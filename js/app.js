@@ -19,7 +19,6 @@ addCamera();
 addLight();
 addControls();
 requestData();
-render();
 
 // data set from http://www.geonames.org/CA/largest-cities-in-canada.html
 
@@ -258,15 +257,6 @@ function hoverOn(event) {
             cities[INTERSECTED.index].visible = true;
             population_array[INTERSECTED.index].visible = true;
 
-            // for ( var k = 0; k < 50; k++ ) {
-            // INTERSECTED.geometry.dynamic = true;
-            //                   INTERSECTED.geometry.vertices[0].y += 0.1;
-            //                   INTERSECTED.geometry.vertices[1].y += 0.1;
-            //                   INTERSECTED.geometry.vertices[4].y += 0.1;
-            //                   INTERSECTED.geometry.vertices[5].y += 0.1;
-            //                   INTERSECTED.geometry.verticesNeedUpdate = true;
-            //               }
-
         }
     }
 }
@@ -281,11 +271,11 @@ function requestData() {
 
                 data = json.cities;
 
-    //            addSpikes(data, function() {
+               addSpikes(data, function() {
 
-    // container.addEventListener('mousemove', hoverOn, false);
-    // render();
-//});
+    container.addEventListener('mousemove', hoverOn, false);
+    render();
+});
             },
             cache: false, // sometimes old info stuck in cache
             error: function() {
