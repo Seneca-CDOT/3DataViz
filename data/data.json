@@ -1,0 +1,185 @@
+{ "cities": [ 
+{   
+    "city": "Montreal",
+    "population": 3268513,
+    "lat": 45.509,
+    "lon": -73.558
+}, {
+    "city": "Toronto",
+    "population": 2600000,
+    "lat": 43.7,
+    "lon": -79.416
+}, {
+    "city": "Vancouver",
+    "population": 1837969,
+    "lat": 49.25,
+    "lon": -123.119
+}, {
+    "city": "Calgary",
+    "population": 1019942,
+    "lat": 51.05,
+    "lon": -114.085
+}, {
+    "city": "Ottawa",
+    "population": 812129,
+    "lat": 45.411,
+    "lon": -75.698
+}, {
+    "city": "Edmonton",
+    "population": 712391,
+    "lat": 53.55,
+    "lon": -113.469
+}, {
+    "city": "Mississauga",
+    "population": 668549,
+    "lat": 43.579,
+    "lon": -79.658
+}, {
+    "city": "North York",
+    "population": 636000,
+    "lat": 43.676,
+    "lon": -79.416
+}, {
+    "city": "Winnipeg",
+    "population": 632063,
+    "lat": 49.884,
+    "lon": -97.147
+}, {
+    "city": "Scarborough",
+    "population": 600000,
+    "lat": 43.772,
+    "lon": -79.257
+},
+{
+    "city": "Hamilton",
+    "population": 645100,
+    "lat": 43.260,
+    "lon": -79.850
+},
+{
+    "city": "Quebec",
+    "population": 643200,
+    "lat": 46.820,
+    "lon": -71.230
+},
+{
+    "city": "Kitchener",
+    "population": 403800,
+    "lat": 43.772,
+    "lon": -80.500
+},
+{
+    "city": "London",
+    "population": 346900,
+    "lat": 42.970,
+    "lon": -81.240
+},
+{
+    "city": "Saint catharines-niagara",
+    "population": 312700,
+    "lat": 43.180,
+    "lon": -79.240
+},
+{
+    "city": "Victoria",
+    "population": 289400,
+    "lat": 48.430,
+    "lon": -123.370
+},
+{
+    "city": "Windsor",
+    "population": 274400,
+    "lat": 42.300,
+    "lon": -83.030
+},
+{
+    "city": "Halifax",
+    "population": 268900,
+    "lat": 44.670,
+    "lon": -63.610
+},
+{
+    "city": "Oshawa",
+    "population": 244700,
+    "lat": 43.890,
+    "lon": -78.860
+},
+{
+    "city": "Gatineau",
+    "population": 235000,
+    "lat": 52.150,
+    "lon": -106.660
+},
+{
+    "city": "Regina",
+    "population": 174600,
+    "lat": 50.450,
+    "lon": -104.610
+},
+{
+    "city": "Barrie",
+    "population": 147200,
+    "lat": 44.380,
+    "lon": -79.680
+},
+{
+    "city": "Abbotsford",
+    "population": 139900,
+    "lat": 49.060,
+    "lon": -122.300
+},
+{
+    "city": "Sherbrooke",
+    "population": 129000,
+    "lat": 45.400,
+    "lon": -71.900
+},
+{
+    "city": "Trois-rivieres",
+    "population": 119200,
+    "lat": 46.350,
+    "lon": -72.570
+},
+{
+    "city": "Kelowna",
+    "population": 119200,
+    "lat": 49.890,
+    "lon": -72.570
+},
+{
+    "city": "Saint john's",
+    "population": 115400,
+    "lat": 47.580,
+    "lon": -52.690
+},
+{
+    "city": "Guelph",
+    "population": 113200,
+    "lat": 43.560,
+    "lon": -80.260
+},
+{
+    "city": "Kingston",
+    "population": 112700,
+    "lat": 44.230,
+    "lon": -76.500
+},
+{
+    "city": "Chicoutimi-jonquiere",
+    "population": 109800,
+    "lat": 48.430,
+    "lon": -71.080
+},
+{
+    "city": "Sudbury",
+    "population": 108300,
+    "lat": 46.490,
+    "lon": -81.010
+},
+{
+    "city": "Thunder bay",
+    "population": 102800,
+    "lat": 48.420,
+    "lon": -89.280
+}
+] }
