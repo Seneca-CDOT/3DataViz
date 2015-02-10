@@ -24,7 +24,7 @@ THREEx.Text	= function(text, options){
 	})
 	
 	// create a mesh with it
-	var material	= new THREE.MeshNormalMaterial()
+	var material	= new THREE.MeshPhongMaterial({ color: 0xCC00FF });
 	var mesh	= new THREE.Mesh(geometry, material)
 	// return mesh
 	return mesh

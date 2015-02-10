@@ -7,77 +7,24 @@ var container;
 var controls;
 var i = 0;
 var spikes = []; // array of spike objects
-var cities = []; // array of cities names
+var cities = []; // array of cities names meshes
+var population_array = []; // array of population meshes
 var INTERSECTED;
 
-var data = [{
-    city: "Montreal",
-    population: 3268513,
-    lat: 45.509,
-    lon: -73.558
-}, {
-    city: "Toronto",
-    population: 2600000,
-    lat: 43.7,
-    lon: -79.416
-}, {
-    city: "Vancouver",
-    population: 1837969,
-    lat: 49.25,
-    lon: -123.119
-}, {
-    city: "Calgary",
-    population: 1019942,
-    lat: 51.05,
-    lon: -114.085
-}, {
-    city: "Ottawa",
-    population: 812129,
-    lat: 45.411,
-    lon: -75.698
-}, {
-    city: "Edmonton",
-    population: 712391,
-    lat: 53.55,
-    lon: -113.469
-}, {
-    city: "Mississauga",
-    population: 668549,
-    lat: 43.579,
-    lon: -79.658
-}, {
-    city: "North York",
-    population: 636000,
-    lat: 43.676,
-    lon: -79.416
-}, {
-    city: "Winnipeg",
-    population: 632063,
-    lat: 49.884,
-    lon: -97.147
-}, {
-    city: "Scarborough",
-    population: 600000,
-    lat: 43.772,
-    lon: -79.257
-}];
+var data;
 
 init();
 drawGlobe();
 addCamera();
 addLight();
 addControls();
-addSpikes(data, function() {
-
-    container.addEventListener('mousemove', hoverOn, false);
-    console.log("here");
-
-});
+requestData();
+render();
 
 // data set from http://www.geonames.org/CA/largest-cities-in-canada.html
 
 //addAxisHelper();
-render();
+
 
 
 function init() {
@@ -200,7 +147,7 @@ function addSpikes(data, callback) {
     var dataRecordIndex;
     for (dataRecordIndex in data) {
         var dataRecord = data[dataRecordIndex];
-        var height = dataRecord.population / 500000;
+        var height = dataRecord.population / 100000;
         var geometry = new THREE.BoxGeometry(0.5, height, 0.5);
         var material = new THREE.MeshPhongMaterial({
             ambient: 0xff0000,
@@ -230,6 +177,23 @@ function addSpikes(data, callback) {
 
         var xRotationSign = dataRecord.lon + 90 > 90 ? -1 : 1;
         spike.rotation.x = xRotationSign * (90 - dataRecord.lat) * Math.PI / 180;
+
+        var cityname = new THREEx.Text(dataRecord.city);
+        var population = new THREEx.Text(dataRecord.population);
+
+        cities.push(cityname);
+        population_array.push(population);
+
+        globe.add(cityname);
+        globe.add( population );
+
+        cityname.visible = false;
+        population.visible = false;
+
+        cityname.position.copy(spike.position);
+        population.position.copy(spike.position);
+        population.position.y += height/2;
+        cityname.position.y += height/2 + 2;
     }
 
     callback();
@@ -264,14 +228,15 @@ function hoverOn(event) {
 
     if (intersects.length > 0) {
 
-        console.log(data[intersects[0].object.index].city);
+        //console.log(data[intersects[0].object.index].city);
 
         if (INTERSECTED != intersects[0].object) {
 
             if (INTERSECTED) {
 
                 INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-                globe.remove(cities[INTERSECTED.index]);
+                cities[INTERSECTED.index].visible = false;
+                population_array[INTERSECTED.index].visible = false;
 
 
                 // 	for ( var k = 0; k < 50; k++ ) {
@@ -288,14 +253,10 @@ function hoverOn(event) {
             INTERSECTED = intersects[0].object;
             INTERSECTED.index = intersects[0].object.index;
             INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-            INTERSECTED.material.emissive.setHex(0xff0000);
+            INTERSECTED.material.emissive.setHex(0xCC00FF);
 
-            cities[INTERSECTED.index] = new THREEx.Text(data[intersects[0].object.index].city);
-
-            globe.add(cities[INTERSECTED.index]);
-
-            cities[INTERSECTED.index].position.copy(spikes[INTERSECTED.index].position);
-            cities[INTERSECTED.index].position.y += data[INTERSECTED.index].population / 500000;
+            cities[INTERSECTED.index].visible = true;
+            population_array[INTERSECTED.index].visible = true;
 
             // for ( var k = 0; k < 50; k++ ) {
             // INTERSECTED.geometry.dynamic = true;
@@ -308,4 +269,28 @@ function hoverOn(event) {
 
         }
     }
+}
+
+function requestData() {
+
+ $.ajax({ // this request for availability of suites
+            type: 'GET',
+            url: 'data/data.json',
+            dataType: 'json',
+            success: function( json ) {
+
+                data = json.cities;
+
+    //            addSpikes(data, function() {
+
+    // container.addEventListener('mousemove', hoverOn, false);
+    // render();
+//});
+            },
+            cache: false, // sometimes old info stuck in cache
+            error: function() {
+                console.log('An error occurred while processing a data file.');
+            }
+        });
+
 }
