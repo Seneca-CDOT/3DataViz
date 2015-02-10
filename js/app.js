@@ -1,70 +1,78 @@
 var scene;
 var stats;
 var renderer;
-var canvas;
 var camera;
 var globe;
 var container;
 var controls;
+var i = 0;
+var spikes = []; // array of spike objects
+var cities = []; // array of cities names
+var INTERSECTED;
+
+var data = [{
+    city: "Montreal",
+    population: 3268513,
+    lat: 45.509,
+    lon: -73.558
+}, {
+    city: "Toronto",
+    population: 2600000,
+    lat: 43.7,
+    lon: -79.416
+}, {
+    city: "Vancouver",
+    population: 1837969,
+    lat: 49.25,
+    lon: -123.119
+}, {
+    city: "Calgary",
+    population: 1019942,
+    lat: 51.05,
+    lon: -114.085
+}, {
+    city: "Ottawa",
+    population: 812129,
+    lat: 45.411,
+    lon: -75.698
+}, {
+    city: "Edmonton",
+    population: 712391,
+    lat: 53.55,
+    lon: -113.469
+}, {
+    city: "Mississauga",
+    population: 668549,
+    lat: 43.579,
+    lon: -79.658
+}, {
+    city: "North York",
+    population: 636000,
+    lat: 43.676,
+    lon: -79.416
+}, {
+    city: "Winnipeg",
+    population: 632063,
+    lat: 49.884,
+    lon: -97.147
+}, {
+    city: "Scarborough",
+    population: 600000,
+    lat: 43.772,
+    lon: -79.257
+}];
 
 init();
 drawGlobe();
 addCamera();
 addLight();
 addControls();
-addSpikes(
-[
-{   city: "Montreal",
-    population: 3268513,
-    lat: 45.509,
-    lon: -73.558
-},
-{   city: "Toronto",
-    population: 2600000,
-    lat: 43.7,
-    lon: -79.416
-},
-{   city: "Vancouver",
-    population: 1837969,
-    lat: 49.25,
-    lon: -123.119
-},
-{   city: "Calgary",
-    population: 1019942,
-    lat: 51.05,
-    lon: -114.085
-},
-{   city: "Ottawa",
-    population: 812129,
-    lat: 45.411,
-    lon: -75.698
-},
-{   city: "Edmonton",
-    population: 712391,
-    lat: 53.55,
-    lon: -113.469
-},
-{   city: "Mississauga",
-    population: 668549,
-    lat: 43.579,
-    lon: -79.658
-},
-{   city: "North York",
-    population: 636000,
-    lat: 43.676,
-    lon: -79.416
-},
-{   city: "Winnipeg",
-    population: 632063,
-    lat: 49.884,
-    lon: -97.147
-},
-{   city: "Scarborough",
-    population: 600000,
-    lat: 43.772,
-    lon: -79.257
-}
-]);
+addSpikes(data, function() {
+
+    container.addEventListener('mousemove', hoverOn, false);
+    console.log("here");
+
+});
 
 // data set from http://www.geonames.org/CA/largest-cities-in-canada.html
 
@@ -170,7 +178,7 @@ function addLight() {
 
     var ambLight = new THREE.AmbientLight(0xFFFFFF);
     var dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.5);
-    dirLight.position.set( 100,100,100 );
+    dirLight.position.set(-100, 100, 100);
     dirLight.target = globe;
 
     //scene.add(ambLight);
@@ -180,48 +188,51 @@ function addLight() {
 
 function addControls() {
 
-    controls = new THREE.OrbitControls(camera, canvas);
+    controls = new THREE.OrbitControls(camera, container);
     controls.minDistance = 75;
     controls.maxDistance = 150;
     controls.userPan = false;
 
 }
 
-function addSpikes(data) {
+function addSpikes(data, callback) {
 
-var dataRecordIndex;
-for (dataRecordIndex in data) {
-	var dataRecord = data[dataRecordIndex];
-	var height = dataRecord.population / 500000;
-    var geometry = new THREE.CylinderGeometry(0.2, 0.2, height, 32);
-    var material = new THREE.MeshPhongMaterial({
-        ambient: 0x00ff00,
-        color: 0x00ff00,
-    });
-    var spike = new THREE.Mesh(geometry, material);
-    //spike.name = i++;
+    var dataRecordIndex;
+    for (dataRecordIndex in data) {
+        var dataRecord = data[dataRecordIndex];
+        var height = dataRecord.population / 500000;
+        var geometry = new THREE.BoxGeometry(0.5, height, 0.5);
+        var material = new THREE.MeshPhongMaterial({
+            ambient: 0xff0000,
+            color: 0xff0000,
+        });
+        var spike = new THREE.Mesh(geometry, material);
 
-    globe.add(spike);
-    
+        spike.index = i++;
 
+        spikes.push(spike);
 
-    var phi = dataRecord.lat * Math.PI / 180;
-    var theta = (dataRecord.lon + 90) * Math.PI / 180;
-    var radius = 50;
+        globe.add(spike);
 
-    var x = radius * Math.cos(phi) * Math.sin(theta);
-    var y = radius * Math.sin(phi);
-    var z = radius * Math.cos(phi) * Math.cos(theta);
+        var phi = dataRecord.lat * Math.PI / 180;
+        var theta = (dataRecord.lon + 90) * Math.PI / 180;
+        var radius = 50;
 
-    var vec = new THREE.Vector3(x, y, z);
+        var x = radius * Math.cos(phi) * Math.sin(theta);
+        var y = radius * Math.sin(phi);
+        var z = radius * Math.cos(phi) * Math.cos(theta);
 
-    spike.position.copy(vec);
+        var vec = new THREE.Vector3(x, y, z);
 
-    spike.rotation.y = dataRecord.lon * Math.PI / 180;
+        spike.position.copy(vec);
 
-    var xRotationSign = dataRecord.lon + 90 > 90 ? -1 : 1;
-    spike.rotation.x = xRotationSign * (90 - dataRecord.lat) * Math.PI / 180;
-} 
+        spike.rotation.y = dataRecord.lon * Math.PI / 180;
+
+        var xRotationSign = dataRecord.lon + 90 > 90 ? -1 : 1;
+        spike.rotation.x = xRotationSign * (90 - dataRecord.lat) * Math.PI / 180;
+    }
+
+    callback();
 }
 
 function addAxisHelper() {
@@ -232,4 +243,69 @@ function addAxisHelper() {
     axes.position.set(0, 0, 0);
     globe.add(axes);
 
+}
+
+function hoverOn(event) {
+
+
+    var x = event.clientX;
+    var y = event.clientY;
+
+    x -= container.offsetLeft;
+    y -= container.offsetTop;
+
+    var vector = new THREE.Vector3((x / container.offsetWidth) * 2 - 1, -(y / container.offsetHeight) * 2 + 1, 0.5);
+
+    vector.unproject(camera);
+
+    var ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+
+    var intersects = ray.intersectObjects(spikes); // returns an object in any intersected on click
+
+    if (intersects.length > 0) {
+
+        console.log(data[intersects[0].object.index].city);
+
+        if (INTERSECTED != intersects[0].object) {
+
+            if (INTERSECTED) {
+
+                INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+                globe.remove(cities[INTERSECTED.index]);
+
+
+                // 	for ( var k = 0; k < 50; k++ ) {
+                // INTERSECTED.geometry.dynamic = true;
+                //                   INTERSECTED.geometry.vertices[0].y -= 0.1;
+                //                   INTERSECTED.geometry.vertices[1].y -= 0.1;
+                //                   INTERSECTED.geometry.vertices[4].y -= 0.1;
+                //                   INTERSECTED.geometry.vertices[5].y -= 0.1;
+                //                   INTERSECTED.geometry.verticesNeedUpdate = true;
+                //               }
+
+            }
+            //console.log( intersects[ 0 ].object );
+            INTERSECTED = intersects[0].object;
+            INTERSECTED.index = intersects[0].object.index;
+            INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+            INTERSECTED.material.emissive.setHex(0xff0000);
+
+            cities[INTERSECTED.index] = new THREEx.Text(data[intersects[0].object.index].city);
+
+            globe.add(cities[INTERSECTED.index]);
+
+            cities[INTERSECTED.index].position.copy(spikes[INTERSECTED.index].position);
+            cities[INTERSECTED.index].position.y += data[INTERSECTED.index].population / 500000;
+
+            // for ( var k = 0; k < 50; k++ ) {
+            // INTERSECTED.geometry.dynamic = true;
+            //                   INTERSECTED.geometry.vertices[0].y += 0.1;
+            //                   INTERSECTED.geometry.vertices[1].y += 0.1;
+            //                   INTERSECTED.geometry.vertices[4].y += 0.1;
+            //                   INTERSECTED.geometry.vertices[5].y += 0.1;
+            //                   INTERSECTED.geometry.verticesNeedUpdate = true;
+            //               }
+
+        }
+    }
 }
