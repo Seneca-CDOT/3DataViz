@@ -6,10 +6,12 @@ var globe;
 var container;
 var controls;
 var i = 0;
-var spikes = []; // array of spike objects
-var cities = []; // array of cities names meshes
-var population_array = []; // array of population meshes
+var spikes = []; // an array of spike objects
+var cities = []; // an array of cities names meshes
+var population_array = []; // an array of population meshes
 var INTERSECTED;
+var countries = []; // an array of countries
+var ctr = 0; // number of shapes
 
 var data;
 
@@ -34,7 +36,7 @@ function init() {
 
     scene = new THREE.Scene();
 
-    //stats; 
+    addStats();
 
     renderer = new THREE.WebGLRenderer({
         antialias: true,
@@ -52,14 +54,14 @@ function drawGlobe() {
 
     var geometry = new THREE.SphereGeometry(50, 128, 128);
 
-    var texture = THREE.ImageUtils.loadTexture('textures/earth.jpg');
+    //var texture = THREE.ImageUtils.loadTexture('textures/earth.jpg');
     var specmap = THREE.ImageUtils.loadTexture('textures/specular.jpg');
 
 
     var material = new THREE.MeshPhongMaterial({
         color: 0xffffff,
         ambient: 0xffffff,
-        map: texture,
+        //map: texture,
         specularMap: specmap,
         shininess: 20,
     });
@@ -72,13 +74,17 @@ function render() {
 
     requestAnimationFrame(render);
 
-    globe.rotation.y += 0.0001;
+    stats.begin();
+
+    //globe.rotation.y += 0.0001;
 
     controls.update();
 
     // if (scope.statshelp === true) stats.update();
 
+    stats.end();
     renderer.render(scene, camera);
+
 
 
 }
@@ -127,7 +133,7 @@ function addLight() {
     dirLight.position.set(-100, 100, 100);
     dirLight.target = globe;
 
-    //scene.add(ambLight);
+    // scene.add(ambLight);
     camera.add(dirLight);
 
 }
@@ -135,7 +141,7 @@ function addLight() {
 function addControls() {
 
     controls = new THREE.OrbitControls(camera, container);
-    controls.minDistance = 75;
+    controls.minDistance = 0;
     controls.maxDistance = 150;
     controls.userPan = false;
 
@@ -184,15 +190,15 @@ function addSpikes(data, callback) {
         population_array.push(population);
 
         globe.add(cityname);
-        globe.add( population );
+        globe.add(population);
 
         cityname.visible = false;
         population.visible = false;
 
         cityname.position.copy(spike.position);
         population.position.copy(spike.position);
-        population.position.y += height/2;
-        cityname.position.y += height/2 + 2;
+        population.position.y += height / 2;
+        cityname.position.y += height / 2 + 2;
     }
 
     callback();
@@ -223,7 +229,7 @@ function hoverOn(event) {
 
     var ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
 
-    var intersects = ray.intersectObjects(spikes); // returns an object in any intersected on click
+    var intersects = ray.intersectObjects(countries); // returns an object in any intersected on click
 
     if (intersects.length > 0) {
 
@@ -233,12 +239,14 @@ function hoverOn(event) {
 
             if (INTERSECTED) {
 
-                INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-                cities[INTERSECTED.index].visible = false;
-                population_array[INTERSECTED.index].visible = false;
+                // INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);// for spikes
+                INTERSECTED.material.color.setHex(INTERSECTED.currentColor); // for countries shapes
+                console.log(INTERSECTED.name);
+                // cities[INTERSECTED.index].visible = false; // for spikes
+                // population_array[INTERSECTED.index].visible = false;
 
 
-                // 	for ( var k = 0; k < 50; k++ ) {
+                //  for ( var k = 0; k < 50; k++ ) {
                 // INTERSECTED.geometry.dynamic = true;
                 //                   INTERSECTED.geometry.vertices[0].y -= 0.1;
                 //                   INTERSECTED.geometry.vertices[1].y -= 0.1;
@@ -250,12 +258,14 @@ function hoverOn(event) {
             }
             //console.log( intersects[ 0 ].object );
             INTERSECTED = intersects[0].object;
-            INTERSECTED.index = intersects[0].object.index;
-            INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-            INTERSECTED.material.emissive.setHex(0xCC00FF);
+            // INTERSECTED.index = intersects[0].object.index; // for spikes
+            // INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex(); // for spikes
+            INTERSECTED.currentColor = INTERSECTED.material.color.getHex();
+            // INTERSECTED.material.emissive.setHex(0xCC00FF); // for spikes
+            INTERSECTED.material.color.setHex(0xFF0000);
 
-            cities[INTERSECTED.index].visible = true;
-            population_array[INTERSECTED.index].visible = true;
+            //cities[INTERSECTED.index].visible = true; // for spikes
+            //population_array[INTERSECTED.index].visible = true; // for spikes
 
         }
     }
@@ -263,24 +273,197 @@ function hoverOn(event) {
 
 function requestData() {
 
- $.ajax({ // this request for availability of suites
-            type: 'GET',
-            url: 'data/data.json',
-            dataType: 'json',
-            success: function( json ) {
+    $.ajax({ // this request for availability of suites
+        type: 'GET',
+        url: 'data/data.json',
+        dataType: 'json',
+        success: function(json) {
 
-                data = json.cities;
+            data = json.cities;
 
-               addSpikes(data, function() {
+            //                addSpikes(data, function() {
 
-    container.addEventListener('mousemove', hoverOn, false);
-    render();
-});
-            },
-            cache: false, // sometimes old info stuck in cache
-            error: function() {
-                console.log('An error occurred while processing a data file.');
-            }
-        });
+            //     container.addEventListener('mousemove', hoverOn, false);
+            //     render();
+            // });
+        },
+        cache: false, // sometimes old info stuck in cache
+        error: function() {
+            console.log('An error occurred while processing a data file.');
+        }
+    });
+
+    $.ajax({ // this request for availability of suites
+        type: 'GET',
+        url: 'data/borders.json',
+        dataType: 'json',
+        success: function(json) {
+
+            readCountries(json, function() {
+
+                container.addEventListener('mousemove', hoverOn, false);
+                render();
+
+            });
+
+
+        },
+        cache: false, // sometimes old info stuck in cache
+        error: function() {
+            console.log('An error occurred while processing a borders file.');
+        }
+    });
+
+}
+
+function addBorders(data) {
+
+    var country = data.features[0].geometry.coordinates[0];
+
+    var i, k, dot, verty = [];
+    var border = new THREE.Shape();
+
+    dot = geoToxyz(country[0][0], country[0][1]);
+    border.moveTo(dot.x, dot.z);
+
+
+    for (i = 1; i < country.length; i++) {
+
+        dot = geoToxyz(country[i][0], country[i][1]);
+
+        border.lineTo(dot.x, dot.z);
+        verty.push(dot.y);
+
+    }
+
+    var rectGeom = new THREE.ShapeGeometry(border);
+
+    var extrudeSettings = {
+        amount: 1,
+        steps: 1,
+        bevelSegments: 0,
+        bevelSize: 0,
+        bevelThickness: 0
+    };
+
+    //var rectGeom = new THREE.ExtrudeGeometry(border, extrudeSettings);
+
+
+    var rectMesh = new THREE.Mesh(rectGeom, new THREE.MeshPhongMaterial({
+        color: 0xff0000,
+        side: THREE.DoubleSide
+    }));
+
+    globe.add(rectMesh);
+
+    rectMesh.position.set(30, 30, 30);
+
+    var xRotationSign = country[0][1] + 90 > 90 ? -1 : 1;
+    // rectMesh.rotation.x = xRotationSign * (90 - country[0][0]) * Math.PI / 180;
+
+    //rectMesh.rotation.y = -Math.PI / 2;
+    rectMesh.scale.set(50, 50, 50);
+    rectMesh.name = 'countryShape';
+
+    var geom = rectMesh.geometry;
+
+
+    geom.dynamic = true;
+
+    for (var k = 0; k < geom.vertices.length; k++) {
+
+        geom.vertices[k].y = 26;
+
+    }
+    geom.verticesNeedUpdate = true;
+
+
+}
+
+function geoToxyz(lon, lat, r) {
+
+    var r = r || 1;
+
+    var phi = lat * Math.PI / 180;
+    var theta = (lon + 90) * Math.PI / 180;
+
+    var x = r * Math.cos(phi) * Math.sin(theta);
+    var y = r * Math.sin(phi);
+    var z = r * Math.cos(phi) * Math.cos(theta);
+
+    return new THREE.Vector3(x, y, z);
+
+
+}
+
+var ctr = 0;
+
+function addBorders2(coordinates, name) {
+
+    //var country = data.features[0].geometry.coordinates[0];
+
+    if (coordinates[0].length !== 2) {
+
+        for (var i = 0; i < coordinates.length; i++) {
+
+            addBorders2(coordinates[i], name);
+
+        }
+        return;
+    }
+
+
+    var point;
+
+    var geometry = new THREE.Geometry();
+
+    for (var k = 0; k < coordinates.length; k++) {
+
+        point = geoToxyz(coordinates[k][0], coordinates[k][1], 50);
+        geometry.vertices.push(point);
+
+    }
+
+    var material = new THREE.LineBasicMaterial({
+        color: 0x000000
+    });
+
+
+    var shape = new THREE.Line(geometry, material);
+    globe.add(shape);
+    shape.name = name;
+    countries.push(shape);
+    ctr++;
+
+    //line.scale.set(50,50,50);
+
+}
+
+function readCountries(data, callback) {
+
+    for (var i = 0; i < data.features.length; i++) {
+
+        addBorders2(data.features[i].geometry.coordinates, data.features[i].properties.NAME);
+
+    }
+
+    console.log(ctr + " shapes were generated");
+    callback();
+
+}
+
+
+
+function addStats() {
+
+    stats = new Stats();
+    stats.setMode(0); // 0: fps, 1: ms 
+
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '0px';
+    stats.domElement.style.top = '0px';
+
+    document.body.appendChild(stats.domElement);
+
 
 }
