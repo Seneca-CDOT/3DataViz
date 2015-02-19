@@ -1,16 +1,27 @@
 <html>
+
 <body>
 	<style>
-body {
-
-	margin: 0;
-	width: 100%;
-	height: 100%;
-}
+		body {
+			margin: 0;
+			width: 100%;
+			height: 100%;
+		}
 	</style>
+
 	<div id="webgl"></div>
-	</body>
-<script src="js/three.js"></script>
-<script src="js/OrbitControls.js"></script>
-<script src="js/app.js"></script>
+</body>
+
+<!-- structure -->
+<script src="Libraries/jquery-2.1.3.min.js"></script>
+<script src="Libraries/underscore.js"></script>
+<script src="Libraries/backbone.js"></script>
+
+<!-- 3D view -->
+<script src="Libraries/three.js"></script>
+<script src="Libraries/OrbitControls.js"></script>
+
+<!-- source code loading -->
+<script data-main="Application.js" src="Libraries/require.js"></script>
+
 </html>
