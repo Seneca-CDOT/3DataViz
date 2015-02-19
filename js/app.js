@@ -20,7 +20,8 @@ drawGlobe();
 addCamera();
 addLight();
 addControls();
-requestData();
+//requestData();
+//render();
 
 // data set from http://www.geonames.org/CA/largest-cities-in-canada.html
 
@@ -52,22 +53,24 @@ function init() {
 
 function drawGlobe() {
 
-    var geometry = new THREE.SphereGeometry(50, 128, 128);
+    var geometry = new THREE.SphereGeometry(50, 64, 64);
 
     //var texture = THREE.ImageUtils.loadTexture('textures/earth.jpg');
-    var specmap = THREE.ImageUtils.loadTexture('textures/specular.jpg');
+    //var specmap = THREE.ImageUtils.loadTexture('textures/specular.jpg');
 
 
     var material = new THREE.MeshPhongMaterial({
-        color: 0xffffff,
-        ambient: 0xffffff,
+        color: 0x4396E8,
+        ambient: 0x4396E8,
         //map: texture,
-        specularMap: specmap,
+        //specularMap: specmap,
         shininess: 20,
     });
     globe = new THREE.Mesh(geometry, material);
+    globe.rotation.y = Math.PI/2;
     scene.add(globe);
-
+    globe.name = 'globe';
+    countries.push( globe );
 }
 
 function render() {
@@ -79,8 +82,6 @@ function render() {
     //globe.rotation.y += 0.0001;
 
     controls.update();
-
-    // if (scope.statshelp === true) stats.update();
 
     stats.end();
     renderer.render(scene, camera);
@@ -231,7 +232,10 @@ function hoverOn(event) {
 
     var intersects = ray.intersectObjects(countries); // returns an object in any intersected on click
 
+
     if (intersects.length > 0) {
+    
+    if ( intersects[0].object.name == 'globe' ) return; // exclude invisible meshes from intersection
 
         //console.log(data[intersects[0].object.index].city);
 
@@ -241,7 +245,9 @@ function hoverOn(event) {
 
                 // INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);// for spikes
                 INTERSECTED.material.color.setHex(INTERSECTED.currentColor); // for countries shapes
-                console.log(INTERSECTED.name);
+                INTERSECTED.scale.x -= 0.5;
+                INTERSECTED.scale.y -= 0.5;
+                INTERSECTED.scale.z -= 0.5;
                 // cities[INTERSECTED.index].visible = false; // for spikes
                 // population_array[INTERSECTED.index].visible = false;
 
@@ -262,7 +268,14 @@ function hoverOn(event) {
             // INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex(); // for spikes
             INTERSECTED.currentColor = INTERSECTED.material.color.getHex();
             // INTERSECTED.material.emissive.setHex(0xCC00FF); // for spikes
-            INTERSECTED.material.color.setHex(0xFF0000);
+            INTERSECTED.material.color.setHex(0x0000FF);
+            INTERSECTED.scale.x += 0.5;
+            INTERSECTED.scale.y += 0.5;
+            INTERSECTED.scale.z += 0.5;
+            console.log(INTERSECTED.getWorldPosition());
+            $( '#webgl' ).empty();
+            var cityname =  '<div style="position:absolute;top:50px;right:50px;color:white;font-size:30px;opacity:0.7;">'+ INTERSECTED.name + '</div>';
+            $( '#webgl' ).append( cityname );
 
             //cities[INTERSECTED.index].visible = true; // for spikes
             //population_array[INTERSECTED.index].visible = true; // for spikes
@@ -301,8 +314,8 @@ function requestData() {
 
             readCountries(json, function() {
 
-                container.addEventListener('mousemove', hoverOn, false);
-                render();
+                // container.addEventListener('mousemove', hoverOn, false);
+                // render();
 
             });
 
@@ -439,6 +452,28 @@ function addBorders2(coordinates, name) {
 
 }
 
+function addCountries( data ) {
+
+
+    var i = 10, geometry, material, scale;
+
+   for (var name in data) {
+
+        material = new THREE.MeshPhongMaterial( { shininess: 0, color: rgbToHex( 10, i++, 0 ) } );
+        geometry = new Map3DGeometry (data[name], 0);
+        data[name].mesh = new THREE.Mesh (geometry, material);
+        scene.add( data[name].mesh );
+        // scale = Math.random()/2 + 50.5;
+        scale = 50.5;
+        data[name].mesh.scale.set( scale, scale, scale );
+        data[name].mesh.geometry.computeBoundingSphere();
+        data[name].mesh.name = name;
+        countries.push(data[name].mesh);
+    }
+    render();
+
+}
+
 function readCountries(data, callback) {
 
     for (var i = 0; i < data.features.length; i++) {
@@ -467,3 +502,15 @@ function addStats() {
 
 
 }
+
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+
+container.addEventListener('mousedown', hoverOn, false);
