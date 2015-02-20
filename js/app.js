@@ -12,20 +12,22 @@ var population_array = []; // an array of population meshes
 var INTERSECTED;
 var countries = []; // an array of countries
 var ctr = 0; // number of shapes
+var midpoints = [];
+var orbitOn = false;
 
-var data;
+var geodata; // stores data about countries
 
 init();
 drawGlobe();
 addCamera();
 addLight();
 addControls();
-//requestData();
+requestData();
 //render();
 
 // data set from http://www.geonames.org/CA/largest-cities-in-canada.html
 
-//addAxisHelper();
+// addAxisHelper();
 
 
 
@@ -67,10 +69,9 @@ function drawGlobe() {
         shininess: 20,
     });
     globe = new THREE.Mesh(geometry, material);
-    globe.rotation.y = Math.PI/2;
     scene.add(globe);
     globe.name = 'globe';
-    countries.push( globe );
+    countries.push(globe);
 }
 
 function render() {
@@ -78,6 +79,10 @@ function render() {
     requestAnimationFrame(render);
 
     stats.begin();
+
+    if (orbitOn === true) {
+        TWEEN.update();
+    }
 
     //globe.rotation.y += 0.0001;
 
@@ -215,7 +220,7 @@ function addAxisHelper() {
 
 }
 
-function hoverOn(event) {
+function clickOn(event) {
 
 
     var x = event.clientX;
@@ -234,10 +239,12 @@ function hoverOn(event) {
 
 
     if (intersects.length > 0) {
-    
-    if ( intersects[0].object.name == 'globe' ) return; // exclude invisible meshes from intersection
+
+        if (intersects[0].object.name == 'globe') return; // exclude invisible meshes from intersection
 
         //console.log(data[intersects[0].object.index].city);
+
+        cameraGoTo( intersects[0].object.name );
 
         if (INTERSECTED != intersects[0].object) {
 
@@ -272,10 +279,10 @@ function hoverOn(event) {
             INTERSECTED.scale.x += 0.5;
             INTERSECTED.scale.y += 0.5;
             INTERSECTED.scale.z += 0.5;
-            console.log(INTERSECTED.getWorldPosition());
-            $( '#webgl' ).empty();
-            var cityname =  '<div style="position:absolute;top:50px;right:50px;color:white;font-size:30px;opacity:0.7;">'+ INTERSECTED.name + '</div>';
-            $( '#webgl' ).append( cityname );
+            console.log(INTERSECTED.direction);
+            $('#webgl').empty();
+            var cityname = '<div style="position:absolute;top:50px;right:50px;color:white;font-size:30px;opacity:0.7;">' + INTERSECTED.name + '</div>';
+            $('#webgl').append(cityname);
 
             //cities[INTERSECTED.index].visible = true; // for spikes
             //population_array[INTERSECTED.index].visible = true; // for spikes
@@ -286,36 +293,37 @@ function hoverOn(event) {
 
 function requestData() {
 
-    $.ajax({ // this request for availability of suites
+    // $.ajax({ 
+    //     type: 'GET',
+    //     url: 'data/data.json',
+    //     dataType: 'json',
+    //     success: function(json) {
+
+    //         data = json.cities;
+
+    //         //                addSpikes(data, function() {
+
+    //         //     container.addEventListener('mousemove', hoverOn, false);
+    //         //     render();
+    //         // });
+    //     },
+    //     cache: false, // sometimes old info stuck in cache
+    //     error: function() {
+    //         console.log('An error occurred while processing a data file.');
+    //     }
+    // });
+
+    $.ajax({ 
         type: 'GET',
-        url: 'data/data.json',
+        url: 'data/geodata.json',
         dataType: 'json',
         success: function(json) {
 
-            data = json.cities;
+            geodata = json;
+            addCountries(json, function() {
 
-            //                addSpikes(data, function() {
-
-            //     container.addEventListener('mousemove', hoverOn, false);
-            //     render();
-            // });
-        },
-        cache: false, // sometimes old info stuck in cache
-        error: function() {
-            console.log('An error occurred while processing a data file.');
-        }
-    });
-
-    $.ajax({ // this request for availability of suites
-        type: 'GET',
-        url: 'data/borders.json',
-        dataType: 'json',
-        success: function(json) {
-
-            readCountries(json, function() {
-
-                // container.addEventListener('mousemove', hoverOn, false);
-                // render();
+                container.addEventListener('mousedown', clickOn, false);
+                render();
 
             });
 
@@ -323,7 +331,7 @@ function requestData() {
         },
         cache: false, // sometimes old info stuck in cache
         error: function() {
-            console.log('An error occurred while processing a borders file.');
+            console.log('An error occurred while processing a countries file.');
         }
     });
 
@@ -397,12 +405,19 @@ function geoToxyz(lon, lat, r) {
 
     var r = r || 1;
 
-    var phi = lat * Math.PI / 180;
-    var theta = (lon + 90) * Math.PI / 180;
+    // var phi = lat * Math.PI / 180;
+    // var theta = (lon + 90) * Math.PI / 180;
 
-    var x = r * Math.cos(phi) * Math.sin(theta);
-    var y = r * Math.sin(phi);
-    var z = r * Math.cos(phi) * Math.cos(theta);
+    // var x = r * Math.cos(phi) * Math.sin(theta);
+    // var y = r * Math.sin(phi);
+    // var z = r * Math.cos(phi) * Math.cos(theta);
+
+    var phi = +(90 - lat) * 0.01745329252;
+    var the = +(180 - lon) * 0.01745329252;
+
+    var x = r * Math.sin (the) * Math.sin (phi) * -1;
+    var z = r * Math.cos (the) * Math.sin (phi);
+    var y = r * Math.cos (phi);
 
     return new THREE.Vector3(x, y, z);
 
@@ -452,25 +467,34 @@ function addBorders2(coordinates, name) {
 
 }
 
-function addCountries( data ) {
+function addCountries(data, callback) {
 
 
-    var i = 10, geometry, material, scale;
+    var i = 10,
+        geometry, material, scale;
 
-   for (var name in data) {
+    for (var name in data) {
 
-        material = new THREE.MeshPhongMaterial( { shininess: 0, color: rgbToHex( 10, i++, 0 ) } );
-        geometry = new Map3DGeometry (data[name], 0);
-        data[name].mesh = new THREE.Mesh (geometry, material);
-        scene.add( data[name].mesh );
+        material = new THREE.MeshPhongMaterial({
+            shininess: 0,
+            color: rgbToHex(10, i++, 0)
+        });
+        geometry = new Map3DGeometry(data[name], 0);
+        midpoints.push({
+            countryname: name,
+            lon: data[name].vertices[0],
+            lat: data[name].vertices[1]
+        });
+        data[name].mesh = new THREE.Mesh(geometry, material);
+        scene.add(data[name].mesh);
         // scale = Math.random()/2 + 50.5;
         scale = 50.5;
-        data[name].mesh.scale.set( scale, scale, scale );
+        data[name].mesh.scale.set(scale, scale, scale);
         data[name].mesh.geometry.computeBoundingSphere();
         data[name].mesh.name = name;
         countries.push(data[name].mesh);
     }
-    render();
+      callback();
 
 }
 
@@ -486,8 +510,6 @@ function readCountries(data, callback) {
     callback();
 
 }
-
-
 
 function addStats() {
 
@@ -512,5 +534,83 @@ function rgbToHex(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
+function cameraGoTo( countryname ) {
 
-container.addEventListener('mousedown', hoverOn, false);
+    var current = controls.getPosition();
+
+ //   for (var i = 0; i < countries.length; i++) {
+
+     //   if (countries[i].name == country) {
+        
+           var midpoint = getMidPoint( geodata[ countryname ] );
+          var destination =  geoToxyz( midpoint.lon, midpoint.lat );
+           // var destination = geoToxyz(camerapoints[i].lon, camerapoints[i].lat);
+            destination.setLength( 100 );
+        //     break;
+      //  }
+
+  //  }
+
+    console.dir( current, destination );
+
+    if (orbitOn == true) {
+        tween.stop();
+    }
+
+    tween = new TWEEN.Tween(current)
+        .to({
+            x: destination.x,
+            y: destination.y,
+            z: destination.z
+        }, 1000)
+
+    .easing(TWEEN.Easing.Sinusoidal.InOut)
+        .onUpdate(function() {
+
+            controls.updateView({
+                x: this.x,
+                y: this.y,
+                z: this.z
+            });
+
+        })
+        .onComplete(function() {
+            orbitOn = false;
+            console.log("stop");
+        });
+
+    orbitOn = true;
+    tween.start();
+
+}
+
+function getMidPoint( country ) {
+
+var lon = [];
+var lat = [];
+
+// var longitude = country.vertices[0];
+// var isInEastHemisphere = (longitude > 0 && longitude < 180)
+// var isInWestHemisphere = (longitude < 0 && longitude > -180)
+
+for ( var i = 0; i+1 < country.vertices.length; i=i+2 ) {
+    lon.push( country.vertices[i] );
+    lat.push( country.vertices[i+1] );
+}
+
+var lonmax = Math.max.apply(Math,lon); 
+var lonmin = Math.min.apply(Math,lon);
+var lonmid = ( lonmin + lonmax ) / 2;
+
+var latmax = Math.max.apply(Math,lat); 
+var latmin = Math.min.apply(Math,lat);
+var latmid = ( latmin + latmax ) / 2;
+
+console.log( lonmid, latmid );
+
+return { lon: lonmid, lat: latmid }
+
+}
+
+
+container.addEventListener('dblclick', clickOn, false);
