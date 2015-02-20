@@ -14,6 +14,7 @@ var countries = []; // an array of countries
 var ctr = 0; // number of shapes
 var midpoints = [];
 var orbitOn = false;
+var list = [];
 
 var geodata; // stores data about countries
 
@@ -46,6 +47,8 @@ function init() {
         alpha: true
     });
 
+    $('#webgl').append('<form><input type="text" id="country" ' + 'style="position:absolute;top:50px;right:50px;font-size:30px;opacity:0.7;"></form>');
+
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setClearColor(0x000000);
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -66,7 +69,7 @@ function drawGlobe() {
         ambient: 0x4396E8,
         //map: texture,
         //specularMap: specmap,
-        shininess: 20,
+        shininess: 20
     });
     globe = new THREE.Mesh(geometry, material);
     scene.add(globe);
@@ -242,52 +245,15 @@ function clickOn(event) {
 
         if (intersects[0].object.name == 'globe') return; // exclude invisible meshes from intersection
 
+        //container.removeEventListener('mousedown', clickOn, false);
+        //controls.removeMouse();
+
         //console.log(data[intersects[0].object.index].city);
 
-        cameraGoTo( intersects[0].object.name );
+        // highlightCountry( intersects[0].object );
 
-        if (INTERSECTED != intersects[0].object) {
+        cameraGoTo(intersects[0].object.name);
 
-            if (INTERSECTED) {
-
-                // INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);// for spikes
-                INTERSECTED.material.color.setHex(INTERSECTED.currentColor); // for countries shapes
-                INTERSECTED.scale.x -= 0.5;
-                INTERSECTED.scale.y -= 0.5;
-                INTERSECTED.scale.z -= 0.5;
-                // cities[INTERSECTED.index].visible = false; // for spikes
-                // population_array[INTERSECTED.index].visible = false;
-
-
-                //  for ( var k = 0; k < 50; k++ ) {
-                // INTERSECTED.geometry.dynamic = true;
-                //                   INTERSECTED.geometry.vertices[0].y -= 0.1;
-                //                   INTERSECTED.geometry.vertices[1].y -= 0.1;
-                //                   INTERSECTED.geometry.vertices[4].y -= 0.1;
-                //                   INTERSECTED.geometry.vertices[5].y -= 0.1;
-                //                   INTERSECTED.geometry.verticesNeedUpdate = true;
-                //               }
-
-            }
-            //console.log( intersects[ 0 ].object );
-            INTERSECTED = intersects[0].object;
-            // INTERSECTED.index = intersects[0].object.index; // for spikes
-            // INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex(); // for spikes
-            INTERSECTED.currentColor = INTERSECTED.material.color.getHex();
-            // INTERSECTED.material.emissive.setHex(0xCC00FF); // for spikes
-            INTERSECTED.material.color.setHex(0x0000FF);
-            INTERSECTED.scale.x += 0.5;
-            INTERSECTED.scale.y += 0.5;
-            INTERSECTED.scale.z += 0.5;
-            console.log(INTERSECTED.direction);
-            $('#webgl').empty();
-            var cityname = '<div style="position:absolute;top:50px;right:50px;color:white;font-size:30px;opacity:0.7;">' + INTERSECTED.name + '</div>';
-            $('#webgl').append(cityname);
-
-            //cities[INTERSECTED.index].visible = true; // for spikes
-            //population_array[INTERSECTED.index].visible = true; // for spikes
-
-        }
     }
 }
 
@@ -313,7 +279,7 @@ function requestData() {
     //     }
     // });
 
-    $.ajax({ 
+    $.ajax({
         type: 'GET',
         url: 'data/geodata.json',
         dataType: 'json',
@@ -322,7 +288,7 @@ function requestData() {
             geodata = json;
             addCountries(json, function() {
 
-                container.addEventListener('mousedown', clickOn, false);
+                // container.addEventListener('mousedown', clickOn, false);
                 render();
 
             });
@@ -415,9 +381,9 @@ function geoToxyz(lon, lat, r) {
     var phi = +(90 - lat) * 0.01745329252;
     var the = +(180 - lon) * 0.01745329252;
 
-    var x = r * Math.sin (the) * Math.sin (phi) * -1;
-    var z = r * Math.cos (the) * Math.sin (phi);
-    var y = r * Math.cos (phi);
+    var x = r * Math.sin(the) * Math.sin(phi) * -1;
+    var z = r * Math.cos(the) * Math.sin(phi);
+    var y = r * Math.cos(phi);
 
     return new THREE.Vector3(x, y, z);
 
@@ -494,7 +460,7 @@ function addCountries(data, callback) {
         data[name].mesh.name = name;
         countries.push(data[name].mesh);
     }
-      callback();
+    callback();
 
 }
 
@@ -506,7 +472,7 @@ function readCountries(data, callback) {
 
     }
 
-    console.log(ctr + " shapes were generated");
+    //  console.log(ctr + " shapes were generated");
     callback();
 
 }
@@ -534,24 +500,42 @@ function rgbToHex(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
-function cameraGoTo( countryname ) {
+function cameraGoTo(countryname) {
+
+    container.removeEventListener('mousedown', clickOn, false);
+    container.removeEventListener('mousemove', clickOn, false);
+    controls.removeMouse();
+
+    var countrymesh = findCountryMesh(countryname);
+
+    if (countrymesh === undefined) {
+
+        $('.cityname').empty();
+        var cityname = '<div class="cityname" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + "Not found" + '</div>';
+        $('#webgl').append(cityname);
+        return;
+
+    }
 
     var current = controls.getPosition();
 
- //   for (var i = 0; i < countries.length; i++) {
+    //   for (var i = 0; i < countries.length; i++) {
 
-     //   if (countries[i].name == country) {
-        
-           var midpoint = getMidPoint( geodata[ countryname ] );
-          var destination =  geoToxyz( midpoint.lon, midpoint.lat );
-           // var destination = geoToxyz(camerapoints[i].lon, camerapoints[i].lat);
-            destination.setLength( 100 );
-        //     break;
-      //  }
+    //   if (countries[i].name == country) {
 
-  //  }
+    //var midpoint = getMidPoint( geodata[ countryname] );
+    //var destination =  geoToxyz( midpoint.lon, midpoint.lat );
+    // var destination = geoToxyz(camerapoints[i].lon, camerapoints[i].lat);
+    // var countrymesh = findCountryMesh( countryname );
+    var destination = countrymesh.geometry.boundingSphere.center.clone();
+    destination.setLength(controls.getRadius());
+    //     break;
+    //  }
 
-    console.dir( current, destination );
+    //  }
+    highlightCountry(countrymesh);
+
+    //    console.dir( current, destination );
 
     if (orbitOn == true) {
         tween.stop();
@@ -576,6 +560,8 @@ function cameraGoTo( countryname ) {
         })
         .onComplete(function() {
             orbitOn = false;
+            addListeners();
+            controls.addMouse();
             console.log("stop");
         });
 
@@ -584,33 +570,190 @@ function cameraGoTo( countryname ) {
 
 }
 
-function getMidPoint( country ) {
+function getMidPoint(country) {
 
-var lon = [];
-var lat = [];
+    var lon = [];
+    var lat = [];
 
-// var longitude = country.vertices[0];
-// var isInEastHemisphere = (longitude > 0 && longitude < 180)
-// var isInWestHemisphere = (longitude < 0 && longitude > -180)
+    // var longitude = country.vertices[0];
+    // var isInEastHemisphere = (longitude > 0 && longitude < 180)
+    // var isInWestHemisphere = (longitude < 0 && longitude > -180)
 
-for ( var i = 0; i+1 < country.vertices.length; i=i+2 ) {
-    lon.push( country.vertices[i] );
-    lat.push( country.vertices[i+1] );
+    for (var i = 0; i + 1 < country.vertices.length; i = i + 2) {
+        lon.push(country.vertices[i]);
+        lat.push(country.vertices[i + 1]);
+    }
+
+    var lonmax = Math.max.apply(Math, lon);
+    var lonmin = Math.min.apply(Math, lon);
+    var lonmid = (lonmin + lonmax) / 2;
+
+    var latmax = Math.max.apply(Math, lat);
+    var latmin = Math.min.apply(Math, lat);
+    var latmid = (latmin + latmax) / 2;
+
+    console.log("longitude min and max: " + lonmin, lonmax);
+
+    return {
+        lon: lonmid,
+        lat: latmid
+    }
+
 }
 
-var lonmax = Math.max.apply(Math,lon); 
-var lonmin = Math.min.apply(Math,lon);
-var lonmid = ( lonmin + lonmax ) / 2;
 
-var latmax = Math.max.apply(Math,lat); 
-var latmin = Math.min.apply(Math,lat);
-var latmid = ( latmin + latmax ) / 2;
+function findCountryMesh(name) {
 
-console.log( lonmid, latmid );
+    showList(name);
 
-return { lon: lonmid, lat: latmid }
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+
+    for (var k = 0; k < name.length; k++) {
+
+        if (name.charAt(k) == ' ') {
+
+            var firstword = name.slice(0, k + 1);
+
+            var secondword = name.charAt(k + 1).toUpperCase() + name.slice(k + 2);
+
+            name = firstword + secondword;
+
+            break;
+        }
+
+    }
+
+
+    for (var i = 0; i < countries.length; i++) {
+
+
+        if (countries[i].name == name) {
+
+            return countries[i];
+        }
+    }
 
 }
 
+function highlightCountry(object) {
 
-container.addEventListener('dblclick', clickOn, false);
+    if (INTERSECTED != object) {
+
+        if (INTERSECTED) {
+
+            // INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);// for spikes
+            INTERSECTED.material.color.setHex(INTERSECTED.currentColor); // for countries shapes
+            INTERSECTED.scale.x -= 0.5;
+            INTERSECTED.scale.y -= 0.5;
+            INTERSECTED.scale.z -= 0.5;
+            // cities[INTERSECTED.index].visible = false; // for spikes
+            // population_array[INTERSECTED.index].visible = false;
+
+
+            //  for ( var k = 0; k < 50; k++ ) {
+            // INTERSECTED.geometry.dynamic = true;
+            //                   INTERSECTED.geometry.vertices[0].y -= 0.1;
+            //                   INTERSECTED.geometry.vertices[1].y -= 0.1;
+            //                   INTERSECTED.geometry.vertices[4].y -= 0.1;
+            //                   INTERSECTED.geometry.vertices[5].y -= 0.1;
+            //                   INTERSECTED.geometry.verticesNeedUpdate = true;
+            //               }
+
+        }
+        //console.log( intersects[ 0 ].object );
+        INTERSECTED = object;
+        // INTERSECTED.index = intersects[0].object.index; // for spikes
+        // INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex(); // for spikes
+        INTERSECTED.currentColor = INTERSECTED.material.color.getHex();
+        // INTERSECTED.material.emissive.setHex(0xCC00FF); // for spikes
+        INTERSECTED.material.color.setHex(0x0000FF);
+        INTERSECTED.scale.x += 0.5;
+        INTERSECTED.scale.y += 0.5;
+        INTERSECTED.scale.z += 0.5;
+        // console.log(INTERSECTED.direction);
+        $('.cityname').empty();
+        var cityname = '<div class="cityname" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + INTERSECTED.name + '</div>';
+        $('#webgl').append(cityname);
+
+        //cities[INTERSECTED.index].visible = true; // for spikes
+        //population_array[INTERSECTED.index].visible = true; // for spikes
+
+    }
+}
+
+var moved;
+//$(document).on("mousedown",  clickOn );
+function addListeners() {
+
+    container.addEventListener('mousedown', function(e) {
+
+        if (moved) {
+            moved = false;
+        } else {
+            clickOn(e)
+        }
+
+    }, false);
+
+    container.addEventListener('mousemove', function(e) {
+
+        if (e.which == 1) {
+            moved = true;
+            container.removeEventListener('mousedown', clickOn, false);
+        }
+    });
+
+}
+
+addListeners();
+
+$(document).on("keyup", 'form', function(e) {
+    var code = e.keyCode || e.which;
+
+    if (code !== 13) {
+        var name = $('#country').val();
+        showList(name);
+    }
+});
+
+$(document).on("keypress", function(e) {
+    var code = e.keyCode || e.which;
+
+    if (code == 13) {
+        e.preventDefault();
+        $('#cityname').empty();
+        var name = $('#country').val();
+        cameraGoTo(name);
+        $('.list').empty();
+
+    }
+});
+
+
+function showList(name) {
+
+    if (name == '') $('.list').empty();
+
+    for (var j = 0; j < countries.length; j++) {
+
+        if (name.charAt(0) == countries[j].name[0].toLowerCase()) {
+
+            list.push(countries[j].name);
+
+        }
+
+    }
+
+
+    $('.list').empty();
+    var countrylist = '<div class="list" style="position:absolute;top:250px;right:50px;color:white;font-size:30px;opacity:0.7;">';
+    for (var x = 0; x < list.length; x++) {
+
+        countrylist += list[x] + '<br>';
+    }
+
+    countrylist += '</div>';
+    $('#webgl').append(countrylist);
+
+    list = [];
+}

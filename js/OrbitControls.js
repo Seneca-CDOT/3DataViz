@@ -12,6 +12,8 @@ THREE.OrbitControls = function(object, domElement) {
     this.object = object;
     this.domElement = (domElement !== undefined) ? domElement : document;
 
+    var element = this.domElement;
+
     // API
 
     this.enabled = true;
@@ -179,6 +181,12 @@ THREE.OrbitControls = function(object, domElement) {
     this.getPosition = function() {
 
         return this.object.position.clone();
+
+    }
+
+    this.getRadius = function() {
+  
+     return this.object.position.distanceTo( new THREE.Vector3() );
 
     }
 
@@ -414,6 +422,19 @@ THREE.OrbitControls = function(object, domElement) {
         }
 
     }
+
+    this.addMouse = function () {
+
+element.addEventListener('mousedown', onMouseDown, false);
+
+    }
+
+     this.removeMouse = function () {
+
+element.removeEventListener('mousedown', onMouseDown, false);
+        
+    }
+
 
     this.domElement.addEventListener('contextmenu', function(event) {
         event.preventDefault();
