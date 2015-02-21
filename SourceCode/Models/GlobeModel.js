@@ -1,61 +1,112 @@
 
-// var City = Backbone.Model.extend({
-// });
+// Data Record
 
-var GlobeModel = Backbone.Collection.extend({
-  // model: City,
-  loadData: function () {
-  	var data = [{   city: "Montreal",
-			    population: 3268513,
-			    lat: 45.509,
-			    lon: -73.558
-			},
-			{   city: "Toronto",
-			    population: 2600000,
-			    lat: 43.7,
-			    lon: -79.416
-			},
-			{   city: "Vancouver",
-			    population: 1837969,
-			    lat: 49.25,
-			    lon: -123.119
-			},
-			{   city: "Calgary",
-			    population: 1019942,
-			    lat: 51.05,
-			    lon: -114.085
-			},
-			{   city: "Ottawa",
-			    population: 812129,
-			    lat: 45.411,
-			    lon: -75.698
-			},
-			{   city: "Edmonton",
-			    population: 712391,
-			    lat: 53.55,
-			    lon: -113.469
-			},
-			{   city: "Mississauga",
-			    population: 668549,
-			    lat: 43.579,
-			    lon: -79.658
-			},
-			{   city: "North York",
-			    population: 636000,
-			    lat: 43.676,
-			    lon: -79.416
-			},
-			{   city: "Winnipeg",
-			    population: 632063,
-			    lat: 49.884,
-			    lon: -97.147
-			},
-			{   city: "Scarborough",
-			    population: 600000,
-			    lat: 43.772,
-			    lon: -79.257
-			}];
+var BaseDataRecord = Backbone.Model.extend({
+	initialize: function() {
+	}
+});
 
-	return data;
-  }
+var GeoDataRecord = BaseDataRecord.extend({
+	defaults: {
+		longitude: 0,
+		latitude: 0,
+		city: ""	
+	},
+	initialize: function() {
+		BaseDataRecord.prototype.initialize.call(this);
+	}
+});
+
+var PopulationGeoDataRecord = GeoDataRecord.extend({
+	defaults: {
+		population: 0
+	},
+	initialize: function() {
+		GeoDataRecord.prototype.initialize.call(this);
+	}
+});
+
+// Data Records Collection
+
+var PopulationGeoDataRecords = Backbone.Collection.extend({
+  model: PopulationGeoDataRecord,
+  url: "#"
+});
+
+// Model
+
+var BaseGlobeModel = Backbone.Collection.extend({
+	initialize: function() {
+	},
+	loadData: function () {
+	}
+});
+
+var GlobeModel = BaseGlobeModel.extend({
+	initialize: function() {
+		BaseGlobeModel.prototype.initialize.call(this);
+	},
+  	loadData: function () {
+	  	var rawData = [{   
+	  				city: "Montreal",
+				    population: 3268513,
+				    latitude: 45.509,
+				    longitude: -73.558
+				},
+				{   city: "Toronto",
+				    population: 2600000,
+				    latitude: 43.7,
+				    longitude: -79.416
+				},
+				{   city: "Vancouver",
+				    population: 1837969,
+				    latitude: 49.25,
+				    longitude: -123.119
+				},
+				{   city: "Calgary",
+				    population: 1019942,
+				    latitude: 51.05,
+				    longitude: -114.085
+				},
+				{   city: "Ottawa",
+				    population: 812129,
+				    latitude: 45.411,
+				    longitude: -75.698
+				},
+				{   city: "Edmonton",
+				    population: 712391,
+				    latitude: 53.55,
+				    longitude: -113.469
+				},
+				{   city: "Mississauga",
+				    population: 668549,
+				    latitude: 43.579,
+				    longitude: -79.658
+				},
+				{   city: "North York",
+				    population: 636000,
+				    latitude: 43.676,
+				    longitude: -79.416
+				},
+				{   city: "Winnipeg",
+				    population: 632063,
+				    latitude: 49.884,
+				    longitude: -97.147
+				},
+				{   city: "Scarborough",
+				    population: 600000,
+				    latitude: 43.772,
+				    longitude: -79.257
+				}];
+
+		// var populationGeoDataRecords = new PopulationGeoDataRecords(rawData);
+	  	var populationGeoDataRecords = new PopulationGeoDataRecords();
+	  	for (var index = 0; index < rawData.length; ++index) {
+	  		// do some preprocessing if needed
+
+	  		var populationGeoDataRecord = new PopulationGeoDataRecord(rawData[index])
+	  		populationGeoDataRecords.add(populationGeoDataRecord);
+	  	}
+		return populationGeoDataRecords;
+  	}
 });

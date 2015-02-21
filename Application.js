@@ -1,8 +1,13 @@
 
 require(['SourceCode/Views/GlobeView', 'SourceCode/Models/GlobeModel'], function() {
 	require(['SourceCode/Controllers/GlobeController'], function() {
+
+		// TODO: Application IS NOT a view, 
+		// thus cannot be inheretied 
+		// from Backbone.View class.
+
 	    var Application = Backbone.View.extend({
-	        initialize: function(options) {
+	        initialize: function() {
 	            this.globeController = new GlobeController();
 	        },
 	        main: function() {
@@ -12,5 +17,6 @@ require(['SourceCode/Views/GlobeView', 'SourceCode/Models/GlobeModel'], function
 
 	    var application = new Application();
 		application.main();
+
 	});
 });

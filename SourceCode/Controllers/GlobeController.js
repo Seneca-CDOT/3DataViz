@@ -1,6 +1,21 @@
 
-var GlobeController = Backbone.View.extend({
+// Controller
+
+// TODO: BaseGlobeController IS NOT a view, 
+// thus cannot be inheretied from 
+// Backbone.View class. Instead, it HAS a 
+// view, thus should contain a view (composition
+// relationship). 
+
+var BaseGlobeController = Backbone.View.extend({
 	initialize: function(options) {
+	}
+});
+
+var GlobeController = BaseGlobeController.extend({
+	initialize: function() {
+		BaseGlobeController.prototype.initialize.call(this);
+
 		this.globeModel = new GlobeModel();
 		this.globeView = new GlobeView();
 	},
