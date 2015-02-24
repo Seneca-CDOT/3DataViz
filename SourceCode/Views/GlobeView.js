@@ -1,5 +1,10 @@
 
+// View
+
 var GlobeView = Backbone.View.extend({
+  	render: function() {
+  		// TODO: call 'render' from here
+  		},
 	initGlobe: function() {
 			var scene;
 			var stats;
@@ -117,10 +122,8 @@ var GlobeView = Backbone.View.extend({
 			}
 		},
 		addSpikes: function (data) {
-			var dataRecordIndex;
-			for (dataRecordIndex in data) {
-				var dataRecord = data[dataRecordIndex];
-				var height = dataRecord.population / 500000;
+			data.each(function(dataRecord) {
+				var height = dataRecord.get("population") / 500000;
 
 			    var geometry = new THREE.CylinderGeometry(0.2, 0.2, height, 32);
 			    var material = new THREE.MeshPhongMaterial({
@@ -130,8 +133,8 @@ var GlobeView = Backbone.View.extend({
 			    var spike = new THREE.Mesh(geometry, material);
 			    globe.add(spike);
 			    
-			    var phi = dataRecord.lat * Math.PI / 180;
-			    var theta = (dataRecord.lon + 90) * Math.PI / 180;
+			    var phi = dataRecord.get("latitude") * Math.PI / 180;
+			    var theta = (dataRecord.get("longitude") + 90) * Math.PI / 180;
 			    var radius = 50;
 
 			    var x = radius * Math.cos(phi) * Math.sin(theta);
@@ -140,11 +143,11 @@ var GlobeView = Backbone.View.extend({
 
 			    var vec = new THREE.Vector3(x, y, z);
 			    spike.position.copy(vec);
-			    spike.rotation.y = dataRecord.lon * Math.PI / 180;
+			    spike.rotation.y = dataRecord.get("longitude") * Math.PI / 180;
 
-			    var xRotationSign = dataRecord.lon + 90 > 90 ? -1 : 1;
-			    spike.rotation.x = xRotationSign * (90 - dataRecord.lat) * Math.PI / 180;
-			} 
+			    var xRotationSign = dataRecord.get("longitude") + 90 > 90 ? -1 : 1;
+			    spike.rotation.x = xRotationSign * (90 - dataRecord.get("latitude")) * Math.PI / 180;
+			}); 
 		},
 		showGlobe: function(data) {
 			this.initGlobe();
