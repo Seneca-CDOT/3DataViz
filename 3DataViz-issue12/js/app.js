@@ -1,3 +1,4 @@
+var intersects;
 var scene;
 var stats;
 var renderer;
@@ -22,6 +23,7 @@ var canvas, canvasCtx;
 
 var t = 0;
 
+var ctr = 0;
 
 init();
 addCamera();
@@ -29,8 +31,6 @@ addControls();
 requestData2();
 
 // data set from http://www.geonames.org/CA/largest-cities-in-canada.html
-
-// addAxisHelper();
 
 function addPaths(data) {
   var dataRecordIndex;
@@ -177,25 +177,20 @@ function drawGlobe(tex) {
 
     var geometry = new THREE.SphereGeometry(radius, 64, 32);
 
-    //var texture = THREE.ImageUtils.loadTexture('textures/earth.jpg');
-    //var specmap = THREE.ImageUtils.loadTexture('textures/specular.jpg');
-    
     var texture = new THREE.Texture( tex );
     texture.needsUpdate    = true;
 
-    // var material = new THREE.MeshPhongMaterial({
-    var material = new THREE.MeshPhongMaterial({
+    var material = new THREE.MeshBasicMaterial({
         color: 0xFFFFFF,
-        ambient: 0x151515,
+        ambient: 0xFFFFFF,
         map: texture,
-        specularMap: map,
-         shininess: 50,
+        // specularMap: texture,
+        // shininess: 50,
     });
     globe = new THREE.Mesh(geometry, material);
     globe.material.needsUpdate = true;
     scene.add(globe);
-    // globe.name = 'globe';
-    // countries.push(globe);
+
     console.log(globe);
 }
 
@@ -204,7 +199,6 @@ function render() {
 
     stats.begin();
 
-    //globe.rotation.y += 0.0001;
 
     controls.update();
 
@@ -220,8 +214,8 @@ function render() {
 
 function addCamera(pos) { // adds a camera
 
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.z = radius * 2;
+    camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.z = radius * 4;
 
     if (pos) {
 
@@ -233,17 +227,9 @@ function addCamera(pos) { // adds a camera
 
     scene.add(camera);
 
-
-    //  var help = new THREE.DirectionalLightHelper(directionalLight, 10);
-
-    //scene.add( help );
-
 }
 
 function onWindowResize() {
-
-    // windowHalfX = window.innerWidth / 2;
-    // windowHalfY = window.innerHeight / 2;
 
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -256,21 +242,21 @@ window.addEventListener('resize', onWindowResize, false);
 
 function addLight() {
 
-    var ambLight = new THREE.AmbientLight(0xFFFFFF);
+    var ambLight = new THREE.AmbientLight(0xFFFFFF, 2.5);
     var dirLight = new THREE.DirectionalLight(0xFFFFFF, 2.5);
-    dirLight.position.set(-100, 100, 100);
+    dirLight.position.set(-10, 10, 10);
     dirLight.target = globe;
 
     scene.add(ambLight);
-    camera.add(dirLight);
+    // camera.add(dirLight);
 
 }
 
 function addControls() {
 
     controls = new THREE.OrbitControls(camera, container);
-    controls.minDistance = 0;
-    controls.maxDistance = 150;
+    controls.minDistance = radius * 1.1;
+    controls.maxDistance = radius * 7;
     controls.userPan = false;
 
 }
@@ -290,8 +276,11 @@ function clickOn(event) {
 
     var ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
 
-    var intersects = ray.intersectObjects(countries); // returns an object in any intersected on click
+    intersects = ray.intersectObject(globe); // returns an object in any intersected on click
 
+    // console.log(intersects.faces.);
+
+    console.log("HEEEERE==================");
 
     if (intersects.length > 0) {
 
@@ -299,7 +288,7 @@ function clickOn(event) {
 
         //console.log(data[intersects[0].object.index].city);
 
-        cameraGoTo( intersects[0].object.name );
+        // cameraGoTo( intersects[0].object.name );
 
         if (INTERSECTED != intersects[0].object) {
 
@@ -307,9 +296,9 @@ function clickOn(event) {
 
                 // INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);// for spikes
                 INTERSECTED.material.color.setHex(INTERSECTED.currentColor); // for countries shapes
-                INTERSECTED.scale.x -= 0.5;
-                INTERSECTED.scale.y -= 0.5;
-                INTERSECTED.scale.z -= 0.5;
+                // INTERSECTED.scale.x -= 0.5;
+                // INTERSECTED.scale.y -= 0.5;
+                // INTERSECTED.scale.z -= 0.5;
                 // cities[INTERSECTED.index].visible = false; // for spikes
                 // population_array[INTERSECTED.index].visible = false;
 
@@ -330,10 +319,12 @@ function clickOn(event) {
             // INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex(); // for spikes
             INTERSECTED.currentColor = INTERSECTED.material.color.getHex();
             // INTERSECTED.material.emissive.setHex(0xCC00FF); // for spikes
+
             INTERSECTED.material.color.setHex(0x0000FF);
-            INTERSECTED.scale.x += 0.5;
-            INTERSECTED.scale.y += 0.5;
-            INTERSECTED.scale.z += 0.5;
+
+            // INTERSECTED.scale.x += 0.5;
+            // INTERSECTED.scale.y += 0.5;
+            // INTERSECTED.scale.z += 0.5;
             console.log(INTERSECTED.direction);
             $('#webgl').empty();
             var cityname = '<div style="position:absolute;top:50px;right:50px;color:white;font-size:30px;opacity:0.7;">' + INTERSECTED.name + '</div>';
@@ -350,14 +341,9 @@ function requestData2(){
     readCountries(dataSet);
     drawGlobe(canvas);
     addLight();
-    addPaths(dataSetPath);
+    // addPaths(dataSetPath);
     render();
 }
-
-// function map( x,  in_min,  in_max,  out_min,  out_max){
-//   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-// }
-
 
 function geoToxyz(lon, lat, r) {
 
@@ -374,9 +360,7 @@ function geoToxyz(lon, lat, r) {
     return new THREE.Vector3(x, y, z);
 }
 
-var ctr = 0;
-
-function addBorders2(coordinates, name) {
+function addBorders2(coordinates, name, color) {
 
     //var country = data.features[0].geometry.coordinates[0];
 
@@ -384,7 +368,7 @@ function addBorders2(coordinates, name) {
 
         for (var i = 0; i < coordinates.length; i++) {
 
-            addBorders2(coordinates[i], name);
+            addBorders2(coordinates[i], name, color);
 
         }
         return;
@@ -408,17 +392,63 @@ function addBorders2(coordinates, name) {
     }
 
     canvasCtx.stroke();  // Draw it
-    canvasCtx.fillStyle = "#2d4505";
+    // canvasCtx.fillStyle = "#003000";
+    canvasCtx.fillStyle = "#" + color;
+
     canvasCtx.fill();
     ctr++;
 
 }
+function decToHex(c){
+    var hc;
+    if (c < 10){ hc = ( '0' + c.toString(16) ); }
+    else if(c < 17){ hc = c.toString(16) + '0';}
+    else{hc = c.toString(16);}
+    return hc;
+}
 
 function readCountries(data) {
-    for (var i = 0; i < data[0].features.length; i++) {
-        addBorders2(data[0].features[i].geometry.coordinates, data[0].features[i].properties.NAME);
-    }
+    var r = 00;
+    var g = 128;
+    var b = 00;
 
+    var threshold = 'b0';
+
+    // var hr, hb,hg;
+    // var hg = '55';
+
+    var color = 0;
+    console.log("'type' : 'countryColorTable',");
+    console.log("'elements' : ['");
+    var i = 0
+    for (; i < data[0].features.length; i++) {
+
+        color = decToHex(r) + decToHex(g) + decToHex(b);
+
+        r = ( r > 100? r = 0 : r );
+        g = ( g > 250? g = 0 : g );
+        b = ( b > 110? b = 0 : b );
+
+        if(b > parseInt(threshold, 16)){
+            g = ((b % 8 == 0)? ++g : g );
+            b++;
+        }else{
+            r = ((b % 16 == 0)? ++r : r );
+            b++;
+        }
+        console.log("{");
+        console.log("'color' : '" + color + "',");
+        console.log("'country' : '" + data[0].features[i].properties.NAME + "'");
+        console.log(( i == data[0].features.length - 1 ) ? "}" : "},");
+        // console.log('r : ' + r);
+        // console.log('g : ' + g);
+        // console.log('b : ' + b);
+
+
+        addBorders2(data[0].features[i].geometry.coordinates, data[0].features[i].properties.NAME, color);
+    }
+    console.log("]");
+    console.log("}");
     console.log(ctr + " shapes were generated");
 
 }
@@ -433,7 +463,6 @@ function addStats() {
     stats.domElement.style.top = '0px';
 
     document.body.appendChild(stats.domElement);
-
 
 }
 
@@ -495,4 +524,4 @@ function cameraGoTo( countryname ) {
     tween.start();
 
 }
-// container.addEventListener('dblclick', clickOn, false);
+ container.addEventListener('dblclick', clickOn, false);

@@ -1,5 +1,5 @@
 var sphere;
-var radius = 75;
+var radius = 5;
 var galaxyRadius = radius * 10;
 
 var paths = [];
