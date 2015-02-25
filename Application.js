@@ -2,21 +2,16 @@
 require(['SourceCode/Views/GlobeView', 'SourceCode/Models/GlobeModel'], function() {
 	require(['SourceCode/Controllers/GlobeController'], function() {
 
-		// TODO: Application IS NOT a view, 
-		// thus cannot be inheretied 
-		// from Backbone.View class.
-
-	    var Application = Backbone.View.extend({
-	        initialize: function() {
+	    var Application = Marionette.Application.extend({
+	        initialize: function(options) {
 	            this.globeController = new GlobeController();
 	        },
-	        main: function() {
+	        start: function() {
 	            this.globeController.presentGlobe();
 	        }
 	    });
 
 	    var application = new Application();
-		application.main();
-
+	    application.start();
 	});
 });
