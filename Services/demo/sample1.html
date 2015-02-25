@@ -1,0 +1,111 @@
+<!--
+
+Sample1.html
+======================
+This is the sample to access TweetAPI(Tweets data stored in MongoDB).
+
+-->
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+  <style>
+  body{
+    font-family: "Arial";
+  }
+  .tweets{
+    padding-left: 0;
+  }
+  .tweets li{
+    position: relative;
+    padding: 5px;
+    list-style-type: none;
+    border: 1px solid #eee;
+    margin-bottom: 10px;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+  .tweets li p{
+    margin: 0;
+  }
+  .tweets li p.name{
+    font-weight: bold;
+  }
+  .tweets li time{
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    color: #aaa;
+  }
+  .tweets li .geo{
+    color: #0088cc;
+  }
+  .tweets li img{
+    float: left;
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+  .tweets li:after{
+    content: "";
+    display: table;
+    clear: both;
+  }
+  </style>
+</head>
+<body>
+  <ul>
+    <li class="getall"><a href="javascript:void(0);">Get All Data</a></li>
+  </ul>
+  <ul class="tweets">
+  </ul>
+</body>
+<script>
+  $(function(){
+
+    var socket = io('http://localhost:8080');
+
+    $('.getall').click(function(){
+      socket.emit('getall', {collection: 'tweets', returnroot: 'output'});
+    });
+
+    socket.on('output', function (data) {
+      if(data){
+        
+        $.each(data, function(i,e){
+
+          console.log(e);
+
+          var $tweet = $('<li>'),
+            $name = $('<p class="name">'),
+            $text = $('<p class="text">'),
+            $time = $('<time>');
+            $geo = $('<a class="geo" target="_blank">');
+
+          $name.append(e.name);
+          $text.append(unescape(e.tweet));
+          $geo.append(e.geo);
+          $geo.append('  ('+e.place.country+')');
+          $geo.attr('href', 'https://www.google.ca/maps/@'+e.geo[0]+','+e.geo[1]+',7z')
+          var date = new Date(e.timestamp*1000);
+          var hours = date.getHours();
+          var minutes = "0" + date.getMinutes();
+          var seconds = "0" + date.getSeconds();
+          var formattedTime = hours + ':' + minutes.substr(minutes.length-2) + ':' + seconds.substr(seconds.length-2);
+          $time.append(formattedTime);
+
+          $tweet.append($name);
+          $tweet.append($text);
+          $tweet.append($time);
+          $tweet.append($geo);
+          $('.tweets').prepend($tweet).fadeIn(200);
+        });
+       
+      }
+    });
+
+  });
+</script>
+</html>

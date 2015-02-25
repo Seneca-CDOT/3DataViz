@@ -1,4 +1,13 @@
-//Twitter part
+// Start up server to Listen a request
+var app = require('express')();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+server.listen(8080);
+app.get('/', function (req, res) {
+  res.sendFile(__dirname + '/index.html');
+});
+
+// configuration for Twitter streaming API
 var Twitter = require('../twitter')
   , kfs = require('fs')
   , MongoClient = require('mongodb').MongoClient
@@ -10,19 +19,20 @@ kfs.readFile('keys.json', 'utf8', function(err, data) {
   client = new Twitter({ consumer_key: keys.consumer_key, consumer_secret: keys.consumer_secret, access_token_key: keys.token, access_token_secret: keys.token_secret });
 });
 
-var app = require('express')();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
-server.listen(8080);
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/index.html');
-});
+// Create a websocket connection
 io.on('connection', function (socket) {
 
+  /**
+   * socket.on('start')
+   * Give a object includes filter keywords, language.
+   * @param  {Object} data) filtering data.
+   */
   socket.on('start', function (data) {
     var obj = {};
     obj.track = data.track;
     if(data.lang) obj.language = data.lang;
+    
+
     client.stream('statuses/filter',
       obj, function(stream) {
       stream.on('data', function(tweet) {
@@ -38,6 +48,7 @@ io.on('connection', function (socket) {
         throw error;
       });
     });
+
   });
   socket.on('stop', function (data) {
     console.log(data);
