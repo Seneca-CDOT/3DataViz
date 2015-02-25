@@ -2,7 +2,7 @@
 // Data Record
 
 var BaseDataRecord = Backbone.Model.extend({
-	initialize: function() {
+	initialize: function(options) {
 	}
 });
 
@@ -12,41 +12,43 @@ var GeoDataRecord = BaseDataRecord.extend({
 		latitude: 0,
 		city: ""	
 	},
-	initialize: function() {
-		BaseDataRecord.prototype.initialize.call(this);
+	initialize: function(options) {
+		BaseDataRecord.prototype.initialize.call(this, options);
 	}
 });
 
 var PopulationGeoDataRecord = GeoDataRecord.extend({
 	defaults: {
-		population: 0
+		population: 0,	
 	},
-	initialize: function() {
-		GeoDataRecord.prototype.initialize.call(this);
+	initialize: function(options) {
+		GeoDataRecord.prototype.initialize.call(this, options);
 	}
 });
 
 // Data Records Collection
 
 var PopulationGeoDataRecords = Backbone.Collection.extend({
-  model: PopulationGeoDataRecord,
-  url: "#"
+	model: PopulationGeoDataRecord,
+	url: "#",	
+	initialize: function(options) {
+	}
 });
 
 // Model
 
-var BaseGlobeModel = Backbone.Collection.extend({
-	initialize: function() {
+var BaseGlobeModel = Marionette.Controller.extend({
+	initialize: function(options) {
 	},
-	loadData: function () {
+	loadData: function() {
 	}
 });
 
 var GlobeModel = BaseGlobeModel.extend({
-	initialize: function() {
-		BaseGlobeModel.prototype.initialize.call(this);
+	initialize: function(options) {
+		BaseGlobeModel.prototype.initialize.call(this, options);
 	},
-  	loadData: function () {
+  	loadData: function() {
 	  	var rawData = [{   
 	  				city: "Montreal",
 				    population: 3268513,
@@ -99,14 +101,14 @@ var GlobeModel = BaseGlobeModel.extend({
 				    longitude: -79.257
 				}];
 
-		// var populationGeoDataRecords = new PopulationGeoDataRecords(rawData);
-	  	var populationGeoDataRecords = new PopulationGeoDataRecords();
-	  	for (var index = 0; index < rawData.length; ++index) {
-	  		// do some preprocessing if needed
+		var populationGeoDataRecords = new PopulationGeoDataRecords(rawData);
+	  	// var populationGeoDataRecords = new PopulationGeoDataRecords();
+	  	// for (var index = 0; index < rawData.length; ++index) {
+	  	// 	// do some preprocessing if needed
 
-	  		var populationGeoDataRecord = new PopulationGeoDataRecord(rawData[index])
-	  		populationGeoDataRecords.add(populationGeoDataRecord);
-	  	}
+	  	// 	var populationGeoDataRecord = new PopulationGeoDataRecord(rawData[index])
+	  	// 	populationGeoDataRecords.add(populationGeoDataRecord);
+	  	// }
 		return populationGeoDataRecords;
   	}
 });
