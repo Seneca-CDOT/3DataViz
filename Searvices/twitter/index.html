@@ -1,0 +1,104 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+  <style>
+  body{
+    font-family: "Arial";
+  }
+  .tweets{
+    padding-left: 0;
+  }
+  .tweets li{
+    position: relative;
+    padding: 5px;
+    list-style-type: none;
+    border: 1px solid #eee;
+    margin-bottom: 10px;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+  .tweets li p{
+    margin: 0;
+  }
+  .tweets li p.name{
+    font-weight: bold;
+  }
+  .tweets li time{
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    color: #aaa;
+  }
+  .tweets li .geo{
+    color: #0088cc;
+  }
+  .tweets li img{
+    float: left;
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+  .tweets li:after{
+    content: "";
+    display: table;
+    clear: both;
+  }
+  </style>
+</head>
+<body>
+  <form action="">
+    <p>Track: <input type="text" type="" class="f_track"></p>
+    <p>Language: <input type="text" type="" class="f_lang"></p>
+    <a href="javascript:void(0);" class="connect">Connect</a>
+  </form>
+  <ul class="tweets">
+  </ul>
+</body>
+<script>
+  $(function(){
+
+    var socket = io('http://localhost:8080');
+
+    $('.connect').click(function(){
+      var track = $('.f_track').val();
+      var lang = $('.f_lang').val();
+      socket.emit('start', {track: track, language:lang});
+    });
+
+    socket.on('tweet', function (data) {
+      if(data){
+        console.log(data);
+        var $tweet = $('<li>'),
+            $img = $('<img>'),
+            $name = $('<p class="name">'),
+            $text = $('<p class="text">'),
+            $time = $('<time>');
+            $geo = $('<a class="geo" target="_blank">');
+
+        $img.attr({'width':58, 'height':58, 'src':data.user.profile_image_url});
+        $name.append(data.user.name);
+        $text.append(data.text);
+        $geo.append(data.geo.coordinates);
+        $geo.append('  ('+data.place.country+')');
+        $geo.attr('href', 'https://www.google.ca/maps/@'+data.geo.coordinates[0]+','+data.geo.coordinates[1]+',7z')
+        var date = new Date(data.timestamp_ms*1000);
+        var hours = date.getHours();
+        var minutes = "0" + date.getMinutes();
+        var seconds = "0" + date.getSeconds();
+        var formattedTime = hours + ':' + minutes.substr(minutes.length-2) + ':' + seconds.substr(seconds.length-2);
+        $time.append(formattedTime);
+
+        $tweet.append($img);
+        $tweet.append($name);
+        $tweet.append($text);
+        $tweet.append($time);
+        $tweet.append($geo);
+        $('.tweets').prepend($tweet).fadeIn(1);
+      }
+    });
+
+  });
+</script>
+</html>
