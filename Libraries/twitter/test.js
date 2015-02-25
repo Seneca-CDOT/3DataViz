@@ -2,7 +2,6 @@ var Twitter = require('twitter')
   , kfs = require('fs')
   , MongoClient = require('mongodb').MongoClient
   , assert = require('assert');
-
 var keys;
 kfs.readFile('keys.json', 'utf8', function(err, data) {
   keys = JSON.parse(data);
@@ -27,7 +26,7 @@ MongoClient.connect(url, function(err, db){
   //   {
   //     track: 'Love',
   //     language: 'en',
-  //     // locations: loc    
+  //     // locations: loc
   //   }, function(stream) {
   //   stream.on('data', function(tweet) {
   //     // console.log(tweet);
@@ -57,7 +56,7 @@ MongoClient.connect(url, function(err, db){
 
 var insertDocuments = function(tweet, db, callback){
   var collection = db.collection('locs');
-  collection.insert(tweet, function(err, result){    
+  collection.insert(tweet, function(err, result){
     callback(result);
   });;
 }
