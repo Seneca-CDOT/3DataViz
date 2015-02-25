@@ -18,11 +18,11 @@ MongoClient.connect('mongodb://localhost:27017/oscar-tweets', function(err, db){
   io.on('connection', function (socket) {
 
     /**
-     * socket.on('getall')
+     * socket.on('tweets/all')
      * Listen get request, it would return all data from the collection.
      * @param  {Object} data) database collection name, and return root.
      */
-    socket.on('getall', function (data) {
+    socket.on('tweets/all', function (data) {
 
       var col = db.collection(data.collection);     
       col.find().toArray(function(err, result) {

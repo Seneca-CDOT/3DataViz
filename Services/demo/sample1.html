@@ -68,9 +68,8 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
     var socket = io('http://localhost:8080');
 
     $('.getall').click(function(){
-      socket.emit('getall', {collection: 'tweets', returnroot: 'output'});
+      socket.emit('tweets/all', {collection: 'tweets', returnroot: 'output'});
     });
-
     socket.on('output', function (data) {
       if(data){
         
