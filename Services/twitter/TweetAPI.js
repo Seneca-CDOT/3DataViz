@@ -13,7 +13,7 @@ app.get('/', function (req, res) {
  */
 var MongoClient = require('mongodb').MongoClient;
 MongoClient.connect('mongodb://localhost:27017/oscar-tweets', function(err, db){
-  
+
   //Create a websocket connection
   io.on('connection', function (socket) {
 
@@ -23,13 +23,39 @@ MongoClient.connect('mongodb://localhost:27017/oscar-tweets', function(err, db){
      * @param  {Object} data) database collection name, and return root.
      */
     socket.on('tweets/all', function (data) {
-
-      var col = db.collection(data.collection);     
+      var col = db.collection(data.collection);
       col.find().toArray(function(err, result) {
         if (err) throw err;
         socket.emit(data.returnroot, result);
       });
+    });
 
+    /**
+     * socket.on('counts/country')
+     * Get number of tweets filtered by country
+     * @param  {Object} data) database collection name, and return root, country name.
+     */
+    socket.on('counts/country', function (data) {
+      var col = db.collection(data.collection);
+      var query = {"place.country" : data.country};
+      col.count(query, function(err, result) {
+        if (err) throw err;
+        socket.emit(data.returnroot, result);
+      });
+    });
+
+    /**
+     * socket.on('counts/country_code')
+     * Get number of tweets filtered by country code
+     * @param  {Object} data) database collection name, and return root, country code.
+     */
+    socket.on('counts/country_code', function (data) {
+      var col = db.collection(data.collection);
+      var query = {"place.country_code" : data.country_code};
+      col.count(query, function(err, result) {
+        if (err) throw err;
+        socket.emit(data.returnroot, result);
+      });
     });
 
   });

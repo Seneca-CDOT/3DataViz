@@ -53,11 +53,41 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
     display: table;
     clear: both;
   }
+  .actions{
+    padding-left: 0;
+    border: 1px solid #aaa;
+  }
+  .actions li{
+    list-style-type: none;
+    padding: 5px;
+    margin-bottom: 5px;
+  }
+  .actions input{
+    margin-bottom: 5px;
+  }
+  .actions a{
+    background: #339933;
+    color: #fff;
+    padding: 6px 8px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+  }
   </style>
 </head>
 <body>
-  <ul>
-    <li class="getall"><a href="javascript:void(0);">Get All Data</a></li>
+  <ul class="actions">
+    <li class="getAllTweet">
+      <a href="javascript:void(0);">Get All Data</a>
+    </li>
+    <li class="getCountByCountry">
+      Country Name: <input type="text" class="country" placeholder="Brasil"><br>
+      <a href="javascript:void(0);">Get Counts By Country</a>
+    </li>
+    <li class="getCountByCountryCode">
+      Country Code: <input type="text" class="country_code" placeholder="US"><br>
+      <a href="javascript:void(0);">Get Counts By CountryCode</a>
+      </li>
   </ul>
   <ul class="tweets">
   </ul>
@@ -67,12 +97,23 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
 
     var socket = io('http://localhost:8080');
 
-    $('.getall').click(function(){
+    $('.getAllTweet').click(function(){
       socket.emit('tweets/all', {collection: 'tweets', returnroot: 'output'});
     });
+    $('.getCountByCountry a').click(function(){
+      socket.emit('counts/country', {collection: 'tweets', returnroot: 'getCount', country: $('.country').val() });
+    });
+    $('.getCountByCountryCode a').click(function(){
+      socket.emit('counts/country_code', {collection: 'tweets', returnroot: 'getCount', country_code: $('.country_code').val() });
+    });
+
+    socket.on('getCount', function (data) {
+      $('.tweets').append("<li>"+data+"</li>");
+    });
+
     socket.on('output', function (data) {
       if(data){
-        
+
         $.each(data, function(i,e){
 
           console.log(e);
@@ -101,7 +142,7 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
           $tweet.append($geo);
           $('.tweets').prepend($tweet).fadeIn(200);
         });
-       
+
       }
     });
 
