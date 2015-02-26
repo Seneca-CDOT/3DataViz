@@ -25,6 +25,13 @@ var texHeight = 1024 * factor;
 var texWidth = texHeight * factor;
 var canvas, canvasCtx;
 
+//getting country's centre variables
+var maxLon = maxLat = -180;
+var minLon = minLat =  180;
+var avgLon = avgLat =    0;
+var dist               = 0;
+var midPoint;
+
 var t = 0;
 var ctr = 0;
 
@@ -239,6 +246,9 @@ function render() {
 
     stats.begin();
 
+if (orbitOn === true) {
+        TWEEN.update();
+    }
 
     controls.update();
 
@@ -320,17 +330,17 @@ function geoToxyz(lon, lat) {
 
     var v = new THREE.Vector3(x, y, z);
 
-    console.log(v);
-
     return v ;
 
 
 }
 function getCountry(id){
     var country = countiresList[0].elements;
+    if(id == '000000')
+        return false;
     for(var i = 0 ; i < country.length; i++){
         if( country[i].id == id ){
-            return country[i].country;
+            return country[i];
         }
     }
 }
@@ -351,41 +361,10 @@ function clickOn(event) {
 
     intersects = ray.intersectObject(globe); // returns an object in any intersected on click
 
-    // console.log("HEEEERE==================");
-    // // console.log(intersects[0].face);
-    // var vertA = intersects[0].face.a;
-    // var vertB = intersects[0].face.b;
-    // var vertC = intersects[0].face.c;
-
-    // canvasCtx.getImageData(x,y,1,1).data
-
-    // var geometry  = new THREE.SphereGeometry(radius/80, 32, 32);
-    // var material  = new THREE.MeshBasicMaterial( {color:0xff00000} );
-    // var sphereA  = new THREE.Mesh(geometry, material);
-    // var sphereB  = new THREE.Mesh(geometry, material);
-    // var sphereC  = new THREE.Mesh(geometry, material);
-    
-    // 
-
-    // var placeA = globe.geometry.vertices[vertA];
-    // var placeB = globe.geometry.vertices[vertB];
-    // var placeC = globe.geometry.vertices[vertC];
-
-    // 
-    // sphereA.position.copy( place );
-    // sphereB.position.copy( placeB );
-    // sphereC.position.copy( placeC );
-    // globe.add(sphereA);
-    // globe.add(sphereB);
-    // globe.add(sphereC);
-
     if (intersects.length > 0) {
 
         if (intersects[0].object.name == 'globe') return; // exclude invisible meshes from intersection
 
-        //console.log(data[intersects[0].object.index].city);
-
-        // cameraGoTo( intersects[0].object.name );
         var place = intersects[0].point;
         place.setLength(radius);
 
@@ -398,13 +377,6 @@ function clickOn(event) {
 
         var p = geoToxy(lon,lat);
 
-        // var p2 = geoToxyz(lon,lat);
-        // var geometry  = new THREE.SphereGeometry(radius/50, 32, 32);
-        // var material  = new THREE.MeshBasicMaterial( {color:0xff00000} );
-        // var sphereA  = new THREE.Mesh(geometry, material);
-        // sphereA.position.copy( p2 );
-        // globe.add(sphereA);
-
         var imageData = canvasCtx.getImageData(p.x, p.y, 1, 1);
         var pixel = imageData.data;
 
@@ -414,8 +386,7 @@ function clickOn(event) {
 
         var color = decToHex(r) + decToHex(g) + decToHex(b);
 
-        if(color != '000000')
-            console.log(getCountry(color));
+        cameraGoTo(color);
     }
 }
 
@@ -459,19 +430,38 @@ function addBorders2(coordinates, name, color) {
     var point;
     
     canvasCtx.beginPath();        
-    canvasCtx.lineWidth = "5";
+    canvasCtx.lineWidth = "2";
     canvasCtx.strokeStyle = "#000";
 
     point = geoToxy(coordinates[0][0], coordinates[0][1]);
 
     canvasCtx.moveTo(point.x, point.y);
+    
+    maxLon = maxLat = -180;
+    minLon = minLat =  180;
+    avgLon = avgLat =    0;
+    dist               = 0;
 
-    for (var k = 1; k < coordinates.length; k++) {
+    var k;
+    for ( k = 1; k < coordinates.length; k++) {
+
+        if(coordinates[k][0] > maxLon) maxLon = coordinates[k][0];
+        if(coordinates[k][0] < minLon) minLon = coordinates[k][0];
+        
+        if(coordinates[k][1] > maxLat) maxLat = coordinates[k][1];
+        if(coordinates[k][1] < minLat) minLat = coordinates[k][1];
+
 
         point = geoToxy(coordinates[k][0], coordinates[k][1]);
 
         canvasCtx.lineTo(point.x, point.y);
     }
+
+    dist = +(maxLat - minLat) + +(maxLon - minLon);
+    avgLat = ( maxLat + minLat ) / 2;
+    avgLon = ( maxLon + minLon ) / 2;   
+
+    midPoint = geoToxyz(avgLon, avgLat);
 
     canvasCtx.stroke();  // Draw it
     // canvasCtx.fillStyle = "#003000";
@@ -520,13 +510,20 @@ function readCountries(data) {
             b++;
         }
         nameC = data[0].features[i].properties.NAME;
-        console.log("{");
-        console.log("'color' : '" + color + "',");
-        console.log("'country' : '" + nameC + "'");
-        console.log(( i == data[0].features.length - 1 ) ? "}" : "},");
-
+        console.log("  {");
+        console.log("  'color' : '" + color + "',");
+        console.log("  'country' : '" + nameC + "',");
 
         addBorders2(data[0].features[i].geometry.coordinates, data[0].features[i].properties.NAME, color);
+
+        console.log( "  'countrySize' : " + dist + "," );
+        console.log( "  'midPoint' : {" );
+        console.log( "    'x' : " + midPoint.x + ", " );
+        console.log( "    'y' : " + midPoint.y + ", " );
+        console.log( "    'z' : " + midPoint.z + ", " );
+        console.log( "  }" );
+
+        console.log(( i == data[0].features.length - 1 ) ? " }" : " },");
     }
     console.log("]");
     console.log("}");
@@ -556,53 +553,59 @@ function rgbToHex(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
-function cameraGoTo( countryname ) {
+// function placeCamera(color){
+//     var geometry  = new THREE.SphereGeometry(radius/50, 32, 32);
+//     var material  = new THREE.MeshBasicMaterial( {color:0xff00000} );
+//     var sphere  = new THREE.Mesh(geometry, material);    
+
+//     p.setLength(radius);
+
+//     sphere.position.copy( p );
+//     globe.add(sphere);
+
+//     camera.lookAt(p);
+// }
+
+function cameraGoTo( id ) {
 
     var current = controls.getPosition();
+    var country = getCountry(id);
+    if(country){
+        var destination = new THREE.Vector3(country.midPoint.x, country.midPoint.y, -1 * country.midPoint.z);
+        console.log(country);
 
- //   for (var i = 0; i < countries.length; i++) {
+        destination.setLength( ( radius * 2 ) );
 
-     //   if (countries[i].name == country) {
-        
-           var midpoint = getMidPoint( geodata[ countryname ] );
-          var destination =  geoToxyz( midpoint.lon, midpoint.lat );
-           // var destination = geoToxyz(camerapoints[i].lon, camerapoints[i].lat);
-            destination.setLength( 100 );
-        //     break;
-      //  }
+        // console.dir( current, destination );
 
-  //  }
+        if (orbitOn == true) {
+            tween.stop();
+        }
 
-    console.dir( current, destination );
+        tween = new TWEEN.Tween(current)
+            .to({
+                x: destination.x,
+                y: destination.y,
+                z: destination.z
+            }, 1000)
 
-    if (orbitOn == true) {
-        tween.stop();
-    }
+        .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .onUpdate(function() {
 
-    tween = new TWEEN.Tween(current)
-        .to({
-            x: destination.x,
-            y: destination.y,
-            z: destination.z
-        }, 1000)
+                controls.updateView({
+                    x: this.x,
+                    y: this.y,
+                    z: this.z
+                });
 
-    .easing(TWEEN.Easing.Sinusoidal.InOut)
-        .onUpdate(function() {
-
-            controls.updateView({
-                x: this.x,
-                y: this.y,
-                z: this.z
+            })
+            .onComplete(function() {
+                orbitOn = false;
+                console.log("stop");
             });
 
-        })
-        .onComplete(function() {
-            orbitOn = false;
-            console.log("stop");
-        });
-
-    orbitOn = true;
-    tween.start();
-
+        orbitOn = true;
+        tween.start();
+    }
 }
- container.addEventListener('click', clickOn, false);
+ container.addEventListener('dblclick', clickOn, false);
