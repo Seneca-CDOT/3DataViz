@@ -37,7 +37,7 @@ var GlobeView = Backbone.View.extend({
 
         // data set from http://www.geonames.org/CA/largest-cities-in-canada.html
 
-        // addAxisHelper();
+        addAxisHelper();
 
 
 
@@ -468,6 +468,7 @@ var GlobeView = Backbone.View.extend({
                 data[name].mesh.geometry.computeBoundingSphere();
                 data[name].mesh.name = name;
                 countries.push(data[name].mesh);
+                drawStar( name );
             }
             callback();
 
@@ -613,30 +614,11 @@ var GlobeView = Backbone.View.extend({
 
         function findCountryMesh(name) {
 
-            showList(name);
-
-            name = name.charAt(0).toUpperCase() + name.slice(1);
-
-            for (var k = 0; k < name.length; k++) {
-
-                if (name.charAt(k) == ' ') {
-
-                    var firstword = name.slice(0, k + 1);
-
-                    var secondword = name.charAt(k + 1).toUpperCase() + name.slice(k + 2);
-
-                    name = firstword + secondword;
-
-                    break;
-                }
-
-            }
-
 
             for (var i = 0; i < countries.length; i++) {
 
 
-                if (countries[i].name == name) {
+                if (countries[i].name.toLowerCase() == name.toLowerCase()) {
 
                     return countries[i];
                 }
@@ -652,9 +634,9 @@ var GlobeView = Backbone.View.extend({
 
                     // INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);// for spikes
                     INTERSECTED.material.color.setHex(INTERSECTED.currentColor); // for countries shapes
-                    INTERSECTED.scale.x -= 0.5;
-                    INTERSECTED.scale.y -= 0.5;
-                    INTERSECTED.scale.z -= 0.5;
+                    // INTERSECTED.scale.x -= 0.5;
+                    // INTERSECTED.scale.y -= 0.5;
+                    // INTERSECTED.scale.z -= 0.5;
                     // cities[INTERSECTED.index].visible = false; // for spikes
                     // population_array[INTERSECTED.index].visible = false;
 
@@ -676,9 +658,9 @@ var GlobeView = Backbone.View.extend({
                 INTERSECTED.currentColor = INTERSECTED.material.color.getHex();
                 // INTERSECTED.material.emissive.setHex(0xCC00FF); // for spikes
                 INTERSECTED.material.color.setHex(0x0000FF);
-                INTERSECTED.scale.x += 0.5;
-                INTERSECTED.scale.y += 0.5;
-                INTERSECTED.scale.z += 0.5;
+                // INTERSECTED.scale.x += 0.5;
+                // INTERSECTED.scale.y += 0.5;
+                // INTERSECTED.scale.z += 0.5;
                 // console.log(INTERSECTED.direction);
                 $('.cityname').empty();
                 var cityname = '<div class="cityname" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + INTERSECTED.name + '</div>';
@@ -765,6 +747,62 @@ var GlobeView = Backbone.View.extend({
             $('#webgl').append(countrylist);
 
             list = [];
+        }
+
+        function drawStar( name ) {
+
+            var countrymesh = findCountryMesh(name);
+
+            var position = countrymesh.geometry.boundingSphere.center.clone().setLength(60);
+
+            var star = new THREE.Shape();
+
+            star.moveTo( .5,.0 );
+            star.lineTo( .625,.4 );
+            star.lineTo( 1.,.4);
+            star.lineTo( .69,.625 );
+            star.lineTo( .8,1. );
+            star.lineTo( .5,.775);
+            star.lineTo( .2,1. );
+            star.lineTo( .31,.625);
+            star.lineTo( .0,.4 );
+            star.lineTo( .375,.4 );
+
+            var extrudeSettings = {
+                amount: .5,
+                steps: 1,
+                bevelSegments: 0,
+                bevelSize: 0,
+                bevelThickness: 0
+            };
+
+            var extruded = new THREE.ExtrudeGeometry(star, extrudeSettings);
+
+
+            var mesh = new THREE.Mesh(extruded, new THREE.MeshPhongMaterial({
+                color: 0xff0000,
+                side: THREE.DoubleSide
+            }));
+
+            scene.add(mesh);
+            //mesh.scale.set( 0.5, 0.5, 0.5 );
+
+            var objectNormal = new THREE.Vector3(0, 0, 1);
+
+            var direction = new THREE.Vector3(position.x, position.y, position.z);
+            direction.normalize();
+
+            var angle = Math.acos(direction.z);
+            var axis = new THREE.Vector3();
+            axis.crossVectors(objectNormal, direction);
+            axis.normalize();
+            
+            var quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);    
+
+            mesh.rotation.setFromQuaternion(quaternion);
+            mesh.position.copy(position);
+
+
         }
     },
     showGlobe: function(data) {
