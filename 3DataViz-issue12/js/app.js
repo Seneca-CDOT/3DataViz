@@ -1,3 +1,5 @@
+// https://github.com/Seneca-CDOT/3DataViz.git
+
 var intersects;
 var scene;
 var stats;
@@ -16,13 +18,14 @@ var ctr = 0; // number of shapes
 var midpoints = [];
 var orbitOn = false;
 
+var imgTex;
+
 var factor = 3;
 var texHeight = 1024 * factor;
 var texWidth = texHeight * factor;
 var canvas, canvasCtx;
 
 var t = 0;
-
 var ctr = 0;
 
 init();
@@ -141,13 +144,14 @@ function addPaths(data) {
   }
 }
 
+
 function init() {
 
     container = document.createElement('div');
     document.body.appendChild(container);
     
     canvas = document.createElement('canvas');
-    canvas.backgroundColor = "0x000000";
+    // canvas.backgroundColor = "0x000000";
     canvas.width = texWidth;
     canvas.height = texHeight;
 
@@ -155,7 +159,7 @@ function init() {
     // document.body.appendChild(canvas);
 
     canvasCtx = canvas.getContext("2d");
-    canvasCtx.fillStyle   = "#000000";
+    // canvasCtx.fillStyle   = "#000000";
 
     scene = new THREE.Scene();
 
@@ -172,6 +176,39 @@ function init() {
     container.appendChild(renderer.domElement);
 
 }
+// $('canvas').mousemove(function(e) { // mouse move handler
+//     var canvasOffset = $(canvas).offset();
+//     var canvasX = Math.floor(e.pageX - canvasOffset.left);
+//     var canvasY = Math.floor(e.pageY - canvasOffset.top);
+
+    // var imageData = canvasCtx.getImageData(canvasX, canvasY, 1, 1);
+    // var pixel = imageData.data;
+//     console.log(canvasX);
+//     console.log(canvasY);
+// // 1099, 417
+
+// });
+function setUpCanvas(tex){
+
+    // drawing active image
+    var image = new Image();
+    
+    image.onload = function () {
+        canvasCtx2.drawImage(image, 0, 0, image.width, image.height); // draw the image on the canvas
+    }
+    image.src = "textures/generatedTexture.png";
+
+    var canvas2 = document.createElement('canvas');
+    
+    canvas2.width = 1920;
+    canvas2.height = 1080;
+
+    document.body.appendChild(canvas2);
+    
+    canvasCtx2 = canvas2.getContext("2d");
+    
+    console.log( canvasCtx2.getImageData(200,200,1,1).data );
+}
 
 function drawGlobe(tex) {
 
@@ -184,12 +221,15 @@ function drawGlobe(tex) {
         color: 0xFFFFFF,
         ambient: 0xFFFFFF,
         map: texture,
+
         // specularMap: texture,
         // shininess: 50,
     });
     globe = new THREE.Mesh(geometry, material);
     globe.material.needsUpdate = true;
     scene.add(globe);
+
+    //setUpCanvas(tex);
 
     console.log(globe);
 }
@@ -260,7 +300,40 @@ function addControls() {
     controls.userPan = false;
 
 }
+function geoToxyz(lon, lat) {
 
+    var r = radius || 1;
+
+    // var phi = lat * Math.PI / 180;
+    // var theta = (lon + 90) * Math.PI / 180;
+
+    // var x = r * Math.cos(phi) * Math.sin(theta);
+    // var y = r * Math.sin(phi);
+    // var z = r * Math.cos(phi) * Math.cos(theta);
+
+    var phi = +(90 - lat) * 0.01745329252;
+    var the = +(180 - lon) * 0.01745329252;
+
+    var z = r * Math.sin (the) * Math.sin (phi);
+    var x = r * Math.cos (the) * Math.sin (phi) * -1;
+    var y = r * Math.cos (phi);
+
+    var v = new THREE.Vector3(x, y, z);
+
+    console.log(v);
+
+    return v ;
+
+
+}
+function getCountry(id){
+    var country = countiresList[0].elements;
+    for(var i = 0 ; i < country.length; i++){
+        if( country[i].id == id ){
+            return country[i].country;
+        }
+    }
+}
 function clickOn(event) {
 
 
@@ -278,9 +351,33 @@ function clickOn(event) {
 
     intersects = ray.intersectObject(globe); // returns an object in any intersected on click
 
-    // console.log(intersects.faces.);
+    // console.log("HEEEERE==================");
+    // // console.log(intersects[0].face);
+    // var vertA = intersects[0].face.a;
+    // var vertB = intersects[0].face.b;
+    // var vertC = intersects[0].face.c;
 
-    console.log("HEEEERE==================");
+    // canvasCtx.getImageData(x,y,1,1).data
+
+    // var geometry  = new THREE.SphereGeometry(radius/80, 32, 32);
+    // var material  = new THREE.MeshBasicMaterial( {color:0xff00000} );
+    // var sphereA  = new THREE.Mesh(geometry, material);
+    // var sphereB  = new THREE.Mesh(geometry, material);
+    // var sphereC  = new THREE.Mesh(geometry, material);
+    
+    // 
+
+    // var placeA = globe.geometry.vertices[vertA];
+    // var placeB = globe.geometry.vertices[vertB];
+    // var placeC = globe.geometry.vertices[vertC];
+
+    // 
+    // sphereA.position.copy( place );
+    // sphereB.position.copy( placeB );
+    // sphereC.position.copy( placeC );
+    // globe.add(sphereA);
+    // globe.add(sphereB);
+    // globe.add(sphereC);
 
     if (intersects.length > 0) {
 
@@ -289,51 +386,36 @@ function clickOn(event) {
         //console.log(data[intersects[0].object.index].city);
 
         // cameraGoTo( intersects[0].object.name );
+        var place = intersects[0].point;
+        place.setLength(radius);
 
-        if (INTERSECTED != intersects[0].object) {
+        var x = place.x;
+        var y = place.y;
+        var z = place.z;
 
-            if (INTERSECTED) {
+        var lat = Math.asin( y / radius) * (180/Math.PI); // LAT in radians
+        var lon = Math.atan2(z, x) * (180/Math.PI) * -1; // LON in radians
 
-                // INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);// for spikes
-                INTERSECTED.material.color.setHex(INTERSECTED.currentColor); // for countries shapes
-                // INTERSECTED.scale.x -= 0.5;
-                // INTERSECTED.scale.y -= 0.5;
-                // INTERSECTED.scale.z -= 0.5;
-                // cities[INTERSECTED.index].visible = false; // for spikes
-                // population_array[INTERSECTED.index].visible = false;
+        var p = geoToxy(lon,lat);
 
+        // var p2 = geoToxyz(lon,lat);
+        // var geometry  = new THREE.SphereGeometry(radius/50, 32, 32);
+        // var material  = new THREE.MeshBasicMaterial( {color:0xff00000} );
+        // var sphereA  = new THREE.Mesh(geometry, material);
+        // sphereA.position.copy( p2 );
+        // globe.add(sphereA);
 
-                //  for ( var k = 0; k < 50; k++ ) {
-                // INTERSECTED.geometry.dynamic = true;
-                //                   INTERSECTED.geometry.vertices[0].y -= 0.1;
-                //                   INTERSECTED.geometry.vertices[1].y -= 0.1;
-                //                   INTERSECTED.geometry.vertices[4].y -= 0.1;
-                //                   INTERSECTED.geometry.vertices[5].y -= 0.1;
-                //                   INTERSECTED.geometry.verticesNeedUpdate = true;
-                //               }
+        var imageData = canvasCtx.getImageData(p.x, p.y, 1, 1);
+        var pixel = imageData.data;
 
-            }
-            //console.log( intersects[ 0 ].object );
-            INTERSECTED = intersects[0].object;
-            // INTERSECTED.index = intersects[0].object.index; // for spikes
-            // INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex(); // for spikes
-            INTERSECTED.currentColor = INTERSECTED.material.color.getHex();
-            // INTERSECTED.material.emissive.setHex(0xCC00FF); // for spikes
+        var r = pixel[0], 
+        g = pixel[1], 
+        b = pixel[2];
 
-            INTERSECTED.material.color.setHex(0x0000FF);
+        var color = decToHex(r) + decToHex(g) + decToHex(b);
 
-            // INTERSECTED.scale.x += 0.5;
-            // INTERSECTED.scale.y += 0.5;
-            // INTERSECTED.scale.z += 0.5;
-            console.log(INTERSECTED.direction);
-            $('#webgl').empty();
-            var cityname = '<div style="position:absolute;top:50px;right:50px;color:white;font-size:30px;opacity:0.7;">' + INTERSECTED.name + '</div>';
-            $('#webgl').append(cityname);
-
-            //cities[INTERSECTED.index].visible = true; // for spikes
-            //population_array[INTERSECTED.index].visible = true; // for spikes
-
-        }
+        if(color != '000000')
+            console.log(getCountry(color));
     }
 }
 
@@ -345,7 +427,7 @@ function requestData2(){
     render();
 }
 
-function geoToxyz(lon, lat, r) {
+function geoToxy(lon, lat) {
 
     var r = r || 1;
 
@@ -380,13 +462,13 @@ function addBorders2(coordinates, name, color) {
     canvasCtx.lineWidth = "5";
     canvasCtx.strokeStyle = "#000";
 
-    point = geoToxyz(coordinates[0][0], coordinates[0][1], radius);
+    point = geoToxy(coordinates[0][0], coordinates[0][1]);
 
     canvasCtx.moveTo(point.x, point.y);
 
     for (var k = 1; k < coordinates.length; k++) {
 
-        point = geoToxyz(coordinates[k][0], coordinates[k][1], radius);
+        point = geoToxy(coordinates[k][0], coordinates[k][1]);
 
         canvasCtx.lineTo(point.x, point.y);
     }
@@ -419,8 +501,9 @@ function readCountries(data) {
 
     var color = 0;
     console.log("'type' : 'countryColorTable',");
-    console.log("'elements' : ['");
+    console.log("'elements' : [");
     var i = 0
+    var nameC;
     for (; i < data[0].features.length; i++) {
 
         color = decToHex(r) + decToHex(g) + decToHex(b);
@@ -436,13 +519,11 @@ function readCountries(data) {
             r = ((b % 16 == 0)? ++r : r );
             b++;
         }
+        nameC = data[0].features[i].properties.NAME;
         console.log("{");
         console.log("'color' : '" + color + "',");
-        console.log("'country' : '" + data[0].features[i].properties.NAME + "'");
+        console.log("'country' : '" + nameC + "'");
         console.log(( i == data[0].features.length - 1 ) ? "}" : "},");
-        // console.log('r : ' + r);
-        // console.log('g : ' + g);
-        // console.log('b : ' + b);
 
 
         addBorders2(data[0].features[i].geometry.coordinates, data[0].features[i].properties.NAME, color);
@@ -524,4 +605,4 @@ function cameraGoTo( countryname ) {
     tween.start();
 
 }
- container.addEventListener('dblclick', clickOn, false);
+ container.addEventListener('click', clickOn, false);
