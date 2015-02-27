@@ -26,7 +26,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.network "forwarded_port", guest: 7777, host: 7777
 
   # MongoDB
-    config.vm.network "forwarded_port", guest: 27018, host: 27018
+    config.vm.network "forwarded_port", guest: 27017, host: 27017
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -47,8 +47,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
 
-   config.vm.synced_folder "datasets", "/home/datasets" , type: "rsync",
-   rsync__exclude: [ ".git/", "node_modules/" ]
+   config.vm.synced_folder ".", "/home/app" , type: "rsync",
+   rsync__exclude: [ ".git/", "node_modules/", ".DS_Store", "Vagrantfile" ]
 
 
   # Provider-specific configuration so you can fine-tune various
