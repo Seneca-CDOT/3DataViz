@@ -59,6 +59,7 @@ This is the sample to access liveTweetAPI(Tweets data from Twitter Streaming API
   <form action="">
     <p>Track: <input type="text" type="" class="f_track"></p>
     <p>Language: <input type="text" type="" class="f_lang"></p>
+    <p>Collection: <input type="text" type="" class="f_coll"></p>
     <a href="javascript:void(0);" class="connect">Connect</a>
   </form>
   <ul class="tweets">
@@ -71,8 +72,10 @@ This is the sample to access liveTweetAPI(Tweets data from Twitter Streaming API
 
     $('.connect').click(function(){
       var obj = {};
-      obj.track = $('.f_track').val();
+      obj.track = $('.f_track').val() || "";
       if($('.f_lang').val() != "") obj.language = $('.f_lang').val();
+      obj.collection = $('.f_coll').val() || 'undefind';
+      
       socket.emit('start', obj);
     });
 

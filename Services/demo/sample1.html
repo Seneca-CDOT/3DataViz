@@ -77,6 +77,9 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
 </head>
 <body>
   <ul class="actions">
+    <li>
+      Collection Name: <input type="text" class="collection" placeholder="oscars"><br><br>
+    </li>
     <li class="getAllTweet">
       <a href="javascript:void(0);">Get All Data</a>
     </li>
@@ -96,15 +99,23 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
   $(function(){
 
     var socket = io('http://localhost:8080');
-
+    var obj = {};
     $('.getAllTweet').click(function(){
-      socket.emit('tweets/all', {collection: 'tweets', returnroot: 'output'});
+      obj.collection = $('.collection').val() || "oscars";
+      obj.returnroot = 'output';
+      socket.emit('tweets/all', obj);
     });
     $('.getCountByCountry a').click(function(){
-      socket.emit('counts/country', {collection: 'tweets', returnroot: 'getCount', country: $('.country').val() });
+      obj.collection = $('.collection').val() || "oscars";
+      obj.returnroot = 'output';
+      obj.country = $('.country').val();
+      socket.emit('counts/country', obj);
     });
     $('.getCountByCountryCode a').click(function(){
-      socket.emit('counts/country_code', {collection: 'tweets', returnroot: 'getCount', country_code: $('.country_code').val() });
+      obj.collection = $('.collection').val() || "oscars";
+      obj.returnroot = 'output';
+      obj.country_code = $('.country_code').val();
+      socket.emit('counts/country_code', obj);
     });
 
     socket.on('getCount', function (data) {
@@ -115,7 +126,6 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
       if(data){
 
         $.each(data, function(i,e){
-
           console.log(e);
 
           var $tweet = $('<li>'),
@@ -123,13 +133,31 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
             $text = $('<p class="text">'),
             $time = $('<time>');
             $geo = $('<a class="geo" target="_blank">');
+          var date;
+          if(e.id){
+            // Original tweet data format
+            $name.append(e.user.name);
+            $text.append(e.text);
+            if(e.geo){
+              $geo.append(e.geo.coordinates[0] + "," + e.geo.coordinates[1]);
+              $geo.attr('href', 'https://www.google.ca/maps/@'+e.geo.coordinates[0]+','+e.geo.coordinates[1]+',7z')
+            }
+            if(e.place){
+              $geo.append('  (' + e.place.country + ')');  
+            }
+            date = new Date(e.timestamp_ms*1000);
+          }else{
+            // Our format data for oscars
+            $name.append(e.name);
+            $text.append(unescape(e.tweet));
+            $geo.append(e.geo);
+            if(e.place){
+              $geo.append('  (' + e.place.country + ')');  
+            }
+            $geo.attr('href', 'https://www.google.ca/maps/@'+e.geo[0]+','+e.geo[1]+',7z')
+            date = new Date(e.timestamp*1000);
+          }
 
-          $name.append(e.name);
-          $text.append(unescape(e.tweet));
-          $geo.append(e.geo);
-          $geo.append('  ('+e.place.country+')');
-          $geo.attr('href', 'https://www.google.ca/maps/@'+e.geo[0]+','+e.geo[1]+',7z')
-          var date = new Date(e.timestamp*1000);
           var hours = date.getHours();
           var minutes = "0" + date.getMinutes();
           var seconds = "0" + date.getSeconds();

@@ -19,6 +19,8 @@ kfs.readFile('keys.json', 'utf8', function(err, data) {
   client = new Twitter({ consumer_key: keys.consumer_key, consumer_secret: keys.consumer_secret, access_token_key: keys.token, access_token_secret: keys.token_secret });
 });
 
+var MongoClient = require('mongodb').MongoClient;
+
 // Create a websocket connection
 io.on('connection', function (socket) {
 
@@ -32,26 +34,28 @@ io.on('connection', function (socket) {
     if(data.track) obj.track = data.track;
     if(data.language) obj.language = data.language;
 
-    client.stream('statuses/filter',
-      obj, function(stream) {
-      stream.on('data', function(tweet) {
-        // if(tweet.geo){
-          console.log(tweet);
-          socket.emit('tweet', tweet);
-        // }
-      });
-      stream.on('end', function() {
-        console.log("end");
-      });
-      stream.on('error', function(error) {
-        console.log(error);
-        throw error;
+    MongoClient.connect('mongodb://localhost:27017/tweets', function(err, db){ 
+      client.stream('statuses/filter', obj, function(stream) {
+        stream.on('data', function(tweet) {
+          // if(tweet.geo){
+            console.log(tweet.text);
+            insertDocuments(db, data.collection, tweet);
+          // }
+        });
+
+        stream.on('error', function(error) {
+          console.log(error);
+          throw error;
+        });
       });
     });
 
   });
-  socket.on('stop', function (data) {
-    console.log(data);
-  });
-
 });
+
+var insertDocuments = function(db, collection, tweet){
+  var collection = db.collection(collection);
+  collection.insert(tweet, function(err, result){
+    console.log("inserted.");
+  });
+}

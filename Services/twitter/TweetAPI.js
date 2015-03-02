@@ -12,7 +12,7 @@ app.get('/', function (req, res) {
  * Create connection to mongoDB
  */
 var MongoClient = require('mongodb').MongoClient;
-MongoClient.connect('mongodb://localhost:27017/oscar-tweets', function(err, db){
+MongoClient.connect('mongodb://localhost:27017/tweets', function(err, db){
 
   //Create a websocket connection
   io.on('connection', function (socket) {
