@@ -20,10 +20,12 @@ var GlobeView = Backbone.View.extend({
         var population_array = []; // an array of population meshes
         var INTERSECTED;
         var countries = []; // an array of countries
+        var countriesmeshes = []; // array of country meshes for intersection purposes
         var ctr = 0; // number of shapes
         var midpoints = [];
         var orbitOn = false;
         var list = [];
+        var socket = null;
 
         var geodata; // stores data about countries
 
@@ -32,13 +34,11 @@ var GlobeView = Backbone.View.extend({
         addCamera();
         addLight();
         addControls();
-        requestData();
-        //render();
-
-        // data set from http://www.geonames.org/CA/largest-cities-in-canada.html
-
-        addAxisHelper();
-
+        requestCountriesData().done(function(result) {
+            addCountries(result, render);
+        });
+        getTweets();
+        // addAxisHelper();
 
 
         function init() {
@@ -46,6 +46,7 @@ var GlobeView = Backbone.View.extend({
             container = document.createElement('div');
             document.body.appendChild(container);
 
+            socket = io('http://localhost:7777');
 
             scene = new THREE.Scene();
 
@@ -56,7 +57,7 @@ var GlobeView = Backbone.View.extend({
                 alpha: true
             });
 
-            $('#webgl').append('<form><input type="text" id="country" ' + 'style="position:absolute;top:50px;right:50px;font-size:30px;opacity:0.7;"></form>');
+            $( container ).append('<form><input type="text" id="country" ' + 'style="position:absolute;top:50px;right:50px;font-size:30px;opacity:0.7;"></form>');
 
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setClearColor(0x000000);
@@ -83,7 +84,8 @@ var GlobeView = Backbone.View.extend({
             globe = new THREE.Mesh(geometry, material);
             scene.add(globe);
             globe.name = 'globe';
-            countries.push(globe);
+            countries['globe'] = globe;
+            countriesmeshes.push(globe);
         }
 
         function render() {
@@ -159,7 +161,7 @@ var GlobeView = Backbone.View.extend({
         function addControls() {
 
             controls = new THREE.OrbitControls(camera, container);
-            controls.minDistance = 0;
+            controls.minDistance = 55;
             controls.maxDistance = 150;
             controls.userPan = false;
 
@@ -247,63 +249,24 @@ var GlobeView = Backbone.View.extend({
 
             var ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
 
-            var intersects = ray.intersectObjects(countries); // returns an object in any intersected on click
+            var intersects = ray.intersectObjects(countriesmeshes); // returns an object in any intersected on click
 
 
             if (intersects.length > 0) {
 
                 if (intersects[0].object.name == 'globe') return; // exclude invisible meshes from intersection
 
-                //container.removeEventListener('mousedown', clickOn, false);
-                //controls.removeMouse();
-
-                //console.log(data[intersects[0].object.index].city);
-
-                // highlightCountry( intersects[0].object );
-
                 cameraGoTo(intersects[0].object.name);
 
             }
         }
 
-        function requestData() {
+        function requestCountriesData() {
 
-            // $.ajax({ 
-            //     type: 'GET',
-            //     url: 'data/data.json',
-            //     dataType: 'json',
-            //     success: function(json) {
-
-            //         data = json.cities;
-
-            //         //                addSpikes(data, function() {
-
-            //         //     container.addEventListener('mousemove', hoverOn, false);
-            //         //     render();
-            //         // });
-            //     },
-            //     cache: false, // sometimes old info stuck in cache
-            //     error: function() {
-            //         console.log('An error occurred while processing a data file.');
-            //     }
-            // });
-
-            $.ajax({
+            return $.ajax({
                 type: 'GET',
                 url: '../../Resources/Data/geodata.json',
                 dataType: 'json',
-                success: function(json) {
-
-                    geodata = json;
-                    addCountries(json, function() {
-
-                        // container.addEventListener('mousedown', clickOn, false);
-                        render();
-
-                    });
-
-
-                },
                 cache: false, // sometimes old info stuck in cache
                 error: function() {
                     console.log('An error occurred while processing a countries file.');
@@ -312,67 +275,17 @@ var GlobeView = Backbone.View.extend({
 
         }
 
-        function addBorders(data) {
+        function requestPopulationData() {
 
-            var country = data.features[0].geometry.coordinates[0];
-
-            var i, k, dot, verty = [];
-            var border = new THREE.Shape();
-
-            dot = geoToxyz(country[0][0], country[0][1]);
-            border.moveTo(dot.x, dot.z);
-
-
-            for (i = 1; i < country.length; i++) {
-
-                dot = geoToxyz(country[i][0], country[i][1]);
-
-                border.lineTo(dot.x, dot.z);
-                verty.push(dot.y);
-
-            }
-
-            var rectGeom = new THREE.ShapeGeometry(border);
-
-            var extrudeSettings = {
-                amount: 1,
-                steps: 1,
-                bevelSegments: 0,
-                bevelSize: 0,
-                bevelThickness: 0
-            };
-
-            //var rectGeom = new THREE.ExtrudeGeometry(border, extrudeSettings);
-
-
-            var rectMesh = new THREE.Mesh(rectGeom, new THREE.MeshPhongMaterial({
-                color: 0xff0000,
-                side: THREE.DoubleSide
-            }));
-
-            globe.add(rectMesh);
-
-            rectMesh.position.set(30, 30, 30);
-
-            var xRotationSign = country[0][1] + 90 > 90 ? -1 : 1;
-            // rectMesh.rotation.x = xRotationSign * (90 - country[0][0]) * Math.PI / 180;
-
-            //rectMesh.rotation.y = -Math.PI / 2;
-            rectMesh.scale.set(50, 50, 50);
-            rectMesh.name = 'countryShape';
-
-            var geom = rectMesh.geometry;
-
-
-            geom.dynamic = true;
-
-            for (var k = 0; k < geom.vertices.length; k++) {
-
-                geom.vertices[k].y = 26;
-
-            }
-            geom.verticesNeedUpdate = true;
-
+            return $.ajax({
+                type: 'GET',
+                url: 'data/data.json',
+                dataType: 'json',
+                cache: false, // sometimes old info stuck in cache
+                error: function() {
+                    console.log('An error occurred while processing a data file.');
+                }
+            });
 
         }
 
@@ -401,7 +314,7 @@ var GlobeView = Backbone.View.extend({
 
         var ctr = 0;
 
-        function addBorders2(coordinates, name) {
+        function addBorders(coordinates, name) {
 
             //var country = data.features[0].geometry.coordinates[0];
 
@@ -409,7 +322,7 @@ var GlobeView = Backbone.View.extend({
 
                 for (var i = 0; i < coordinates.length; i++) {
 
-                    addBorders2(coordinates[i], name);
+                    addBorders(coordinates[i], name);
 
                 }
                 return;
@@ -455,11 +368,11 @@ var GlobeView = Backbone.View.extend({
                     color: rgbToHex(10, i++, 0)
                 });
                 geometry = new Map3DGeometry(data[name], 0);
-                midpoints.push({
-                    countryname: name,
-                    lon: data[name].vertices[0],
-                    lat: data[name].vertices[1]
-                });
+                // midpoints.push({
+                //     countryname: name,
+                //     lon: data[name].vertices[0],
+                //     lat: data[name].vertices[1]
+                // });
                 data[name].mesh = new THREE.Mesh(geometry, material);
                 scene.add(data[name].mesh);
                 // scale = Math.random()/2 + 50.5;
@@ -467,8 +380,9 @@ var GlobeView = Backbone.View.extend({
                 data[name].mesh.scale.set(scale, scale, scale);
                 data[name].mesh.geometry.computeBoundingSphere();
                 data[name].mesh.name = name;
-                countries.push(data[name].mesh);
-                drawStar( name );
+                //data[name].mesh.code = data[name].code;
+                countries[data[name].code] = data[name].mesh;
+                countriesmeshes.push(data[name].mesh);
             }
             callback();
 
@@ -478,7 +392,7 @@ var GlobeView = Backbone.View.extend({
 
             for (var i = 0; i < data.features.length; i++) {
 
-                addBorders2(data.features[i].geometry.coordinates, data.features[i].properties.NAME);
+                addBorders(data.features[i].geometry.coordinates, data.features[i].properties.NAME);
 
             }
 
@@ -512,11 +426,11 @@ var GlobeView = Backbone.View.extend({
 
         function cameraGoTo(countryname) {
 
-            container.removeEventListener('mousedown', clickOn, false);
-            container.removeEventListener('mousemove', clickOn, false);
-            controls.removeMouse();
+            // container.removeEventListener('mousedown', clickOn, false);
+            // container.removeEventListener('mousemove', clickOn, false);
+            // controls.removeMouse();
 
-            var countrymesh = findCountryMesh(countryname);
+            var countrymesh = findCountryMeshByName(countryname);
 
             if (countrymesh === undefined) {
 
@@ -536,7 +450,7 @@ var GlobeView = Backbone.View.extend({
             //var midpoint = getMidPoint( geodata[ countryname] );
             //var destination =  geoToxyz( midpoint.lon, midpoint.lat );
             // var destination = geoToxyz(camerapoints[i].lon, camerapoints[i].lat);
-            // var countrymesh = findCountryMesh( countryname );
+            // var countrymesh = findCountryMeshByName( countryname );
             var destination = countrymesh.geometry.boundingSphere.center.clone();
             destination.setLength(controls.getRadius());
             //     break;
@@ -570,9 +484,9 @@ var GlobeView = Backbone.View.extend({
                 })
                 .onComplete(function() {
                     orbitOn = false;
-                    addListeners();
-                    controls.addMouse();
-                    console.log("stop");
+                    //addListeners();
+                    //controls.addMouse();
+                    //console.log("stop");
                 });
 
             orbitOn = true;
@@ -580,50 +494,23 @@ var GlobeView = Backbone.View.extend({
 
         }
 
-        function getMidPoint(country) {
 
-            var lon = [];
-            var lat = [];
+        function findCountryMeshByName(name) {
 
-            // var longitude = country.vertices[0];
-            // var isInEastHemisphere = (longitude > 0 && longitude < 180)
-            // var isInWestHemisphere = (longitude < 0 && longitude > -180)
+            for (var i = 0; i < countriesmeshes.length; i++) {
 
-            for (var i = 0; i + 1 < country.vertices.length; i = i + 2) {
-                lon.push(country.vertices[i]);
-                lat.push(country.vertices[i + 1]);
-            }
 
-            var lonmax = Math.max.apply(Math, lon);
-            var lonmin = Math.min.apply(Math, lon);
-            var lonmid = (lonmin + lonmax) / 2;
+                if (countriesmeshes[i].name.toLowerCase() == name.toLowerCase()) {
 
-            var latmax = Math.max.apply(Math, lat);
-            var latmin = Math.min.apply(Math, lat);
-            var latmid = (latmin + latmax) / 2;
-
-            console.log("longitude min and max: " + lonmin, lonmax);
-
-            return {
-                lon: lonmid,
-                lat: latmid
+                    return countriesmeshes[i];
+                }
             }
 
         }
 
+        function findCountryMeshByCode(code) {
 
-        function findCountryMesh(name) {
-
-
-            for (var i = 0; i < countries.length; i++) {
-
-
-                if (countries[i].name.toLowerCase() == name.toLowerCase()) {
-
-                    return countries[i];
-                }
-            }
-
+            return countries[code];
         }
 
         function highlightCountry(object) {
@@ -632,42 +519,14 @@ var GlobeView = Backbone.View.extend({
 
                 if (INTERSECTED) {
 
-                    // INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);// for spikes
                     INTERSECTED.material.color.setHex(INTERSECTED.currentColor); // for countries shapes
-                    // INTERSECTED.scale.x -= 0.5;
-                    // INTERSECTED.scale.y -= 0.5;
-                    // INTERSECTED.scale.z -= 0.5;
-                    // cities[INTERSECTED.index].visible = false; // for spikes
-                    // population_array[INTERSECTED.index].visible = false;
-
-
-                    //  for ( var k = 0; k < 50; k++ ) {
-                    // INTERSECTED.geometry.dynamic = true;
-                    //                   INTERSECTED.geometry.vertices[0].y -= 0.1;
-                    //                   INTERSECTED.geometry.vertices[1].y -= 0.1;
-                    //                   INTERSECTED.geometry.vertices[4].y -= 0.1;
-                    //                   INTERSECTED.geometry.vertices[5].y -= 0.1;
-                    //                   INTERSECTED.geometry.verticesNeedUpdate = true;
-                    //               }
-
                 }
-                //console.log( intersects[ 0 ].object );
                 INTERSECTED = object;
-                // INTERSECTED.index = intersects[0].object.index; // for spikes
-                // INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex(); // for spikes
                 INTERSECTED.currentColor = INTERSECTED.material.color.getHex();
-                // INTERSECTED.material.emissive.setHex(0xCC00FF); // for spikes
                 INTERSECTED.material.color.setHex(0x0000FF);
-                // INTERSECTED.scale.x += 0.5;
-                // INTERSECTED.scale.y += 0.5;
-                // INTERSECTED.scale.z += 0.5;
-                // console.log(INTERSECTED.direction);
                 $('.cityname').empty();
                 var cityname = '<div class="cityname" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + INTERSECTED.name + '</div>';
                 $('#webgl').append(cityname);
-
-                //cities[INTERSECTED.index].visible = true; // for spikes
-                //population_array[INTERSECTED.index].visible = true; // for spikes
 
             }
         }
@@ -725,16 +584,15 @@ var GlobeView = Backbone.View.extend({
 
             if (name == '') $('.list').empty();
 
-            for (var j = 0; j < countries.length; j++) {
+            for (var j = 0; j < countriesmeshes.length; j++) {
 
-                if (name.charAt(0) == countries[j].name[0].toLowerCase()) {
+                if (name.charAt(0) == countriesmeshes[j].name[0].toLowerCase()) {
 
-                    list.push(countries[j].name);
+                    list.push(countriesmeshes[j].name);
 
                 }
 
             }
-
 
             $('.list').empty();
             var countrylist = '<div class="list" style="position:absolute;top:250px;right:50px;color:white;font-size:30px;opacity:0.7;">';
@@ -749,24 +607,24 @@ var GlobeView = Backbone.View.extend({
             list = [];
         }
 
-        function drawStar( name ) {
+        function drawStar(name) {
 
-            var countrymesh = findCountryMesh(name);
+            var countrymesh = findCountryMeshByName(name);
 
             var position = countrymesh.geometry.boundingSphere.center.clone().setLength(60);
 
             var star = new THREE.Shape();
 
-            star.moveTo( .5,.0 );
-            star.lineTo( .625,.4 );
-            star.lineTo( 1.,.4);
-            star.lineTo( .69,.625 );
-            star.lineTo( .8,1. );
-            star.lineTo( .5,.775);
-            star.lineTo( .2,1. );
-            star.lineTo( .31,.625);
-            star.lineTo( .0,.4 );
-            star.lineTo( .375,.4 );
+            star.moveTo(.5, .0);
+            star.lineTo(.625, .4);
+            star.lineTo(1., .4);
+            star.lineTo(.69, .625);
+            star.lineTo(.8, 1.);
+            star.lineTo(.5, .775);
+            star.lineTo(.2, 1.);
+            star.lineTo(.31, .625);
+            star.lineTo(.0, .4);
+            star.lineTo(.375, .4);
 
             var extrudeSettings = {
                 amount: .5,
@@ -796,13 +654,83 @@ var GlobeView = Backbone.View.extend({
             var axis = new THREE.Vector3();
             axis.crossVectors(objectNormal, direction);
             axis.normalize();
-            
-            var quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);    
+
+            var quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
 
             mesh.rotation.setFromQuaternion(quaternion);
             mesh.position.copy(position);
 
 
+        }
+
+        function drawAmount(array) {
+
+            var step = 100 / array.length;
+            var total = 0;
+            // var index = 0;
+             array.sort(function(a, b){return b.total_tweets-a.total_tweets});
+             // var loop = setInterval(function() {
+
+           array.forEach(function(country, index) {
+
+                // console.log(index);
+                var countrymesh = findCountryMeshByCode(array[index]._id.code);
+                // var countrymesh = findCountryMeshByCode(country._id.code);
+
+                if (typeof countrymesh === 'undefined') {
+
+                    console.log("Missing country " + array[index]._id.country + " from globe dataset");
+                    //index++;
+                    return;
+                }
+
+                var position = countrymesh.geometry.boundingSphere.center.clone().setLength(51);
+
+                var number = new THREEx.Text(index+1);
+
+                scene.add(number);
+
+                var objectNormal = new THREE.Vector3(0, 0, 1);
+
+                var direction = new THREE.Vector3(position.x, position.y, position.z);
+                direction.normalize();
+
+                var angle = Math.acos(direction.z);
+                var axis = new THREE.Vector3();
+                axis.crossVectors(objectNormal, direction);
+                axis.normalize();
+
+                var quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
+
+                number.rotation.setFromQuaternion(quaternion);
+                number.position.copy(position);
+
+                // $("#webgl").empty();
+                // $('#webgl').append("<div style='position:absolute;top:200px;left:500px;color:white;font-size: 30px'>" + parseInt(step++) + "</div>");
+                console.log( parseInt(total += step) + '%');
+                
+                if (index == array.length - 1) {
+                    // $("#webgl").empty();
+                    console.log('100%');
+                   // clearInterval(loop);
+                }
+               
+            //   index++;
+          //  }, 100);
+});
+
+
+
+        }
+
+        function getTweets() {
+
+            socket.emit('countries');
+            socket.on('result', function(result) {
+
+                console.dir(result);
+                drawAmount(result);
+            });
         }
     },
     showGlobe: function(data) {
