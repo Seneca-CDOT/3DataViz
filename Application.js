@@ -3,11 +3,18 @@ require(['SourceCode/Views/GlobeView', 'SourceCode/Models/GlobeModel'], function
 	require(['SourceCode/Controllers/GlobeController'], function() {
 
 	    var Application = Marionette.Application.extend({
+	    	regions: {
+				applicationRegion: "#applicaitonRegion"
+			},	
 	        initialize: function(options) {
-	            this.globeController = new GlobeController();
+	            this.rootGlobeController = new RootGlobeController();
 	        },
-	        start: function() {
-	            this.globeController.presentGlobe();
+	        onBeforeStart: function(options) {
+	
+	        },
+	        onStart: function(options) {
+	            var rootGlobeView = this.rootGlobeController.getRootGlobeView();
+	            this.applicationRegion.show(rootGlobeView);
 	        }
 	    });
 
