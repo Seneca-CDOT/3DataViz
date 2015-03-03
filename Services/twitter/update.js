@@ -19,7 +19,8 @@ MongoClient.connect("mongodb://localhost:27017/tweets", function(err, db) {
     dba = db;
     dba.collection('oscars_all', function(err, coll) { // create and specify a collection
 
-        var data = coll.find();
+        // var data = coll.find();
+        var data = coll.find({country:null});
         var ctr = 0;
         var stop = false;
         data.each(function(err, doc) {
@@ -34,7 +35,7 @@ MongoClient.connect("mongodb://localhost:27017/tweets", function(err, db) {
                 }
                 countries.push(item);
             }
-            if (ctr == 16367) {
+            if (ctr == 136) {
                 console.log(countries);
                 console.log(countries.length);
                 dorequest();
@@ -53,13 +54,13 @@ MongoClient.connect("mongodb://localhost:27017/tweets", function(err, db) {
 function dorequest() {
 
     // var i = 0;
-    var i = 13159;
+    var i = 0;
     var loop = setInterval(function() {
 
-        i++;
         getNameAndInsert(countries[i], i);
+        i++;
         // getNameAndInsert(countries[i++], i);
-        if (i == 16367) {
+        if (i == 136) {
             clearInterval(loop);
         }
     }, 10);
@@ -73,7 +74,7 @@ function getNameAndInsert(item, idx) {
     
     if(item){
 
-        var req = 'http://api.geonames.org/countrySubdivisionJSON?lat=' + item.lat + '&lng=' + item.lon + '&username=collamo';
+        var req = 'http://api.geonames.org/countrySubdivisionJSON?lat=' + item.lat + '&lng=' + item.lon + '&username=3dataviz';
         var updateObj = {};
         updateObj.id = item.id;
 

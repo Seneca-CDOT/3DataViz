@@ -40,6 +40,7 @@ io.on('connection', function (socket) {
           // if(tweet.geo){
             console.log(tweet.text);
             insertDocuments(db, data.collection, tweet);
+            socket.emit('tweet', tweet);
           // }
         });
 
@@ -56,6 +57,6 @@ io.on('connection', function (socket) {
 var insertDocuments = function(db, collection, tweet){
   var collection = db.collection(collection);
   collection.insert(tweet, function(err, result){
-    console.log("inserted.");
+    //console.log("inserted.");
   });
 }

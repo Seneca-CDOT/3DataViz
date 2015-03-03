@@ -129,15 +129,24 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
           console.log(e);
 
           var $tweet = $('<li>'),
+            $img = $('<img>'),
             $name = $('<p class="name">'),
             $text = $('<p class="text">'),
             $time = $('<time>');
             $geo = $('<a class="geo" target="_blank">');
           var date;
-          if(e.id){
+          if(e.id && !e.limit){
             // Original tweet data format
-            $name.append(e.user.name);
-            $text.append(e.text);
+            if(e.user){
+              $name.append(e.user.name);
+
+              if(e.user.profile_image_url){
+                $img.attr({'width':58, 'height':58, 'src':e.user.profile_image_url});
+                $tweet.append($img);
+              }
+
+            }
+            $text.append(e.text); 
             if(e.geo){
               $geo.append(e.geo.coordinates[0] + "," + e.geo.coordinates[1]);
               $geo.attr('href', 'https://www.google.ca/maps/@'+e.geo.coordinates[0]+','+e.geo.coordinates[1]+',7z')
@@ -146,6 +155,7 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
               $geo.append('  (' + e.place.country + ')');  
             }
             date = new Date(e.timestamp_ms*1000);
+
           }else{
             // Our format data for oscars
             $name.append(e.name);
@@ -154,7 +164,9 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
             if(e.place){
               $geo.append('  (' + e.place.country + ')');  
             }
-            $geo.attr('href', 'https://www.google.ca/maps/@'+e.geo[0]+','+e.geo[1]+',7z')
+            if(e.geo){
+              $geo.attr('href', 'https://www.google.ca/maps/@'+e.geo[0]+','+e.geo[1]+',7z')
+            }
             date = new Date(e.timestamp*1000);
           }
 
