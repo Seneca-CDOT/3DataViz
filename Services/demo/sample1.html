@@ -107,13 +107,13 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
     });
     $('.getCountByCountry a').click(function(){
       obj.collection = $('.collection').val() || "oscars";
-      obj.returnroot = 'output';
+      obj.returnroot = 'getCount';
       obj.country = $('.country').val();
       socket.emit('counts/country', obj);
     });
     $('.getCountByCountryCode a').click(function(){
       obj.collection = $('.collection').val() || "oscars";
-      obj.returnroot = 'output';
+      obj.returnroot = 'getCount';
       obj.country_code = $('.country_code').val();
       socket.emit('counts/country_code', obj);
     });
