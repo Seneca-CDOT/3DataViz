@@ -91,6 +91,7 @@ THREE.OrbitControls = function(object, domElement) {
 
     this.rotateLeft = function(angle) {
 
+
         if (angle === undefined) {
 
             angle = getAutoRotationAngle();
@@ -163,7 +164,6 @@ THREE.OrbitControls = function(object, domElement) {
     this.momentum = function() {
         if (!momentumOn) return;
 
-        // console.log('momentum-ing: '+momentumUp+" "+momentumLeft);
 
         if (Math.abs(momentumUp + momentumLeft) < 10e-5) {
             momentumOn = false;
@@ -205,7 +205,6 @@ THREE.OrbitControls = function(object, domElement) {
     this.update = function() {
         this.zoomCamera();
         this.momentum();
-        // console.log(scale)
 
         var position = this.object.position;
         var offset = position.clone().sub(this.center);
@@ -303,8 +302,8 @@ THREE.OrbitControls = function(object, domElement) {
 
         }
 
-        document.addEventListener('mousemove', onMouseMove, false);
-        document.addEventListener('mouseup', onMouseUp, false);
+        element.addEventListener('mousemove', onMouseMove, false);
+        element.addEventListener('mouseup', onMouseUp, false);
 
     }
 
@@ -370,8 +369,8 @@ THREE.OrbitControls = function(object, domElement) {
         if (scope.enabled === false) return;
         if (scope.userRotate === false) return;
 
-        document.removeEventListener('mousemove', onMouseMove, false);
-        document.removeEventListener('mouseup', onMouseUp, false);
+        element.removeEventListener('mousemove', onMouseMove, false);
+       element.removeEventListener('mouseup', onMouseUp, false);
 
         state = STATE.NONE;
 
@@ -439,10 +438,10 @@ element.removeEventListener('mousedown', onMouseDown, false);
     this.domElement.addEventListener('contextmenu', function(event) {
         event.preventDefault();
     }, false);
-    this.domElement.addEventListener('mousedown', onMouseDown, false);
-    this.domElement.addEventListener('mousewheel', onMouseWheel, false);
-    this.domElement.addEventListener('DOMMouseScroll', onMouseWheel, false); // firefox
-    this.domElement.addEventListener('keydown', onKeyDown, false);
+    element.addEventListener('mousedown', onMouseDown, false);
+    element.addEventListener('mousewheel', onMouseWheel, false);
+    element.addEventListener('DOMMouseScroll', onMouseWheel, false); // firefox
+    element.addEventListener('keydown', onKeyDown, false);
 
 };
 
