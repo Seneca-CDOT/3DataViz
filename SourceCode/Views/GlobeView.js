@@ -37,7 +37,6 @@ var GlobeView = Backbone.View.extend({
         requestCountriesData().done(function(result) {
             addCountries(result, render);
         });
-        getTweets();
         // addAxisHelper();
 
 
@@ -58,6 +57,8 @@ var GlobeView = Backbone.View.extend({
             });
 
             $( container ).append('<form><input type="text" id="country" ' + 'style="position:absolute;top:50px;right:50px;font-size:30px;opacity:0.7;"></form>');
+            $( container ).append('<button type="button" id="tweets" style="position:absolute;bottom:100px;right:50px;width: 200px;height: 50px">Tweets</button>');
+            $( container ).append('<button type="button" id="reset" style="position:absolute;bottom:50px;right:50px;width: 200px;height: 50px">Reset</button>');
 
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setClearColor(0x000000);
@@ -363,9 +364,11 @@ var GlobeView = Backbone.View.extend({
 
             for (var name in data) {
 
+                var countrycolor = rgbToHex(10, i++, 0);
+
                 material = new THREE.MeshPhongMaterial({
                     shininess: 0,
-                    color: rgbToHex(10, i++, 0)
+                    color: countrycolor
                 });
                 geometry = new Map3DGeometry(data[name], 0);
                 // midpoints.push({
@@ -380,7 +383,8 @@ var GlobeView = Backbone.View.extend({
                 data[name].mesh.scale.set(scale, scale, scale);
                 data[name].mesh.geometry.computeBoundingSphere();
                 data[name].mesh.name = name;
-                //data[name].mesh.code = data[name].code;
+                data[name].mesh.used = false;
+                data[name].mesh.countrycolor = countrycolor;
                 countries[data[name].code] = data[name].mesh;
                 countriesmeshes.push(data[name].mesh);
             }
@@ -426,9 +430,9 @@ var GlobeView = Backbone.View.extend({
 
         function cameraGoTo(countryname) {
 
-            // container.removeEventListener('mousedown', clickOn, false);
-            // container.removeEventListener('mousemove', clickOn, false);
-            // controls.removeMouse();
+            document.removeEventListener('mouseup', onMouseUp, false);
+            moved = true;
+            controls.removeMouse();
 
             var countrymesh = findCountryMeshByName(countryname);
 
@@ -484,9 +488,8 @@ var GlobeView = Backbone.View.extend({
                 })
                 .onComplete(function() {
                     orbitOn = false;
-                    //addListeners();
-                    //controls.addMouse();
-                    //console.log("stop");
+                    document.addEventListener('mouseup', onMouseUp, false);
+                    controls.addMouse();
                 });
 
             orbitOn = true;
@@ -531,31 +534,32 @@ var GlobeView = Backbone.View.extend({
             }
         }
 
-        var moved;
-        //$(document).on("mousedown",  clickOn );
-        function addListeners() {
 
-            container.addEventListener('mousedown', function(e) {
+// Event listeners to distinguish a move and a click
+var moved = false;
 
-                if (moved) {
-                    moved = false;
-                } else {
-                    clickOn(e)
-                }
+function onMouseUp( e ) {
 
-            }, false);
+ if (!moved) {
 
-            container.addEventListener('mousemove', function(e) {
+    clickOn(e); 
+}
 
-                if (e.which == 1) {
-                    moved = true;
-                    container.removeEventListener('mousedown', clickOn, false);
-                }
-            });
+moved = false;
+};
 
-        }
+function onMouseMove( e ) {
 
-        addListeners();
+    if (e.which == 1) {
+    moved = true;
+}
+};
+
+document.addEventListener('mousemove', onMouseMove, false);
+document.addEventListener('mouseup', onMouseUp, false);
+
+// End of move and click event listeners section
+        
 
         $(document).on("keyup", 'form', function(e) {
             var code = e.keyCode || e.which;
@@ -577,6 +581,18 @@ var GlobeView = Backbone.View.extend({
                 $('.list').empty();
 
             }
+        });
+
+        $('#tweets').on("click", function(e) {
+            
+            getTweets();
+
+        });
+
+         $('#reset').on("click", function(e) {
+            
+            resetCountriesColor();
+
         });
 
 
@@ -663,7 +679,7 @@ var GlobeView = Backbone.View.extend({
 
         }
 
-        function drawAmount(array) {
+        function drawAmount(array, callback) {
 
             var step = 100 / array.length;
             var total = 0;
@@ -671,7 +687,7 @@ var GlobeView = Backbone.View.extend({
              array.sort(function(a, b){return b.total_tweets-a.total_tweets});
              // var loop = setInterval(function() {
 
-           array.forEach(function(country, index) {
+           $.each( array, function(index, country) {
 
                 // console.log(index);
                 var countrymesh = findCountryMeshByCode(array[index]._id.code);
@@ -683,6 +699,10 @@ var GlobeView = Backbone.View.extend({
                     //index++;
                     return;
                 }
+
+                countrymesh.used = true;
+
+               if ( index < 10 ) {
 
                 var position = countrymesh.geometry.boundingSphere.center.clone().setLength(51);
 
@@ -705,6 +725,8 @@ var GlobeView = Backbone.View.extend({
                 number.rotation.setFromQuaternion(quaternion);
                 number.position.copy(position);
 
+            }
+
                 // $("#webgl").empty();
                 // $('#webgl').append("<div style='position:absolute;top:200px;left:500px;color:white;font-size: 30px'>" + parseInt(step++) + "</div>");
                 console.log( parseInt(total += step) + '%');
@@ -712,14 +734,12 @@ var GlobeView = Backbone.View.extend({
                 if (index == array.length - 1) {
                     // $("#webgl").empty();
                     console.log('100%');
-                   // clearInterval(loop);
+                    callback();
                 }
                
             //   index++;
           //  }, 100);
 });
-
-
 
         }
 
@@ -729,9 +749,37 @@ var GlobeView = Backbone.View.extend({
             socket.on('result', function(result) {
 
                 console.dir(result);
-                drawAmount(result);
+                drawAmount(result, hideUnusedCountries);
             });
         }
+
+        function hideUnusedCountries() {
+
+          $.each( countriesmeshes, function (index, value ) {
+
+            if ( countriesmeshes[index].used == false ) {
+                
+                countriesmeshes[index].material.color.set( 0x62626C );
+
+            }
+
+          });
+
+        }
+
+        function resetCountriesColor() {
+
+ $.each( countriesmeshes, function (index, value ) {
+
+                           if ( countriesmeshes[index].name !== 'globe') {
+                countriesmeshes[index].material.color.set( countriesmeshes[index].countrycolor );
+            }
+
+          });
+
+
+        }
+
     },
     showGlobe: function(data) {
         this.initGlobe();
