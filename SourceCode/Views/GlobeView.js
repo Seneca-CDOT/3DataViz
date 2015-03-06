@@ -1,59 +1,60 @@
 // View
 
-var RootGlobeView = Marionette.LayoutView.extend({
-// WARNING: don't use 'el', use 'tagName' and 'template' instead
-	// el: "...", 
-	tagName: "div", // default value
-// NOTE: see index.html for template definitions
-	template: "#rootGlobeViewTemplate",
-	regions: {
-		globeViewRegion: "#globeViewRegion",
-		searchFieldRegion: "#searchFieldRegion"
-	},
+var RootGlobeView = Backbone.View.extend({
+	tagName: "div",
+	template: _.template($("#rootGlobeViewTemplate").html()),
+
 	initialize: function(options) {
 		this.globeView = new GlobeView();
 
 		// test
 		this.searchField = new GlobeView(); 
 	},
-	onShow: function(options) {
-		var options = {
-			origin: {
-				x: 0,
-				y: 0
-			},
-			size: {
-				width: 0.5 * window.innerWidth,
-				height: window.innerHeight
-			}
-		};
-		this.globeView.options = options;
-    	this.globeViewRegion.show(this.globeView);
+    render: function(options) {
+         var options = {
+             origin: {
+                 x: 0,
+                 y: 0
+             },
+             size: {
+                 width: 0.5 * window.innerWidth,
+                 height: window.innerHeight
+             }
+         };
+         this.globeView.options = options;
+        
+         options = {
+             origin: {
+                 x: 0.5 * window.innerWidth,
+                 y: 0
+             },
+             size: {
+                 width: 0.5 * window.innerWidth,
+                 height: window.innerHeight
+             }
+         };
+         this.searchField.options = options;
 
-		options = {
-			origin: {
-				x: 0.5 * window.innerWidth,
-				y: 0
-			},
-			size: {
-				width: 0.5 * window.innerWidth,
-				height: window.innerHeight
-			}
-		};
-		this.searchField.options = options;
-    	this.searchFieldRegion.show(this.searchField);
-  	}
+        this.$el.append(this.globeView.$el);
+        this.globeView.render();
+
+        this.$el.append(this.searchField.$el);
+        this.searchField.render();
+        
+        return this;
+    }
 });
 
-// var SearchView = Marionette.ItemView.extend({
+// var SearchView = Backbone.View.extend({
 // });
 
-var GlobeView = Marionette.ItemView.extend({
+var GlobeView = Backbone.View.extend({
 	tagName: "div",
-	template: "#globeViewTemplate",
-	onShow: function(options) {
-		this.showGlobe();
-	},
+    template: _.template($("#globeViewTemplate").html()),
+    render: function(options) {
+        this.showGlobe();
+        return this;
+    },
 
 // *************************
 

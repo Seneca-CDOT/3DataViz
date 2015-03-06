@@ -1,7 +1,8 @@
 
 // Controller
 
-var BaseGlobeController = Marionette.Controller.extend({
+// TODO: subclass another class 
+var BaseGlobeController = Backbone.View.extend({
 	initialize: function(options) {
 	}
 });
