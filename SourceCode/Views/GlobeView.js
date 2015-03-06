@@ -20,12 +20,11 @@ var GlobeView = Backbone.View.extend({
         var population_array = []; // an array of population meshes
         var INTERSECTED;
         var countries = []; // an array of countries
-        var countriesmeshes = []; // array of country meshes for intersection purposes
         var ctr = 0; // number of shapes
-        var midpoints = [];
         var orbitOn = false;
         var list = [];
-        var socket = null;
+        var socket;
+        var twittermode = false;
 
         var geodata; // stores data about countries
 
@@ -46,6 +45,10 @@ var GlobeView = Backbone.View.extend({
             document.body.appendChild(container);
 
             socket = io('http://localhost:7777');
+            socket.on('result', function(result) {
+
+                drawAmount(result, hideUnusedCountries);
+            });
 
             scene = new THREE.Scene();
 
@@ -56,9 +59,9 @@ var GlobeView = Backbone.View.extend({
                 alpha: true
             });
 
-            $( container ).append('<form><input type="text" id="country" ' + 'style="position:absolute;top:50px;right:50px;font-size:30px;opacity:0.7;"></form>');
-            $( container ).append('<button type="button" id="tweets" style="position:absolute;bottom:100px;right:50px;width: 200px;height: 50px">Tweets</button>');
-            $( container ).append('<button type="button" id="reset" style="position:absolute;bottom:50px;right:50px;width: 200px;height: 50px">Reset</button>');
+            $(document.body).append('<form><input type="text" id="country" ' + 'style="position:absolute;top:50px;right:50px;font-size:30px;opacity:0.7;"></form>');
+            $(document.body).append('<button type="button" id="tweets" style="position:absolute;bottom:100px;right:50px;width: 200px;height: 50px">Tweets</button>');
+            $(document.body).append('<button type="button" id="reset" style="position:absolute;bottom:50px;right:50px;width: 200px;height: 50px">Reset</button>');
 
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setClearColor(0x000000);
@@ -67,42 +70,32 @@ var GlobeView = Backbone.View.extend({
 
         }
 
-        function drawGlobe() {
+        function drawGlobe() { // draw a globe
 
             var geometry = new THREE.SphereGeometry(50, 64, 64);
-
-            //var texture = THREE.ImageUtils.loadTexture('textures/earth.jpg');
-            //var specmap = THREE.ImageUtils.loadTexture('textures/specular.jpg');
-
 
             var material = new THREE.MeshPhongMaterial({
                 color: 0x4396E8,
                 ambient: 0x4396E8,
-                //map: texture,
-                //specularMap: specmap,
                 shininess: 20
             });
             globe = new THREE.Mesh(geometry, material);
             scene.add(globe);
-            globe.name = 'globe';
-            countries['globe'] = globe;
-            countriesmeshes.push(globe);
+            globe.userData.name = 'globe';
+            globe.userData.code = '';
+            countries.push(globe);
         }
 
-        function render() {
+        function render() { // main render loop
 
             requestAnimationFrame(render);
-
             stats.begin();
 
             if (orbitOn === true) {
                 TWEEN.update();
             }
 
-            //globe.rotation.y += 0.0001;
-
             controls.update();
-
             stats.end();
             renderer.render(scene, camera);
 
@@ -133,23 +126,19 @@ var GlobeView = Backbone.View.extend({
 
         }
 
-        function onWindowResize() {
-
-            // windowHalfX = window.innerWidth / 2;
-            // windowHalfY = window.innerHeight / 2;
+        function onWindowResize() { // function that resizes the canvas on screen resizing
 
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
-
             renderer.setSize(window.innerWidth, window.innerHeight);
 
         }
 
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize, false); // a listener to resize event
 
-        function addLight() {
+        function addLight() { // adds light to the scene
 
-            var ambLight = new THREE.AmbientLight(0xFFFFFF);
+            //var ambLight = new THREE.AmbientLight(0xFFFFFF);
             var dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.5);
             dirLight.position.set(-100, 100, 100);
             dirLight.target = globe;
@@ -159,7 +148,7 @@ var GlobeView = Backbone.View.extend({
 
         }
 
-        function addControls() {
+        function addControls() { // add controls to the scene
 
             controls = new THREE.OrbitControls(camera, container);
             controls.minDistance = 55;
@@ -225,7 +214,7 @@ var GlobeView = Backbone.View.extend({
             callback();
         }
 
-        function addAxisHelper() {
+        function addAxisHelper() { // adds axis to the globe
 
             //if (scope.axishelp === false) return;
 
@@ -235,7 +224,7 @@ var GlobeView = Backbone.View.extend({
 
         }
 
-        function clickOn(event) {
+        function clickOn(event) { // function that determines intersection with meshes
 
 
             var x = event.clientX;
@@ -250,19 +239,19 @@ var GlobeView = Backbone.View.extend({
 
             var ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
 
-            var intersects = ray.intersectObjects(countriesmeshes); // returns an object in any intersected on click
+            var intersects = ray.intersectObjects(countries); // returns an object in any intersected on click
 
 
             if (intersects.length > 0) {
 
-                if (intersects[0].object.name == 'globe') return; // exclude invisible meshes from intersection
+                if (intersects[0].object.userData.name == 'globe') return; // exclude invisible meshes from intersection
 
-                cameraGoTo(intersects[0].object.name);
+                cameraGoTo(intersects[0].object.userData.name);
 
             }
         }
 
-        function requestCountriesData() {
+        function requestCountriesData() { // requesting initial data of country borders
 
             return $.ajax({
                 type: 'GET',
@@ -276,7 +265,7 @@ var GlobeView = Backbone.View.extend({
 
         }
 
-        function requestPopulationData() {
+        function requestPopulationData() { // requests data of population
 
             return $.ajax({
                 type: 'GET',
@@ -290,7 +279,7 @@ var GlobeView = Backbone.View.extend({
 
         }
 
-        function geoToxyz(lon, lat, r) {
+        function geoToxyz(lon, lat, r) { // turns longitude and lattitude to cartesian coordinates
 
             var r = r || 1;
 
@@ -371,23 +360,20 @@ var GlobeView = Backbone.View.extend({
                     color: countrycolor
                 });
                 geometry = new Map3DGeometry(data[name], 0);
-                // midpoints.push({
-                //     countryname: name,
-                //     lon: data[name].vertices[0],
-                //     lat: data[name].vertices[1]
-                // });
                 data[name].mesh = new THREE.Mesh(geometry, material);
                 scene.add(data[name].mesh);
                 // scale = Math.random()/2 + 50.5;
                 scale = 50.5;
                 data[name].mesh.scale.set(scale, scale, scale);
                 data[name].mesh.geometry.computeBoundingSphere();
-                data[name].mesh.name = name;
-                data[name].mesh.used = false;
-                data[name].mesh.countrycolor = countrycolor;
-                countries[data[name].code] = data[name].mesh;
-                countriesmeshes.push(data[name].mesh);
+                data[name].mesh.userData.name = name;
+                data[name].mesh.userData.code = data[name].code;
+                data[name].mesh.userData.used = false;
+                data[name].mesh.userData.countrycolor = countrycolor;
+                //countries[data[name].code] = data[name].mesh;
+                countries.push(data[name].mesh);
             }
+
             callback();
 
         }
@@ -440,7 +426,7 @@ var GlobeView = Backbone.View.extend({
 
                 $('.cityname').empty();
                 var cityname = '<div class="cityname" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + "Not found" + '</div>';
-                $('#webgl').append(cityname);
+                $(document.body).append(cityname);
                 return;
 
             }
@@ -500,12 +486,12 @@ var GlobeView = Backbone.View.extend({
 
         function findCountryMeshByName(name) {
 
-            for (var i = 0; i < countriesmeshes.length; i++) {
+            for (var i = 0; i < countries.length; i++) {
 
 
-                if (countriesmeshes[i].name.toLowerCase() == name.toLowerCase()) {
+                if (countries[i].userData.name.toLowerCase() == name.toLowerCase()) {
 
-                    return countriesmeshes[i];
+                    return countries[i];
                 }
             }
 
@@ -513,7 +499,14 @@ var GlobeView = Backbone.View.extend({
 
         function findCountryMeshByCode(code) {
 
-            return countries[code];
+            for (var i = 0; i < countries.length; i++) {
+
+
+                if (countries[i].userData.code.toLowerCase() == code.toLowerCase()) {
+
+                    return countries[i];
+                }
+            }
         }
 
         function highlightCountry(object) {
@@ -527,39 +520,42 @@ var GlobeView = Backbone.View.extend({
                 INTERSECTED = object;
                 INTERSECTED.currentColor = INTERSECTED.material.color.getHex();
                 INTERSECTED.material.color.setHex(0x0000FF);
-                $('.cityname').empty();
-                var cityname = '<div class="cityname" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + INTERSECTED.name + '</div>';
-                $('#webgl').append(cityname);
-
+                $('.countryinfo').empty();
+                var countryname = '<div class="countryinfo" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + INTERSECTED.userData.name + '</div>';
+                $(document.body).append(countryname);
+                if (twittermode && typeof INTERSECTED.userData.tweets !== 'undefined') {
+                    var tweets = '<div class="countryinfo" style="position:absolute;top:200px;right:50px;color:white;font-size:30px;opacity:0.7;">' + 'tweets: ' + INTERSECTED.userData.tweets + '</div>';
+                    $(document.body).append(tweets);
+                }
             }
         }
 
 
-// Event listeners to distinguish a move and a click
-var moved = false;
+        // Event listeners to distinguish a move and a click
+        var moved = false;
 
-function onMouseUp( e ) {
+        function onMouseUp(e) {
 
- if (!moved) {
+            if (!moved) {
 
-    clickOn(e); 
-}
+                clickOn(e);
+            }
 
-moved = false;
-};
+            moved = false;
+        };
 
-function onMouseMove( e ) {
+        function onMouseMove(e) {
 
-    if (e.which == 1) {
-    moved = true;
-}
-};
+            if (e.which == 1) {
+                moved = true;
+            }
+        };
 
-document.addEventListener('mousemove', onMouseMove, false);
-document.addEventListener('mouseup', onMouseUp, false);
+        document.addEventListener('mousemove', onMouseMove, false);
+        document.addEventListener('mouseup', onMouseUp, false);
 
-// End of move and click event listeners section
-        
+        // End of move and click event listeners section
+
 
         $(document).on("keyup", 'form', function(e) {
             var code = e.keyCode || e.which;
@@ -584,14 +580,14 @@ document.addEventListener('mouseup', onMouseUp, false);
         });
 
         $('#tweets').on("click", function(e) {
-            
+
             getTweets();
 
         });
 
-         $('#reset').on("click", function(e) {
-            
-            resetCountriesColor();
+        $('#reset').on("click", function(e) {
+
+            resetCountries();
 
         });
 
@@ -600,11 +596,11 @@ document.addEventListener('mouseup', onMouseUp, false);
 
             if (name == '') $('.list').empty();
 
-            for (var j = 0; j < countriesmeshes.length; j++) {
+            for (var j = 0; j < countries.length; j++) {
 
-                if (name.charAt(0) == countriesmeshes[j].name[0].toLowerCase()) {
+                if (name.charAt(0) == countries[j].userData.name[0].toLowerCase()) {
 
-                    list.push(countriesmeshes[j].name);
+                    list.push(countries[j].userData.name);
 
                 }
 
@@ -683,99 +679,149 @@ document.addEventListener('mouseup', onMouseUp, false);
 
             var step = 100 / array.length;
             var total = 0;
+            var r = 255; // red chanel
+            var g = 0; // green chanel
+            var b = 0; // blue chanel
+            var list = [];
             // var index = 0;
-             array.sort(function(a, b){return b.total_tweets-a.total_tweets});
-             // var loop = setInterval(function() {
+            array.sort(function(a, b) {
+                return b.total_tweets - a.total_tweets
+            });
+            // var loop = setInterval(function() {
+            var bottomcolor = 80;
+            var colorstep = array[0].total_tweets / (255 - bottomcolor);
 
-           $.each( array, function(index, country) {
+            $.each(array, function(index, country) {
 
-                // console.log(index);
-                var countrymesh = findCountryMeshByCode(array[index]._id.code);
-                // var countrymesh = findCountryMeshByCode(country._id.code);
+                var countrymesh = findCountryMeshByCode(country._id.code);
 
                 if (typeof countrymesh === 'undefined') {
 
-                    console.log("Missing country " + array[index]._id.country + " from globe dataset");
+                    console.log("Missing country " + country._id.country + " from globe dataset");
                     //index++;
                     return;
                 }
 
-                countrymesh.used = true;
+                countrymesh.userData.used = true;
 
-               if ( index < 10 ) {
+                // *** PUTS NUMBERS TO THE COUNTRY 
 
-                var position = countrymesh.geometry.boundingSphere.center.clone().setLength(51);
+                //    if ( index < 10 ) {
 
-                var number = new THREEx.Text(index+1);
+                //     var position = countrymesh.geometry.boundingSphere.center.clone().setLength(51);
 
-                scene.add(number);
+                //     var number = new THREEx.Text(index+1);
 
-                var objectNormal = new THREE.Vector3(0, 0, 1);
+                //     scene.add(number);
 
-                var direction = new THREE.Vector3(position.x, position.y, position.z);
-                direction.normalize();
+                //    number.userData.name = 'number';
+                //    countrymesh.userData.numbermesh = number;
 
-                var angle = Math.acos(direction.z);
-                var axis = new THREE.Vector3();
-                axis.crossVectors(objectNormal, direction);
-                axis.normalize();
 
-                var quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
+                //     var objectNormal = new THREE.Vector3(0, 0, 1);
 
-                number.rotation.setFromQuaternion(quaternion);
-                number.position.copy(position);
+                //     var direction = new THREE.Vector3(position.x, position.y, position.z);
+                //     direction.normalize();
 
-            }
+                //     var angle = Math.acos(direction.z);
+                //     var axis = new THREE.Vector3();
+                //     axis.crossVectors(objectNormal, direction);
+                //     axis.normalize();
+
+                //     var quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
+
+                //     number.rotation.setFromQuaternion(quaternion);
+                //     number.position.copy(position);
+
+                // }
+                // if ( r > 0 ) r = r - 3;
+                // else {
+                // if ( g < 255 ) g = g + 3;
+                // else {
+                // if ( b < 255 ) b = b + 3;
+                // }
+                // }   // END OF NUMBER 
+
+                if (index < 10) {
+
+                    list.push( (index+1) + '. ' + country._id.country);
+                }
+
+                r = parseInt(bottomcolor + country.total_tweets / colorstep);
+                var color = rgbToHex(r, g, b);
+                countrymesh.material.color.set(color);
+                countrymesh.userData.tweets = country.total_tweets;
 
                 // $("#webgl").empty();
                 // $('#webgl').append("<div style='position:absolute;top:200px;left:500px;color:white;font-size: 30px'>" + parseInt(step++) + "</div>");
-                console.log( parseInt(total += step) + '%');
-                
+                //console.log( parseInt(total += step) + '%');
+
                 if (index == array.length - 1) {
-                    // $("#webgl").empty();
+
+                    var rank = "<div id='rank' style='position:absolute;top:200px;left:20px;color:white;font-size: 30px; opacity: 0.7'></div>";
+                    $(document.body).append(rank);
+                    $.each(list, function(index, value) {
+                        $('#rank').append(value + '<br>');
+                    });
                     console.log('100%');
                     callback();
                 }
-               
-            //   index++;
-          //  }, 100);
-});
+
+                //   index++;
+                //  }, 100);
+            });
 
         }
 
         function getTweets() {
 
+            resetCountries();
             socket.emit('countries');
-            socket.on('result', function(result) {
+            twittermode = true;
 
-                console.dir(result);
-                drawAmount(result, hideUnusedCountries);
-            });
         }
 
         function hideUnusedCountries() {
 
-          $.each( countriesmeshes, function (index, value ) {
+            $.each(countries, function(index, value) {
 
-            if ( countriesmeshes[index].used == false ) {
-                
-                countriesmeshes[index].material.color.set( 0x62626C );
+                if (countries[index].userData.used == false) {
 
-            }
+                    countries[index].material.color.set(0x62626C);
 
-          });
+                }
+
+            });
 
         }
 
-        function resetCountriesColor() {
+        function resetCountries() {
 
- $.each( countriesmeshes, function (index, value ) {
+            twittermode = false;
+            $('.countryinfo').empty();
+            $('#rank').empty();
 
-                           if ( countriesmeshes[index].name !== 'globe') {
-                countriesmeshes[index].material.color.set( countriesmeshes[index].countrycolor );
-            }
+            $.each(countries, function(index, country) {
 
-          });
+                if (country.userData.name !== 'globe') {
+                    country.material.color.set(country.userData.countrycolor);
+
+                    $.each(country.userData, function(i, mesh) {
+
+
+                        if (mesh instanceof THREE.Mesh) {
+
+                            scene.remove(mesh);
+
+                            mesh.geometry.dispose();
+                            mesh.material.dispose();
+                        }
+
+                    });
+
+                }
+
+            });
 
 
         }
