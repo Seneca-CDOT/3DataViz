@@ -19,10 +19,15 @@ var midpoints = [];
 var orbitOn = false;
 
 var imgTex;
+var hexMap = 'textures/hexMapMin.png';
+var textureMap = 'textures/worldMatrix.png';
 
 var factor = 3;
 var texHeight = 1024 * factor;
 var texWidth = texHeight * factor;
+
+var tw = th = 1024;
+
 var canvas, canvasCtx;
 
 //getting country's centre variables
@@ -36,9 +41,7 @@ var t = 0;
 var ctr = 0;
 
 init();
-addCamera();
-addControls();
-requestData2();
+startStuff();
 
 // data set from http://www.geonames.org/CA/largest-cities-in-canada.html
 
@@ -156,17 +159,6 @@ function init() {
 
     container = document.createElement('div');
     document.body.appendChild(container);
-    
-    canvas = document.createElement('canvas');
-    // canvas.backgroundColor = "0x000000";
-    canvas.width = texWidth;
-    canvas.height = texHeight;
-
-    //uncomment this line to see the texture at the bottom of the page
-    // document.body.appendChild(canvas);
-
-    canvasCtx = canvas.getContext("2d");
-    // canvasCtx.fillStyle   = "#000000";
 
     scene = new THREE.Scene();
 
@@ -183,46 +175,33 @@ function init() {
     container.appendChild(renderer.domElement);
 
 }
-// $('canvas').mousemove(function(e) { // mouse move handler
-//     var canvasOffset = $(canvas).offset();
-//     var canvasX = Math.floor(e.pageX - canvasOffset.left);
-//     var canvasY = Math.floor(e.pageY - canvasOffset.top);
-
-    // var imageData = canvasCtx.getImageData(canvasX, canvasY, 1, 1);
-    // var pixel = imageData.data;
-//     console.log(canvasX);
-//     console.log(canvasY);
-// // 1099, 417
-
-// });
+//sets up canvas and loads hexMap for pixel clicking functionality
 function setUpCanvas(tex){
 
-    // drawing active image
+    canvas = document.createElement('canvas');
+    canvas.backgrounCdolor = "0x000000";
+    
+    canvasCtx = canvas.getContext("2d");
+    
     var image = new Image();
     
     image.onload = function () {
-        canvasCtx2.drawImage(image, 0, 0, image.width, image.height); // draw the image on the canvas
+        canvasCtx.drawImage(image, 0, 0); // draw the image on the canvas
     }
-    image.src = "textures/generatedTexture.png";
+    image.src = tex;
+    
+    canvas.width = tw;
+    canvas.height = th;
 
-    var canvas2 = document.createElement('canvas');
-    
-    canvas2.width = 1920;
-    canvas2.height = 1080;
-
-    document.body.appendChild(canvas2);
-    
-    canvasCtx2 = canvas2.getContext("2d");
-    
-    console.log( canvasCtx2.getImageData(200,200,1,1).data );
+    document.body.appendChild(canvas);
 }
 
-function drawGlobe(tex) {
+function drawGlobe(tex, hexMap) {
 
     var geometry = new THREE.SphereGeometry(radius, 64, 32);
 
-    var texture = new THREE.Texture( tex );
-    texture.needsUpdate    = true;
+    var texture = THREE.ImageUtils.loadTexture( tex );
+    // texture.needsUpdate    = true;
 
     var material = new THREE.MeshBasicMaterial({
         color: 0xFFFFFF,
@@ -236,7 +215,7 @@ function drawGlobe(tex) {
     globe.material.needsUpdate = true;
     scene.add(globe);
 
-    //setUpCanvas(tex);
+    setUpCanvas(hexMap);
 
     console.log(globe);
 }
@@ -246,19 +225,19 @@ function render() {
 
     stats.begin();
 
-if (orbitOn === true) {
-        TWEEN.update();
-    }
+    if (orbitOn === true) {
+            TWEEN.update();
+        }
 
-    controls.update();
+        controls.update();
 
-    stats.end();
-    renderer.render(scene, camera);
-    for( var i = 0; i < movingGuys.length; i ++ ) {
-          pt = paths[i].getPoint( t );
-          movingGuys[i].position.set( pt.x, pt.y, pt.z );          
-    }
-    t = (t >= 1) ? 0 : t += 0.005;
+        stats.end();
+        renderer.render(scene, camera);
+        for( var i = 0; i < movingGuys.length; i ++ ) {
+              pt = paths[i].getPoint( t );
+              movingGuys[i].position.set( pt.x, pt.y, pt.z );          
+        }
+        t = (t >= 1) ? 0 : t += 0.005;
 }
 
 
@@ -310,6 +289,7 @@ function addControls() {
     controls.userPan = false;
 
 }
+
 function geoToxyz(lon, lat) {
 
     var r = radius || 1;
@@ -331,10 +311,32 @@ function geoToxyz(lon, lat) {
     var v = new THREE.Vector3(x, y, z);
 
     return v ;
-
-
 }
-function getCountry(id){
+
+/*Beggining of click country*/
+function getPixelClicked(place, canvasContext){
+    var x = place.x;
+    var y = place.y;
+    var z = place.z;
+
+    var lat = Math.asin( y / radius) * (180/Math.PI); // LAT in radians
+    var lon = Math.atan2(z, x) * (180/Math.PI) * -1; // LON in radians
+
+    var p = geoToxy(lon,lat);
+
+    var imageData = canvasContext.getImageData(p.x, p.y, 1, 1);
+    var pixel = imageData.data;
+
+    var r = pixel[0], 
+    g = pixel[1], 
+    b = pixel[2];
+
+    var color = decToHex(r) + decToHex(g) + decToHex(b);
+
+    return color;
+}
+
+function getCountryById(id){
     var country = countiresList[0].elements;
     if(id == '000000')
         return false;
@@ -344,6 +346,33 @@ function getCountry(id){
         }
     }
 }
+
+function getCountryByName(name){
+    var country = countiresList[0].elements;
+    if(id == '')
+        return false;
+    for(var i = 0 ; i < country.length; i++){
+        if( country[i].name == name ){
+            return country[i];
+        }
+    }
+}
+
+function geoToxy(lon, lat) {
+
+    var r = r || 1;
+
+    var x = 0;
+    x = map(lon, -180, 180, 0, tw);
+
+    var y = 0;
+    y = map(-lat,-90,90,0, th);
+
+    var z = 0;
+
+    return new THREE.Vector3(x, y, z);
+}
+/*end of click country*/
 function clickOn(event) {
 
 
@@ -368,49 +397,23 @@ function clickOn(event) {
         var place = intersects[0].point;
         place.setLength(radius);
 
-        var x = place.x;
-        var y = place.y;
-        var z = place.z;
+        var color = getPixelClicked(place, canvasCtx)
 
-        var lat = Math.asin( y / radius) * (180/Math.PI); // LAT in radians
-        var lon = Math.atan2(z, x) * (180/Math.PI) * -1; // LON in radians
+        var country = getCountryById(color);
 
-        var p = geoToxy(lon,lat);
-
-        var imageData = canvasCtx.getImageData(p.x, p.y, 1, 1);
-        var pixel = imageData.data;
-
-        var r = pixel[0], 
-        g = pixel[1], 
-        b = pixel[2];
-
-        var color = decToHex(r) + decToHex(g) + decToHex(b);
-
-        cameraGoTo(color);
+        cameraGoTo(country);
     }
 }
 
-function requestData2(){
-    readCountries(dataSet);
-    drawGlobe(canvas);
+function startStuff(){
+    //generates textures
+    // readCountries(dataSet);
+    addCamera();
+    addControls();
+    drawGlobe(textureMap, hexMap);
     addLight();
     // addPaths(dataSetPath);
     render();
-}
-
-function geoToxy(lon, lat) {
-
-    var r = r || 1;
-
-    var x = 0;
-    x = map(lon, -180, 180, 0, texWidth);
-
-    var y = 0;
-    y = map(-lat,-90,90,0,texHeight);
-
-    var z = 0;
-
-    return new THREE.Vector3(x, y, z);
 }
 
 function addBorders2(coordinates, name, color) {
@@ -431,7 +434,7 @@ function addBorders2(coordinates, name, color) {
     
     canvasCtx.beginPath();        
     canvasCtx.lineWidth = "2";
-    canvasCtx.strokeStyle = "#000";
+    canvasCtx.strokeStyle = "#00f100";
 
     point = geoToxy(coordinates[0][0], coordinates[0][1]);
 
@@ -464,7 +467,7 @@ function addBorders2(coordinates, name, color) {
     midPoint = geoToxyz(avgLon, avgLat);
 
     canvasCtx.stroke();  // Draw it
-    // canvasCtx.fillStyle = "#003000";
+    // canvasCtx.fillStyle = "#000000";
     canvasCtx.fillStyle = "#" + color;
 
     canvasCtx.fill();
@@ -553,23 +556,10 @@ function rgbToHex(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
-// function placeCamera(color){
-//     var geometry  = new THREE.SphereGeometry(radius/50, 32, 32);
-//     var material  = new THREE.MeshBasicMaterial( {color:0xff00000} );
-//     var sphere  = new THREE.Mesh(geometry, material);    
-
-//     p.setLength(radius);
-
-//     sphere.position.copy( p );
-//     globe.add(sphere);
-
-//     camera.lookAt(p);
-// }
-
-function cameraGoTo( id ) {
+function cameraGoTo( c ) {
 
     var current = controls.getPosition();
-    var country = getCountry(id);
+    var country = c;
     if(country){
         var destination = new THREE.Vector3(country.midPoint.x, country.midPoint.y, -1 * country.midPoint.z);
         console.log(country);
