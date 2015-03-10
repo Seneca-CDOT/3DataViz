@@ -1,7 +1,10 @@
 # 3DataViz
 
-To run this example you need a web server. For MAC users type " python -m SimpleHTTPServer " in the app directory. For Windows users sorry.
+This version uses a lot of black magic.
+You can check it live here:
+http://zenit.senecac.on.ca/~int322_142a07/cdot/globe/3DataViz-issue12/
 
-Link to textures: http://www.shadedrelief.com/natural3/pages/textures.html
+Scroll down on the page to see the hexmap texture.
 
+-Bruno Di Giuseppe
 
