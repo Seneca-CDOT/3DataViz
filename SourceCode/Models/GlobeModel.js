@@ -2,7 +2,7 @@
 // Data Record
 
 var BaseDataRecord = Backbone.Model.extend({
-	initialize: function(options) {
+	initialize: function() {
 	}
 });
 
@@ -12,8 +12,8 @@ var GeoDataRecord = BaseDataRecord.extend({
 		latitude: 0,
 		city: ""	
 	},
-	initialize: function(options) {
-		BaseDataRecord.prototype.initialize.call(this, options);
+	initialize: function() {
+		BaseDataRecord.prototype.initialize.call(this);
 	}
 });
 
@@ -21,8 +21,8 @@ var PopulationGeoDataRecord = GeoDataRecord.extend({
 	defaults: {
 		population: 0,	
 	},
-	initialize: function(options) {
-		GeoDataRecord.prototype.initialize.call(this, options);
+	initialize: function() {
+		GeoDataRecord.prototype.initialize.call(this);
 	}
 });
 
@@ -31,22 +31,22 @@ var PopulationGeoDataRecord = GeoDataRecord.extend({
 var PopulationGeoDataRecords = Backbone.Collection.extend({
 	model: PopulationGeoDataRecord,
 	url: "#",	
-	initialize: function(options) {
+	initialize: function() {
 	}
 });
 
 // Model
 
 var BaseGlobeModel = Marionette.Controller.extend({
-	initialize: function(options) {
+	initialize: function() {
 	},
 	loadData: function() {
 	}
 });
 
 var GlobeModel = BaseGlobeModel.extend({
-	initialize: function(options) {
-		BaseGlobeModel.prototype.initialize.call(this, options);
+	initialize: function() {
+		BaseGlobeModel.prototype.initialize.call(this);
 	},
   	loadData: function() {
 	  	var rawData = [{   

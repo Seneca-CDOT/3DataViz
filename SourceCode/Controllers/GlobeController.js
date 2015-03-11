@@ -2,13 +2,13 @@
 // Controller
 
 var BaseGlobeController = Marionette.Controller.extend({
-	initialize: function(options) {
+	initialize: function() {
 	}
 });
 
 var RootGlobeController = BaseGlobeController.extend({
-	initialize: function(options) {
-		BaseGlobeController.prototype.initialize.call(this, options);
+	initialize: function() {
+		BaseGlobeController.prototype.initialize.call(this);
 
 		// this.globeModel = new GlobeModel();
 		this.rootGlobeView = new RootGlobeView();

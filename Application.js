@@ -6,13 +6,13 @@ require(['SourceCode/Views/GlobeView', 'SourceCode/Models/GlobeModel'], function
 	    	regions: {
 				applicationRegion: "#applicaitonRegion"
 			},	
-	        initialize: function(options) {
+	        initialize: function() {
 	            this.rootGlobeController = new RootGlobeController();
 	        },
-	        onBeforeStart: function(options) {
+	        onBeforeStart: function() {
 	
 	        },
-	        onStart: function(options) {
+	        onStart: function() {
 	            var rootGlobeView = this.rootGlobeController.getRootGlobeView();
 	            this.applicationRegion.show(rootGlobeView);
 	        }
