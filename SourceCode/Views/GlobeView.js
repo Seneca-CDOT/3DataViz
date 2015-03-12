@@ -25,6 +25,9 @@ var GlobeView = Backbone.View.extend({
         var list = [];
         var socket;
         var twittermode = false;
+        var GLOBE_SCALE = 50;
+        var COUNTRY_SCALE = 50.5;
+        var dbconfig = {};
 
         var geodata; // stores data about countries
 
@@ -42,12 +45,18 @@ var GlobeView = Backbone.View.extend({
         function init() {
 
             container = document.createElement('div');
+            container.id = 'main';
             document.body.appendChild(container);
 
             socket = io('http://localhost:7777');
+
+            dbconfig.dbname = 'mydb';
+            dbconfig.dbcollection = 'oscars';
+
             socket.on('result', function(result) {
 
-                drawAmount(result, hideUnusedCountries);
+                // numToColor(result, hideUnusedCountries);
+                numToScale(result, hideUnusedCountries);
             });
 
             scene = new THREE.Scene();
@@ -59,14 +68,20 @@ var GlobeView = Backbone.View.extend({
                 alpha: true
             });
 
-            $(document.body).append('<form><input type="text" id="country" ' + 'style="position:absolute;top:50px;right:50px;font-size:30px;opacity:0.7;"></form>');
-            $(document.body).append('<button type="button" id="tweets" style="position:absolute;bottom:100px;right:50px;width: 200px;height: 50px">Tweets</button>');
-            $(document.body).append('<button type="button" id="reset" style="position:absolute;bottom:50px;right:50px;width: 200px;height: 50px">Reset</button>');
-
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setClearColor(0x000000);
             renderer.setSize(window.innerWidth, window.innerHeight);
             container.appendChild(renderer.domElement);
+
+            // $('#container').append('<div id="rightcolumn"></div>');
+            $('#main').append('<div id="rightcolumn"></div>');
+            $('#main').append('<div id="leftcolumn"></div>');
+            $('#rightcolumn').append('<input type="text" class="form-control" id="search">');
+            // $('#rightcolumn').append('<div id="buttons"></div>');
+            $('#rightcolumn').append('<button type="button" id="tweets" class="btn btn-primary">Tweets</button>');
+            $('#rightcolumn').append('<button type="button" id="reset" class="btn btn-danger">Reset</button>');
+            $('#rightcolumn').append('<div class="country"></div>');
+
 
         }
 
@@ -349,7 +364,7 @@ var GlobeView = Backbone.View.extend({
 
 
             var i = 10,
-                geometry, material, scale;
+                geometry, material;
 
             for (var name in data) {
 
@@ -363,8 +378,8 @@ var GlobeView = Backbone.View.extend({
                 data[name].mesh = new THREE.Mesh(geometry, material);
                 scene.add(data[name].mesh);
                 // scale = Math.random()/2 + 50.5;
-                scale = 50.5;
-                data[name].mesh.scale.set(scale, scale, scale);
+                //scale = 50.5;
+                data[name].mesh.scale.set(COUNTRY_SCALE, COUNTRY_SCALE, COUNTRY_SCALE);
                 data[name].mesh.geometry.computeBoundingSphere();
                 data[name].mesh.userData.name = name;
                 data[name].mesh.userData.code = data[name].code;
@@ -416,7 +431,7 @@ var GlobeView = Backbone.View.extend({
 
         function cameraGoTo(countryname) {
 
-            document.removeEventListener('mouseup', onMouseUp, false);
+            container.removeEventListener('mouseup', onMouseUp, false);
             moved = true;
             controls.removeMouse();
 
@@ -424,9 +439,8 @@ var GlobeView = Backbone.View.extend({
 
             if (countrymesh === undefined) {
 
-                $('.cityname').empty();
-                var cityname = '<div class="cityname" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + "Not found" + '</div>';
-                $(document.body).append(cityname);
+                $('.country').empty();
+                $('.country').append("Not found");
                 return;
 
             }
@@ -474,7 +488,7 @@ var GlobeView = Backbone.View.extend({
                 })
                 .onComplete(function() {
                     orbitOn = false;
-                    document.addEventListener('mouseup', onMouseUp, false);
+                    container.addEventListener('mouseup', onMouseUp, false);
                     controls.addMouse();
                 });
 
@@ -520,12 +534,11 @@ var GlobeView = Backbone.View.extend({
                 INTERSECTED = object;
                 INTERSECTED.currentColor = INTERSECTED.material.color.getHex();
                 INTERSECTED.material.color.setHex(0x0000FF);
-                $('.countryinfo').empty();
-                var countryname = '<div class="countryinfo" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + INTERSECTED.userData.name + '</div>';
-                $(document.body).append(countryname);
+                $('.country').empty();
+                $('.country').append('<div>' + INTERSECTED.userData.name + '</div>');
                 if (twittermode && typeof INTERSECTED.userData.tweets !== 'undefined') {
-                    var tweets = '<div class="countryinfo" style="position:absolute;top:200px;right:50px;color:white;font-size:30px;opacity:0.7;">' + 'tweets: ' + INTERSECTED.userData.tweets + '</div>';
-                    $(document.body).append(tweets);
+                    var tweets = '<div>tweets: ' + INTERSECTED.userData.tweets + '</div>';
+                    $('.country').append(tweets);
                 }
             }
         }
@@ -551,31 +564,32 @@ var GlobeView = Backbone.View.extend({
             }
         };
 
-        document.addEventListener('mousemove', onMouseMove, false);
-        document.addEventListener('mouseup', onMouseUp, false);
+        function onMouseDown(e) {
+
+            e.stopPropagation();
+        }
+
+        container.addEventListener('mousemove', onMouseMove, false);
+        container.addEventListener('mouseup', onMouseUp, false);
+        $('#search').on('mousedown', onMouseDown);
 
         // End of move and click event listeners section
 
 
-        $(document).on("keyup", 'form', function(e) {
-            var code = e.keyCode || e.which;
-
-            if (code !== 13) {
-                var name = $('#country').val();
-                showList(name);
-            }
-        });
-
-        $(document).on("keypress", function(e) {
+        $('#search').on("keyup", function(e) {
             var code = e.keyCode || e.which;
 
             if (code == 13) {
                 e.preventDefault();
-                $('#cityname').empty();
-                var name = $('#country').val();
+                $('.country').empty();
+                var name = $('#search').val();
                 cameraGoTo(name);
-                $('.list').empty();
+                //$('.list').empty();
 
+            } else {
+
+                var name = $('#search').val();
+                showList(name);
             }
         });
 
@@ -594,7 +608,7 @@ var GlobeView = Backbone.View.extend({
 
         function showList(name) {
 
-            if (name == '') $('.list').empty();
+            $('.country').empty();
 
             for (var j = 0; j < countries.length; j++) {
 
@@ -606,15 +620,12 @@ var GlobeView = Backbone.View.extend({
 
             }
 
-            $('.list').empty();
-            var countrylist = '<div class="list" style="position:absolute;top:250px;right:50px;color:white;font-size:30px;opacity:0.7;">';
+            //$('.country').empty();
+            //var countrylist = '<div class="country">';
             for (var x = 0; x < list.length; x++) {
 
-                countrylist += list[x] + '<br>';
+                $('.country').append(list[x] + '<br>');
             }
-
-            countrylist += '</div>';
-            $('#webgl').append(countrylist);
 
             list = [];
         }
@@ -675,7 +686,7 @@ var GlobeView = Backbone.View.extend({
 
         }
 
-        function drawAmount(array, callback) {
+        function numToColor(array, callback) {
 
             var step = 100 / array.length;
             var total = 0;
@@ -685,7 +696,7 @@ var GlobeView = Backbone.View.extend({
             var list = [];
             // var index = 0;
             array.sort(function(a, b) {
-                return b.total_tweets - a.total_tweets
+                return b.total_tweets - a.total_tweets;
             });
             // var loop = setInterval(function() {
             var bottomcolor = 80;
@@ -744,7 +755,7 @@ var GlobeView = Backbone.View.extend({
 
                 if (index < 10) {
 
-                    list.push( (index+1) + '. ' + country._id.country);
+                    list.push((index + 1) + '. ' + country._id.country);
                 }
 
                 r = parseInt(bottomcolor + country.total_tweets / colorstep);
@@ -758,10 +769,70 @@ var GlobeView = Backbone.View.extend({
 
                 if (index == array.length - 1) {
 
-                    var rank = "<div id='rank' style='position:absolute;top:200px;left:20px;color:white;font-size: 30px; opacity: 0.7'></div>";
-                    $(document.body).append(rank);
+
                     $.each(list, function(index, value) {
-                        $('#rank').append(value + '<br>');
+                        $('#leftcolumn').append(value + '<br>');
+                    });
+                    console.log('100%');
+                    callback();
+                }
+
+                //   index++;
+                //  }, 100);
+            });
+
+        }
+
+
+        function numToScale(array, callback) {
+
+            var step = 100 / array.length;
+            var total = 0;
+            var r = 255; // red chanel
+            var g = 0; // green chanel
+            var b = 0; // blue chanel
+            var list = [];
+            // var index = 0;
+            array.sort(function(a, b) {
+                return b.total_tweets - a.total_tweets;
+            });
+            // var loop = setInterval(function() {
+            // var bottomcolor = 80;
+            // var colorstep = array[0].total_tweets / (255 - bottomcolor);
+
+            var maxscalefactor = 0.5;
+            var scalestep = maxscalefactor / array[0].total_tweets;
+
+
+            $.each(array, function(index, country) {
+
+                var countrymesh = findCountryMeshByCode(country._id.code);
+
+                if (typeof countrymesh === 'undefined') {
+
+                    console.log("Missing country " + country._id.country + " from globe dataset");
+                    //index++;
+                    return;
+                }
+
+                countrymesh.userData.used = true;
+
+                if (index < 10)
+                    list.push((index + 1) + '. ' + country._id.country);
+
+                var scalar = scalestep * country.total_tweets;
+                console.log(scalar);
+                countrymesh.scale.multiplyScalar(1 + scalar);
+                countrymesh.userData.tweets = country.total_tweets;
+
+                // $("#webgl").empty();
+                // $('#webgl').append("<div style='position:absolute;top:200px;left:500px;color:white;font-size: 30px'>" + parseInt(step++) + "</div>");
+                //console.log( parseInt(total += step) + '%');
+
+                if (index == array.length - 1) {
+
+                    $.each(list, function(index, value) {
+                        $('#leftcolumn').append(value + '<br>');
                     });
                     console.log('100%');
                     callback();
@@ -776,7 +847,7 @@ var GlobeView = Backbone.View.extend({
         function getTweets() {
 
             resetCountries();
-            socket.emit('countries');
+            socket.emit('countries', dbconfig);
             twittermode = true;
 
         }
@@ -798,8 +869,8 @@ var GlobeView = Backbone.View.extend({
         function resetCountries() {
 
             twittermode = false;
-            $('.countryinfo').empty();
-            $('#rank').empty();
+            $('.country').empty();
+            $('#leftcolumn').empty();
 
             $.each(countries, function(index, country) {
 
@@ -817,8 +888,10 @@ var GlobeView = Backbone.View.extend({
                             mesh.material.dispose();
                         }
 
+
                     });
 
+                    country.scale.set(COUNTRY_SCALE, COUNTRY_SCALE, COUNTRY_SCALE);
                 }
 
             });

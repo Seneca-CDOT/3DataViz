@@ -185,8 +185,8 @@ THREE.OrbitControls = function(object, domElement) {
     }
 
     this.getRadius = function() {
-  
-     return this.object.position.distanceTo( new THREE.Vector3() );
+
+        return this.object.position.distanceTo(new THREE.Vector3());
 
     }
 
@@ -283,6 +283,7 @@ THREE.OrbitControls = function(object, domElement) {
 
 
         event.preventDefault();
+        event.stopPropagation();
 
         if (event.button === 0) {
 
@@ -314,6 +315,7 @@ THREE.OrbitControls = function(object, domElement) {
         if (scope.enabled === false) return;
 
         event.preventDefault();
+        event.stopPropagation();
 
         if (state === STATE.ROTATE) {
 
@@ -370,7 +372,7 @@ THREE.OrbitControls = function(object, domElement) {
         if (scope.userRotate === false) return;
 
         element.removeEventListener('mousemove', onMouseMove, false);
-       element.removeEventListener('mouseup', onMouseUp, false);
+        element.removeEventListener('mouseup', onMouseUp, false);
 
         state = STATE.NONE;
 
@@ -422,16 +424,16 @@ THREE.OrbitControls = function(object, domElement) {
 
     }
 
-    this.addMouse = function () {
+    this.addMouse = function() {
 
-element.addEventListener('mousedown', onMouseDown, false);
+        element.addEventListener('mousedown', onMouseDown, false);
 
     }
 
-     this.removeMouse = function () {
+    this.removeMouse = function() {
 
-element.removeEventListener('mousedown', onMouseDown, false);
-        
+        element.removeEventListener('mousedown', onMouseDown, false);
+
     }
 
 
