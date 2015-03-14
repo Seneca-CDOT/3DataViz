@@ -1,26 +1,20 @@
 
 // Controller
 
-var BaseGlobeController = Marionette.Controller.extend({
+// TODO: subclass another class 
+var BaseGlobeController = Backbone.View.extend({
 	initialize: function(options) {
 	}
 });
 
-var GlobeController = BaseGlobeController.extend({
+var RootGlobeController = BaseGlobeController.extend({
 	initialize: function(options) {
 		BaseGlobeController.prototype.initialize.call(this, options);
 
-		this.globeModel = new GlobeModel();
-		this.globeView = new GlobeView();
+		// this.globeModel = new GlobeModel();
+		this.rootGlobeView = new RootGlobeView();
 	},
-	loadData: function() {
-		return this.globeModel.loadData();
-	},
-	showGlobe: function(data) {
-		this.globeView.showGlobe(data);
-	},
-	presentGlobe: function() {
-		var data = this.loadData();
-		this.showGlobe(data);
+	getRootGlobeView: function() {	
+		return this.rootGlobeView;
 	}
 }); 

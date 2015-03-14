@@ -2,16 +2,19 @@
 require(['SourceCode/Views/GlobeView', 'SourceCode/Models/GlobeModel'], function() {
 	require(['SourceCode/Controllers/GlobeController'], function() {
 
-	    var Application = Marionette.Application.extend({
+	    var Application = Backbone.View.extend({
+	    	el: $("#applicaitonRegion"),
 	        initialize: function(options) {
-	            this.globeController = new GlobeController();
+	            this.rootGlobeController = new RootGlobeController();
 	        },
-	        start: function() {
-	            this.globeController.presentGlobe();
+	        render: function(options) {
+				this.$el.append(this.rootGlobeController.getRootGlobeView().$el);
+				this.rootGlobeController.getRootGlobeView().render();
+				return this;
 	        }
 	    });
 
 	    var application = new Application();
-	    application.start();
+	    application.render();
 	});
 });

@@ -37,7 +37,7 @@ var PopulationGeoDataRecords = Backbone.Collection.extend({
 
 // Model
 
-var BaseGlobeModel = Marionette.Controller.extend({
+var BaseGlobeModel = Backbone.Model.extend({
 	initialize: function(options) {
 	},
 	loadData: function() {

@@ -1,12 +1,67 @@
 // View
 
+var RootGlobeView = Backbone.View.extend({
+	tagName: "div",
+	template: _.template($("#rootGlobeViewTemplate").html()),
+
+	initialize: function(options) {
+		this.globeView = new GlobeView();
+
+		// test
+		this.searchField = new GlobeView(); 
+	},
+    render: function(options) {
+         var options = {
+             origin: {
+                 x: 0,
+                 y: 0
+             },
+             size: {
+                 width: 0.5 * window.innerWidth,
+                 height: window.innerHeight
+             }
+         };
+         this.globeView.options = options;
+        
+         options = {
+             origin: {
+                 x: 0.5 * window.innerWidth,
+                 y: 0
+             },
+             size: {
+                 width: 0.5 * window.innerWidth,
+                 height: window.innerHeight
+             }
+         };
+         this.searchField.options = options;
+
+        this.$el.append(this.globeView.$el);
+        this.globeView.render();
+
+        this.$el.append(this.searchField.$el);
+        this.searchField.render();
+        
+        return this;
+    }
+});
+
+// var SearchView = Backbone.View.extend({
+// });
+
 var GlobeView = Backbone.View.extend({
-    render: function() {
-        // TODO: call 'render' from here
+	tagName: "div",
+    template: _.template($("#globeViewTemplate").html()),
+    render: function(options) {
+        this.showGlobe();
+        return this;
     },
 
-    initGlobe: function() {
+// *************************
 
+ 	showGlobe: function() {
+        this.initGlobe();
+    },    
+    initGlobe: function() {
         var scene;
         var stats;
         var renderer;
@@ -27,52 +82,62 @@ var GlobeView = Backbone.View.extend({
 
         var geodata; // stores data about countries
 
-        init();
+        init(this.options);
+        container = this.$el[0];
+        container.appendChild(renderer.domElement);
+        container.style.position = "absolute";
+        container.style.width = this.options.size.width;
+        container.style.left = this.options.origin.x;
+
         drawGlobe();
-        addCamera();
+        addCamera(this.options);
         addLight();
+
         addControls();
-        requestData();
-        //render();
+        addStats();
+
+// ...
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        // window.addEventListener('resize', onWindowResize, false);
+
+ // TODO: search field must be separate object
+
+        // addSearch();
+		addAxisHelper();
+		addListeners();
+		requestData();
 
         // data set from http://www.geonames.org/CA/largest-cities-in-canada.html
 
-        addAxisHelper();
-
-
-
-        function init() {
-
-            container = document.createElement('div');
-            document.body.appendChild(container);
-
-
+        function init(options) {
             scene = new THREE.Scene();
-
-            addStats();
 
             renderer = new THREE.WebGLRenderer({
                 antialias: true,
                 alpha: true
             });
 
-            $('#webgl').append('<form><input type="text" id="country" ' + 'style="position:absolute;top:50px;right:50px;font-size:30px;opacity:0.7;"></form>');
-
-            renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setClearColor(0x000000);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            container.appendChild(renderer.domElement);
 
+            var width = options.size.width;
+            var height = options.size.height;
+			renderer.setSize(width, height);
+
+// NOTE:  'renderer.domElement' must be appended to GlobeView
+
+   //          container = document.createElement('div');
+   //          container.appendChild(renderer.domElement);
+			// document.body.appendChild(container);
         }
 
         function drawGlobe() {
-
             var geometry = new THREE.SphereGeometry(50, 64, 64);
-
-            //var texture = THREE.ImageUtils.loadTexture('textures/earth.jpg');
-            //var specmap = THREE.ImageUtils.loadTexture('textures/specular.jpg');
-
-
             var material = new THREE.MeshPhongMaterial({
                 color: 0x4396E8,
                 ambient: 0x4396E8,
@@ -86,10 +151,33 @@ var GlobeView = Backbone.View.extend({
             countries.push(globe);
         }
 
+        function addCamera(options) {
+        	var width = options.size.width;
+            var height = options.size.height;
+
+            camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000);
+            camera.position.z = 100;
+
+            if (options.position) {
+                camera.position.z = pos.z;
+                camera.position.y = pos.y;
+                camera.position.x = pos.x;
+            }
+            scene.add(camera);
+        }
+
+        function addLight() {
+            var ambLight = new THREE.AmbientLight(0xFFFFFF);
+            var dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.5);
+            dirLight.position.set(-100, 100, 100);
+            dirLight.target = globe;
+
+            // scene.add(ambLight);
+            camera.add(dirLight);
+        }
+
         function render() {
-
             requestAnimationFrame(render);
-
             stats.begin();
 
             if (orbitOn === true) {
@@ -102,58 +190,6 @@ var GlobeView = Backbone.View.extend({
 
             stats.end();
             renderer.render(scene, camera);
-
-
-
-        }
-
-
-        function addCamera(pos) { // adds a camera
-
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-            camera.position.z = 100;
-
-            if (pos) {
-
-                camera.position.z = pos.z;
-                camera.position.y = pos.y;
-                camera.position.x = pos.x;
-
-            }
-
-            scene.add(camera);
-
-
-            //  var help = new THREE.DirectionalLightHelper(directionalLight, 10);
-
-            //scene.add( help );
-
-        }
-
-        function onWindowResize() {
-
-            // windowHalfX = window.innerWidth / 2;
-            // windowHalfY = window.innerHeight / 2;
-
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-
-            renderer.setSize(window.innerWidth, window.innerHeight);
-
-        }
-
-        window.addEventListener('resize', onWindowResize, false);
-
-        function addLight() {
-
-            var ambLight = new THREE.AmbientLight(0xFFFFFF);
-            var dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.5);
-            dirLight.position.set(-100, 100, 100);
-            dirLight.target = globe;
-
-            // scene.add(ambLight);
-            camera.add(dirLight);
-
         }
 
         function addControls() {
@@ -162,11 +198,9 @@ var GlobeView = Backbone.View.extend({
             controls.minDistance = 0;
             controls.maxDistance = 150;
             controls.userPan = false;
-
         }
 
         function addSpikes(data, callback) {
-
             var dataRecordIndex;
             for (dataRecordIndex in data) {
                 var dataRecord = data[dataRecordIndex];
@@ -218,56 +252,38 @@ var GlobeView = Backbone.View.extend({
                 population.position.y += height / 2;
                 cityname.position.y += height / 2 + 2;
             }
-
             callback();
         }
 
-        function addAxisHelper() {
+// helpers addition
 
+        function addAxisHelper() {
             //if (scope.axishelp === false) return;
 
             var axes = new THREE.AxisHelper(200);
             axes.position.set(0, 0, 0);
             globe.add(axes);
-
         }
 
-        function clickOn(event) {
+        function addStats() {
+            stats = new Stats();
+            stats.setMode(0); // 0: fps, 1: ms 
 
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
 
-            var x = event.clientX;
-            var y = event.clientY;
-
-            x -= container.offsetLeft;
-            y -= container.offsetTop;
-
-            var vector = new THREE.Vector3((x / container.offsetWidth) * 2 - 1, -(y / container.offsetHeight) * 2 + 1, 0.5);
-
-            vector.unproject(camera);
-
-            var ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
-
-            var intersects = ray.intersectObjects(countries); // returns an object in any intersected on click
-
-
-            if (intersects.length > 0) {
-
-                if (intersects[0].object.name == 'globe') return; // exclude invisible meshes from intersection
-
-                //container.removeEventListener('mousedown', clickOn, false);
-                //controls.removeMouse();
-
-                //console.log(data[intersects[0].object.index].city);
-
-                // highlightCountry( intersects[0].object );
-
-                cameraGoTo(intersects[0].object.name);
-
-            }
+            // append to GlobeView
+            document.body.appendChild(stats.domElement);
         }
+
+   //      function addSearch() {
+			// $('#webgl').append('<form><input type="text" id="country" ' + 'style="position:absolute;top:50px;right:50px;font-size:30px;opacity:0.7;"></form>');
+   //      }
+
+// data requesting
 
         function requestData() {
-
             // $.ajax({ 
             //     type: 'GET',
             //     url: 'data/data.json',
@@ -309,11 +325,11 @@ var GlobeView = Backbone.View.extend({
                     console.log('An error occurred while processing a countries file.');
                 }
             });
-
         }
 
-        function addBorders(data) {
+// geo logic
 
+        function addBorders(data) {
             var country = data.features[0].geometry.coordinates[0];
 
             var i, k, dot, verty = [];
@@ -372,39 +388,11 @@ var GlobeView = Backbone.View.extend({
 
             }
             geom.verticesNeedUpdate = true;
-
-
-        }
-
-        function geoToxyz(lon, lat, r) {
-
-            var r = r || 1;
-
-            // var phi = lat * Math.PI / 180;
-            // var theta = (lon + 90) * Math.PI / 180;
-
-            // var x = r * Math.cos(phi) * Math.sin(theta);
-            // var y = r * Math.sin(phi);
-            // var z = r * Math.cos(phi) * Math.cos(theta);
-
-            var phi = +(90 - lat) * 0.01745329252;
-            var the = +(180 - lon) * 0.01745329252;
-
-            var x = r * Math.sin(the) * Math.sin(phi) * -1;
-            var z = r * Math.cos(the) * Math.sin(phi);
-            var y = r * Math.cos(phi);
-
-            return new THREE.Vector3(x, y, z);
-
-
         }
 
         var ctr = 0;
-
         function addBorders2(coordinates, name) {
-
             //var country = data.features[0].geometry.coordinates[0];
-
             if (coordinates[0].length !== 2) {
 
                 for (var i = 0; i < coordinates.length; i++) {
@@ -415,9 +403,7 @@ var GlobeView = Backbone.View.extend({
                 return;
             }
 
-
             var point;
-
             var geometry = new THREE.Geometry();
 
             for (var k = 0; k < coordinates.length; k++) {
@@ -437,14 +423,10 @@ var GlobeView = Backbone.View.extend({
             shape.name = name;
             countries.push(shape);
             ctr++;
-
             //line.scale.set(50,50,50);
-
         }
 
         function addCountries(data, callback) {
-
-
             var i = 10,
                 geometry, material, scale;
 
@@ -462,294 +444,17 @@ var GlobeView = Backbone.View.extend({
                 });
                 data[name].mesh = new THREE.Mesh(geometry, material);
                 scene.add(data[name].mesh);
-                // scale = Math.random()/2 + 50.5;
                 scale = 50.5;
                 data[name].mesh.scale.set(scale, scale, scale);
                 data[name].mesh.geometry.computeBoundingSphere();
                 data[name].mesh.name = name;
                 countries.push(data[name].mesh);
-                drawStar( name );
+                // drawStar( name );
             }
             callback();
-
         }
 
-        function readCountries(data, callback) {
-
-            for (var i = 0; i < data.features.length; i++) {
-
-                addBorders2(data.features[i].geometry.coordinates, data.features[i].properties.NAME);
-
-            }
-
-            //  console.log(ctr + " shapes were generated");
-            callback();
-
-        }
-
-        function addStats() {
-
-            stats = new Stats();
-            stats.setMode(0); // 0: fps, 1: ms 
-
-            stats.domElement.style.position = 'absolute';
-            stats.domElement.style.left = '0px';
-            stats.domElement.style.top = '0px';
-
-            document.body.appendChild(stats.domElement);
-
-
-        }
-
-        function componentToHex(c) {
-            var hex = c.toString(16);
-            return hex.length == 1 ? "0" + hex : hex;
-        }
-
-        function rgbToHex(r, g, b) {
-            return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-        }
-
-        function cameraGoTo(countryname) {
-
-            container.removeEventListener('mousedown', clickOn, false);
-            container.removeEventListener('mousemove', clickOn, false);
-            controls.removeMouse();
-
-            var countrymesh = findCountryMesh(countryname);
-
-            if (countrymesh === undefined) {
-
-                $('.cityname').empty();
-                var cityname = '<div class="cityname" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + "Not found" + '</div>';
-                $('#webgl').append(cityname);
-                return;
-
-            }
-
-            var current = controls.getPosition();
-
-            //   for (var i = 0; i < countries.length; i++) {
-
-            //   if (countries[i].name == country) {
-
-            //var midpoint = getMidPoint( geodata[ countryname] );
-            //var destination =  geoToxyz( midpoint.lon, midpoint.lat );
-            // var destination = geoToxyz(camerapoints[i].lon, camerapoints[i].lat);
-            // var countrymesh = findCountryMesh( countryname );
-            var destination = countrymesh.geometry.boundingSphere.center.clone();
-            destination.setLength(controls.getRadius());
-            //     break;
-            //  }
-
-            //  }
-            highlightCountry(countrymesh);
-
-            //    console.dir( current, destination );
-
-            if (orbitOn == true) {
-                tween.stop();
-            }
-
-            tween = new TWEEN.Tween(current)
-                .to({
-                    x: destination.x,
-                    y: destination.y,
-                    z: destination.z
-                }, 1000)
-
-            .easing(TWEEN.Easing.Sinusoidal.InOut)
-                .onUpdate(function() {
-
-                    controls.updateView({
-                        x: this.x,
-                        y: this.y,
-                        z: this.z
-                    });
-
-                })
-                .onComplete(function() {
-                    orbitOn = false;
-                    addListeners();
-                    controls.addMouse();
-                    console.log("stop");
-                });
-
-            orbitOn = true;
-            tween.start();
-
-        }
-
-        function getMidPoint(country) {
-
-            var lon = [];
-            var lat = [];
-
-            // var longitude = country.vertices[0];
-            // var isInEastHemisphere = (longitude > 0 && longitude < 180)
-            // var isInWestHemisphere = (longitude < 0 && longitude > -180)
-
-            for (var i = 0; i + 1 < country.vertices.length; i = i + 2) {
-                lon.push(country.vertices[i]);
-                lat.push(country.vertices[i + 1]);
-            }
-
-            var lonmax = Math.max.apply(Math, lon);
-            var lonmin = Math.min.apply(Math, lon);
-            var lonmid = (lonmin + lonmax) / 2;
-
-            var latmax = Math.max.apply(Math, lat);
-            var latmin = Math.min.apply(Math, lat);
-            var latmid = (latmin + latmax) / 2;
-
-            console.log("longitude min and max: " + lonmin, lonmax);
-
-            return {
-                lon: lonmid,
-                lat: latmid
-            }
-
-        }
-
-
-        function findCountryMesh(name) {
-
-
-            for (var i = 0; i < countries.length; i++) {
-
-
-                if (countries[i].name.toLowerCase() == name.toLowerCase()) {
-
-                    return countries[i];
-                }
-            }
-
-        }
-
-        function highlightCountry(object) {
-
-            if (INTERSECTED != object) {
-
-                if (INTERSECTED) {
-
-                    // INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);// for spikes
-                    INTERSECTED.material.color.setHex(INTERSECTED.currentColor); // for countries shapes
-                    // INTERSECTED.scale.x -= 0.5;
-                    // INTERSECTED.scale.y -= 0.5;
-                    // INTERSECTED.scale.z -= 0.5;
-                    // cities[INTERSECTED.index].visible = false; // for spikes
-                    // population_array[INTERSECTED.index].visible = false;
-
-
-                    //  for ( var k = 0; k < 50; k++ ) {
-                    // INTERSECTED.geometry.dynamic = true;
-                    //                   INTERSECTED.geometry.vertices[0].y -= 0.1;
-                    //                   INTERSECTED.geometry.vertices[1].y -= 0.1;
-                    //                   INTERSECTED.geometry.vertices[4].y -= 0.1;
-                    //                   INTERSECTED.geometry.vertices[5].y -= 0.1;
-                    //                   INTERSECTED.geometry.verticesNeedUpdate = true;
-                    //               }
-
-                }
-                //console.log( intersects[ 0 ].object );
-                INTERSECTED = object;
-                // INTERSECTED.index = intersects[0].object.index; // for spikes
-                // INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex(); // for spikes
-                INTERSECTED.currentColor = INTERSECTED.material.color.getHex();
-                // INTERSECTED.material.emissive.setHex(0xCC00FF); // for spikes
-                INTERSECTED.material.color.setHex(0x0000FF);
-                // INTERSECTED.scale.x += 0.5;
-                // INTERSECTED.scale.y += 0.5;
-                // INTERSECTED.scale.z += 0.5;
-                // console.log(INTERSECTED.direction);
-                $('.cityname').empty();
-                var cityname = '<div class="cityname" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + INTERSECTED.name + '</div>';
-                $('#webgl').append(cityname);
-
-                //cities[INTERSECTED.index].visible = true; // for spikes
-                //population_array[INTERSECTED.index].visible = true; // for spikes
-
-            }
-        }
-
-        var moved;
-        //$(document).on("mousedown",  clickOn );
-        function addListeners() {
-
-            container.addEventListener('mousedown', function(e) {
-
-                if (moved) {
-                    moved = false;
-                } else {
-                    clickOn(e)
-                }
-
-            }, false);
-
-            container.addEventListener('mousemove', function(e) {
-
-                if (e.which == 1) {
-                    moved = true;
-                    container.removeEventListener('mousedown', clickOn, false);
-                }
-            });
-
-        }
-
-        addListeners();
-
-        $(document).on("keyup", 'form', function(e) {
-            var code = e.keyCode || e.which;
-
-            if (code !== 13) {
-                var name = $('#country').val();
-                showList(name);
-            }
-        });
-
-        $(document).on("keypress", function(e) {
-            var code = e.keyCode || e.which;
-
-            if (code == 13) {
-                e.preventDefault();
-                $('#cityname').empty();
-                var name = $('#country').val();
-                cameraGoTo(name);
-                $('.list').empty();
-
-            }
-        });
-
-
-        function showList(name) {
-
-            if (name == '') $('.list').empty();
-
-            for (var j = 0; j < countries.length; j++) {
-
-                if (name.charAt(0) == countries[j].name[0].toLowerCase()) {
-
-                    list.push(countries[j].name);
-
-                }
-
-            }
-
-
-            $('.list').empty();
-            var countrylist = '<div class="list" style="position:absolute;top:250px;right:50px;color:white;font-size:30px;opacity:0.7;">';
-            for (var x = 0; x < list.length; x++) {
-
-                countrylist += list[x] + '<br>';
-            }
-
-            countrylist += '</div>';
-            $('#webgl').append(countrylist);
-
-            list = [];
-        }
-
-        function drawStar( name ) {
+		function drawStar( name ) {
 
             var countrymesh = findCountryMesh(name);
 
@@ -801,11 +506,297 @@ var GlobeView = Backbone.View.extend({
 
             mesh.rotation.setFromQuaternion(quaternion);
             mesh.position.copy(position);
+        }
 
+        function readCountries(data, callback) {
+            for (var i = 0; i < data.features.length; i++) {
+                addBorders2(data.features[i].geometry.coordinates, data.features[i].properties.NAME);
+            }
+            callback();
+        }
+
+        function geoToxyz(lon, lat, r) {
+            var r = r || 1;
+
+            // var phi = lat * Math.PI / 180;
+            // var theta = (lon + 90) * Math.PI / 180;
+
+            // var x = r * Math.cos(phi) * Math.sin(theta);
+            // var y = r * Math.sin(phi);
+            // var z = r * Math.cos(phi) * Math.cos(theta);
+
+            var phi = +(90 - lat) * 0.01745329252;
+            var the = +(180 - lon) * 0.01745329252;
+
+            var x = r * Math.sin(the) * Math.sin(phi) * -1;
+            var z = r * Math.cos(the) * Math.sin(phi);
+            var y = r * Math.cos(phi);
+
+            return new THREE.Vector3(x, y, z);
+        }
+
+// coloring
+
+        function componentToHex(c) {
+            var hex = c.toString(16);
+            return hex.length == 1 ? "0" + hex : hex;
+        }
+
+        function rgbToHex(r, g, b) {
+            return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+        }
+
+        function findCountryMesh(name) {
+            showList(name);
+            name = name.charAt(0).toUpperCase() + name.slice(1);
+            for (var k = 0; k < name.length; k++) {
+                if (name.charAt(k) == ' ') {
+                    var firstword = name.slice(0, k + 1);
+                    var secondword = name.charAt(k + 1).toUpperCase() + name.slice(k + 2);
+
+                    name = firstword + secondword;
+                    break;
+                }
+            }
+
+            for (var i = 0; i < countries.length; i++) {
+                if (countries[i].name == name) {
+                    return countries[i];
+                }
+            }
+        }
+
+        function highlightCountry(object) {
+            if (INTERSECTED != object) {
+                if (INTERSECTED) {
+                    // INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);// for spikes
+                    INTERSECTED.material.color.setHex(INTERSECTED.currentColor); // for countries shapes
+                    INTERSECTED.scale.x -= 0.5;
+                    INTERSECTED.scale.y -= 0.5;
+                    INTERSECTED.scale.z -= 0.5;
+                    // cities[INTERSECTED.index].visible = false; // for spikes
+                    // population_array[INTERSECTED.index].visible = false;
+
+                    //  for ( var k = 0; k < 50; k++ ) {
+                    // INTERSECTED.geometry.dynamic = true;
+                    //                   INTERSECTED.geometry.vertices[0].y -= 0.1;
+                    //                   INTERSECTED.geometry.vertices[1].y -= 0.1;
+                    //                   INTERSECTED.geometry.vertices[4].y -= 0.1;
+                    //                   INTERSECTED.geometry.vertices[5].y -= 0.1;
+                    //                   INTERSECTED.geometry.verticesNeedUpdate = true;
+                    //               }
+                }
+                //console.log( intersects[ 0 ].object );
+                INTERSECTED = object;
+                // INTERSECTED.index = intersects[0].object.index; // for spikes
+                // INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex(); // for spikes
+                INTERSECTED.currentColor = INTERSECTED.material.color.getHex();
+                // INTERSECTED.material.emissive.setHex(0xCC00FF); // for spikes
+                INTERSECTED.material.color.setHex(0x0000FF);
+                INTERSECTED.scale.x += 0.5;
+                INTERSECTED.scale.y += 0.5;
+                INTERSECTED.scale.z += 0.5;
+                // console.log(INTERSECTED.direction);
+
+                // $('.cityname').empty();
+                // var cityname = '<div class="cityname" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + INTERSECTED.name + '</div>';
+                // $('#webgl').append(cityname);
+
+                //cities[INTERSECTED.index].visible = true; // for spikes
+                //population_array[INTERSECTED.index].visible = true; // for spikes
+            }
+        }
+
+// events hendling
+
+        function clickOn(event) {
+            var x = event.clientX;
+            var y = event.clientY;
+
+            x -= container.offsetLeft;
+            y -= container.offsetTop;
+
+            var vector = new THREE.Vector3((x / container.offsetWidth) * 2 - 1, -(y / container.offsetHeight) * 2 + 1, 0.5);
+            vector.unproject(camera);
+
+            var ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+            var intersects = ray.intersectObjects(countries); // returns an object in any intersected on click
+
+            if (intersects.length > 0) {
+                if (intersects[0].object.name == 'globe') return; // exclude invisible meshes from intersection
+
+                //container.removeEventListener('mousedown', clickOn, false);
+                //controls.removeMouse();
+
+                //console.log(data[intersects[0].object.index].city);
+
+                // highlightCountry( intersects[0].object );
+
+                cameraGoTo(intersects[0].object.name);
+            }
+        }
+
+        function cameraGoTo(countryname) {
+            container.removeEventListener('mousedown', clickOn, false);
+            container.removeEventListener('mousemove', clickOn, false);
+            controls.removeMouse();
+
+            var countrymesh = findCountryMesh(countryname);
+            if (countrymesh === undefined) {
+
+                // $('.cityname').empty();
+                // var cityname = '<div class="cityname" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + "Not found" + '</div>';
+                // $('#webgl').append(cityname);
+                return;
+
+            }
+
+            var current = controls.getPosition();
+
+            //   for (var i = 0; i < countries.length; i++) {
+            //   if (countries[i].name == country) {
+
+            //var midpoint = getMidPoint( geodata[ countryname] );
+            //var destination =  geoToxyz( midpoint.lon, midpoint.lat );
+            // var destination = geoToxyz(camerapoints[i].lon, camerapoints[i].lat);
+            // var countrymesh = findCountryMesh( countryname );
+            var destination = countrymesh.geometry.boundingSphere.center.clone();
+            destination.setLength(controls.getRadius());
+            //     break;
+            //  }
+
+            //  }
+            highlightCountry(countrymesh);
+
+            //    console.dir( current, destination );
+
+            if (orbitOn == true) {
+                tween.stop();
+            }
+
+            tween = new TWEEN.Tween(current)
+                .to({
+                    x: destination.x,
+                    y: destination.y,
+                    z: destination.z
+                }, 1000)
+
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+                .onUpdate(function() {
+
+                    controls.updateView({
+                        x: this.x,
+                        y: this.y,
+                        z: this.z
+                    });
+
+                })
+                .onComplete(function() {
+                    orbitOn = false;
+                    addListeners();
+                    controls.addMouse();
+                    console.log("stop");
+                });
+
+            orbitOn = true;
+            tween.start();
+        }
+
+        function getMidPoint(country) {
+            var lon = [];
+            var lat = [];
+
+            // var longitude = country.vertices[0];
+            // var isInEastHemisphere = (longitude > 0 && longitude < 180)
+            // var isInWestHemisphere = (longitude < 0 && longitude > -180)
+
+            for (var i = 0; i + 1 < country.vertices.length; i = i + 2) {
+                lon.push(country.vertices[i]);
+                lat.push(country.vertices[i + 1]);
+            }
+
+            var lonmax = Math.max.apply(Math, lon);
+            var lonmin = Math.min.apply(Math, lon);
+            var lonmid = (lonmin + lonmax) / 2;
+
+            var latmax = Math.max.apply(Math, lat);
+            var latmin = Math.min.apply(Math, lat);
+            var latmid = (latmin + latmax) / 2;
+
+            console.log("longitude min and max: " + lonmin, lonmax);
+
+            return {
+                lon: lonmid,
+                lat: latmid
+            }
+        }
+
+// ...
+
+        var moved;
+        //$(document).on("mousedown",  clickOn );
+        function addListeners() {
+            container.addEventListener('mousedown', function(e) {
+                if (moved) {
+                    moved = false;
+                } else {
+                    clickOn(e)
+                }
+
+            }, false);
+
+            container.addEventListener('mousemove', function(e) {
+                if (e.which == 1) {
+                    moved = true;
+                    container.removeEventListener('mousedown', clickOn, false);
+                }
+            });
 
         }
-    },
-    showGlobe: function(data) {
-        this.initGlobe();
-    }
+        
+        $(document).on("keyup", 'form', function(e) {
+            var code = e.keyCode || e.which;
+
+            if (code !== 13) {
+                var name = $('#country').val();
+                showList(name);
+            }
+        });
+
+        $(document).on("keypress", function(e) {
+            var code = e.keyCode || e.which;
+
+            if (code == 13) {
+                e.preventDefault();
+                $('#cityname').empty();
+                var name = $('#country').val();
+                cameraGoTo(name);
+                $('.list').empty();
+
+            }
+        });
+
+        function showList(name) {
+            if (name == '') $('.list').empty();
+            for (var j = 0; j < countries.length; j++) {
+                if (name.charAt(0) == countries[j].name[0].toLowerCase()) {
+
+                    list.push(countries[j].name);
+                }
+            }
+
+
+            // $('.list').empty();
+            // var countrylist = '<div class="list" style="position:absolute;top:250px;right:50px;color:white;font-size:30px;opacity:0.7;">';
+            // for (var x = 0; x < list.length; x++) {
+
+            //     countrylist += list[x] + '<br>';
+            // }
+
+            // countrylist += '</div>';
+            // $('#webgl').append(countrylist);
+
+            list = [];
+        }
+    }   
 });
