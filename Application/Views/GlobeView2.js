@@ -34,7 +34,7 @@ App.GlobeView2 = Backbone.View.extend({
 
         var imgTex;
         var hexMap = '/Assets/images/textures/hexMapMin.png';
-        var textureMap = '/Assets/images/textures/worldMatrix.png';
+        var textureMap = '/Assets/images/textures/worldMatrix.jpg';
 
         var factor = 3;
         var texHeight = 1024 * factor;
@@ -212,7 +212,7 @@ App.GlobeView2 = Backbone.View.extend({
             canvas.width = tw;
             canvas.height = th;
 
-            document.body.appendChild(canvas);
+            // document.body.appendChild(canvas);
         }
 
         /* Moved */
@@ -278,14 +278,11 @@ App.GlobeView2 = Backbone.View.extend({
 
         }
 
-        /* Moved */
+        /* Common */
         function onWindowResize() {
-
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
-
             renderer.setSize(window.innerWidth, window.innerHeight);
-
         }
         window.addEventListener('resize', onWindowResize, false);
 
@@ -312,29 +309,6 @@ App.GlobeView2 = Backbone.View.extend({
 
         }
 
-        function geoToxyz(lon, lat) {
-
-            var r = radius || 1;
-
-            // var phi = lat * Math.PI / 180;
-            // var theta = (lon + 90) * Math.PI / 180;
-
-            // var x = r * Math.cos(phi) * Math.sin(theta);
-            // var y = r * Math.sin(phi);
-            // var z = r * Math.cos(phi) * Math.cos(theta);
-
-            var phi = +(90 - lat) * 0.01745329252;
-            var the = +(180 - lon) * 0.01745329252;
-
-            var z = r * Math.sin (the) * Math.sin (phi);
-            var x = r * Math.cos (the) * Math.sin (phi) * -1;
-            var y = r * Math.cos (phi);
-
-            var v = new THREE.Vector3(x, y, z);
-
-            return v ;
-        }
-
         /*Beggining of click country*/
         function getPixelClicked(place, canvasContext){
             var x = place.x;
@@ -353,7 +327,7 @@ App.GlobeView2 = Backbone.View.extend({
             g = pixel[1],
             b = pixel[2];
 
-            var color = decToHex(r) + decToHex(g) + decToHex(b);
+            var color = App.Helper.decToHex(r) + App.Helper.decToHex(g) + App.Helper.decToHex(b);
 
             return color;
         }
@@ -489,7 +463,7 @@ App.GlobeView2 = Backbone.View.extend({
             avgLat = ( maxLat + minLat ) / 2;
             avgLon = ( maxLon + minLon ) / 2;
 
-            midPoint = geoToxyz(avgLon, avgLat);
+            midPoint = App.Helper.geoToxyz(avgLon, avgLat);
 
             canvasCtx.stroke();  // Draw it
             // canvasCtx.fillStyle = "#000000";
@@ -498,15 +472,6 @@ App.GlobeView2 = Backbone.View.extend({
             canvasCtx.fill();
             ctr++;
 
-        }
-
-        /* Moved */
-        function decToHex(c){
-            var hc;
-            if (c < 10){ hc = ( '0' + c.toString(16) ); }
-            else if(c < 17){ hc = c.toString(16) + '0';}
-            else{hc = c.toString(16);}
-            return hc;
         }
 
         function readCountries(data) {
@@ -526,7 +491,7 @@ App.GlobeView2 = Backbone.View.extend({
             var nameC;
             for (; i < data[0].features.length; i++) {
 
-                color = decToHex(r) + decToHex(g) + decToHex(b);
+                color = App.Helper.decToHex(r) + App.Helper.decToHex(g) + App.Helper.decToHex(b);
 
                 r = ( r > 100? r = 0 : r );
                 g = ( g > 250? g = 0 : g );
@@ -573,17 +538,6 @@ App.GlobeView2 = Backbone.View.extend({
 
             document.body.appendChild(stats.domElement);
 
-        }
-
-        /* Moved */
-        function componentToHex(c) {
-            var hex = c.toString(16);
-            return hex.length == 1 ? "0" + hex : hex;
-        }
-
-        /* Moved */
-        function rgbToHex(r, g, b) {
-            return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
         }
 
         /* Moved */

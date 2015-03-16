@@ -47,14 +47,14 @@ App.GlobeView = Backbone.View.extend({
         addControls();
         addStats();
 
-// ...
 
+        /* Common */
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
-        // window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('resize', onWindowResize, false);
 
  // TODO: search field must be separate object
 
@@ -286,13 +286,13 @@ App.GlobeView = Backbone.View.extend({
             var i, k, dot, verty = [];
             var border = new THREE.Shape();
 
-            dot = geoToxyz(country[0][0], country[0][1]);
+            dot = App.Helper.geoToxyz(country[0][0], country[0][1]);
             border.moveTo(dot.x, dot.z);
 
 
             for (i = 1; i < country.length; i++) {
 
-                dot = geoToxyz(country[i][0], country[i][1]);
+                dot = App.Helper.geoToxyz(country[i][0], country[i][1]);
 
                 border.lineTo(dot.x, dot.z);
                 verty.push(dot.y);
@@ -359,7 +359,7 @@ App.GlobeView = Backbone.View.extend({
 
             for (var k = 0; k < coordinates.length; k++) {
 
-                point = geoToxyz(coordinates[k][0], coordinates[k][1], 50);
+                point = App.Helper.geoToxyz(coordinates[k][0], coordinates[k][1], 50);
                 geometry.vertices.push(point);
 
             }
@@ -385,7 +385,7 @@ App.GlobeView = Backbone.View.extend({
 
                 material = new THREE.MeshPhongMaterial({
                     shininess: 0,
-                    color: rgbToHex(10, i++, 0)
+                    color: App.Helper.rgbToHex(10, i++, 0)
                 });
                 geometry = new Map3DGeometry(data[name], 0);
                 midpoints.push({
@@ -466,36 +466,7 @@ App.GlobeView = Backbone.View.extend({
             callback();
         }
 
-        function geoToxyz(lon, lat, r) {
-            var r = r || 1;
 
-            // var phi = lat * Math.PI / 180;
-            // var theta = (lon + 90) * Math.PI / 180;
-
-            // var x = r * Math.cos(phi) * Math.sin(theta);
-            // var y = r * Math.sin(phi);
-            // var z = r * Math.cos(phi) * Math.cos(theta);
-
-            var phi = +(90 - lat) * 0.01745329252;
-            var the = +(180 - lon) * 0.01745329252;
-
-            var x = r * Math.sin(the) * Math.sin(phi) * -1;
-            var z = r * Math.cos(the) * Math.sin(phi);
-            var y = r * Math.cos(phi);
-
-            return new THREE.Vector3(x, y, z);
-        }
-
-// coloring
-
-        function componentToHex(c) {
-            var hex = c.toString(16);
-            return hex.length == 1 ? "0" + hex : hex;
-        }
-
-        function rgbToHex(r, g, b) {
-            return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-        }
 
         function findCountryMesh(name) {
             showList(name);
@@ -608,8 +579,8 @@ App.GlobeView = Backbone.View.extend({
             //   if (countries[i].name == country) {
 
             //var midpoint = getMidPoint( geodata[ countryname] );
-            //var destination =  geoToxyz( midpoint.lon, midpoint.lat );
-            // var destination = geoToxyz(camerapoints[i].lon, camerapoints[i].lat);
+            //var destination =  App.Helper.geoToxyz( midpoint.lon, midpoint.lat );
+            // var destination = App.Helper.geoToxyz(camerapoints[i].lon, camerapoints[i].lat);
             // var countrymesh = findCountryMesh( countryname );
             var destination = countrymesh.geometry.boundingSphere.center.clone();
             destination.setLength(controls.getRadius());

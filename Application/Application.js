@@ -19,6 +19,7 @@ App = {
   //Files which need to be imported for GlobeVisualization
   files : [
     'Routes/Routes',
+    'Helpers/ApplicationHelper',
     'Libraries/OrbitControls.js',
     'Libraries/stats.js',
     'Libraries/tween.min.js'

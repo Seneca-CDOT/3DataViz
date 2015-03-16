@@ -101,7 +101,6 @@ App.Helper = {
   /**
    * Controller kind of methods
    */
-
   onWindowResize : function() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -272,6 +271,11 @@ App.Helper = {
   /**
    * Calculation kind of helper
    */
+  
+  /**
+   * Convert Geo coordinates to XYZ coordinates
+   * @return THREE.Vector3
+   */
   geoToxyz : function(lon, lat, r) {
 
     var r = r || 1;
@@ -291,6 +295,10 @@ App.Helper = {
     return new THREE.Vector3(x, y, z);
   },
 
+  /**
+   * Convert decimal to HEX
+   * @return hex
+   */
   decToHex : function(c){
     var hc;
     if (c < 10){ hc = ( '0' + c.toString(16) ); }
@@ -299,10 +307,18 @@ App.Helper = {
     return hc;
   },
 
+  /**
+   * Convert RBG to HEX
+   * @return hex
+   */
   rgbToHex : function(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
   },
 
+  /**
+   * Convert component to HEX
+   * @return hex
+   */
   componentToHex : function(c) {
     var hex = c.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
