@@ -5,7 +5,6 @@ App.Debug = {
   addAxisHelper: function() { // adds axis to the globe
 
       //if (scope.axishelp === false) return;
-
       var axes = new THREE.AxisHelper(200);
       axes.position.set(0, 0, 0);
       globe.add(axes);
