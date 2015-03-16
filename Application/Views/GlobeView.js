@@ -21,7 +21,6 @@ App.GlobeView = App.BaseGlobeView.extend({
         App.BaseGlobeView.prototype.render.call(this);
         return this;
     },
-
     // member methods
 
     showGlobe: function() {

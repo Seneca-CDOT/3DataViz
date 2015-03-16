@@ -1,7 +1,7 @@
 var App = App || {};
 
 /**
- * RootGlobeView:
+ * RootGlobeView: It would contains views of
  * Create common views
  * @return this element
  */
