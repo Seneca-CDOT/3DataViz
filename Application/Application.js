@@ -19,6 +19,7 @@ App = {
   //Files which need to be imported for GlobeVisualization
   files : [
     'Routes/Routes',
+    'Views/BaseGlobeView.js',
     'Helpers/ApplicationHelper',
     'Helpers/Debug', // FOR DEBUG
     'Libraries/OrbitControls.js',
@@ -51,6 +52,7 @@ App = {
       'Libraries/map3d.js'
     ]
   }
+
 };
 
 require(App.files, function(){
