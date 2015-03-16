@@ -20,6 +20,7 @@ App = {
   files : [
     'Routes/Routes',
     'Helpers/ApplicationHelper',
+    'Helpers/Debug', // FOR DEBUG
     'Libraries/OrbitControls.js',
     'Libraries/stats.js',
     'Libraries/tween.min.js'
