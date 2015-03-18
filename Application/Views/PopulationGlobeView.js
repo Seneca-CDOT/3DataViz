@@ -1,11 +1,11 @@
-var App = App || {};
+var Application = Application || {};
 
-App.PopulationGlobeView = App.BaseGlobeView.extend({
+Application.PopulationGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
 
     initialize: function() {
-        App.BaseGlobeView.prototype.initialize.call(this);
+        Application.BaseGlobeView.prototype.initialize.call(this);
 
         this.countries = [];
         this.spikes = []; // an array of spike objects
@@ -18,21 +18,22 @@ App.PopulationGlobeView = App.BaseGlobeView.extend({
         this.twittermode = false;
     },
     render: function() {
-        App.BaseGlobeView.prototype.render.call(this);
+        Application.BaseGlobeView.prototype.render.call(this);
         return this;
     },
+    
     // member methods
 
     showGlobe: function() {
-        App.BaseGlobeView.prototype.showGlobe.call(this);
+        Application.BaseGlobeView.prototype.showGlobe.call(this);
     },
-    drawGlobe: function() {
-        App.BaseGlobeView.prototype.drawGlobe.call(this);
+    addGlobe: function() {
+        Application.BaseGlobeView.prototype.addGlobe.call(this);
 
         this.countries.push(this.globe);
     },
     initGlobe: function() {
-        App.BaseGlobeView.prototype.initGlobe.call(this);
+        Application.BaseGlobeView.prototype.initGlobe.call(this);
 
         this.requestCountriesData().done(this.addCountries.bind(this));
         this.renderGlobe();

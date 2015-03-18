@@ -1,6 +1,6 @@
-var App = App || {};
+var Application = Application || {};
 
-App.Helper = {
+Application.Helper = {
 
   /**
    * Convert Geo coordinates to XYZ coordinates

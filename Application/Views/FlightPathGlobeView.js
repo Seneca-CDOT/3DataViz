@@ -1,6 +1,6 @@
-var App = App || {};
+var Application = Application || {};
 
-App.FlightPathGlobeView = Backbone.View.extend({
+Application.FlightPathGlobeView = Backbone.View.extend({
 	tagName: "div",
     template: _.template($("#globeViewTemplate").html()),
     render: function(options) {
@@ -327,7 +327,7 @@ App.FlightPathGlobeView = Backbone.View.extend({
             g = pixel[1],
             b = pixel[2];
 
-            var color = App.Helper.decToHex(r) + App.Helper.decToHex(g) + App.Helper.decToHex(b);
+            var color = Application.Helper.decToHex(r) + Application.Helper.decToHex(g) + Application.Helper.decToHex(b);
 
             return color;
         }
@@ -463,7 +463,7 @@ App.FlightPathGlobeView = Backbone.View.extend({
             avgLat = ( maxLat + minLat ) / 2;
             avgLon = ( maxLon + minLon ) / 2;
 
-            midPoint = App.Helper.geoToxyz(avgLon, avgLat);
+            midPoint = Application.Helper.geoToxyz(avgLon, avgLat);
 
             canvasCtx.stroke();  // Draw it
             // canvasCtx.fillStyle = "#000000";
@@ -491,7 +491,7 @@ App.FlightPathGlobeView = Backbone.View.extend({
             var nameC;
             for (; i < data[0].features.length; i++) {
 
-                color = App.Helper.decToHex(r) + App.Helper.decToHex(g) + App.Helper.decToHex(b);
+                color = Application.Helper.decToHex(r) + Application.Helper.decToHex(g) + Application.Helper.decToHex(b);
 
                 r = ( r > 100? r = 0 : r );
                 g = ( g > 250? g = 0 : g );

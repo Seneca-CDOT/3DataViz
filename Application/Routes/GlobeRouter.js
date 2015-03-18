@@ -1,11 +1,11 @@
-var App = App || {};
+var Application = Application || {};
 
 /**
- * App.Router (Controller)
+ * Application.GlobeRouter (Controller)
  * Perform functions besed on the parameters from URL.
  * @return null
  */
-App.GlobeRouter = Backbone.Router.extend({
+Application.GlobeRouter = Backbone.Router.extend({
 
   routes : {
     "globeView" : "initGlobeView",
@@ -16,10 +16,10 @@ App.GlobeRouter = Backbone.Router.extend({
    * @return null
    */
   initGlobeView: function(){
-    require(App.globeView.files , function(){
+    require(Application.globeView.files , function(){
 
       //Create View
-      var rootGlobeView = new App.RootGlobeView();
+      var rootGlobeView = new Application.RootGlobeView();
       $("#applicaitonRegion").empty().append(rootGlobeView.render().$el[0]);
 
     });

@@ -1,4 +1,4 @@
-var App = App || {};
+var Application = Application || {};
 
 /**
  * Application object(namespace), which wraps entire application.
@@ -8,7 +8,7 @@ var App = App || {};
  * - etc.
  * @return null
  */
-App = {
+Application = {
 
 	//Create Route which handles Views and Models
   init : function(){
@@ -21,9 +21,9 @@ App = {
     'Views/RootGlobeView.js',
     'Views/BaseGlobeView.js',
 
-    'Routes/Routes',
-    'Helpers/ApplicationHelper',
-    'Helpers/Debug', // FOR DEBUG
+    'Routes/GlobeRouter.js',
+    'Helpers/Helper.js',
+    'Helpers/Debug.js', // FOR DEBUG
     'Libraries/OrbitControls.js',
     'Libraries/stats.js',
     'Libraries/tween.min.js'
@@ -44,6 +44,6 @@ App = {
   }
 };
 
-require(App.files, function(){
-  App.init();
+require(Application.files, function(){
+  Application.init();
 });

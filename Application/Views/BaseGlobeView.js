@@ -1,20 +1,14 @@
-var App = App || {};
+var Application = Application || {};
 
-App.BaseGlobeView = Backbone.View.extend({
+Application.BaseGlobeView = Backbone.View.extend({
     tagName: "div",
     template: _.template($("#globeViewTemplate").html()),
 
     // framework methods
 
     initialize: function() {
-        this.scene = new THREE.Scene();
-        this.renderer = new THREE.WebGLRenderer({
-                                antialias: true,
-                                alpha: true
-                            });
         this.container = this.$el[0];
-        // this.camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000);
-        // this.globe = new THREE.Mesh(geometry, material);
+    
 
         // TODO: move out of this view
         this.orbitOn = false;
@@ -31,19 +25,18 @@ App.BaseGlobeView = Backbone.View.extend({
     },
     initGlobe: function() {
 
-        this.init();
-
+        this.addSceneAndRenderer();
         this.addCamera();
-        this.drawGlobe();
-
+        this.addGlobe();
         this.addLight();
 
-        this.addStats();
-        this.addAxisHelper();
         this.addControls();
-    },
 
-// *************************
+        Application.Debug.addStats();
+        Application.Debug.addAxes(this.globe);
+
+        this.renderGlobe();
+    },
 
     //   function onWindowResize() {
 
@@ -53,10 +46,13 @@ App.BaseGlobeView = Backbone.View.extend({
     //   }
     //   window.addEventListener('resize', onWindowResize, false);
 
-// *************************
+    addSceneAndRenderer: function() {
 
-    init: function() {
-
+            this.scene = new THREE.Scene();
+            this.renderer = new THREE.WebGLRenderer({
+                                antialias: true,
+                                alpha: true
+                            });
             this.renderer.setPixelRatio(window.devicePixelRatio);
             this.renderer.setClearColor(0x000000);
 
@@ -74,24 +70,25 @@ App.BaseGlobeView = Backbone.View.extend({
 //          $(document.body).append('<button type="button" id="reset" style="position:absolute;bottom:50px;right:50px;width: 200px;height: 50px">Reset</button>');
     },
 
-// *************************
-
     addCamera: function () {
 
         var width = this.options.size.width;
         var height = this.options.size.height;
         this.camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000);
 
-        this.camera.position.z = 100;
         if (this.options.position) {
 
-            this.camera.position.z = pos.z;
-            this.camera.position.y = pos.y;
-            this.camera.position.x = pos.x;
+            this.camera.position.x = this.options.position.x;
+            this.camera.position.y = this.options.position.y;
+            this.camera.position.z = this.options.position.z;
+        } else {
+
+            this.camera.position.z = 100;
         }
+
         this.scene.add(this.camera);
     },
-    drawGlobe: function() {
+    addGlobe: function() {
 
         var geometry = new THREE.SphereGeometry(50, 64, 64);
         var material = new THREE.MeshPhongMaterial({
@@ -116,42 +113,18 @@ App.BaseGlobeView = Backbone.View.extend({
         // scene.add(ambLight);
         this.camera.add(dirLight);
     },
-
-// *************************
-
     renderGlobe: function() {
         requestAnimationFrame(this.renderGlobe.bind(this));
 
-        this.stats.begin();
+        Application.Debug.stats.begin();
         if (this.orbitOn === true) {
 
             TWEEN.update();
         }
         this.controls.update();
-        this.stats.end();
+        Application.Debug.stats.end();
 
         this.renderer.render(this.scene, this.camera);
-    },
-
-// *************************
-
-    addStats: function() {
-
-        this.stats = new Stats();
-        this.stats.setMode(0); // 0: fps, 1: ms 
-
-        this.stats.domElement.style.position = 'absolute';
-        this.stats.domElement.style.left = '0px';
-        this.stats.domElement.style.top = '0px';
-
-        // TODO: move out of this view
-        document.body.appendChild(this.stats.domElement);
-    },
-    addAxisHelper: function() { 
-
-        var axes = new THREE.AxisHelper(200);
-        axes.position.set(0, 0, 0);
-        this.globe.add(axes);
     },
     addControls: function() {
 
@@ -160,6 +133,4 @@ App.BaseGlobeView = Backbone.View.extend({
         this.controls.maxDistance = 150;
         this.controls.userPan = false;
     }
-
-// *************************
 });

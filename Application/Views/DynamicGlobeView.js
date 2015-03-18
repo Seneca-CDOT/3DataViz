@@ -1,35 +1,34 @@
-var App = App || {};
+var Application = Application || {};
 
-App.DynamicGlobeView = App.BaseGlobeView.extend({
+Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
 
     initialize: function() {
-        App.BaseGlobeView.prototype.initialize.call(this);
+        Application.BaseGlobeView.prototype.initialize.call(this);
 
         this.countries = [];
         this.moved = false;
     },
     render: function() {
-        App.BaseGlobeView.prototype.render.call(this);
+        Application.BaseGlobeView.prototype.render.call(this);
         return this;
     },
 
     // member methods
 
     showGlobe: function() {
-        App.BaseGlobeView.prototype.showGlobe.call(this);
+        Application.BaseGlobeView.prototype.showGlobe.call(this);
     },
-    drawGlobe: function() {
-        App.BaseGlobeView.prototype.drawGlobe.call(this);
+    addGlobe: function() {
+        Application.BaseGlobeView.prototype.addGlobe.call(this);
 
         this.countries.push(this.globe);
     },
     initGlobe: function() {
-        App.BaseGlobeView.prototype.initGlobe.call(this);
+        Application.BaseGlobeView.prototype.initGlobe.call(this);
 
         this.requestCountriesData().done(this.addCountries.bind(this));
-        this.renderGlobe();
 
 // TODO: move out of this view
         function onMouseUp(e) {
@@ -64,7 +63,6 @@ App.DynamicGlobeView = App.BaseGlobeView.extend({
         $('#reset').on("click", function(e) {
 
         });
-// TODO: move out of this view
 
     },
     addCountries: function(data) {
@@ -72,12 +70,13 @@ App.DynamicGlobeView = App.BaseGlobeView.extend({
         var i = 10;
         for (var name in data) {
 
-            var countrycolor = App.Helper.rgbToHex(10, i++, 0);
+            var countrycolor = Application.Helper.rgbToHex(10, i++, 0);
 
             var material = new THREE.MeshPhongMaterial({
                 shininess: 0,
                 color: countrycolor
             });
+
             var geometry = new Map3DGeometry(data[name], 0);
             data[name].mesh = new THREE.Mesh(geometry, material);
             this.scene.add(data[name].mesh);
@@ -104,8 +103,7 @@ App.DynamicGlobeView = App.BaseGlobeView.extend({
                 return this.countries[i];
             }
         }
-    },
-// TODO: move out of this view    
+    }, 
 
     clickOn: function(event) {
 

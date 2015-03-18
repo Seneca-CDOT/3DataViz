@@ -1,27 +1,28 @@
-var App = App || {};
+var Application = Application || {};
 
-App.Debug = {
+Application.Debug = {
 
-  addAxisHelper: function() { // adds axis to the globe
+  addAxes: function(mesh) { 
 
-      //if (scope.axishelp === false) return;
       var axes = new THREE.AxisHelper(200);
       axes.position.set(0, 0, 0);
-      globe.add(axes);
-
+      mesh.add(axes);
   },
 
-  addStats : function() {
+  addStats: function() {
 
-    stats = new Stats();
-    stats.setMode(0); // 0: fps, 1: ms
+    if (this.stats) {
+      return;
+    }
 
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.left = '0px';
-    stats.domElement.style.top = '0px';
+    this.stats = new Stats();
+    this.stats.setMode(0); // 0: fps, 1: ms
 
-    document.body.appendChild(stats.domElement);
+    this.stats.domElement.style.position = 'absolute';
+    this.stats.domElement.style.left = '0px';
+    this.stats.domElement.style.top = '0px';
 
+    document.body.appendChild(this.stats.domElement);
   }
 
 }
