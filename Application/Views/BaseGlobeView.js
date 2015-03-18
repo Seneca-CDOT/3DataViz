@@ -103,6 +103,8 @@ App.BaseGlobeView = Backbone.View.extend({
 
         this.globe.userData.name = 'globe';
         this.globe.userData.code = '';
+
+        this.scene.add(this.globe);
     },
     addLight: function() {
 

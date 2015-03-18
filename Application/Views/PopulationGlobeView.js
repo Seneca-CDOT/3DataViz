@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.GlobeView = App.BaseGlobeView.extend({
+App.PopulationGlobeView = App.BaseGlobeView.extend({
 
     // framework methods
 

@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.GlobeView2 = Backbone.View.extend({
+App.FlightPathGlobeView = Backbone.View.extend({
 	tagName: "div",
     template: _.template($("#globeViewTemplate").html()),
     render: function(options) {

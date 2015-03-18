@@ -5,11 +5,10 @@ var App = App || {};
  * Perform functions besed on the parameters from URL.
  * @return null
  */
-App.Router = Backbone.Router.extend({
+App.GlobeRouter = Backbone.Router.extend({
 
   routes : {
     "globeView" : "initGlobeView",
-    "globeView2" : "initGlobeView2"
   },
 
   /**
@@ -25,19 +24,5 @@ App.Router = Backbone.Router.extend({
 
     });
   },
-
-  /**
-   * Create GlobeView2(flightPathGlobe) and append it to the page.
-   * @return {[type]} [description]
-   */
-  initGlobeView2: function(){
-    require(App.globeView2.files , function(){
-
-      //Create View
-      var rootGlobeView = new App.RootGlobeView2();
-      $("#applicaitonRegion").empty().append(rootGlobeView.render().$el[0]);
-
-    });
-  }
 
 });
