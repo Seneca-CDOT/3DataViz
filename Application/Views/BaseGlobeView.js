@@ -115,6 +115,17 @@ Application.BaseGlobeView = Backbone.View.extend({
 
             TWEEN.update();
         }
+
+        if( typeof(movingGuys) !== "undefined" &&
+            typeof(paths)      !== "undefined"
+             ){
+            for( var i = 0; i < movingGuys.length; i ++ ) {
+                      pt = paths[i].getPoint( this.t );
+                      movingGuys[i].position.set( pt.x, pt.y, pt.z );
+                }
+                this.t = (this.t >= 1) ? 0 : this.t += 0.005;
+        }
+
         this.controls.update();
         Application.Debug.stats.end();
 
