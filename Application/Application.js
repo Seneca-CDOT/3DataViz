@@ -29,19 +29,48 @@ Application = {
     'Libraries/tween.min.js'
   ],
 
-  //configuration for GloveView (Population)
-  globeView : {
-  	files: [
-  		'Views/PopulationGlobeView.js',
-      'Views/FlightPathGlobeView.js',
-      'Views/DynamicGlobeView.js',
+  globeViews : {
+    //configuration for GloveView (Population)
+    //TODO: put files which needed for the paticular view
+    population : {
+      files: [
+        'Views/PopulationGlobeView.js',
 
-      'Models/GlobeModel.js',
-      'Libraries/text.js',
-      'Libraries/font.js',
-      'Libraries/map3d.js'
-    ]
+        'Models/GlobeModel.js',
+        'Libraries/text.js',
+        'Libraries/font.js',
+        'Libraries/map3d.js'
+      ]
+    },
+
+    //configuration for GloveView (Flight Path)
+    //TODO: put files which needed for the paticular view
+    flightPath : {
+      files: [
+        'Views/FlightPathGlobeView.js',
+
+        'Models/GlobeModel.js',
+        'Libraries/text.js',
+        'Libraries/font.js',
+        'Libraries/map3d.js'
+      ]
+    },
+
+    //configuration for GloveView (Dynamic)
+    //TODO: put files which needed for the paticular view
+    dynamic : {
+      files: [
+        'Views/DynamicGlobeView.js',
+
+        'Models/GlobeModel.js',
+        'Libraries/text.js',
+        'Libraries/font.js',
+        'Libraries/map3d.js'
+      ]
+    }
+
   }
+
 };
 
 require(Application.files, function(){
