@@ -20,7 +20,7 @@ Application.GlobeRouter = Backbone.Router.extend({
 
       //Create View
       var rootGlobeView = new Application.RootGlobeView();
-      $("#applicaitonRegion").empty().append(rootGlobeView.render().$el[0]);
+      $("#applicationRegion").empty().append(rootGlobeView.render().$el[0]);
 
     });
   },
