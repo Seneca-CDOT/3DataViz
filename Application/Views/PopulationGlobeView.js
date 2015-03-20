@@ -36,7 +36,12 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.initGlobe.call(this);
 
         this.requestCountriesData().done(this.addCountries.bind(this));
-        this.renderGlobe();
+
+        // WARNING! This is the second call to render the globe. 
+        // The first rendering is invoked from the base class "initGlobe:" 
+        // implementation. See Application.BaseGlobeView declaration.
+
+        // this.renderGlobe();
 // ************************
 
         function clickOn(event) { // function that determines intersection with meshes
