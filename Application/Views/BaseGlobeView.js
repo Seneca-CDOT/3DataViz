@@ -9,8 +9,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     initialize: function() {
         this.container = this.$el[0];
     
-
-        // TODO: move out of this view
+        // TODO: review
         this.orbitOn = false;
     },
     render: function(options) {
@@ -35,17 +34,11 @@ Application.BaseGlobeView = Backbone.View.extend({
         Application.Debug.addStats();
         Application.Debug.addAxes(this.globe);
 
+// TODO: move out of this view        
+        window.addEventListener('resize', this.onWindowResize.bind(this), false);
+
         this.renderGlobe();
     },
-
-    //   function onWindowResize() {
-
-    //           camera.aspect = window.innerWidth / window.innerHeight;
-    //           camera.updateProjectionMatrix();
-    //           renderer.setSize(window.innerWidth, window.innerHeight);
-    //   }
-    //   window.addEventListener('resize', onWindowResize, false);
-
     addSceneAndRenderer: function() {
 
             this.scene = new THREE.Scene();
@@ -65,11 +58,11 @@ Application.BaseGlobeView = Backbone.View.extend({
             this.container.style.width = this.options.size.width;
             this.container.style.left = this.options.origin.x;
 
+// TODO: move out of this view  
 //          $(document.body).append('<form><input type="text" id="country" ' + 'style="position:absolute;top:50px;right:50px;font-size:30px;opacity:0.7;"></form>');
 //          $(document.body).append('<button type="button" id="tweets" style="position:absolute;bottom:100px;right:50px;width: 200px;height: 50px">Tweets</button>');
 //          $(document.body).append('<button type="button" id="reset" style="position:absolute;bottom:50px;right:50px;width: 200px;height: 50px">Reset</button>');
     },
-
     addCamera: function () {
 
         var width = this.options.size.width;
@@ -98,6 +91,7 @@ Application.BaseGlobeView = Backbone.View.extend({
                             });
         this.globe = new THREE.Mesh(geometry, material);
 
+        // TODO: review
         this.globe.userData.name = 'globe';
         this.globe.userData.code = '';
 
@@ -132,5 +126,13 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.controls.minDistance = 55;
         this.controls.maxDistance = 150;
         this.controls.userPan = false;
+    },
+    
+// TODO: move out of this view
+    onWindowResize: function() {
+
+          this.camera.aspect = window.innerWidth / window.innerHeight;
+          this.camera.updateProjectionMatrix();
+          this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 });

@@ -8,6 +8,8 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.initialize.call(this);
 
         this.countries = [];
+
+        // TODO: review
         this.moved = false;
     },
     render: function() {
@@ -104,7 +106,6 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
             }
         }
     }, 
-
     clickOn: function(event) {
 
         var x = event.clientX;
@@ -126,7 +127,6 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
             this.cameraGoTo(intersects[0].object.userData.name);
         }
     },
-
     cameraGoTo: function(countryname) {
 
         // document.removeEventListener('mouseup', onMouseUp, false);
