@@ -1,419 +1,380 @@
 var Application = Application || {};
 
-Application.FlightPathGlobeView = Backbone.View.extend({
-	tagName: "div",
-    template: _.template($("#globeViewTemplate").html()),
-    render: function(options) {
-        this.showGlobe();
+Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
+
+// *************************
+    initialize: function() {
+        Application.BaseGlobeView.prototype.initialize.call(this);
+        this.intersects;
+
+        this.hexMap = 'Assets/images/textures/hexMapMin.png';
+        this.textureMap = 'Assets/images/textures/worldMatrix.jpg';
+
+        this.imgTex;
+        this.radius = 50;
+
+        this.factor = 3;
+        this.texHeight = 1024 * this.factor;
+        this.texWidth = this.texHeight * this.factor;
+
+        this.tw = this.th = 1024;
+
+        this.canvas, this.canvasCtx;
+
+        //getting country's centre variables
+        this.maxLon = maxLat = -180;
+        this.minLon = minLat =  180;
+        this.avgLon = avgLat =    0;
+        this.dist            =    0;
+        this.midPoint;
+
+        this.moved = false
+
+        this.t = 0;
+    },
+    render: function() {
+        Application.BaseGlobeView.prototype.render.call(this);
         return this;
     },
 
-// *************************
- 	showGlobe: function() {
-        this.initGlobe();
+    showGlobe: function() {
+        Application.BaseGlobeView.prototype.showGlobe.call(this);
     },
-    initGlobe: function() {
 
-        var intersects;
-        var scene;
-        var stats;
-        var renderer;
-        var camera;
-        var globe;
-        var container;
-        var controls;
-        var i = 0;
-        var spikes = []; // an array of spike objects
-        var cities = []; // an array of cities names meshes
-        var population_array = []; // an array of population meshes
-        var INTERSECTED;
-        var countries = []; // an array of countries
-        var ctr = 0; // number of shapes
-        var midpoints = [];
-        var orbitOn = false;
+    addGlobe: function() {
+        // Application.BaseGlobeView.prototype.addGlobe.call(this);
 
-        var imgTex;
-        var hexMap = '/Assets/images/textures/hexMapMin.png';
-        var textureMap = '/Assets/images/textures/worldMatrix.jpg';
+        var geometry = new THREE.SphereGeometry(this.radius, 64, 64);
 
-        var factor = 3;
-        var texHeight = 1024 * factor;
-        var texWidth = texHeight * factor;
+        var texture = THREE.ImageUtils.loadTexture( this.textureMap );
 
-        var tw = th = 1024;
+        var material = new THREE.MeshBasicMaterial({
+                                color: 0xFFFFFF,
+                                map: texture
+                            });
+        this.globe = new THREE.Mesh(geometry, material);
 
-        var canvas, canvasCtx;
+        this.globe.userData.name = 'globe';
+        this.globe.userData.code = '';
+        this.scene.add(this.globe);
+        
+    },
+    //sets up canvas and loads hexMap for pixel clicking functionality
+    setUpCanvas: function (tex){
 
-        //getting country's centre variables
-        var maxLon = maxLat = -180;
-        var minLon = minLat =  180;
-        var avgLon = avgLat =    0;
-        var dist               = 0;
-        var midPoint;
+        canvas = document.createElement('canvas');
+        canvas.backgrounColor = "0x000000";
 
-        var t = 0;
-        var ctr = 0;
+        canvasCtx = canvas.getContext("2d");
 
-        init(this.options);
-        startStuff();
+        var image = new Image();
+        image.onload = function () {
+            canvasCtx.drawImage(image, 0, 0); // draw the image on the canvas
+        }
+        image.src = tex;
 
-        //Adding elements here
-        container = this.$el[0];
-        container.appendChild(renderer.domElement);
-        container.style.position = "absolute";
-        container.style.width = this.options.size.width;
-        container.style.left = this.options.origin.x;
+        canvas.width  = this.tw;
+        canvas.height = this.th;
 
-        function addPaths(data) {
-          var dataRecordIndex;
+        document.body.appendChild(canvas);
+    },
 
-          for (dataRecordIndex in data) {
-            var dataRecord = data[dataRecordIndex];
-            var phiFrom = dataRecord.from.lat * Math.PI / 180;
-            var thetaFrom = (dataRecord.from.lon + 90) * Math.PI / 180;
+    addPaths: function (data) {
+      var dataRecordIndex;
 
-            //calculates "from" point
-            var xF = radius * Math.cos(phiFrom) * Math.sin(thetaFrom);
-            var yF = radius * Math.sin(phiFrom);
-            var zF = radius * Math.cos(phiFrom) * Math.cos(thetaFrom);
+      for (dataRecordIndex in data) {
 
-            var phiTo   =  dataRecord.to.lat * Math.PI / 180;
-            var thetaTo = (dataRecord.to.lon + 90) * Math.PI / 180;
+        var dataRecord = data[dataRecordIndex];
+        var phiFrom = dataRecord.from.lat * Math.PI / 180;
+        var thetaFrom = (dataRecord.from.lon + 90) * Math.PI / 180;
 
-            //calculates "to" point
-            var xT = radius * Math.cos(phiTo) * Math.sin(thetaTo);
-            var yT = radius * Math.sin(phiTo);
-            var zT = radius * Math.cos(phiTo) * Math.cos(thetaTo);
+        //calculates "from" point
+        var xF = this.radius * Math.cos(phiFrom) * Math.sin(thetaFrom);
+        var yF = this.radius * Math.sin(phiFrom);
+        var zF = this.radius * Math.cos(phiFrom) * Math.cos(thetaFrom);
 
-            //Sets up vectors
-            var vT = new THREE.Vector3(xT, yT, zT);
-            var vF = new THREE.Vector3(xF, yF, zF);
+        var phiTo   =  dataRecord.to.lat * Math.PI / 180;
+        var thetaTo = (dataRecord.to.lon + 90) * Math.PI / 180;
 
-            //gets the distance between the points. Maxium = 2*radius
-            var dist = vF.distanceTo(vT);
+        //calculates "to" point
+        var xT = this.radius * Math.cos(phiTo) * Math.sin(thetaTo);
+        var yT = this.radius * Math.sin(phiTo);
+        var zT = this.radius * Math.cos(phiTo) * Math.cos(thetaTo);
 
-            //create
-            var cvT = vT.clone();
-            var cvF = vF.clone();
+        //Sets up vectors
+        var vT = new THREE.Vector3(xT, yT, zT);
+        var vF = new THREE.Vector3(xF, yF, zF);
 
-            var xC = ( 0.5 * (vF.x + vT.x) );
-            var yC = ( 0.5 * (vF.y + vT.y) );
-            var zC = ( 0.5 * (vF.z + vT.z) );
+        //gets the distance between the points. Maxium = 2*radius
+        var dist = vF.distanceTo(vT);
 
-            var mid = new THREE.Vector3(xC, yC, zC);
+        //create
+        var cvT = vT.clone();
+        var cvF = vF.clone();
 
-            var smoothDist = map(dist, 0, 10, 0, 15/dist );
-            var dist2 = Math.pow(15/dist,2);
+        var xC = ( 0.5 * (vF.x + vT.x) );
+        var yC = ( 0.5 * (vF.y + vT.y) );
+        var zC = ( 0.5 * (vF.z + vT.z) );
 
-            mid.setLength( radius * smoothDist );
+        var mid = new THREE.Vector3(xC, yC, zC);
 
-            cvT.add(mid);
-            cvF.add(mid);
+        var smoothDist = this.map(dist, 0, 10, 0, 15/dist );
+        var dist2 = Math.pow(15/dist,2);
 
-            cvT.setLength( radius * smoothDist );
-            cvF.setLength( radius * smoothDist );
+        mid.setLength( this.radius * smoothDist );
 
-            //create the bezier curve
-            var curve = new THREE.CubicBezierCurve3( vF, cvF, cvT, vT );
+        cvT.add(mid);
+        cvF.add(mid);
 
-            var geometry2 = new THREE.Geometry();
-            geometry2.vertices = curve.getPoints( 50 );
+        cvT.setLength( this.radius * smoothDist );
+        cvF.setLength( this.radius * smoothDist );
 
-            var material2 = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+        //create the bezier curve
+        var curve = new THREE.CubicBezierCurve3( vF, cvF, cvT, vT );
 
-            // Create the final Object3d to add to the scene
-            var curveObject = new THREE.Line( geometry2, material2 );
-            paths.push(curve);
-            scene.add(curveObject);
+        var geometry2 = new THREE.Geometry();
+        geometry2.vertices = curve.getPoints( 50 );
+
+        var material2 = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+
+        // Create the final Object3d to add to the this.scene
+        var curveObject = new THREE.Line( geometry2, material2 );
+        paths.push(curve);
+        this.scene.add(curveObject);
 
 
-            var cylinderRadius = radius * 0.01;
-            var cylinderHeight = radius / 500;
+        var cylinderRadius = this.radius * 0.01;
+        var cylinderHeight = this.radius / 500;
 
-            //Create cylinder to reperesent "From" city
-            var geometry = new THREE.CylinderGeometry( cylinderRadius, cylinderRadius, cylinderHeight, 32 );
-            var material = new THREE.MeshBasicMaterial( {color: 0xff0000} );
-            var cylinderFrom = new THREE.Mesh( geometry, material );
+        //Create cylinder to reperesent "From" city
+        var geometry = new THREE.CylinderGeometry( cylinderRadius, cylinderRadius, cylinderHeight, 32 );
+        var material = new THREE.MeshBasicMaterial( {color: 0xff0000} );
+        var cylinderFrom = new THREE.Mesh( geometry, material );
 
-            fromPoints.push(cylinderFrom);
+        fromPoints.push(cylinderFrom);
 
-            cylinderFrom.position.copy(vF);
+        cylinderFrom.position.copy(vF);
 
-            cylinderFrom.rotation.y = dataRecord.from.lon * Math.PI / 180;
+        cylinderFrom.rotation.y = dataRecord.from.lon * Math.PI / 180;
 
-            var xRotationSign = dataRecord.from.lon + 90 > 90 ? -1 : 1;
-            cylinderFrom.rotation.x = xRotationSign * (90 - dataRecord.from.lat) * Math.PI / 180;
+        var xRotationSign = dataRecord.from.lon + 90 > 90 ? -1 : 1;
+        cylinderFrom.rotation.x = xRotationSign * (90 - dataRecord.from.lat) * Math.PI / 180;
 
-            scene.add( cylinderFrom );
+        this.scene.add( cylinderFrom );
 
-            //Create cylinder to reperesent "To" city
-            var cylinderTo = new THREE.Mesh( geometry, material );
+        //Create cylinder to reperesent "To" city
+        var cylinderTo = new THREE.Mesh( geometry, material );
 
-            toPoints.push(cylinderTo);
+        toPoints.push(cylinderTo);
 
-            cylinderTo.position.copy(vT);
+        cylinderTo.position.copy(vT);
 
-            cylinderTo.rotation.y = dataRecord.to.lon * Math.PI / 180;
+        cylinderTo.rotation.y = dataRecord.to.lon * Math.PI / 180;
 
-            xRotationSign = dataRecord.to.lon + 90 > 90 ? -1 : 1;
-            cylinderTo.rotation.x = xRotationSign * (90 - dataRecord.to.lat) * Math.PI / 180;
+        xRotationSign = dataRecord.to.lon + 90 > 90 ? -1 : 1;
+        cylinderTo.rotation.x = xRotationSign * (90 - dataRecord.to.lat) * Math.PI / 180;
 
-            scene.add( cylinderTo );
+        this.scene.add( cylinderTo );
 
-            //Create Shpere to follow along the path
-            geometry  = new THREE.SphereGeometry(cylinderRadius * 2, 32, 32);
-            material  = new THREE.MeshBasicMaterial( {color:0xff00000} );
-            var sphere  = new THREE.Mesh(geometry, material);
+        //Create Shpere to follow along the path
+        geometry  = new THREE.SphereGeometry(cylinderRadius * 2, 32, 32);
+        material  = new THREE.MeshBasicMaterial( {color:0xff00000} );
+        var sphere  = new THREE.Mesh(geometry, material);
 
-            movingGuys.push(sphere);
-            //gets the path first position
-            sphere.position.copy(curve.getPoint(0));
-            scene.add(sphere);
+        movingGuys.push(sphere);
+        //gets the path first position
+        sphere.position.copy(curve.getPoint(0));
+        this.scene.add(sphere);
 
+      }
+    },
+    startStuff: function(){
+        //generates textures
+        // readCountries(dataSet);
+        // this.drawGlobe( this.textureMap );
+        this.setUpCanvas( this.hexMap );
+        this.addPaths( dataSetPath );
+    },
+    cameraGoTo: function(country) {
+
+        // document.removeEventListener('mouseup', onMouseUp, false);
+        // this.controls.removeMouse();
+        
+        this.moved = true;
+
+        var current = this.controls.getPosition();
+        var destination = new THREE.Vector3(country.midPoint.x, country.midPoint.y, -1 * country.midPoint.z);
+        destination.setLength(this.controls.getRadius());
+
+        if (this.orbitOn == true) {
+            this.tween.stop();
+        }
+
+        this.tween = new TWEEN.Tween(current)
+        .to({
+            x: destination.x,
+            y: destination.y,
+            z: destination.z
+        }, 1000)
+        .easing(TWEEN.Easing.Sinusoidal.InOut)
+        .onUpdate((function(that) { 
+            return function () { 
+                onUpdate(this, that); 
+            };
+        })(this))
+        .onComplete((function(that) { 
+            return function () { 
+                onComplete(this, that); 
+            };
+        })(this));
+
+        function onUpdate(point, that) {
+            that.controls.updateView({
+                x: point.x,
+                y: point.y,
+                z: point.z
+            });
+        }
+
+        function onComplete(point, that) {
+            that.orbitOn = false;
+
+            // document.addEventListener('mouseup', onMouseUp, false);
+            // this.controls.addMouse();
+        }
+
+        this.orbitOn = true;
+        this.tween.start();
+    },
+    onWindowResize: function() {
+        Application.BaseGlobeView.prototype.onWindowResize()
+    },
+
+    clickOn: function(event) {
+        var x = event.clientX;
+        var y = event.clientY;
+
+        x -= this.container.offsetLeft;
+        y -= this.container.offsetTop;
+
+        var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
+
+        vector.unproject(this.camera);
+
+        var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
+
+        intersects = ray.intersectObject(this.globe); // returns an object in any intersected on click
+
+        if (intersects.length > 0) {
+
+            if (intersects[0].object.name == 'globe') return; // exclude invisible meshes from intersection
+
+            var place = intersects[0].point;
+            place.setLength(radius);
+
+            var color = this.getPixelClicked(place, canvasCtx)
+
+            var country = this.getCountryById(color);
+            console.log(color);
+            if(country)
+                this.cameraGoTo(country);
+        }
+    },
+
+map: function ( x,  in_min,  in_max,  out_min,  out_max){
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+  },
+  getPixelClicked: function (place, canvasContext){
+      var x = place.x;
+      var y = place.y;
+      var z = place.z;
+
+      var lat = Math.asin( y / radius) * (180/Math.PI); // LAT in radians
+      var lon = Math.atan2(z, x) * (180/Math.PI) * -1; // LON in radians
+
+      var p = this.geoToxy(lon,lat);
+
+      var imageData = canvasContext.getImageData(p.x, p.y, 1, 1);
+      var pixel = imageData.data;
+
+      var r = pixel[0],
+          g = pixel[1],
+          b = pixel[2];
+
+      var color = Application.Helper.decToHex(r) + 
+                  Application.Helper.decToHex(g) + 
+                  Application.Helper.decToHex(b);
+
+      return color;
+  },
+  getCountryById: function(id){
+      var country = countiresList[0].elements;
+      if(id == '000000')
+          return false;
+      for(var i = 0 ; i < country.length; i++){
+          if( country[i].id == id ){
+              return country[i];
           }
-        }
+      }
+  },
+  getCountryByName: function(name){
+      var country = this.countiresList[0].elements;
+      if(id == '')
+          return false;
+      for(var i = 0 ; i < country.length; i++){
+          if( country[i].name == name ){
+              return country[i];
+          }
+      }
+  },
+  geoToxy: function(lon, lat) {
 
+      var r = r || 1;
 
-        function init() {
+      var x = 0;
+      x = this.map(lon, -180, 180, 0, 1024);
 
-            // container = document.createElement('div');
-            // document.body.appendChild(container);
+      var y = 0;
+      y = this.map(-lat,-90,90,0, 1024);
 
-            scene = new THREE.Scene();
+      var z = 0;
 
-            addStats();
+      return new THREE.Vector3(x, y, z);
+  },
 
-            renderer = new THREE.WebGLRenderer({
-                antialias: true,
-                alpha: true
-            });
+    initGlobe: function() {
+        Application.BaseGlobeView.prototype.initGlobe.call(this);
+        this.renderGlobe();
+        
+        this.startStuff();
 
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setClearColor(0x000);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            // container.appendChild(renderer.domElement);
-
-        }
-        //sets up canvas and loads hexMap for pixel clicking functionality
-        function setUpCanvas(tex){
-
-            canvas = document.createElement('canvas');
-            canvas.backgrounCdolor = "0x000000";
-
-            canvasCtx = canvas.getContext("2d");
-
-            var image = new Image();
-
-            image.onload = function () {
-                canvasCtx.drawImage(image, 0, 0); // draw the image on the canvas
+        function onMouseUp(e) {
+            if (!this.moved) {
+               this.clickOn(e);
             }
-            image.src = tex;
+            this.moved = false;
+        };
 
-            canvas.width = tw;
-            canvas.height = th;
+        function onMouseMove(e) {
+            if (e.which == 1) {
 
-            // document.body.appendChild(canvas);
-        }
-
-        /* Moved */
-        function drawGlobe(tex, hexMap) {
-
-            var geometry = new THREE.SphereGeometry(radius, 64, 32);
-
-            var texture = THREE.ImageUtils.loadTexture( tex );
-            // texture.needsUpdate    = true;
-
-            var material = new THREE.MeshBasicMaterial({
-                color: 0xFFFFFF,
-                ambient: 0xFFFFFF,
-                map: texture,
-
-                // specularMap: texture,
-                // shininess: 50,
-            });
-            globe = new THREE.Mesh(geometry, material);
-            globe.material.needsUpdate = true;
-            scene.add(globe);
-
-            setUpCanvas(hexMap);
-
-            console.log(globe);
-        }
-
-        function render() {
-            requestAnimationFrame(render);
-
-            stats.begin();
-
-            if (orbitOn === true) {
-                    TWEEN.update();
-                }
-
-                controls.update();
-
-                stats.end();
-                renderer.render(scene, camera);
-                for( var i = 0; i < movingGuys.length; i ++ ) {
-                      pt = paths[i].getPoint( t );
-                      movingGuys[i].position.set( pt.x, pt.y, pt.z );
-                }
-                t = (t >= 1) ? 0 : t += 0.005;
-        }
-
-        /* Moved */
-        function addCamera(pos) { // adds a camera
-
-            camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
-            camera.position.z = radius * 4;
-
-            if (pos) {
-
-                camera.position.z = pos.z;
-                camera.position.y = pos.y;
-                camera.position.x = pos.x;
-
+                this.moved = true;
             }
+        };
 
-            scene.add(camera);
+    /* Common */
+        
+        window.addEventListener('resize', this.onWindowResize, false);
+        document.addEventListener('mousemove', onMouseMove.bind(this), false);
+        document.addEventListener('mouseup', onMouseUp.bind(this), false);
 
-        }
+        $(document).on("keyup", 'form', function(e) {
+            
+        });
 
-        /* Common */
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-        window.addEventListener('resize', onWindowResize, false);
+        $(document).on("keypress", function(e) {
 
-        /* Moved */
-        function addLight() {
-
-            var ambLight = new THREE.AmbientLight(0xFFFFFF, 2.5);
-            var dirLight = new THREE.DirectionalLight(0xFFFFFF, 2.5);
-            dirLight.position.set(-10, 10, 10);
-            dirLight.target = globe;
-
-            scene.add(ambLight);
-            // camera.add(dirLight);
-
-        }
-
-        /* Moved */
-        function addControls() {
-
-            controls = new THREE.OrbitControls(camera, container);
-            controls.minDistance = radius * 1.1;
-            controls.maxDistance = radius * 7;
-            controls.userPan = false;
-
-        }
-
-        /*Beggining of click country*/
-        function getPixelClicked(place, canvasContext){
-            var x = place.x;
-            var y = place.y;
-            var z = place.z;
-
-            var lat = Math.asin( y / radius) * (180/Math.PI); // LAT in radians
-            var lon = Math.atan2(z, x) * (180/Math.PI) * -1; // LON in radians
-
-            var p = geoToxy(lon,lat);
-
-            var imageData = canvasContext.getImageData(p.x, p.y, 1, 1);
-            var pixel = imageData.data;
-
-            var r = pixel[0],
-            g = pixel[1],
-            b = pixel[2];
-
-            var color = Application.Helper.decToHex(r) + Application.Helper.decToHex(g) + Application.Helper.decToHex(b);
-
-            return color;
-        }
-
-        function getCountryById(id){
-            var country = countiresList[0].elements;
-            if(id == '000000')
-                return false;
-            for(var i = 0 ; i < country.length; i++){
-                if( country[i].id == id ){
-                    return country[i];
-                }
-            }
-        }
-
-        function getCountryByName(name){
-            var country = countiresList[0].elements;
-            if(id == '')
-                return false;
-            for(var i = 0 ; i < country.length; i++){
-                if( country[i].name == name ){
-                    return country[i];
-                }
-            }
-        }
-
-        /* Moved */
-        function geoToxy(lon, lat) {
-
-            var r = r || 1;
-
-            var x = 0;
-            x = map(lon, -180, 180, 0, tw);
-
-            var y = 0;
-            y = map(-lat,-90,90,0, th);
-
-            var z = 0;
-
-            return new THREE.Vector3(x, y, z);
-        }
-
-        /* Moved */
-        /*end of click country*/
-        function clickOn(event) {
-
-
-            var x = event.clientX;
-            var y = event.clientY;
-
-            x -= container.offsetLeft;
-            y -= container.offsetTop;
-
-            var vector = new THREE.Vector3((x / container.offsetWidth) * 2 - 1, -(y / container.offsetHeight) * 2 + 1, 0.5);
-
-            vector.unproject(camera);
-
-            var ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
-
-            intersects = ray.intersectObject(globe); // returns an object in any intersected on click
-
-            if (intersects.length > 0) {
-
-                if (intersects[0].object.name == 'globe') return; // exclude invisible meshes from intersection
-
-                var place = intersects[0].point;
-                place.setLength(radius);
-
-                var color = getPixelClicked(place, canvasCtx)
-
-                var country = getCountryById(color);
-
-                cameraGoTo(country);
-            }
-        }
-
-        function startStuff(){
-            //generates textures
-            // readCountries(dataSet);
-            addCamera();
-            addControls();
-            drawGlobe(textureMap, hexMap);
-            addLight();
-            // addPaths(dataSetPath);
-            render();
-        }
+        });
 
         function addBorders2(coordinates, name, color) {
 
@@ -431,13 +392,13 @@ Application.FlightPathGlobeView = Backbone.View.extend({
 
             var point;
 
-            canvasCtx.beginPath();
-            canvasCtx.lineWidth = "2";
-            canvasCtx.strokeStyle = "#00f100";
+            this.canvasCtx.beginPath();
+            this.canvasCtx.lineWidth = "2";
+            this.canvasCtx.strokeStyle = "#00f100";
 
             point = geoToxy(coordinates[0][0], coordinates[0][1]);
 
-            canvasCtx.moveTo(point.x, point.y);
+            this.canvasCtx.moveTo(point.x, point.y);
 
             maxLon = maxLat = -180;
             minLon = minLat =  180;
@@ -456,7 +417,7 @@ Application.FlightPathGlobeView = Backbone.View.extend({
 
                 point = geoToxy(coordinates[k][0], coordinates[k][1]);
 
-                canvasCtx.lineTo(point.x, point.y);
+                this.canvasCtx.lineTo(point.x, point.y);
             }
 
             dist = +(maxLat - minLat) + +(maxLon - minLon);
@@ -465,12 +426,11 @@ Application.FlightPathGlobeView = Backbone.View.extend({
 
             midPoint = Application.Helper.geoToxyz(avgLon, avgLat);
 
-            canvasCtx.stroke();  // Draw it
-            // canvasCtx.fillStyle = "#000000";
-            canvasCtx.fillStyle = "#" + color;
+            this.canvasCtx.stroke();  // Draw it
+            // this.canvasCtx.fillStyle = "#000000";
+            this.canvasCtx.fillStyle = "#" + color;
 
-            canvasCtx.fill();
-            ctr++;
+            this.canvasCtx.fill();
 
         }
 
@@ -522,67 +482,9 @@ Application.FlightPathGlobeView = Backbone.View.extend({
             }
             console.log("]");
             console.log("}");
-            console.log(ctr + " shapes were generated");
 
         }
-
         /* Moved */
-        function addStats() {
-
-            stats = new Stats();
-            stats.setMode(0); // 0: fps, 1: ms
-
-            stats.domElement.style.position = 'absolute';
-            stats.domElement.style.left = '0px';
-            stats.domElement.style.top = '0px';
-
-            document.body.appendChild(stats.domElement);
-
-        }
-
-        /* Moved */
-        function cameraGoTo( c ) {
-
-            var current = controls.getPosition();
-            var country = c;
-            if(country){
-                var destination = new THREE.Vector3(country.midPoint.x, country.midPoint.y, -1 * country.midPoint.z);
-                console.log(country);
-
-                destination.setLength( ( radius * 2 ) );
-
-                // console.dir( current, destination );
-
-                if (orbitOn == true) {
-                    tween.stop();
-                }
-
-                tween = new TWEEN.Tween(current)
-                    .to({
-                        x: destination.x,
-                        y: destination.y,
-                        z: destination.z
-                    }, 1000)
-
-                .easing(TWEEN.Easing.Sinusoidal.InOut)
-                    .onUpdate(function() {
-
-                        controls.updateView({
-                            x: this.x,
-                            y: this.y,
-                            z: this.z
-                        });
-
-                    })
-                    .onComplete(function() {
-                        orbitOn = false;
-                        console.log("stop");
-                    });
-
-                orbitOn = true;
-                tween.start();
-            }
-        }
-        container.addEventListener('dblclick', clickOn, false);
+        // this.container.addEventListener('dblclick', clickOn, false);
     }
 });

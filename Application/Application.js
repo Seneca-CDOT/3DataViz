@@ -37,6 +37,8 @@ Application = {
       'Views/DynamicGlobeView.js',
 
       'Models/GlobeModel.js',
+      'Models/data/path.js',
+      'Models/data/countriesList.js',
       'Libraries/text.js',
       'Libraries/font.js',
       'Libraries/map3d.js'
