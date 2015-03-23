@@ -35,6 +35,8 @@ Application = {
   		'Views/PopulationGlobeView.js',
       'Views/FlightPathGlobeView.js',
       'Views/DynamicGlobeView.js',
+      'Views/ControlPanelGlobeView.js',
+      'Views/ControlElementsGlobeView.js',
 
       'Models/GlobeModel.js',
       'Models/data/path.js',
