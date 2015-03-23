@@ -9,7 +9,7 @@ Application.RootGlobeView = Backbone.View.extend({
   tagName: "div",
   template: _.template($("#rootGlobeViewTemplate").html()),
 
-  initialize: function(type, view) {
+  initialize: function(view) {
     this.globeView = view;
   },
   render: function(options) {

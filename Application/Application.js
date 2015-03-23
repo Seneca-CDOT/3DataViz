@@ -18,55 +18,45 @@ Application = {
 
   //Files which need to be imported for GlobeVisualization
   files : [
+    'Routes/GlobeRouter.js',
     'Views/RootGlobeView.js',
     'Views/BaseGlobeView.js',
-
-    'Routes/GlobeRouter.js',
+    'Models/GlobeModel.js',
     'Helpers/Helper.js',
     'Helpers/Debug.js', // FOR DEBUG
     'Libraries/OrbitControls.js',
     'Libraries/stats.js',
-    'Libraries/tween.min.js'
+    'Libraries/tween.min.js',
+    'Libraries/text.js',
+    'Libraries/font.js',
+    'Libraries/map3d.js'
   ],
 
   globeViews : {
     //configuration for GloveView (Population)
-    //TODO: put files which needed for the paticular view
     population : {
       files: [
         'Views/PopulationGlobeView.js',
-
-        'Models/GlobeModel.js',
-        'Libraries/text.js',
-        'Libraries/font.js',
-        'Libraries/map3d.js'
-      ]
+      ],
+      view: "PopulationGlobeView"
     },
 
     //configuration for GloveView (Flight Path)
-    //TODO: put files which needed for the paticular view
     flightPath : {
       files: [
         'Views/FlightPathGlobeView.js',
-
-        'Models/GlobeModel.js',
-        'Libraries/text.js',
-        'Libraries/font.js',
-        'Libraries/map3d.js'
-      ]
+        'Models/data/path.js',
+        'Models/data/countriesList.js',
+      ],
+      view: "FlightPathGlobeView"
     },
 
     //configuration for GloveView (Dynamic)
-    //TODO: put files which needed for the paticular view
     dynamic : {
       files: [
         'Views/DynamicGlobeView.js',
-
-        'Models/GlobeModel.js',
-        'Libraries/text.js',
-        'Libraries/font.js',
-        'Libraries/map3d.js'
-      ]
+      ],
+      view: "DynamicGlobeView"
     }
 
   }
