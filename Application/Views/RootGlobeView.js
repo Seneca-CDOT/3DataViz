@@ -10,8 +10,8 @@ Application.RootGlobeView = Backbone.View.extend({
   template: _.template($("#rootGlobeViewTemplate").html()),
 
   initialize: function(options) {
-    this.globeView = new Application.PopulationGlobeView();
-    // this.globeView = new Application.FlightPathGlobeView();
+    // this.globeView = new Application.PopulationGlobeView();
+    this.globeView = new Application.FlightPathGlobeView();
     // this.globeView = new Application.DynamicGlobeView();
     // this.globeView = new Application.BaseGlobeView();
   },
