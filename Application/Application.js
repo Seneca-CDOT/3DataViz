@@ -37,6 +37,8 @@ Application = {
     population : {
       files: [
         'Views/PopulationGlobeView.js',
+        'Views/ControlPanelGlobeView.js',
+        'Views/ControlElementsGlobeView.js'
       ],
       views:{
         globeView : "PopulationGlobeView"
