@@ -35,6 +35,6 @@ Application.RootGlobeView = Backbone.View.extend({
       this.views[i].render();
     }
 
-        return this;
-    }
+    return this;
+  }
 });

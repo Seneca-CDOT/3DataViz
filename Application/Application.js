@@ -41,7 +41,8 @@ Application = {
         'Views/ControlElementsGlobeView.js'
       ],
       views:{
-        globeView : "PopulationGlobeView"
+        globeView : "PopulationGlobeView",
+        controlPanel : "ControlPanelGlobeView"
       }
     },
 
@@ -61,11 +62,9 @@ Application = {
     dynamic : {
       files: [
         'Views/DynamicGlobeView.js',
-        'Views/TestView.js'
       ],
       views:{
         globeView : "DynamicGlobeView",
-        testView : "TestView"
       }
     }
 
