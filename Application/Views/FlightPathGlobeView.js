@@ -34,7 +34,27 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
     },
     render: function() {
         Application.BaseGlobeView.prototype.render.call(this);
+        this.renderGlobe2();
         return this;
+    },
+    renderGlobe2: function(){
+        Application.BaseGlobeView.prototype.renderGlobe.call(this);
+        requestAnimationFrame(this.renderGlobe2.bind(this));
+
+        if (this.orbitOn === true) {
+
+            TWEEN.update();
+        }
+
+        if( typeof(movingGuys) !== "undefined" &&
+            typeof(paths)      !== "undefined"
+             ){
+            for( var i = 0; i < movingGuys.length; i ++ ) {
+                      pt = paths[i].getPoint( this.t );
+                      movingGuys[i].position.set( pt.x, pt.y, pt.z );
+                }
+                this.t = (this.t >= 1) ? 0 : this.t += 0.005;
+        }
     },
 
     showGlobe: function() {
@@ -281,9 +301,9 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         }
     },
 
-map: function ( x,  in_min,  in_max,  out_min,  out_max){
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-  },
+    map: function ( x,  in_min,  in_max,  out_min,  out_max){
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    },    
   getPixelClicked: function (place, canvasContext){
       var x = place.x;
       var y = place.y;
@@ -332,10 +352,10 @@ map: function ( x,  in_min,  in_max,  out_min,  out_max){
       var r = r || 1;
 
       var x = 0;
-      x = this.map(lon, -180, 180, 0, 1024);
+      x = this.map(lon, -180, 180, 0, this.tw);
 
       var y = 0;
-      y = this.map(-lat,-90,90,0, 1024);
+      y = this.map(-lat,-90,90,0, this.th);
 
       var z = 0;
 
@@ -344,8 +364,7 @@ map: function ( x,  in_min,  in_max,  out_min,  out_max){
 
     initGlobe: function() {
         Application.BaseGlobeView.prototype.initGlobe.call(this);
-        this.renderGlobe();
-        
+        // this.renderGlobe2();
         this.startStuff();
 
         function onMouseUp(e) {
