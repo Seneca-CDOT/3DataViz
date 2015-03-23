@@ -6,8 +6,8 @@ var Application = Application || {};
  * @return this element
  */
 Application.RootGlobeView = Backbone.View.extend({
-  tagName: "div",
-  template: _.template($("#rootGlobeViewTemplate").html()),
+    tagName: "div",
+    template: _.template($("#rootGlobeViewTemplate").html()),
 
   initialize: function(view) {
     this.globeView = view;
@@ -29,6 +29,6 @@ Application.RootGlobeView = Backbone.View.extend({
     this.$el.append(this.globeView.$el);
     this.globeView.render();
 
-    return this;
-  }
+        return this;
+    }
 });
