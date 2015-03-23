@@ -6,7 +6,7 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
 
     initialize: function() {
         Application.BaseGlobeView.prototype.initialize.call(this);
-        this.controlPanel = new Application.ControlPanelGlobeView();
+        // this.controlPanel = new Application.ControlPanelGlobeView();
 
         this.countries = [];
         this.intersected; // intersected mesh
@@ -29,7 +29,7 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
     },
     render: function() {
         Application.BaseGlobeView.prototype.render.call(this);
-        this.$el.append(this.controlPanel.render().$el);
+        // this.$el.append(this.controlPanel.render().$el);
         this.renderGlobe();
         return this;
     },
@@ -288,7 +288,7 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
         }
     },
 
-    //     // ***********************     
+    //     // ***********************
 
     //     // TODO: move out of this view
 
@@ -382,7 +382,7 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
         }
         //,
 
-    // // *************************    
+    // // *************************
 
     // addSpikes: function(data, callback) {
 
@@ -517,7 +517,7 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
 
     //         countrymesh.userData.used = true;
 
-    //         // *** PUTS NUMBERS TO THE COUNTRY 
+    //         // *** PUTS NUMBERS TO THE COUNTRY
 
     //         //    if ( index < 10 ) {
 
@@ -553,7 +553,7 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
     //         // else {
     //         // if ( b < 255 ) b = b + 3;
     //         // }
-    //         // }   // END OF NUMBER 
+    //         // }   // END OF NUMBER
 
     //         if (index < 10) {
 

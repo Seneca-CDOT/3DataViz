@@ -9,12 +9,15 @@ Application.RootGlobeView = Backbone.View.extend({
     tagName: "div",
     template: _.template($("#rootGlobeViewTemplate").html()),
 
-  initialize: function(view) {
-    this.globeView = view;
+  initialize: function(views) {
+    this.views = [];
+    for(view in views){
+      this[view] = new Application[views[view]];
+      this.views.push(this[view]);
+    }
   },
   render: function(options) {
 
-    console.log("RootGlobeView: render");
     var options = {
       origin: {
         x: 0,
@@ -26,9 +29,12 @@ Application.RootGlobeView = Backbone.View.extend({
       }
     };
     this.globeView.options = options;
-    this.$el.append(this.globeView.$el);
-    this.globeView.render();
 
-        return this;
+    for(var i=0; i<this.views.length; i++){
+      this.$el.append(this.views[i].$el);
+      this.views[i].render();
     }
+
+    return this;
+  }
 });

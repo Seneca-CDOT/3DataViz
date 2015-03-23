@@ -40,7 +40,10 @@ Application = {
         'Views/ControlPanelGlobeView.js',
         'Views/ControlElementsGlobeView.js'
       ],
-      view: "PopulationGlobeView"
+      views:{
+        globeView : "PopulationGlobeView",
+        controlPanel : "ControlPanelGlobeView"
+      }
     },
 
     //configuration for GloveView (Flight Path)
@@ -50,7 +53,9 @@ Application = {
         'Models/data/path.js',
         'Models/data/countriesList.js',
       ],
-      view: "FlightPathGlobeView"
+      views:{
+        globeView : "FlightPathGlobeView"
+      }
     },
 
     //configuration for GloveView (Dynamic)
@@ -58,7 +63,9 @@ Application = {
       files: [
         'Views/DynamicGlobeView.js',
       ],
-      view: "DynamicGlobeView"
+      views:{
+        globeView : "DynamicGlobeView",
+      }
     }
 
   }
