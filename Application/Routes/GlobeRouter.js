@@ -8,21 +8,24 @@ var Application = Application || {};
 Application.GlobeRouter = Backbone.Router.extend({
 
   routes : {
-    "globeView" : "initGlobeView",
+    "globeView/:type" : "initGlobeView"
   },
 
   /**
    * Create GlobeView(CountryBaseGlobe) and append it to the page.
    * @return null
    */
-  initGlobeView: function(){
-    require(Application.globeView.files , function(){
+  initGlobeView: function(type){
 
-      //Create View
-      var rootGlobeView = new Application.RootGlobeView();
-      $("#applicationRegion").empty().append(rootGlobeView.render().$el[0]);
+    if(Application.globeViews[type]){
+      require(Application.globeViews[type].files , function(){
 
-    });
+        var rootGlobeView = new Application.RootGlobeView(new Application[Application.globeViews[type].view]);
+        $("#applicaitonRegion").empty().append(rootGlobeView.render().$el[0]);
+
+      });
+    }
+
   },
 
 });
