@@ -20,7 +20,7 @@ Application.GlobeRouter = Backbone.Router.extend({
     if(Application.globeViews[type]){
       require(Application.globeViews[type].files , function(){
 
-        var rootGlobeView = new Application.RootGlobeView(new Application[Application.globeViews[type].view]);
+        var rootGlobeView = new Application.RootGlobeView(Application.globeViews[type].views);
         $("#applicaitonRegion").empty().append(rootGlobeView.render().$el[0]);
 
       });
