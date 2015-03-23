@@ -6,6 +6,7 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
 
     initialize: function() {
         Application.BaseGlobeView.prototype.initialize.call(this);
+        this.controlPanel = new Application.ControlPanelGlobeView();
 
         this.countries = [];
         this.intersected; // intersected mesh
@@ -18,6 +19,7 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
         this.midpoints = [];
         this.list = [];
         this.twittermode = false;
+        this.orbitOn = false;
     },
     events: {
 
@@ -27,10 +29,31 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
     },
     render: function() {
         Application.BaseGlobeView.prototype.render.call(this);
+        this.$el.append(this.controlPanel.render().$el);
+        this.renderGlobe();
         return this;
+    },
+    destroy: function() {
+
+        this.remove();
+        this.unbind();
+        delete this.$el;
+        delete this.el;
     },
 
     // member methods
+    renderGlobe: function() {
+
+        Application.BaseGlobeView.prototype.renderGlobe.call(this);
+
+        requestAnimationFrame(this.renderGlobe.bind(this));
+
+        if (this.orbitOn === true) {
+
+            TWEEN.update();
+        }
+
+    },
 
     showGlobe: function() {
         Application.BaseGlobeView.prototype.showGlobe.call(this);
@@ -45,11 +68,7 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
 
         this.requestCountriesData().done(this.addCountries.bind(this));
 
-        // WARNING! This is the second call to render the globe. 
-        // The first rendering is invoked from the base class "initGlobe:" 
-        // implementation. See Application.BaseGlobeView declaration.
-
-        // this.renderGlobe();
+        //  this.renderGlobe();
         // ************************
     },
     onMouseUp: function(e) {
