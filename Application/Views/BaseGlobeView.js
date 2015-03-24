@@ -8,6 +8,11 @@ Application.BaseGlobeView = Backbone.View.extend({
 
     initialize: function() {
         this.container = this.$el[0];
+    
+        // TODO: review
+        this.orbitOn = false;
+
+        this.globeRadius = 50;
     },
     render: function(options) {
         this.showGlobe();
@@ -80,7 +85,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     addGlobe: function() {
 
-        var geometry = new THREE.SphereGeometry(50, 64, 64);
+        var geometry = new THREE.SphereGeometry(this.globeRadius, 64, 64);
         var material = new THREE.MeshPhongMaterial({
             color: 0x4396E8,
             ambient: 0x4396E8,

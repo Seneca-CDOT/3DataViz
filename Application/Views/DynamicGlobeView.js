@@ -30,7 +30,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     initGlobe: function() {
         Application.BaseGlobeView.prototype.initGlobe.call(this);
 
-        this.requestCountriesData().done(this.addCountries.bind(this));
+        this.getCountriesGeometry().done(this.addCountries.bind(this));
 
 // TODO: move out of this view
         function onMouseUp(e) {
@@ -94,6 +94,8 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
             this.countries[data[name].code] = data[name].mesh;
             this.countries.push(data[name].mesh);
         }
+
+        this.startDataStreaming();
     },
 
 // TODO: move out of this view
@@ -185,7 +187,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     },
 
 // TODO: move out of this view
-    requestCountriesData: function() { 
+    getCountriesGeometry: function() { 
 
         return $.ajax({
             type: 'GET',
@@ -196,5 +198,35 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
                 console.log('An error occurred while processing a countries file.');
             }
         });
+    },
+
+// TODO:    
+    startDataStreaming: function() {
+
+        var obj = {};
+        obj.track = "love";
+        // obj.language = "en";
+
+        var socket = io('http://localhost:8080');
+        socket.on('tweet', this.didReceiveData.bind(this));
+
+        socket.emit('start', obj);
+    },
+    didReceiveData: function(data) {
+
+        console.log(data);
+
+        var geometry = new THREE.SphereGeometry(1, 64, 64);
+        var material = new THREE.MeshPhongMaterial({
+                                color: 0xFF0000,
+                                ambient: 0x4396E8,
+                                shininess: 20
+                            });
+        var particle = new THREE.Mesh(geometry, material);
+
+        var position = Application.Helper.geoToxyz(data.coordinates.coordinates[0], data.coordinates.coordinates[1], this.globeRadius);
+        particle.position.set(position.x, position.y, position.z);
+
+        this.scene.add(particle);
     }
 });
