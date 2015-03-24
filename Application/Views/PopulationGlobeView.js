@@ -8,6 +8,9 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.initialize.call(this);
         // this.controlPanel = new Application.ControlPanelGlobeView();
 
+        console.log("Get model here========");
+        console.log(this.model);
+
         this.countries = [];
         this.intersected; // intersected mesh
         this.spikes = []; // an array of spike objects

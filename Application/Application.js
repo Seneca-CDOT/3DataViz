@@ -43,6 +43,9 @@ Application = {
       views:{
         globeView : "PopulationGlobeView",
         controlPanel : "ControlPanelGlobeView"
+      },
+      models:{
+        globeView : "PopulationGeoDataRecord"
       }
     },
 

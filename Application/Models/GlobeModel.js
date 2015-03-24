@@ -1,55 +1,55 @@
-
+Application = Application || {};
 // Data Record
 
-var BaseDataRecord = Backbone.Model.extend({
+Application.BaseDataRecord = Backbone.Model.extend({
 	initialize: function(options) {
 	}
 });
 
-var GeoDataRecord = BaseDataRecord.extend({
+Application.GeoDataRecord = Application.BaseDataRecord.extend({
 	defaults: {
 		longitude: 0,
 		latitude: 0,
-		city: ""	
+		city: ""
 	},
 	initialize: function(options) {
-		BaseDataRecord.prototype.initialize.call(this, options);
+		Application.BaseDataRecord.prototype.initialize.call(this, options);
 	}
 });
 
-var PopulationGeoDataRecord = GeoDataRecord.extend({
+Application.PopulationGeoDataRecord = Application.GeoDataRecord.extend({
 	defaults: {
-		population: 0,	
+		population: 0,
 	},
 	initialize: function(options) {
-		GeoDataRecord.prototype.initialize.call(this, options);
+		Application.GeoDataRecord.prototype.initialize.call(this, options);
 	}
 });
 
 // Data Records Collection
 
-var PopulationGeoDataRecords = Backbone.Collection.extend({
-	model: PopulationGeoDataRecord,
-	url: "#",	
+Application.PopulationGeoDataRecords = Backbone.Collection.extend({
+	model: Application.PopulationGeoDataRecord,
+	url: "#",
 	initialize: function(options) {
 	}
 });
 
 // Model
 
-var BaseGlobeModel = Backbone.Model.extend({
+Application.BaseGlobeModel = Backbone.Model.extend({
 	initialize: function(options) {
 	},
 	loadData: function() {
 	}
 });
 
-var GlobeModel = BaseGlobeModel.extend({
+Application.GlobeModel = Application.BaseGlobeModel.extend({
 	initialize: function(options) {
 		BaseGlobeModel.prototype.initialize.call(this, options);
 	},
   	loadData: function() {
-	  	var rawData = [{   
+	  	var rawData = [{
 	  				city: "Montreal",
 				    population: 3268513,
 				    latitude: 45.509,
@@ -101,7 +101,7 @@ var GlobeModel = BaseGlobeModel.extend({
 				    longitude: -79.257
 				}];
 
-		var populationGeoDataRecords = new PopulationGeoDataRecords(rawData);
+		var populationGeoDataRecords = new Application.PopulationGeoDataRecords(rawData);
 	  	// var populationGeoDataRecords = new PopulationGeoDataRecords();
 	  	// for (var index = 0; index < rawData.length; ++index) {
 	  	// 	// do some preprocessing if needed
