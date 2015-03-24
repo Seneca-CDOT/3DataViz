@@ -35,10 +35,10 @@ io.on('connection', function (socket) {
     client.stream('statuses/filter',
       obj, function(stream) {
       stream.on('data', function(tweet) {
-        // if(tweet.geo){
+        if(tweet.coordinates){
           console.log(tweet);
           socket.emit('tweet', tweet);
-        // }
+        }
       });
       stream.on('end', function() {
         console.log("end");

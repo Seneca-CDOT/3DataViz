@@ -46,7 +46,7 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.renderGlobe.call(this);
 
-        requestAnimationFrame(this.renderGlobe.bind(this));
+        // requestAnimationFrame(this.renderGlobe.bind(this));
 
         if (this.orbitOn === true) {
 
