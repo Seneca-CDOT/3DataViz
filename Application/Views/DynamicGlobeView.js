@@ -5,14 +5,17 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     // framework methods
 
     initialize: function() {
+
         Application.BaseGlobeView.prototype.initialize.call(this);
 
         this.countries = [];
+        this.particles = [];
 
         // TODO: review
         this.moved = false;
     },
     render: function() {
+
         Application.BaseGlobeView.prototype.render.call(this);
         return this;
     },
@@ -20,17 +23,20 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     // member methods
 
     showGlobe: function() {
+
         Application.BaseGlobeView.prototype.showGlobe.call(this);
     },
     addGlobe: function() {
+
         Application.BaseGlobeView.prototype.addGlobe.call(this);
 
         this.countries.push(this.globe);
     },
     initGlobe: function() {
+
         Application.BaseGlobeView.prototype.initGlobe.call(this);
 
-        this.getCountriesGeometry().done(this.addCountries.bind(this));
+        this.getCountriesGeometry().done(this.onGotCountriesGeometry.bind(this));
 
 // TODO: move out of this view
         function onMouseUp(e) {
@@ -51,58 +57,112 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         document.addEventListener('mouseup', onMouseUp.bind(this), false);
 
         $(document).on("keyup", 'form', function(e) {
-            
         });
 
         $(document).on("keypress", function(e) {
-
         });
 
         $('#tweets').on("click", function(e) {
-
         });
 
         $('#reset').on("click", function(e) {
-
         });
+    },
+    renderGlobe: function() {
 
+        Application.BaseGlobeView.prototype.renderGlobe.call(this);
+        if (this.orbitOn === true) {
+
+            TWEEN.update();
+        }
+    },
+    addHelpers: function() {
+        
+        Application.BaseGlobeView.prototype.addHelpers.call(this);
+        
+        Application.Debug.addAxes(this.globe);
+    },
+    // TODO: move out of this view
+    getCountriesGeometry: function() { 
+
+        return $.ajax({
+            type: 'GET',
+            url: 'Models/geodata.json',
+            dataType: 'json',
+            cache: false, 
+            error: function() {
+                console.log('An error occurred while processing a countries file.');
+            }
+        });
+    },
+    onGotCountriesGeometry: function(data) {
+        this.addCountries(data);
+        this.startDataStreaming();
     },
     addCountries: function(data) {
 
         var i = 10;
-        for (var name in data) {
+        for (var countryName in data) {
 
             var countrycolor = Application.Helper.rgbToHex(10, i++, 0);
-
             var material = new THREE.MeshPhongMaterial({
                 shininess: 0,
                 color: countrycolor
             });
 
-            var geometry = new Map3DGeometry(data[name], 0);
-            data[name].mesh = new THREE.Mesh(geometry, material);
-            this.scene.add(data[name].mesh);
+            var geometry = new Map3DGeometry(data[countryName], 0);
+            var mesh = new THREE.Mesh(geometry, material);
 
-            var scale = 50.5;
-            data[name].mesh.scale.set(scale, scale, scale);
-            data[name].mesh.geometry.computeBoundingSphere();
-            data[name].mesh.userData.name = name;
-            data[name].mesh.userData.code = data[name].code;
-            data[name].mesh.userData.used = false;
-            data[name].mesh.userData.countrycolor = countrycolor;
+            var scale = this.globeRadius + 0.5;
+            mesh.scale.set(scale, scale, scale);
+            mesh.geometry.computeBoundingSphere();
 
-            this.countries[data[name].code] = data[name].mesh;
-            this.countries.push(data[name].mesh);
+            this.scene.add(mesh);
+
+            // see 'findCountryMeshByName'
+            mesh.userData.countryName = countryName;
+
+            this.countries.push(mesh);
         }
+    },
+    // TODO:
+    // <script src="http://localhost:8080/socket.io/socket.io.js"></script>    
+    startDataStreaming: function() {
 
-        this.startDataStreaming();
+        var obj = {};
+        obj.track = "love";
+        // obj.language = "en";
+
+        var socket = io('http://localhost:8080');
+        socket.on('tweet', this.didReceiveData.bind(this));
+
+        socket.emit('start', obj);
+    },
+    didReceiveData: function(data) {
+
+        console.log(data);
+
+        var geometry = new THREE.SphereGeometry(1, 64, 64);
+        var material = new THREE.MeshPhongMaterial({
+                                color: 0xFF0000,
+                                ambient: 0x4396E8,
+                                shininess: 20
+                            });
+        var particle = new THREE.Mesh(geometry, material);
+
+        var position = Application.Helper.geoToxyz(data.coordinates.coordinates[0], data.coordinates.coordinates[1], this.globeRadius);
+        particle.position.set(position.x, position.y, position.z);
+
+        this.scene.add(particle);
+
+        this.particles.push(particle);
     },
 
-// TODO: move out of this view
-    findCountryMeshByName: function(name) {
-        for (var i = 0; i < this.countries.length; i++) {
+    findCountryMeshByName: function(countryName) {
 
-            if (this.countries[i].userData.name.toLowerCase() == name.toLowerCase()) {
+        for (var i = 0; i < this.countries.length; ++i) {
+
+            if (this.countries[i].userData.countryName.toLowerCase() == countryName.toLowerCase()) {
 
                 return this.countries[i];
             }
@@ -126,23 +186,18 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
             if (intersects[0].object == this.globe) {
                 return;
             }
-            this.cameraGoTo(intersects[0].object.userData.name);
+            this.cameraGoTo(intersects[0].object);
         }
     },
-    cameraGoTo: function(countryname) {
+    cameraGoTo: function(countryMesh) {
 
         // document.removeEventListener('mouseup', onMouseUp, false);
         // this.controls.removeMouse();
         
         this.moved = true;
 
-        var countrymesh = this.findCountryMeshByName(countryname);
-        if (countrymesh === undefined) {
-            return;
-        }
-
         var current = this.controls.getPosition();
-        var destination = countrymesh.geometry.boundingSphere.center.clone();
+        var destination = countryMesh.geometry.boundingSphere.center.clone();
         destination.setLength(this.controls.getRadius());
 
         if (this.orbitOn == true) {
@@ -184,49 +239,5 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         this.orbitOn = true;
         this.tween.start();
-    },
-
-// TODO: move out of this view
-    getCountriesGeometry: function() { 
-
-        return $.ajax({
-            type: 'GET',
-            url: 'Models/geodata.json',
-            dataType: 'json',
-            cache: false, 
-            error: function() {
-                console.log('An error occurred while processing a countries file.');
-            }
-        });
-    },
-
-// TODO:    
-    startDataStreaming: function() {
-
-        var obj = {};
-        obj.track = "love";
-        // obj.language = "en";
-
-        var socket = io('http://localhost:8080');
-        socket.on('tweet', this.didReceiveData.bind(this));
-
-        socket.emit('start', obj);
-    },
-    didReceiveData: function(data) {
-
-        console.log(data);
-
-        var geometry = new THREE.SphereGeometry(1, 64, 64);
-        var material = new THREE.MeshPhongMaterial({
-                                color: 0xFF0000,
-                                ambient: 0x4396E8,
-                                shininess: 20
-                            });
-        var particle = new THREE.Mesh(geometry, material);
-
-        var position = Application.Helper.geoToxyz(data.coordinates.coordinates[0], data.coordinates.coordinates[1], this.globeRadius);
-        particle.position.set(position.x, position.y, position.z);
-
-        this.scene.add(particle);
     }
 });

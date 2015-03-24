@@ -30,16 +30,14 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.addCamera();
         this.addGlobe();
         this.addLight();
-
         this.addControls();
 
-        Application.Debug.addStats();
-        // Application.Debug.addAxes(this.globe);
+        this.addHelpers();
 
         // TODO: move out of this view        
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
 
-        //this.renderGlobe();
+        this.renderGlobe();
     },
     addSceneAndRenderer: function() {
 
@@ -111,6 +109,8 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     renderGlobe: function() {
 
+        requestAnimationFrame(this.renderGlobe.bind(this));
+
         Application.Debug.stats.begin();
         this.controls.update();
         Application.Debug.stats.end();
@@ -123,6 +123,9 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.controls.minDistance = 55;
         this.controls.maxDistance = 150;
         this.controls.userPan = false;
+    },
+    addHelpers: function() {
+        Application.Debug.addStats();
     },
 
     // TODO: move out of this view
