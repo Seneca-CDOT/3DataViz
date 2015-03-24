@@ -71,10 +71,14 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     renderGlobe: function() {
 
         Application.BaseGlobeView.prototype.renderGlobe.call(this);
+    },
+    updateGlobe: function() {
+        
         if (this.orbitOn === true) {
 
             TWEEN.update();
         }
+        Application.BaseGlobeView.prototype.updateGlobe.call(this);
     },
     addHelpers: function() {
         

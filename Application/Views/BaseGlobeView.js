@@ -112,9 +112,12 @@ Application.BaseGlobeView = Backbone.View.extend({
         requestAnimationFrame(this.renderGlobe.bind(this));
 
         Application.Debug.stats.begin();
-        this.controls.update();
+        this.updateGlobe();
         Application.Debug.stats.end();
+    },
+    updateGlobe: function() {
 
+        this.controls.update();
         this.renderer.render(this.scene, this.camera);
     },
     addControls: function() {
