@@ -1,5 +1,7 @@
 var Application = Application || {};
 
+// list
+
 Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
@@ -9,10 +11,22 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.initialize.call(this);
 
         this.countries = [];
-        this.particles = [];
+
+        // array based collections
+        // this.particles = [];
+        // this.particlesToRemove = [];
+
+        // list based collections
+        this.particles = new Application.DataStructures.List();
+        this.particlesToRemove = new Application.DataStructures.List();
 
         // TODO: review
         this.moved = false;
+
+        // amimation
+        this.timePeriod = 0;
+        this.timePeriodMax = 100;
+        this.delta = 0.05
     },
     render: function() {
 
@@ -76,20 +90,100 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
             TWEEN.update();
         }
+
         Application.BaseGlobeView.prototype.updateGlobe.call(this);
 
         this.updateParticles();
     },
     updateParticles: function() {
 
-        var time = Date.now() * 0.001;
+        ++this.timePeriod;
+        if (this.timePeriod > this.timePeriodMax) {
+            this.timePeriod = 0;
+        }
+        var ratio = this.timePeriod / this.timePeriodMax;
 
-        for(var i = 0; i < this.particles.length; ++i) {
-            var rotation = 2 * Math.PI * Math.sin(0.5 * i + time)
-            this.particles[i].rotation.z = rotation;
+        // array
+        // update state of the active particles
+        // for (var i = 0; i < this.particles.length; ++i) {
 
-            var scale = 2 + Math.sin(0.5 * i + time);
-            this.particles[i].scale.set(scale, scale, scale);
+        //     var rotation = 2 * Math.PI * ratio;
+        //     this.particles[i].rotation.z = rotation;
+
+        //     var scale = this.particles[i].scale.x; // x, y, z are equal
+        //     if (scale < 2.5) {
+        //         scale += this.delta;
+        //         this.particles[i].scale.set(scale, scale, scale);
+        //     }
+        // }
+
+        // list
+        var iterator = this.particles.getBegin();
+        while (iterator !== this.particles.getEnd()) {
+
+            var particle = iterator.getData();
+
+            var rotation = 2 * Math.PI * ratio;
+            particle.rotation.z = rotation;
+
+            var scale = particle.scale.x; // x, y, z are equal
+            if (scale < 2.5) {
+                scale += this.delta;
+                particle.scale.set(scale, scale, scale);
+            }
+
+            iterator = iterator.getNext();
+        }
+
+        // array
+        // update state of the particles that are about to disappear
+        // var start = -1;
+        // var count = 0;
+        // for (var i = 0; i < this.particlesToRemove.length; ++i) {
+
+        //     var scale = this.particlesToRemove[i].scale.x; 
+        //     if (scale > 0.01) {
+
+        //         var rotation = 2 * Math.PI * ratio;
+        //         this.particlesToRemove[i].rotation.z = rotation;
+
+        //         scale -= this.delta;
+        //         this.particlesToRemove[i].scale.set(scale, scale, scale);
+        //     } else {
+
+        //         if (start < 0) {
+
+        //             start = i;
+        //         }
+        //         ++count;
+
+        //         this.scene.remove(this.particlesToRemove[i]);
+        //     }
+        // }
+        // this.particlesToRemove.splice(start, count);
+
+        // list
+        iterator = this.particlesToRemove.getBegin();
+        while (iterator !== this.particlesToRemove.getEnd()) {
+
+            var particle = iterator.getData();
+
+            var scale = particle.scale.x; 
+            if (scale > 0.01) {
+
+                var rotation = 2 * Math.PI * ratio;
+                particle.rotation.z = rotation;
+
+                scale -= this.delta;
+                particle.scale.set(scale, scale, scale);
+
+                iterator = iterator.getNext();
+            } else {
+
+                this.scene.remove(particle);
+                // TODO: eliminate use of private method
+                iterator = this.particlesToRemove._remove(iterator);
+            }
         }
     },
     addHelpers: function() {
@@ -151,11 +245,11 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         obj.track = "love";
         // obj.language = "en";
 
-        var socket = io('http://localhost:8080');
-        socket.on('tweet', this.onDataReceive.bind(this));
-        // socket.off('tweet', ...);
+        this.socket = io('http://localhost:8080');
+        this.socket.on('tweet', this.onDataReceive.bind(this));
+        // this.socket.off('tweet', ...);
 
-        socket.emit('start', obj); 
+        this.socket.emit('start', obj); 
     },
     onDataReceive: function(data) {
 
@@ -174,17 +268,20 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         // TODO: encapsulate paticle
 
         // sphere
-        // var geometry = new THREE.SphereGeometry(0.5, 64, 64);
+        // var geometry = new THREE.SphereGeometry(0.5, 6, 6);
         // var material = new THREE.MeshPhongMaterial({
         //                         color: 0xFF0000,
         //                         ambient: 0x4396E8,
-        //                         shininess: 20
+        //                         shininess: 20,
+        //                         wireframe: true
         //                     });
 
-        // sphere cube
+        // cube
         var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-        var material = new THREE.MeshBasicMaterial({ 
+        var material = new THREE.MeshPhongMaterial({ 
                                     color: 0xFF0000, 
+                                     ambient: 0x4396E8,
+                                     shininess: 20,
                                     wireframe: true 
                                 });
 
@@ -207,22 +304,41 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         var quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
 
         // set orientation parameters
-        particle.rotation.setFromQuaternion(quaternion);direction
         var displacement = 1.04 * this.globeRadius;
         particle.position.set(direction.x * displacement, direction.y * displacement, direction.z * displacement);
+        particle.scale.set(0, 0, 0);
+        particle.rotation.setFromQuaternion(quaternion);direction
 
-        // Application.Debug.addAxes(particle);
+        Application.Debug.addAxes(particle);
 
         this.scene.add(particle);
-        this.particles.push(particle);
+        // this.particles.push(particle);
+        this.particles.pushBack(particle);
     },
     removeParticleIfNeeded: function() {
-        var count = this.particles.length;
-        if (count > 100) {
-            var particlesToRemove = this.particles.splice(0, count - 100);
-            for (var i = 0; i < particlesToRemove.length; ++i) {
-                this.scene.remove(particlesToRemove[i]);
-            }
+
+        var maxCount = 10;
+
+        // array
+        // var count = this.particles.length;
+        // if (count > maxCount) {
+
+        //     var particlesToRemove = this.particles.splice(0, count - maxCount);
+        //     for (var i = 0; i < particlesToRemove.length; ++i) {
+
+        //         this.particlesToRemove.push(particlesToRemove[i])
+        //     }
+        // }
+
+        // list
+        var iterator = this.particles.getBegin();
+        while (iterator !== this.particles.getEnd() && this.particles.getLength() > maxCount) {
+
+            var particle = iterator.getData();
+            this.particlesToRemove.pushBack(particle);
+
+            // TODO: eliminate use of private method
+            iterator = this.particles._remove(iterator);
         }
     },
 
