@@ -29,14 +29,12 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     addGlobe: function() {
 
         Application.BaseGlobeView.prototype.addGlobe.call(this);
-
-        this.countries.push(this.globe);
     },
     initGlobe: function() {
 
         Application.BaseGlobeView.prototype.initGlobe.call(this);
 
-        this.getCountriesGeometry().done(this.onGotCountriesGeometry.bind(this));
+        this.getCountriesGeometry().done(this.onCountriesGeometryGet.bind(this));
 
 // TODO: move out of this view
         function onMouseUp(e) {
@@ -66,19 +64,33 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         });
 
         $('#reset').on("click", function(e) {
-        });
+        });        
     },
     renderGlobe: function() {
 
         Application.BaseGlobeView.prototype.renderGlobe.call(this);
     },
     updateGlobe: function() {
-        
+
         if (this.orbitOn === true) {
 
             TWEEN.update();
         }
         Application.BaseGlobeView.prototype.updateGlobe.call(this);
+
+        this.updateParticles();
+    },
+    updateParticles: function() {
+
+        var time = Date.now() * 0.001;
+
+        for(var i = 0; i < this.particles.length; ++i) {
+            var rotation = 2 * Math.PI * Math.sin(0.5 * i + time)
+            this.particles[i].rotation.z = rotation;
+
+            var scale = 2 + Math.sin(0.5 * i + time);
+            this.particles[i].scale.set(scale, scale, scale);
+        }
     },
     addHelpers: function() {
         
@@ -99,19 +111,21 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
             }
         });
     },
-    onGotCountriesGeometry: function(data) {
+    onCountriesGeometryGet: function(data) {
         this.addCountries(data);
         this.startDataStreaming();
     },
     addCountries: function(data) {
 
-        var i = 10;
+        var green = 1;
         for (var countryName in data) {
 
-            var countrycolor = Application.Helper.rgbToHex(10, i++, 0);
+            green = (2 * green) % 100;
+
+            var countryColor = Application.Helper.rgbToHex(10, 50 + green, 0);
             var material = new THREE.MeshPhongMaterial({
                 shininess: 0,
-                color: countrycolor
+                color: countryColor
             });
 
             var geometry = new Map3DGeometry(data[countryName], 0);
@@ -122,56 +136,98 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
             mesh.geometry.computeBoundingSphere();
 
             this.scene.add(mesh);
-
-            // see 'findCountryMeshByName'
-            mesh.userData.countryName = countryName;
-
             this.countries.push(mesh);
         }
+
+        // TODO: review
+        this.countries.push(this.globe);
     },
-    // TODO:
+    // TODO: move to model
     // <script src="http://localhost:8080/socket.io/socket.io.js"></script>    
     startDataStreaming: function() {
-
+        
         var obj = {};
+        // obj.track = "morning";
         obj.track = "love";
         // obj.language = "en";
 
         var socket = io('http://localhost:8080');
-        socket.on('tweet', this.didReceiveData.bind(this));
+        socket.on('tweet', this.onDataReceive.bind(this));
+        // socket.off('tweet', ...);
 
-        socket.emit('start', obj);
+        socket.emit('start', obj); 
     },
-    didReceiveData: function(data) {
+    onDataReceive: function(data) {
 
         console.log(data);
 
-        var geometry = new THREE.SphereGeometry(1, 64, 64);
-        var material = new THREE.MeshPhongMaterial({
-                                color: 0xFF0000,
-                                ambient: 0x4396E8,
-                                shininess: 20
-                            });
+        var dataRecord = new Application.GeoDataRecord();
+        dataRecord.longitude = data.coordinates.coordinates[0];
+        dataRecord.latitude = data.coordinates.coordinates[1];
+        dataRecord.timestamp = data.timestamp_ms;
+
+        this.addParticleWithDataRecord(dataRecord);
+        this.removeParticleIfNeeded();
+    },
+    addParticleWithDataRecord: function(dataRecord) {
+
+        // TODO: encapsulate paticle
+
+        // sphere
+        // var geometry = new THREE.SphereGeometry(0.5, 64, 64);
+        // var material = new THREE.MeshPhongMaterial({
+        //                         color: 0xFF0000,
+        //                         ambient: 0x4396E8,
+        //                         shininess: 20
+        //                     });
+
+        // sphere cube
+        var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+        var material = new THREE.MeshBasicMaterial({ 
+                                    color: 0xFF0000, 
+                                    wireframe: true 
+                                });
+
         var particle = new THREE.Mesh(geometry, material);
 
-        var position = Application.Helper.geoToxyz(data.coordinates.coordinates[0], data.coordinates.coordinates[1], this.globeRadius);
-        particle.position.set(position.x, position.y, position.z);
+
+        var position = Application.Helper.geoToxyz(dataRecord.longitude, dataRecord.latitude, this.globeRadius);
+
+        // compute orientation parameters
+        var objectNormal = new THREE.Vector3(0, 0, 1);
+
+        var direction = new THREE.Vector3(position.x, position.y, position.z);
+        direction.normalize();
+
+        var angle = Math.acos(direction.z);
+        var axis = new THREE.Vector3();
+        axis.crossVectors(objectNormal, direction);
+        axis.normalize();
+
+        var quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
+
+        // set orientation parameters
+        particle.rotation.setFromQuaternion(quaternion);direction
+        var displacement = 1.04 * this.globeRadius;
+        particle.position.set(direction.x * displacement, direction.y * displacement, direction.z * displacement);
+
+        // Application.Debug.addAxes(particle);
 
         this.scene.add(particle);
-
         this.particles.push(particle);
     },
-
-    findCountryMeshByName: function(countryName) {
-
-        for (var i = 0; i < this.countries.length; ++i) {
-
-            if (this.countries[i].userData.countryName.toLowerCase() == countryName.toLowerCase()) {
-
-                return this.countries[i];
+    removeParticleIfNeeded: function() {
+        var count = this.particles.length;
+        if (count > 100) {
+            var particlesToRemove = this.particles.splice(0, count - 100);
+            for (var i = 0; i < particlesToRemove.length; ++i) {
+                this.scene.remove(particlesToRemove[i]);
             }
         }
-    }, 
+    },
+
+    // interaction
+
     clickOn: function(event) {
 
         var x = event.clientX;
@@ -187,10 +243,11 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         var intersects = ray.intersectObjects(this.countries);
         if (intersects.length > 0) {
 
-            if (intersects[0].object == this.globe) {
-                return;
+            var closestMesh = intersects[0].object;
+            if (closestMesh !== this.globe) {
+
+                this.cameraGoTo(closestMesh);
             }
-            this.cameraGoTo(intersects[0].object);
         }
     },
     cameraGoTo: function(countryMesh) {
