@@ -11,6 +11,8 @@ Application.PopulationGlobeView = Application.BaseGlobeView.extend({
         console.log("Get model here========");
         console.log(this.model);
 
+        this.model.test();
+
         this.countries = [];
         this.intersected; // intersected mesh
         this.spikes = []; // an array of spike objects

@@ -23,6 +23,9 @@ Application.PopulationGeoDataRecord = Application.GeoDataRecord.extend({
 	},
 	initialize: function(options) {
 		Application.GeoDataRecord.prototype.initialize.call(this, options);
+	},
+	test: function(){
+		console.log("test!!");
 	}
 });
 
