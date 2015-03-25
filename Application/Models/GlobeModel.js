@@ -1,52 +1,54 @@
+var Application = Application || {};
 
 // Data Record
 
-var BaseDataRecord = Backbone.Model.extend({
-	initialize: function(options) {
+Application.BaseDataRecord = Backbone.Model.extend({
+	initialize: function() {
+		this.timestamp = 0;
 	}
 });
 
-var GeoDataRecord = BaseDataRecord.extend({
-	defaults: {
-		longitude: 0,
-		latitude: 0,
-		city: ""	
-	},
-	initialize: function(options) {
-		BaseDataRecord.prototype.initialize.call(this, options);
+Application.GeoDataRecord = Application.BaseDataRecord.extend({
+
+	initialize: function() {
+		Application.BaseDataRecord.prototype.initialize.call(this);
+
+		this.longitude = 0;
+		this.latitude = 0;
+		this.city = "";
 	}
 });
 
-var PopulationGeoDataRecord = GeoDataRecord.extend({
-	defaults: {
-		population: 0,	
-	},
-	initialize: function(options) {
-		GeoDataRecord.prototype.initialize.call(this, options);
+Application.PopulationGeoDataRecord = Application.GeoDataRecord.extend({
+
+	initialize: function() {
+		Application.GeoDataRecord.prototype.initialize.call(this);
+
+		this.population = 0;
 	}
 });
 
 // Data Records Collection
 
-var PopulationGeoDataRecords = Backbone.Collection.extend({
-	model: PopulationGeoDataRecord,
+Application.PopulationGeoDataRecords = Backbone.Collection.extend({
+	model: Application.PopulationGeoDataRecord,
 	url: "#",	
-	initialize: function(options) {
+	initialize: function() {
 	}
 });
 
 // Model
 
-var BaseGlobeModel = Backbone.Model.extend({
-	initialize: function(options) {
+Application.BaseGlobeModel = Backbone.Model.extend({
+	initialize: function() {
 	},
 	loadData: function() {
 	}
 });
 
-var GlobeModel = BaseGlobeModel.extend({
-	initialize: function(options) {
-		BaseGlobeModel.prototype.initialize.call(this, options);
+Application.GlobeModel = Application.BaseGlobeModel.extend({
+	initialize: function() {
+		Application.BaseGlobeModel.prototype.initialize.call(this);
 	},
   	loadData: function() {
 	  	var rawData = [{   
@@ -101,7 +103,7 @@ var GlobeModel = BaseGlobeModel.extend({
 				    longitude: -79.257
 				}];
 
-		var populationGeoDataRecords = new PopulationGeoDataRecords(rawData);
+		var populationGeoDataRecords = new Application.PopulationGeoDataRecords(rawData);
 	  	// var populationGeoDataRecords = new PopulationGeoDataRecords();
 	  	// for (var index = 0; index < rawData.length; ++index) {
 	  	// 	// do some preprocessing if needed
