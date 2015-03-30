@@ -16,7 +16,8 @@ Application.GeoDataRecord = Application.BaseDataRecord.extend({
 		this.longitude = 0;
 		this.latitude = 0;
 		this.city = "";
-	}
+	},
+	urlRoot : '/Models/geodata.json'
 });
 
 Application.PopulationGeoDataRecord = Application.GeoDataRecord.extend({
@@ -32,7 +33,7 @@ Application.PopulationGeoDataRecord = Application.GeoDataRecord.extend({
 
 Application.PopulationGeoDataRecords = Backbone.Collection.extend({
 	model: Application.PopulationGeoDataRecord,
-	url: "#",	
+	url: "#",
 	initialize: function() {
 	}
 });
@@ -51,7 +52,7 @@ Application.GlobeModel = Application.BaseGlobeModel.extend({
 		Application.BaseGlobeModel.prototype.initialize.call(this);
 	},
   	loadData: function() {
-	  	var rawData = [{   
+	  	var rawData = [{
 	  				city: "Montreal",
 				    population: 3268513,
 				    latitude: 45.509,

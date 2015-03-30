@@ -8,11 +8,6 @@ Application.BaseGlobeView = Backbone.View.extend({
 
     initialize: function() {
         this.container = this.$el[0];
-    
-        // TODO: review
-        this.orbitOn = false;
-
-        this.globeRadius = 50;
     },
     render: function(options) {
         this.showGlobe();
@@ -30,14 +25,16 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.addCamera();
         this.addGlobe();
         this.addLight();
+
         this.addControls();
 
-        this.addHelpers();
+        Application.Debug.addStats();
+        // Application.Debug.addAxes(this.globe);
 
         // TODO: move out of this view        
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
 
-        this.renderGlobe();
+        //this.renderGlobe();
     },
     addSceneAndRenderer: function() {
 
@@ -83,7 +80,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     addGlobe: function() {
 
-        var geometry = new THREE.SphereGeometry(this.globeRadius, 64, 64);
+        var geometry = new THREE.SphereGeometry(50, 64, 64);
         var material = new THREE.MeshPhongMaterial({
             color: 0x4396E8,
             ambient: 0x4396E8,
@@ -109,16 +106,11 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     renderGlobe: function() {
 
-        requestAnimationFrame(this.renderGlobe.bind(this));
-
         Application.Debug.stats.begin();
-        this.updateGlobe();
-        this.renderer.render(this.scene, this.camera);
-        Application.Debug.stats.end();
-    },
-    updateGlobe: function() {
-
         this.controls.update();
+        Application.Debug.stats.end();
+
+        this.renderer.render(this.scene, this.camera);
     },
     addControls: function() {
 
@@ -126,9 +118,6 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.controls.minDistance = 55;
         this.controls.maxDistance = 150;
         this.controls.userPan = false;
-    },
-    addHelpers: function() {
-        Application.Debug.addStats();
     },
 
     // TODO: move out of this view
