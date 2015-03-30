@@ -1,31 +1,31 @@
-Application = Application || {};
+var Application = Application || {};
+
 // Data Record
 
 Application.BaseDataRecord = Backbone.Model.extend({
-	initialize: function(options) {
+	initialize: function() {
+		this.timestamp = 0;
 	}
 });
 
 Application.GeoDataRecord = Application.BaseDataRecord.extend({
-	defaults: {
-		longitude: 0,
-		latitude: 0,
-		city: ""
+
+	initialize: function() {
+		Application.BaseDataRecord.prototype.initialize.call(this);
+
+		this.longitude = 0;
+		this.latitude = 0;
+		this.city = "";
 	},
-	initialize: function(options) {
-		Application.BaseDataRecord.prototype.initialize.call(this, options);
-	}
+	urlRoot : '/Models/geodata.json'
 });
 
 Application.PopulationGeoDataRecord = Application.GeoDataRecord.extend({
-	defaults: {
-		population: 0,
-	},
-	initialize: function(options) {
-		Application.GeoDataRecord.prototype.initialize.call(this, options);
-	},
-	test: function(){
-		console.log("test!!");
+
+	initialize: function() {
+		Application.GeoDataRecord.prototype.initialize.call(this);
+
+		this.population = 0;
 	}
 });
 
@@ -34,22 +34,22 @@ Application.PopulationGeoDataRecord = Application.GeoDataRecord.extend({
 Application.PopulationGeoDataRecords = Backbone.Collection.extend({
 	model: Application.PopulationGeoDataRecord,
 	url: "#",
-	initialize: function(options) {
+	initialize: function() {
 	}
 });
 
 // Model
 
 Application.BaseGlobeModel = Backbone.Model.extend({
-	initialize: function(options) {
+	initialize: function() {
 	},
 	loadData: function() {
 	}
 });
 
 Application.GlobeModel = Application.BaseGlobeModel.extend({
-	initialize: function(options) {
-		BaseGlobeModel.prototype.initialize.call(this, options);
+	initialize: function() {
+		Application.BaseGlobeModel.prototype.initialize.call(this);
 	},
   	loadData: function() {
 	  	var rawData = [{

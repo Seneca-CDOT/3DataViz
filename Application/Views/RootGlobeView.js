@@ -10,11 +10,16 @@ Application.RootGlobeView = Backbone.View.extend({
     template: _.template($("#rootGlobeViewTemplate").html()),
 
   initialize: function(views, models) {
+
     this.views = [];
     for(name in views){
-      if(models[name]) this[name+"Model"] = new Application[models[name]];
-      this[name] = new Application[views[name]]( { model: this[name+"Model"] });
+      var obj = {};
+      if(models != null && models[name] !== undefined){
+        obj.model = new Application[models[name]];
+      }
+      this[name] = new Application[views[name]](obj);
       this.views.push(this[name]);
+      console.log(this.views);
     }
   },
   render: function(options) {
