@@ -12,7 +12,7 @@ Application = {
 
 	//Create Route which handles Views and Models
   init : function(){
-    this.router = new this.GlobeRouter();
+    this.globeRouter = new this.GlobeRouter();
     Backbone.history.start();
   },
 
@@ -34,6 +34,7 @@ Application = {
   ],
 
   globeViews : {
+
     //configuration for GloveView (Population)
     population : {
       files: [
@@ -44,6 +45,9 @@ Application = {
       views:{
         globeView : "PopulationGlobeView",
         controlPanel : "ControlPanelGlobeView"
+      },
+      models:{
+        globeView : "PopulationGeoDataRecord"
       }
     },
 
@@ -65,7 +69,7 @@ Application = {
         'Views/DynamicGlobeView.js',
       ],
       views:{
-        globeView : "DynamicGlobeView",
+        globeView : "DynamicGlobeView"
       }
     }
 
