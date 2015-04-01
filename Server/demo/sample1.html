@@ -11,7 +11,7 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
   <meta charset="UTF-8">
   <title>Document</title>
   <script src="http://localhost:8080/socket.io/socket.io.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
   <style>
   body{
     font-family: "Arial";
@@ -146,13 +146,13 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
               }
 
             }
-            $text.append(e.text); 
+            $text.append(e.text);
             if(e.geo){
               $geo.append(e.geo.coordinates[0] + "," + e.geo.coordinates[1]);
               $geo.attr('href', 'https://www.google.ca/maps/@'+e.geo.coordinates[0]+','+e.geo.coordinates[1]+',7z')
             }
             if(e.place){
-              $geo.append('  (' + e.place.country + ')');  
+              $geo.append('  (' + e.place.country + ')');
             }
             date = new Date(e.timestamp_ms*1000);
 
@@ -162,7 +162,7 @@ This is the sample to access TweetAPI(Tweets data stored in MongoDB).
             $text.append(unescape(e.tweet));
             $geo.append(e.geo);
             if(e.place){
-              $geo.append('  (' + e.place.country + ')');  
+              $geo.append('  (' + e.place.country + ')');
             }
             if(e.geo){
               $geo.attr('href', 'https://www.google.ca/maps/@'+e.geo[0]+','+e.geo[1]+',7z')
