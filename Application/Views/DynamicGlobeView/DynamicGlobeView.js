@@ -206,10 +206,13 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         console.log(data);
 
-        var dataRecord = new Application.GeoDataRecord();
-        dataRecord.longitude = data.coordinates.coordinates[0];
-        dataRecord.latitude = data.coordinates.coordinates[1];
-        dataRecord.timestamp = data.timestamp_ms;
+        var dataRecord = new Application.GeoDataRecord({
+
+            "longitude": data.coordinates.coordinates[0],
+            "latitude": data.coordinates.coordinates[1],
+            "timestamp": data.timestamp_ms
+
+        });
 
         this.addParticleWithDataRecord(dataRecord);
     },
