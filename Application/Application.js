@@ -24,6 +24,7 @@ Application = {
     'Models/GlobeModel.js',
     'Helpers/Helper.js',
     'Helpers/Debug.js', // FOR DEBUG
+    'Helpers/DataStructures.js',
     'Libraries/OrbitControls.js',
     'Libraries/stats.js',
     'Libraries/tween.min.js',
@@ -43,6 +44,9 @@ Application = {
       views:{
         globeView : "StaticTwitterGlobeView",
         controlPanel : "StaticTwitterControlPanel"
+      },
+      collection:{
+        globeView : "StaticTwitterCountriesCollection"
       }
     },
 
