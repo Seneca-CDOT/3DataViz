@@ -21,6 +21,6 @@ cd /home/app
 sudo npm install mongodb
 echo "Installing express"
 sudo npm install express
-echo "Installing Socket.io"
-sudo npm install socket.io
+#echo "Installing Socket.io"
+#sudo npm install socket.io
 

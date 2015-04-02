@@ -3,19 +3,24 @@ var Application = Application || {};
 // Data Record
 
 Application.BaseDataRecord = Backbone.Model.extend({
+    defaults: {
+
+        timestamp: 0
+    },
     initialize: function() {
-        this.timestamp = 0;
     }
 });
 
 Application.GeoDataRecord = Application.BaseDataRecord.extend({
 
+	defaults: {
+
+		longitude: 0,
+        latitude: 0,
+        city: ""
+	},
     initialize: function() {
         Application.BaseDataRecord.prototype.initialize.call(this);
-
-        this.longitude = 0;
-        this.latitude = 0;
-        this.city = "";
     }
 });
 

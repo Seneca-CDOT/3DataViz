@@ -5,7 +5,6 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
     },
     events: {
         'mousedown': 'action'
-
     },
     destroy: function() {
 
@@ -60,7 +59,7 @@ Application.TweetsButton = Application.ControlElementsGlobeView.extend({
 
             success: function(response) {
 
-                Application.StaticTwitterGlobeView.numToScale(response);
+                Application.router.rootGlobeView.views[0].numToScale(response.models);
             },
             error: function(err, response) {
 

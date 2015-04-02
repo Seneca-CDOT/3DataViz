@@ -221,6 +221,7 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
     },
 
     findCountryMeshByCode: function(code) {
+
         for (var i = 0; i < this.countries.length; i++) {
             if (this.countries[i].userData.code.toLowerCase() == code.toLowerCase()) {
 
@@ -320,7 +321,10 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
     addCountries: function(data) {
 
         var i = 10;
-        for (var name in data) {
+
+        var that = this;
+
+        $.each(data, function(name, index) {
 
             var countrycolor = Application.Helper.rgbToHex(10, i++, 0);
 
@@ -330,7 +334,7 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
             });
             var geometry = new Map3DGeometry(data[name], 0);
             data[name].mesh = new THREE.Mesh(geometry, material);
-            this.scene.add(data[name].mesh);
+            that.scene.add(data[name].mesh);
 
             var scale = 50.5;
             data[name].mesh.scale.set(scale, scale, scale);
@@ -340,8 +344,8 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
             data[name].mesh.userData.used = false;
             data[name].mesh.userData.countrycolor = countrycolor;
             // countries[data[name].code] = data[name].mesh;
-            this.countries.push(data[name].mesh);
-        }
+            that.countries.push(data[name].mesh);
+        });
     },
 
     numToScale: function(array, callback) {
@@ -354,7 +358,7 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
         var list = [];
         // var index = 0;
         array.sort(function(a, b) {
-            return b.total_tweets - a.total_tweets;
+            return b.attributes.total_tweets - a.attributes.total_tweets;
         });
         // var loop = setInterval(function() {
         // var bottomcolor = 80;
@@ -366,7 +370,7 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
 
         $.each(array, function(index, country) {
 
-            var countrymesh = findCountryMeshByCode(country._id.code);
+            var countrymesh = this.findCountryMeshByCode(country.attributes.countrycode);
 
             if (typeof countrymesh === 'undefined') {
 
@@ -392,7 +396,7 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
             if (index == array.length - 1) {
 
                 $.each(list, function(index, value) {
-                    $('#leftcolumn').append(value + '<br>');
+                  //  $('#leftcolumn').append(value + '<br>');
                 });
                 console.log('100%');
                 callback();
@@ -400,7 +404,7 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
 
             //   index++;
             //  }, 100);
-        });
+        }.bind(this));
     }
 
 });
