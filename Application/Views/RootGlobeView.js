@@ -15,6 +15,8 @@ Application.RootGlobeView = Backbone.View.extend({
       this[view] = new Application[views[view]];
       this.views.push(this[view]);
     }
+    var coll = new Application.StaticTwitterCountriesCollection();
+    this['globeView'].collection = coll;
   },
   render: function(options) {
 

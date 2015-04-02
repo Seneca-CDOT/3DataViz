@@ -34,15 +34,15 @@ Application = {
 
   globeViews : {
     //configuration for GloveView (Population)
-    population : {
+    statictwitter : {
       files: [
-        'Views/PopulationGlobeView.js',
+        'Views/StaticTwitterGlobeView.js',
         'Views/ControlPanelGlobeView.js',
         'Views/ControlElementsGlobeView.js'
       ],
       views:{
-        globeView : "PopulationGlobeView",
-        controlPanel : "ControlPanelGlobeView"
+        globeView : "StaticTwitterGlobeView",
+        controlPanel : "StaticTwitterControlPanel"
       }
     },
 
