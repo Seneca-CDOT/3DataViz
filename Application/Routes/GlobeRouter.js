@@ -35,6 +35,13 @@ Application.GlobeRouter = Backbone.Router.extend({
       var collection = Application.globeViews.population.collection;
       Application.router.initGlobeView(views, collection);
 
+      //call fetch test
+      Application.router.rootGlobeView.globeView.collection.fetch({
+        success: function(){
+          // console.log(Application.router.rootGlobeView.globeView.collection);
+        }
+      });
+
     });
   },
 
@@ -55,6 +62,13 @@ Application.GlobeRouter = Backbone.Router.extend({
       var views = Application.globeViews.dynamic.views;
       var collection = Application.globeViews.dynamic.collection;
       Application.router.initGlobeView(views, collection);
+
+      //call fetch test
+      Application.router.rootGlobeView.globeView.collection.fetch({
+        success: function(){
+          // console.log(Application.router.rootGlobeView.globeView.collection);
+        }
+      });
 
     });
   }

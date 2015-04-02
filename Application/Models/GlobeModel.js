@@ -3,24 +3,30 @@ var Application = Application || {};
 // Data Record
 
 Application.BaseDataRecord = Backbone.Model.extend({
+	defaults: {
+		timestamp: 0
+	},
 	initialize: function() {
-		this.timestamp = 0;
 	}
 });
 
 Application.GeoDataRecord = Application.BaseDataRecord.extend({
 
+	default: {
+		longitude : 0,
+		latitude : 0,
+		city : ""
+	},
 	initialize: function() {
 		Application.BaseDataRecord.prototype.initialize.call(this);
-
-		this.longitude = 0;
-		this.latitude = 0;
-		this.city = "";
 	}
 });
 
 Application.PopulationGeoDataRecord = Application.GeoDataRecord.extend({
 
+	default: {
+		population: 0
+	},
 	initialize: function() {
 		Application.GeoDataRecord.prototype.initialize.call(this);
 
@@ -29,11 +35,23 @@ Application.PopulationGeoDataRecord = Application.GeoDataRecord.extend({
 });
 
 // Data Records Collection
-
 Application.PopulationGeoDataRecords = Backbone.Collection.extend({
 	model: Application.PopulationGeoDataRecord,
-	url: "#",	
+	url: "/Models/geodata.json",
 	initialize: function() {
+	},
+	parse: function(responce){
+
+		// console.log("parse called");
+		// console.log(responce);
+		var obj =
+		[
+			{population: 10},
+			{population: 20},
+			{population: 30}
+		];
+		return obj;
+
 	}
 });
 
@@ -51,7 +69,7 @@ Application.GlobeModel = Application.BaseGlobeModel.extend({
 		Application.BaseGlobeModel.prototype.initialize.call(this);
 	},
   	loadData: function() {
-	  	var rawData = [{   
+	  	var rawData = [{
 	  				city: "Montreal",
 				    population: 3268513,
 				    latitude: 45.509,
@@ -113,4 +131,35 @@ Application.GlobeModel = Application.BaseGlobeModel.extend({
 	  	// }
 		return populationGeoDataRecords;
   	}
+});
+
+Application.Tweet = Application.GeoDataRecord.extend({
+
+	default: {
+		text: "",
+	},
+	initialize: function() {
+		Application.GeoDataRecord.prototype.initialize.call(this);
+	}
+});
+
+Application.Tweets = Backbone.Collection.extend({
+	model: Application.Tweet,
+	url: "http://localhost:7777/tweets",
+	initialize: function() {
+	},
+	parse: function(data){
+
+		var tweets = new Array();
+		for(idx in data){
+			var tweet = {};
+			tweet.longitude = data[idx].geo.coordinates[0];
+			tweet.latitude = data[idx].geo.coordinates[1];
+			tweet.text = data[idx].text;
+			tweet.timestamp = data[idx].timestamp_ms;
+			tweets.push(tweet);
+		}
+		return tweets;
+
+	}
 });

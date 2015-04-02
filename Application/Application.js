@@ -69,6 +69,9 @@ Application = {
       ],
       views:{
         globeView : "DynamicGlobeView",
+      },
+      collection:{
+        globeView : "Tweets"
       }
     }
 
