@@ -73,6 +73,11 @@ Application.DataStructures.List.prototype._remove = function(node) {
 
 // public
 
+Application.DataStructures.List.prototype.getLength = function() {
+
+  return _length;
+};
+
 Application.DataStructures.List.prototype.getBegin = function() {
 
   return this._pre_head._next

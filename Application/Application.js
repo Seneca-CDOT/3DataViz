@@ -23,7 +23,7 @@ Application = {
     'Views/BaseGlobeView.js',
     'Models/GlobeModel.js',
     'Helpers/Helper.js',
-    'Helpers/Debug.js', // FOR DEBUG
+    'Helpers/Debug.js',
     'Helpers/DataStructures.js',
     'Libraries/OrbitControls.js',
     'Libraries/stats.js',
@@ -65,7 +65,8 @@ Application = {
     //configuration for GloveView (Dynamic)
     dynamic : {
       files: [
-        'Views/DynamicGlobeView.js',
+        'Views/DynamicGlobeView/DynamicGlobeView.js',
+        'Views/DynamicGlobeView/DynamicGlobeParticle.js',
       ],
       views:{
         globeView : "DynamicGlobeView",
