@@ -48,6 +48,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.vm.synced_folder "../data", "/vagrant_data"
 
    config.vm.synced_folder ".", "/home/app/server" , type: "rsync"
+  # config.vm.synced_folder ".", "/home/app" , type: "rsync"
    config.vm.synced_folder "../Application", "/home/app/public" , type: "rsync",
    rsync__exclude: [ ".git/", "node_modules/", ".DS_Store", "Vagrantfile" ]
 

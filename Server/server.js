@@ -3,39 +3,23 @@ var express = require('express');
 var app  = express();
 var MongoClient = require('mongodb').MongoClient;
 var port = 7777;
+var dbname = "tweets";
 app.listen(port);
 
-app.use(express.static('../public'));
+app.use(express.static('./public'));
 
-MongoClient.connect('mongodb://localhost:27017/mydb', function(err, db) {
+MongoClient.connect('mongodb://localhost:27017/' + dbname, function(err, db) {
 
-    if (err) console.log(err);
-    else console.log('Server is running at ' + port + ' port');
+  if (err) console.log(err);
+  else console.log('Server is running at ' + port + ' port');
 
-app.get('/tweets', function(req, res) {
-    
-     var col = db.collection('oscars');
+  app.get('/tweets', function(req, res) {
 
-                col.aggregate({
-                    $group: {
-                        _id: {
-                            country: "$country",
-                            code: "$country_code"
-                        },
-                        total_tweets: {
-                            $sum: 1
-                        }
-                    }
-                }, function(err, result) {
+    var col = db.collection('apple_event_2015s');
+    col.find({"geo":{$ne:null}}).toArray(function(err, result) {
+      if (err) throw err;
+      res.send(result);
+    });
 
-                    console.dir( result );
-                    // socket.emit('result', result);
-                    res.send(result);
-
-                });
-
-
-});
-   
-
+  });
 });

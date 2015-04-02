@@ -12,7 +12,7 @@ Application.BaseDataRecord = Backbone.Model.extend({
 
 Application.GeoDataRecord = Application.BaseDataRecord.extend({
 
-    defaults: {
+   defaults: {
 
         longitude: 0,
         latitude: 0,
@@ -33,19 +33,11 @@ Application.StaticTwitterCountryRecord = Application.BaseDataRecord.extend({
     },
     initialize: function() {
         Application.BaseDataRecord.prototype.initialize.call(this);
-
     }
 });
 
 
 // Data Records Collection
-
-Application.PopulationGeoDataRecords = Backbone.Collection.extend({
-    model: Application.PopulationGeoDataRecord,
-    url: "#",
-    initialize: function() {}
-});
-
 
 Application.StaticTwitterCountriesCollection = Backbone.Collection.extend({
     model: Application.StaticTwitterCountryRecord,
@@ -143,4 +135,35 @@ Application.GlobeModel = Application.BaseGlobeModel.extend({
         // }
         return populationGeoDataRecords;
     }
+});
+
+Application.Tweet = Application.GeoDataRecord.extend({
+
+	defaults: {
+		text: "",
+	},
+	initialize: function() {
+		Application.GeoDataRecord.prototype.initialize.call(this);
+	}
+});
+
+Application.Tweets = Backbone.Collection.extend({
+	model: Application.Tweet,
+	url: "http://localhost:7777/tweets",
+	initialize: function() {
+	},
+	parse: function(data){
+
+		var tweets = new Array();
+		for(idx in data){
+			var tweet = {};
+			tweet.longitude = data[idx].geo.coordinates[0];
+			tweet.latitude = data[idx].geo.coordinates[1];
+			tweet.text = data[idx].text;
+			tweet.timestamp = data[idx].timestamp_ms;
+			tweets.push(tweet);
+		}
+		return tweets;
+
+	}
 });
