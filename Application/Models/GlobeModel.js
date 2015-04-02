@@ -7,18 +7,17 @@ Application.BaseDataRecord = Backbone.Model.extend({
 
         timestamp: 0
     },
-    initialize: function() {
-    }
+    initialize: function() {}
 });
 
 Application.GeoDataRecord = Application.BaseDataRecord.extend({
 
-	defaults: {
+    defaults: {
 
-		longitude: 0,
+        longitude: 0,
         latitude: 0,
         city: ""
-	},
+    },
     initialize: function() {
         Application.BaseDataRecord.prototype.initialize.call(this);
     }
