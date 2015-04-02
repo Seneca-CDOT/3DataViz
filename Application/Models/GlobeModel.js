@@ -39,19 +39,6 @@ Application.PopulationGeoDataRecords = Backbone.Collection.extend({
 	model: Application.PopulationGeoDataRecord,
 	url: "/Models/geodata.json",
 	initialize: function() {
-	},
-	parse: function(responce){
-
-		// console.log("parse called");
-		// console.log(responce);
-		var obj =
-		[
-			{population: 10},
-			{population: 20},
-			{population: 30}
-		];
-		return obj;
-
 	}
 });
 
