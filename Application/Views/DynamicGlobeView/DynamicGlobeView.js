@@ -43,10 +43,10 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         this.getCountriesGeometry().done(this.onCountriesGeometryGet.bind(this));
 
-        // TODO: move out of this view
+// TODO: move out of this view
         function onMouseUp(e) {
             if (!this.moved) {
-                this.clickOn(e);
+               this.clickOn(e);
             }
             this.moved = false;
         };
@@ -61,13 +61,17 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         document.addEventListener('mousemove', onMouseMove.bind(this), false);
         document.addEventListener('mouseup', onMouseUp.bind(this), false);
 
-        $(document).on("keyup", 'form', function(e) {});
+        $(document).on("keyup", 'form', function(e) {
+        });
 
-        $(document).on("keypress", function(e) {});
+        $(document).on("keypress", function(e) {
+        });
 
-        $('#tweets').on("click", function(e) {});
+        $('#tweets').on("click", function(e) {
+        });
 
-        $('#reset').on("click", function(e) {});
+        $('#reset').on("click", function(e) {
+        });        
     },
     renderGlobe: function() {
 
@@ -82,10 +86,10 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.updateGlobe.call(this);
 
-        this.removeParticleIfNeeded();
         this.updateParticles();
     },
     updateParticles: function() {
+        this.removeParticleIfNeeded();
 
         ++this.timePeriod;
         if (this.timePeriod > this.timePeriodMax) {
@@ -99,12 +103,12 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
             var particle = iterator.getData();
 
             var rotation = 2 * Math.PI * ratio;
-            particle.rotation.z = rotation;
+            particle.getMesh().rotation.z = rotation;
 
-            var scale = particle.scale.x; // x, y, z are equal
+            var scale = particle.getMesh().scale.x; // x, y, z are equal
             if (scale < 2.5) {
                 scale += this.delta;
-                particle.scale.set(scale, scale, scale);
+                particle.getMesh().scale.set(scale, scale, scale);
             }
 
             iterator = iterator.getNext();
@@ -115,38 +119,38 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
             var particle = iterator.getData();
 
-            var scale = particle.scale.x;
+            var scale = particle.getMesh().scale.x; 
             if (scale > 0.01) {
 
                 var rotation = 2 * Math.PI * ratio;
-                particle.rotation.z = rotation;
+                particle.getMesh().rotation.z = rotation;
 
                 scale -= this.delta;
-                particle.scale.set(scale, scale, scale);
+                particle.getMesh().scale.set(scale, scale, scale);
 
                 iterator = iterator.getNext();
             } else {
 
-                this.scene.remove(particle);
+                this.scene.remove(particle.getMesh());
                 // TODO: eliminate use of private method
                 iterator = this.particlesToRemove._remove(iterator);
             }
         }
     },
     addHelpers: function() {
-
+        
         Application.BaseGlobeView.prototype.addHelpers.call(this);
-
+        
         Application.Debug.addAxes(this.globe);
     },
     // TODO: move out of this view
-    getCountriesGeometry: function() {
+    getCountriesGeometry: function() { 
 
         return $.ajax({
             type: 'GET',
             url: 'Models/geodata.json',
             dataType: 'json',
-            cache: false,
+            cache: false, 
             error: function() {
                 console.log('An error occurred while processing a countries file.');
             }
@@ -186,7 +190,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     // TODO: move to model
     // <script src="http://localhost:8080/socket.io/socket.io.js"></script>    
     startDataStreaming: function() {
-
+        
         var obj = {};
         // obj.track = "morning";
         obj.track = "love";
@@ -196,87 +200,47 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         this.socket.on('tweet', this.onDataReceive.bind(this));
         // this.socket.off('tweet', ...);
 
-        this.socket.emit('start', obj);
+        this.socket.emit('start', obj); 
     },
     onDataReceive: function(data) {
 
         console.log(data);
 
-        var dataRecord = new Application.GeoDataRecord({
-
-            "longitude": data.coordinates.coordinates[0],
-            "latitude": data.coordinates.coordinates[1],
-            "city": data.timestamp_ms
-
-        });
+        var dataRecord = new Application.GeoDataRecord();
+        dataRecord.longitude = data.coordinates.coordinates[0];
+        dataRecord.latitude = data.coordinates.coordinates[1];
+        dataRecord.timestamp = data.timestamp_ms;
 
         this.addParticleWithDataRecord(dataRecord);
     },
     addParticleWithDataRecord: function(dataRecord) {
 
-        // TODO: encapsulate paticle
+        var particle = new Application.DynamicGlobeParticle(dataRecord, this.globeRadius);
+        particle.setLifeTime(5000);
 
-        // sphere
-        // var geometry = new THREE.SphereGeometry(0.5, 6, 6);
-        // var material = new THREE.MeshPhongMaterial({
-        //                         color: 0xFF0000,
-        //                         ambient: 0x4396E8,
-        //                         shininess: 20,
-        //                         wireframe: true
-        //                     });
+        Application.Debug.addAxes(particle.getMesh());
 
-        // cube
-        var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-        var material = new THREE.MeshPhongMaterial({
-            color: 0xFF0000,
-            ambient: 0x4396E8,
-            shininess: 20,
-            wireframe: true
-        });
-
-        var particle = new THREE.Mesh(geometry, material);
-
-
-        var position = Application.Helper.geoToxyz(dataRecord.get("longitude"), dataRecord.get("latitude"), this.globeRadius);
-
-        // compute orientation parameters
-        var objectNormal = new THREE.Vector3(0, 0, 1);
-
-        var direction = new THREE.Vector3(position.x, position.y, position.z);
-        direction.normalize();
-
-        var angle = Math.acos(direction.z);
-        var axis = new THREE.Vector3();
-        axis.crossVectors(objectNormal, direction);
-        axis.normalize();
-
-        var quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
-
-        // set orientation parameters
-        var displacement = 1.04 * this.globeRadius;
-        particle.position.set(direction.x * displacement, direction.y * displacement, direction.z * displacement);
-        particle.scale.set(0, 0, 0);
-        particle.rotation.setFromQuaternion(quaternion);
-        direction
-
-        Application.Debug.addAxes(particle);
-
-        this.scene.add(particle);
-        // this.particles.push(particle);
+        this.scene.add(particle.getMesh());
         this.particles.pushBack(particle);
     },
     removeParticleIfNeeded: function() {
 
-        var maxCount = 10;
+        var date = new Date();
 
         var iterator = this.particles.getBegin();
-        while (iterator !== this.particles.getEnd() && this.particles.getLength() > maxCount) {
+        while (iterator !== this.particles.getEnd()) {
 
             var particle = iterator.getData();
-            this.particlesToRemove.pushBack(particle);
+            if (particle.isDead(date.getTime())) {
 
-            // TODO: eliminate use of private method
-            iterator = this.particles._remove(iterator);
+                this.particlesToRemove.pushBack(particle);
+
+                // TODO: eliminate use of private method
+                iterator = this.particles._remove(iterator);
+            } else {
+
+                break;
+            }
         }
     },
 
@@ -308,7 +272,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         // document.removeEventListener('mouseup', onMouseUp, false);
         // this.controls.removeMouse();
-
+        
         this.moved = true;
 
         var current = this.controls.getPosition();
@@ -320,22 +284,22 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         }
 
         this.tween = new TWEEN.Tween(current)
-            .to({
-                x: destination.x,
-                y: destination.y,
-                z: destination.z
-            }, 1000)
-            .easing(TWEEN.Easing.Sinusoidal.InOut)
-            .onUpdate((function(that) {
-                return function() {
-                    onUpdate(this, that);
-                };
-            })(this))
-            .onComplete((function(that) {
-                return function() {
-                    onComplete(this, that);
-                };
-            })(this));
+        .to({
+            x: destination.x,
+            y: destination.y,
+            z: destination.z
+        }, 1000)
+        .easing(TWEEN.Easing.Sinusoidal.InOut)
+        .onUpdate((function(that) { 
+            return function () { 
+                onUpdate(this, that); 
+            };
+        })(this))
+        .onComplete((function(that) { 
+            return function () { 
+                onComplete(this, that); 
+            };
+        })(this));
 
         function onUpdate(point, that) {
             that.controls.updateView({
