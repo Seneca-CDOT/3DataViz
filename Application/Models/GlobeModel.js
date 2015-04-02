@@ -12,7 +12,7 @@ Application.BaseDataRecord = Backbone.Model.extend({
 
 Application.GeoDataRecord = Application.BaseDataRecord.extend({
 
-	default: {
+	defaults: {
 		longitude : 0,
 		latitude : 0,
 		city : ""
@@ -24,7 +24,7 @@ Application.GeoDataRecord = Application.BaseDataRecord.extend({
 
 Application.PopulationGeoDataRecord = Application.GeoDataRecord.extend({
 
-	default: {
+	defaults: {
 		population: 0
 	},
 	initialize: function() {
@@ -123,7 +123,7 @@ Application.GlobeModel = Application.BaseGlobeModel.extend({
 
 Application.Tweet = Application.GeoDataRecord.extend({
 
-	default: {
+	defaults: {
 		text: "",
 	},
 	initialize: function() {
