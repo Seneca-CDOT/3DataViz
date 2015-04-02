@@ -56,6 +56,7 @@ Application.GlobeModel = Application.BaseGlobeModel.extend({
 		Application.BaseGlobeModel.prototype.initialize.call(this);
 	},
   	loadData: function() {
+
 	  	var rawData = [{
 	  				city: "Montreal",
 				    population: 3268513,
