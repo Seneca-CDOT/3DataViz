@@ -8,6 +8,20 @@ Application.BaseDataRecord = Backbone.Model.extend({
 	}
 });
 
+Application.VideoModel = Application.BaseDataRecord.extend({
+	initialize: function() {
+		Application.BaseDataRecord.prototype.initialize.call(this);
+		this.url = "https://www.youtube.com/embed/Kbh9EFuFf0M";
+	}
+});
+Application.TimelineSliderModel = Backbone.Model.extend({
+	initialize: function(){
+		this.DOMWidth = 0;
+		this.MaxVal = 0;
+		this.clicked = false;
+	}
+});
+
 Application.GeoDataRecord = Application.BaseDataRecord.extend({
 
 	initialize: function() {

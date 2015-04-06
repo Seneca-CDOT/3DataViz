@@ -31,6 +31,7 @@ Application = {
     'Libraries/text.js',
     'Libraries/font.js',
     'Libraries/map3d.js'
+    'Libraries/popcorn-complete.min.js'
   ],
 
   globeViews : {
@@ -66,14 +67,15 @@ Application = {
     dynamic : {
       files: [
         'Views/DynamicGlobeView.js',
+        'Views/VideoView.js',
+        'Views/SliderControlView.js',
       ],
       views:{
         globeView : "DynamicGlobeView",
+        controlPanel : "ControlPanelGlobeView"
       }
     }
-
   }
-
 };
 
 require(Application.files, function(){
