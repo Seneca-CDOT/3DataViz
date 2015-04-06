@@ -21,7 +21,6 @@ Application.RootGlobeView = Backbone.View.extend({
       this.views.push(this[name]);
 
     }
-
   },
   render: function(options) {
 

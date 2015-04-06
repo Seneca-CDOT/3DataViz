@@ -8,7 +8,7 @@ var Application = Application || {};
 Application.GlobeRouter = Backbone.Router.extend({
 
   routes : {
-    "globeView/population" : "initPopulationGlobeView",
+    "globeView/statictwitter" : "initStaticTwitterGlobeView",
     "globeView/flightPath" : "initFlightPathGlobeView",
     "globeView/dynamic" : "initDynamicGlobeView",
     //"globeView/population/:action" : "doSomething",
@@ -28,11 +28,11 @@ Application.GlobeRouter = Backbone.Router.extend({
 
   },
 
-  initPopulationGlobeView: function(){
-    require(Application.globeViews.population.files , function(){
+  initStaticTwitterGlobeView: function(){
+    require(Application.globeViews.statictwitter.files , function(){
 
-      var views = Application.globeViews.population.views;
-      var collection = Application.globeViews.population.collection;
+      var views = Application.globeViews.statictwitter.views;
+      var collection = Application.globeViews.statictwitter.collection;
       Application.router.initGlobeView(views, collection);
 
       //call fetch test
