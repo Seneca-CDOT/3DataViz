@@ -29,7 +29,8 @@ Application = {
     'Libraries/tween.min.js',
     'Libraries/text.js',
     'Libraries/font.js',
-    'Libraries/map3d.js'
+    'Libraries/map3d.js',
+    'Libraries/papaparse.js'
   ],
 
   globeViews : {
