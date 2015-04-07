@@ -13,7 +13,6 @@ Application.BaseDataRecord = Backbone.Model.extend({
 Application.GeoDataRecord = Application.BaseDataRecord.extend({
 
    defaults: {
-
         longitude: 0,
         latitude: 0,
         city: ""
@@ -41,22 +40,15 @@ Application.StaticTwitterCountryRecord = Application.BaseDataRecord.extend({
 
 Application.StaticTwitterCountriesCollection = Backbone.Collection.extend({
     model: Application.StaticTwitterCountryRecord,
-    url: "tweets",
+    url: "tweets/oscars",
     initialize: function() {},
     parse: function(response) {
-
-        var collection = this;
-
-        response.forEach(function(item) {
-
-            var obj = {};
-            obj.countrycode = item._id.code;
-            obj.countryname = item._id.country;
-            obj.total_tweets = item.total_tweets;
-            collection.push(obj);
-        });
-
-        return this.models;
+        var filter = {
+            countrycode : "_id.code",
+            countryname : "_id.country",
+            total_tweets : "total_tweets"
+        }
+        return Application.Filter.extractJSON(filter, response);
     }
 });
 
@@ -139,31 +131,25 @@ Application.GlobeModel = Application.BaseGlobeModel.extend({
 
 Application.Tweet = Application.GeoDataRecord.extend({
 
-	defaults: {
-		text: "",
-	},
-	initialize: function() {
-		Application.GeoDataRecord.prototype.initialize.call(this);
-	}
+    defaults: {
+        text: "",
+    },
+    initialize: function() {
+        Application.GeoDataRecord.prototype.initialize.call(this);
+    }
 });
 
 Application.Tweets = Backbone.Collection.extend({
-	model: Application.Tweet,
-	url: "http://localhost:7777/tweets",
-	initialize: function() {
-	},
-	parse: function(data){
-
-		var tweets = new Array();
-		for(idx in data){
-			var tweet = {};
-			tweet.longitude = data[idx].geo.coordinates[0];
-			tweet.latitude = data[idx].geo.coordinates[1];
-			tweet.text = data[idx].text;
-			tweet.timestamp = data[idx].timestamp_ms;
-			tweets.push(tweet);
-		}
-		return tweets;
-
-	}
+    model: Application.Tweet,
+    url: "tweets/apple",
+    initialize: function() {},
+    parse: function(response){
+        var filter = {
+            longitude : "geo.coordinates[0]",
+            latitude : "geo.coordinates[1]",
+            text : "text",
+            timestamp : "timestamp_ms",
+        }
+        return Application.Filter.extractJSON(filter, response);
+    }
 });
