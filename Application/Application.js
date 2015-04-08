@@ -21,16 +21,17 @@ Application = {
     'Routes/GlobeRouter.js',
     'Views/RootGlobeView.js',
     'Views/BaseGlobeView.js',
-    'Models/GlobeModel.js',
     'Helpers/Helper.js',
     'Helpers/Debug.js',
     'Helpers/DataStructures.js',
+    'Helpers/Filter.js',
+    'Models/GlobeModel.js',
     'Libraries/OrbitControls.js',
     'Libraries/stats.js',
     'Libraries/tween.min.js',
     'Libraries/text.js',
     'Libraries/font.js',
-    'Libraries/map3d.js'
+    'Libraries/map3d.js',
   ],
 
   globeViews : {
