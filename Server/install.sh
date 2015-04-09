@@ -22,7 +22,7 @@ npm update
 
 mkdir -p /home/app
 mkdir -p /data/db
-sudo chown `whoami` /data/db
+sudo chown -R vagrant /data
 
 cd /home/app
 sudo npm install mongodb
@@ -31,3 +31,16 @@ sudo npm install express
 #echo "Installing Socket.io"
 #sudo npm install socket.io
 
+echo "Downloading oscar-all.json..."
+wget https://www.dropbox.com/s/tmg0gvqkcx1pr4r/oscar-all.json > /dev/null 2>&1
+echo "Downloading apple.json..."
+wget https://www.dropbox.com/s/y9s64d36xig50iz/apple.json > /dev/null 2>&1
+
+mongod
+echo "Importing oscar-all.json"
+mongoimport --db tweets --collection oscars --file oscar-all.json --jsonArray
+echo "Importing apple.json"
+mongoimport --db tweets --collection apple --file apple.json --jsonArray
+
+echo "shutdown mongod"
+sudo service mongod stop

@@ -16,16 +16,7 @@ Install.sh contains the installation of mongodb on your virtual machine.
 #Run mongodb
 1. Make sure that port 27017 is available on your machine, otherwise you will have to change it on your vm.
 2. Type ```mongod --dbpath /data/db --port 27017``` to run.
-3. Now you have an access to mongodb in console by typing ```mongo```
-
-#Import data
-Two datasets are available:
-- Download oscars-all.json from ```https://www.dropbox.com/s/tmg0gvqkcx1pr4r/oscar-all.json?dl=0```
-- Download apple.json from ```https://www.dropbox.com/s/y9s64d36xig50iz/apple.json?dl=0```
-
-1. Import oscars datasets by issuing ```mongoimport --db tweets --collection oscars --file oscars-all.json --jsonArray```
-2. Import apple datasets by issuing ```mongoimport --db tweets --collection apple --file apple.json --jsonArray```
-3. Done. After you run the server by following next step, you can connect from your app to db by address ```localhost:27107/tweets/oscars``` or ```localhost:27107/tweets/apple```
+3. Now you have an access to mongodb in console by typing ```mongo```, tweets data from oscars and apple are available.
 
 #Run application
 1. Type ```node server.js``` to run our server in /home/app/server.
