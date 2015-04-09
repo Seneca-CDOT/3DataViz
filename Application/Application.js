@@ -10,77 +10,91 @@ var Application = Application || {};
  */
 Application = {
 
-	//Create Route which handles Views and Models
-  init : function(){
-    this.router = new this.GlobeRouter();
-    Backbone.history.start();
-  },
-
-  //Files which need to be imported for GlobeVisualization
-  files : [
-    'Routes/GlobeRouter.js',
-    'Views/RootGlobeView.js',
-    'Views/BaseGlobeView.js',
-    'Helpers/Helper.js',
-    'Helpers/Debug.js',
-    'Helpers/DataStructures.js',
-    'Helpers/Filter.js',
-    'Models/GlobeModel.js',
-    'Libraries/OrbitControls.js',
-    'Libraries/stats.js',
-    'Libraries/tween.min.js',
-    'Libraries/text.js',
-    'Libraries/font.js',
-    'Libraries/map3d.js',
-  ],
-
-  globeViews : {
-    //configuration for GloveView (Population)
-    statictwitter : {
-      files: [
-        'Views/StaticTwitterGlobeView.js',
-        'Views/ControlPanelGlobeView.js',
-        'Views/ControlElementsGlobeView.js'
-      ],
-      views:{
-        globeView : "StaticTwitterGlobeView",
-        controlPanel : "StaticTwitterControlPanel"
-      },
-      collection:{
-        globeView : "StaticTwitterCountriesCollection"
-      }
+    //Create Route which handles Views and Models
+    init: function() {
+        this.router = new this.GlobeRouter();
+        Backbone.history.start();
     },
 
-    //configuration for GloveView (Flight Path)
-    flightPath : {
-      files: [
-        'Views/FlightPathGlobeView.js',
-        'Models/data/path.js',
-        'Models/data/countriesList.js',
-      ],
-      views:{
-        globeView : "FlightPathGlobeView"
-      }
-    },
+    //Files which need to be imported for GlobeVisualization
+    files: [
+        'Routes/GlobeRouter.js',
+        'Views/RootGlobeView.js',
+        'Views/BaseGlobeView.js',
+        'Helpers/Helper.js',
+        'Helpers/Debug.js',
+        'Helpers/DataStructures.js',
+        'Helpers/Filter.js',
+        'Models/GlobeModel.js',
+        'Libraries/OrbitControls.js',
+        'Libraries/stats.js',
+        'Libraries/tween.min.js',
+        'Libraries/text.js',
+        'Libraries/font.js',
+        'Libraries/map3d.js',
+    ],
 
-    //configuration for GloveView (Dynamic)
-    dynamic : {
-      files: [
-        'Views/DynamicGlobeView/DynamicGlobeView.js',
-        'Views/DynamicGlobeView/DynamicGlobeParticle.js',
-      ],
-      views:{
-        globeView : "DynamicGlobeView",
-      },
-      collection:{
-        globeView : "Tweets"
-      }
+    globeViews: {
+        //configuration for GloveView (Population)
+        statictwitter: {
+            files: [
+                'Views/StaticTwitterGlobeView.js',
+                'Views/ControlPanelGlobeView.js',
+                'Views/ControlElementsGlobeView.js'
+            ],
+            views: {
+                globeView: "StaticTwitterGlobeView",
+                controlPanel: "StaticTwitterControlPanel"
+            },
+            collection: {
+                globeView: "StaticTwitterCountriesCollection"
+            }
+        },
+
+        //configuration for GloveView (Flight Path)
+        flightPath: {
+            files: [
+                'Views/FlightPathGlobeView.js',
+                'Models/data/path.js',
+                'Models/data/countriesList.js',
+            ],
+            views: {
+                globeView: "FlightPathGlobeView"
+            }
+        },
+
+        //configuration for GloveView (Dynamic)
+        dynamic: {
+            files: [
+                'Views/DynamicGlobeView/DynamicGlobeView.js',
+                'Views/DynamicGlobeView/DynamicGlobeParticle.js',
+            ],
+            views: {
+                globeView: "DynamicGlobeView",
+            },
+            collection: {
+                globeView: "Tweets"
+            }
+
+        },
+
+        //configuration for SpreadSheetGlobeView
+        spreadsheet: {
+            files: [
+                'Views/SpreadSheetGlobeView.js',
+                'Views/ControlPanelGlobeView.js',
+                'Views/ControlElementsGlobeView.js'
+            ],
+            views: {
+                globeView: "SpreadSheetGlobeView",
+            },
+            collection: {
+                globeView: "Tweets"
+            }
+        }
     }
-
-  }
-
 };
 
-require(Application.files, function(){
-  Application.init();
+require(Application.files, function() {
+    Application.init();
 });

@@ -12,11 +12,11 @@ Application.BaseDataRecord = Backbone.Model.extend({
 
 Application.GeoDataRecord = Application.BaseDataRecord.extend({
 
-   defaults: {
+    defaults: _.extend({}, Application.BaseDataRecord.prototype.defaults, {
         longitude: 0,
         latitude: 0,
         city: ""
-    },
+    }),
     initialize: function() {
         Application.BaseDataRecord.prototype.initialize.call(this);
     }
@@ -24,19 +24,53 @@ Application.GeoDataRecord = Application.BaseDataRecord.extend({
 
 Application.StaticTwitterCountryRecord = Application.BaseDataRecord.extend({
 
-    defaults: {
-
+    defaults: _.extend({}, Application.BaseDataRecord.prototype.defaults, {
         countrycode: "",
         countryname: "",
         total_tweets: 0
-    },
+    }),
     initialize: function() {
         Application.BaseDataRecord.prototype.initialize.call(this);
     }
 });
 
+Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
+
+    defaults: _.extend({}, Application.GeoDataRecord.prototype.defaults, {
+
+    }),
+    initialize: function() {
+        Application.GeoDataRecord.prototype.initialize.call(this);
+    }
+
+});
+
 
 // Data Records Collection
+
+Application.SpreadSheetCollection = Backbone.Collection.extend({
+    model: Application.SpreadSheetRecord,
+    initialize: function() {},
+    parse: function(response) {
+
+        console.log(response);
+
+        var collection = this;
+
+        for (i = 0; i < response.feed.entry.length; i = i + 4) {
+
+            var obj = {};
+            obj.city = response.feed.entry[i].content.$t;
+            obj.longitude = response.feed.entry[i+1].content.$t;
+            obj.latitude = response.feed.entry[i+2].content.$t;
+            obj.timestamp = response.feed.entry[i+3].content.$t;
+            collection.push(obj);
+        }
+
+
+        return this.models;
+    }
+});
 
 Application.StaticTwitterCountriesCollection = Backbone.Collection.extend({
     model: Application.StaticTwitterCountryRecord,
@@ -44,9 +78,9 @@ Application.StaticTwitterCountriesCollection = Backbone.Collection.extend({
     initialize: function() {},
     parse: function(response) {
         var filter = {
-            countrycode : "_id.code",
-            countryname : "_id.country",
-            total_tweets : "total_tweets"
+            countrycode: "_id.code",
+            countryname: "_id.country",
+            total_tweets: "total_tweets"
         }
         return Application.Filter.extractJSON(filter, response);
     }
@@ -143,12 +177,12 @@ Application.Tweets = Backbone.Collection.extend({
     model: Application.Tweet,
     url: "tweets/apple",
     initialize: function() {},
-    parse: function(response){
+    parse: function(response) {
         var filter = {
-            longitude : "geo.coordinates[0]",
-            latitude : "geo.coordinates[1]",
-            text : "text",
-            timestamp : "timestamp_ms",
+            longitude: "geo.coordinates[0]",
+            latitude: "geo.coordinates[1]",
+            text: "text",
+            timestamp: "timestamp_ms",
         }
         return Application.Filter.extractJSON(filter, response);
     }

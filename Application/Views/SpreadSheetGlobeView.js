@@ -1,12 +1,12 @@
 var Application = Application || {};
 
-Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
+Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
 
     initialize: function() {
         Application.BaseGlobeView.prototype.initialize.call(this);
-        this.controlPanel = new Application.StaticTwitterControlPanel();
+        this.controlPanel = new Application.SpreadSheetControlPanel();
         this.countries = [];
         this.intersected; // intersected mesh
         this.moved = false; // for controls and mouse events
@@ -62,8 +62,6 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
 
         });
 
-        //  this.renderGlobe();
-        // ************************
     },
     onMouseUp: function(e) {
 
@@ -118,7 +116,7 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
 
         var destination = countrymesh.geometry.boundingSphere.center.clone();
         destination.setLength(this.controls.getRadius());
-      
+
         this.highlightCountry(countrymesh);
 
 
@@ -271,17 +269,16 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
     },
     requestCountriesData: function() { // requesting initial data of country borders
 
-            return $.ajax({
-                type: 'GET',
-                url: 'Models/geodata.json',
-                dataType: 'json',
-                cache: false, // sometimes old info stuck in cache
-                error: function() {
-                    console.log('An error occurred while processing a countries file.');
-                }
-            });
-        }
-    ,
+        return $.ajax({
+            type: 'GET',
+            url: 'Models/geodata.json',
+            dataType: 'json',
+            cache: false, // sometimes old info stuck in cache
+            error: function() {
+                console.log('An error occurred while processing a countries file.');
+            }
+        });
+    },
     // *************************
 
     addCountries: function(data) {
@@ -367,6 +364,32 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
             //   index++;
             //  }, 100);
         }.bind(this));
+    },
+
+    addPoints: function(array) {
+
+        var that = this;
+
+        var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
+
+        var material = new THREE.SpriteMaterial({
+            map: map,
+            color: 0xffffff,
+            fog: true
+        });
+
+        array.forEach(function(item) {
+
+            var sprite = new THREE.Sprite(material);
+
+            that.scene.add(sprite);
+
+            var position = Application.Helper.geoToxyz(item.attributes.longitude, item.attributes.latitude, 51);
+
+            sprite.position.copy(position);
+
+        });
+
     }
 
 });
