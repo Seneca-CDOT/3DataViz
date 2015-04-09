@@ -8,6 +8,7 @@ var Application = Application || {};
 Application.GlobeRouter = Backbone.Router.extend({
 
   routes : {
+    "globeView/spreadsheet" : "initSpreadSheetGlobeView",
     "globeView/statictwitter" : "initStaticTwitterGlobeView",
     "globeView/flightPath" : "initFlightPathGlobeView",
     "globeView/dynamic" : "initDynamicGlobeView",
@@ -26,6 +27,22 @@ Application.GlobeRouter = Backbone.Router.extend({
     this.rootGlobeView = new Application.RootGlobeView(views, collection);
     $("#applicaitonRegion").empty().append(this.rootGlobeView.render().$el[0]);
 
+  },
+  initSpreadSheetGlobeView: function(){
+    require(Application.globeViews.spreadsheet.files , function(){
+
+      var views = Application.globeViews.spreadsheet.views;
+      var collection = Application.globeViews.spreadsheet.collection;
+      Application.router.initGlobeView(views, collection);
+
+      //call fetch test
+      Application.router.rootGlobeView.globeView.collection.fetch({
+        success: function(){
+          // console.log(Application.router.rootGlobeView.globeView.collection);
+        }
+      });
+
+    });
   },
 
   initStaticTwitterGlobeView: function(){

@@ -15,9 +15,12 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
     },
     action: function(e) {
 
+
     }
 
 });
+
+// StaticTwitter
 
 Application.SearchField = Application.ControlElementsGlobeView.extend({
     tagName: 'input',
@@ -33,6 +36,7 @@ Application.SearchField = Application.ControlElementsGlobeView.extend({
 
 
 });
+
 
 Application.TweetsButton = Application.ControlElementsGlobeView.extend({
     tagName: 'button',
@@ -84,6 +88,73 @@ Application.ResetButton = Application.ControlElementsGlobeView.extend({
 
         this.$el.text('reset');
         return this;
+    }
+
+});
+
+// SpreadSheet
+
+Application.URLField = Application.ControlElementsGlobeView.extend({
+    tagName: 'input',
+    id: 'url',
+    className: 'form-control',
+    initialize: function() {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this);
+    },
+    render: function() {
+
+        return this;
+    },
+    action: function(e) {
+
+        e.stopPropagation();
+    }
+
+
+});
+
+Application.SubmitButton = Application.ControlElementsGlobeView.extend({
+    tagName: 'button',
+    id: 'submit',
+    className: 'btn btn-primary',
+    initialize: function() {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this);
+
+    },
+    render: function() {
+
+        this.$el.text('submit');
+        return this;
+    },
+    action: function(e) {
+
+        Application.ControlElementsGlobeView.prototype.action.call(this);
+
+        e.stopPropagation();
+
+        var val = Application.router.rootGlobeView.views[0].controlPanel.urlfield.el.value;
+
+        console.log(val);
+
+        var collection = new Application.SpreadSheetCollection();
+
+        collection.url = 'https://spreadsheets.google.com/feeds/cells/' + val + '/1/public/basic?alt=json';
+
+        collection.fetch({
+
+            success: function(response) {
+
+                // console.log(response);
+
+                Application.router.rootGlobeView.views[0].addPoints(response.models);
+            },
+            error: function(err, response) {
+
+                console.log(err);
+
+            }
+        });
+
     }
 
 });

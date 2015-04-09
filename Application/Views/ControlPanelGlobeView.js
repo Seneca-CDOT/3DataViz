@@ -26,10 +26,30 @@ initialize: function() {
 	this.tweetsbtn = new Application.TweetsButton();
 	this.resetbtn = new Application.ResetButton();
 },
-render: function () {
+render: function() {
 	Application.ControlPanelGlobeView.prototype.render.call(this);
 	this.$el.append( this.search.render().$el );
 	this.$el.append( this.tweetsbtn.render().$el );
+	this.$el.append( this.resetbtn.render().$el );
+	return this;
+}
+
+
+
+});
+
+Application.SpreadSheetControlPanel = Application.ControlPanelGlobeView.extend({
+
+initialize: function() {
+    Application.ControlPanelGlobeView.prototype.initialize.call(this);
+	this.urlfield = new Application.URLField();
+	this.submitbtn = new Application.SubmitButton();
+	this.resetbtn = new Application.ResetButton();
+},
+render: function() {
+	Application.ControlPanelGlobeView.prototype.render.call(this);
+	this.$el.append( this.urlfield.render().$el );
+	this.$el.append( this.submitbtn.render().$el );
 	this.$el.append( this.resetbtn.render().$el );
 	return this;
 }

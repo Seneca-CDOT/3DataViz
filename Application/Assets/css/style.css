@@ -39,14 +39,15 @@ body {
     top: 20%;
 }
 
-#search {
+#search, #url {
     position: absolute;
     width: 80%;
     left: 10%;
     top: 200px;
 }
 
-#tweets {
+
+#tweets, #submit {
     position: absolute;
     width: 80%;
     left: 10%;
