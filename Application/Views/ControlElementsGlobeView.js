@@ -88,6 +88,11 @@ Application.ResetButton = Application.ControlElementsGlobeView.extend({
 
         this.$el.text('reset');
         return this;
+    },
+    action: function(e) {
+
+        e.stopPropagation();
+        Application.router.rootGlobeView.views[0].resetCountries();
     }
 
 });
@@ -108,6 +113,7 @@ Application.URLField = Application.ControlElementsGlobeView.extend({
     action: function(e) {
 
         e.stopPropagation();
+
     }
 
 
@@ -133,6 +139,8 @@ Application.SubmitButton = Application.ControlElementsGlobeView.extend({
         e.stopPropagation();
 
         var val = Application.router.rootGlobeView.views[0].controlPanel.urlfield.el.value;
+
+        if (val == '') val = '13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg'; // temporary
 
         console.log(val);
 
