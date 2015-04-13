@@ -35,12 +35,12 @@ Application.GlobeRouter = Backbone.Router.extend({
       var collection = Application.globeViews.spreadsheet.collection;
       Application.router.initGlobeView(views, collection);
 
-      //call fetch test
-      Application.router.rootGlobeView.globeView.collection.fetch({
-        success: function(){
-          // console.log(Application.router.rootGlobeView.globeView.collection);
-        }
-      });
+      // //call fetch test
+      // Application.router.rootGlobeView.globeView.collection.fetch({
+      //   success: function(){
+      //     // console.log(Application.router.rootGlobeView.globeView.collection);
+      //   }
+      // });
 
     });
   },

@@ -89,7 +89,7 @@ Application = {
                 globeView: "SpreadSheetGlobeView",
             },
             collection: {
-                globeView: "Tweets"
+                globeView: "SpreadSheetCollection"
             }
         }
     }

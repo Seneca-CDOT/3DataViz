@@ -27,10 +27,29 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
-        this.remove();
-        this.unbind();
-        delete this.$el;
-        delete this.el;
+        this.collection.reset();
+    },
+    updateCollection: function(val) {
+
+        var that = this;
+
+        this.collection.url = 'https://spreadsheets.google.com/feeds/cells/' + val + '/1/public/basic?alt=json';
+
+        this.collection.fetch({
+
+            success: function(response) {
+
+                // console.log(response);
+
+                that.addPoints(response.models);
+            },
+
+            error: function(err, response) {
+
+                console.log(err);
+
+            }
+        });
     },
 
     // member methods
@@ -155,7 +174,7 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
         tween.start();
     },
 
-    resetCountries: function() {
+    resetGlobe: function() {
 
         // this.twittermode = false;
         // $('.countryinfo').empty();
@@ -166,6 +185,9 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
         this.sprites.forEach(function(sprite) {
 
             that.scene.remove(sprite);
+
+            sprite.geometry.dispose();
+            sprite.material.dispose();
 
         });
     },

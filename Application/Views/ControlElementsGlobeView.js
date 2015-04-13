@@ -15,6 +15,7 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
     },
     action: function(e) {
 
+        if (e) e.stopPropagation();
 
     }
 
@@ -32,6 +33,11 @@ Application.SearchField = Application.ControlElementsGlobeView.extend({
     render: function() {
 
         return this;
+    },
+    action: function(e) {
+
+        Application.ControlElementsGlobeView.prototype.action.call(this,e);
+
     }
 
 
@@ -53,9 +59,7 @@ Application.TweetsButton = Application.ControlElementsGlobeView.extend({
     },
     action: function(e) {
 
-        Application.ControlElementsGlobeView.prototype.action.call(this);
-
-        e.stopPropagation();
+        Application.ControlElementsGlobeView.prototype.action.call(this,e);
 
         var tweetscollection = new Application.StaticTwitterCountriesCollection();
 
@@ -91,8 +95,11 @@ Application.ResetButton = Application.ControlElementsGlobeView.extend({
     },
     action: function(e) {
 
-        e.stopPropagation();
-        Application.router.rootGlobeView.views[0].resetCountries();
+        Application.ControlElementsGlobeView.prototype.action.call(this,e);
+
+        Application.router.rootGlobeView.views[0].resetGlobe();
+        
+        Application.router.rootGlobeView.views[0].destroy();
     }
 
 });
@@ -112,7 +119,8 @@ Application.URLField = Application.ControlElementsGlobeView.extend({
     },
     action: function(e) {
 
-        e.stopPropagation();
+        Application.ControlElementsGlobeView.prototype.action.call(this, e);
+
 
     }
 
@@ -134,34 +142,15 @@ Application.SubmitButton = Application.ControlElementsGlobeView.extend({
     },
     action: function(e) {
 
-        Application.ControlElementsGlobeView.prototype.action.call(this);
-
-        e.stopPropagation();
+        Application.ControlElementsGlobeView.prototype.action.call(this,e);
 
         var val = Application.router.rootGlobeView.views[0].controlPanel.urlfield.el.value;
 
         if (val == '') val = '13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg'; // temporary
 
-        console.log(val);
+        //console.log(val);
 
-        var collection = new Application.SpreadSheetCollection();
-
-        collection.url = 'https://spreadsheets.google.com/feeds/cells/' + val + '/1/public/basic?alt=json';
-
-        collection.fetch({
-
-            success: function(response) {
-
-                // console.log(response);
-
-                Application.router.rootGlobeView.views[0].addPoints(response.models);
-            },
-            error: function(err, response) {
-
-                console.log(err);
-
-            }
-        });
+        Application.router.rootGlobeView.views[0].updateCollection(val);
 
     }
 

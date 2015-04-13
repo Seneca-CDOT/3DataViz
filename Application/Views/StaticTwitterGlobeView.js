@@ -154,7 +154,7 @@ Application.StaticTwitterGlobeView = Application.BaseGlobeView.extend({
         tween.start();
     },
 
-    resetCountries: function() {
+    resetGlobe: function() {
 
         this.twittermode = false;
         $('.countryinfo').empty();
