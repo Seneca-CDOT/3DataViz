@@ -11,6 +11,7 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
         this.intersected; // intersected mesh
         this.moved = false; // for controls and mouse events
         this.orbitOn = false;
+        this.sprites = [];
 
     },
     events: {
@@ -41,6 +42,8 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
             TWEEN.update();
         }
+
+        this.camera.rotation.y += 0.1;
 
     },
     showGlobe: function() {
@@ -154,26 +157,16 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
     resetCountries: function() {
 
-        this.twittermode = false;
-        $('.countryinfo').empty();
-        $('#rank').empty();
+        // this.twittermode = false;
+        // $('.countryinfo').empty();
+        // $('#rank').empty();
 
-        $.each(this.countries, function(index, country) {
+        var that = this;
 
-            if (country.userData.name !== 'globe') {
-                country.material.color.set(country.userData.countrycolor);
+        this.sprites.forEach(function(sprite) {
 
-                $.each(country.userData, function(i, mesh) {
+            that.scene.remove(sprite);
 
-                    if (mesh instanceof THREE.Mesh) {
-
-                        this.scene.remove(mesh);
-
-                        mesh.geometry.dispose();
-                        mesh.material.dispose();
-                    }
-                });
-            }
         });
     },
 
@@ -387,6 +380,9 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
             var position = Application.Helper.geoToxyz(item.attributes.longitude, item.attributes.latitude, 51);
 
             sprite.position.copy(position);
+
+            that.sprites.push(sprite);
+
 
         });
 
