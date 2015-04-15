@@ -19,13 +19,16 @@ Application = {
     //Files which need to be imported for GlobeVisualization
     files: [
         'Routes/GlobeRouter.js',
-        'Views/RootGlobeView.js',
-        'Views/BaseGlobeView.js',
+        'Views/BaseClasses/RootGlobeView.js',
+        'Views/BaseClasses/BaseGlobeView.js',
+
         'Helpers/Helper.js',
         'Helpers/Debug.js',
         'Helpers/DataStructures.js',
         'Helpers/Filter.js',
+
         'Models/GlobeModel.js',
+
         'Libraries/OrbitControls.js',
         'Libraries/stats.js',
         'Libraries/tween.min.js',
@@ -38,17 +41,11 @@ Application = {
         //configuration for GloveView (Population)
         statictwitter: {
             files: [
-                'Views/StaticTwitterGlobeView.js',
+                'Views/StaticTwitterGlobeView/StaticTwitterRootGlobeView.js',
+                'Views/StaticTwitterGlobeView/StaticTwitterGlobeView.js',
                 'Views/ControlPanelGlobeView.js',
-                'Views/ControlElementsGlobeView.js'
-            ],
-            views: {
-                globeView: "StaticTwitterGlobeView",
-                controlPanel: "StaticTwitterControlPanel"
-            },
-            collection: {
-                globeView: "StaticTwitterCountriesCollection"
-            }
+                'Views/ControlElementsGlobeView.js',
+            ]
         },
 
         //configuration for GloveView (Flight Path)
@@ -57,25 +54,16 @@ Application = {
                 'Views/FlightPathGlobeView.js',
                 'Models/data/path.js',
                 'Models/data/countriesList.js',
-            ],
-            views: {
-                globeView: "FlightPathGlobeView"
-            }
+            ]
         },
 
         //configuration for GloveView (Dynamic)
         dynamic: {
             files: [
+                'Views/DynamicGlobeView/DynamicRootGlobeView.js',
                 'Views/DynamicGlobeView/DynamicGlobeView.js',
                 'Views/DynamicGlobeView/DynamicGlobeParticle.js',
-            ],
-            views: {
-                globeView: "DynamicGlobeView",
-            },
-            collection: {
-                globeView: "Tweets"
-            }
-
+            ]
         },
 
         //configuration for SpreadSheetGlobeView
@@ -84,13 +72,7 @@ Application = {
                 'Views/SpreadSheetGlobeView.js',
                 'Views/ControlPanelGlobeView.js',
                 'Views/ControlElementsGlobeView.js'
-            ],
-            views: {
-                globeView: "SpreadSheetGlobeView",
-            },
-            collection: {
-                globeView: "Tweets"
-            }
+            ]
         }
     }
 };

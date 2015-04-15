@@ -17,26 +17,36 @@ Application.GlobeRouter = Backbone.Router.extend({
     //"globeView/dynamic/:action" : "doSomething",
   },
 
-  initGlobeView: function(views, collection){
+  // initGlobeView: function(views, collection){
 
-    /**
-     * TODO:
-     * If this.rootGlobeView is not null and not same with previous globe,
-     * then clean up the view.
-     */
-    this.rootGlobeView = new Application.RootGlobeView(views, collection);
-    $("#applicaitonRegion").empty().append(this.rootGlobeView.render().$el[0]);
-
-  },
+  //   this.rootGlobeView = new Application.RootGlobeView(views, collection);
+  //   $("#applicaitonRegion").empty().append(this.rootGlobeView.render().$el[0]);
+  // },
+  
+  // TODO: Dima
   initSpreadSheetGlobeView: function(){
+
+    var that = this;
     require(Application.globeViews.spreadsheet.files , function(){
 
-      var views = Application.globeViews.spreadsheet.views;
-      var collection = Application.globeViews.spreadsheet.collection;
-      Application.router.initGlobeView(views, collection);
+      // See examples below.
+
+      // from Applicaiton class
+      // views: {
+      //     globeView: "SpreadSheetGlobeView",
+      // },
+      // collection: {
+      //     globeView: "Tweets"
+      // }
+
+
+      // var views = Application.globeViews.spreadsheet.views;
+      // var collection = Application.globeViews.spreadsheet.collection;
+      // Application.router.initGlobeView(views, collection);
+
 
       //call fetch test
-      Application.router.rootGlobeView.globeView.collection.fetch({
+      that.rootGlobeView.globeView.collection.fetch({
         success: function(){
           // console.log(Application.router.rootGlobeView.globeView.collection);
         }
@@ -46,14 +56,16 @@ Application.GlobeRouter = Backbone.Router.extend({
   },
 
   initStaticTwitterGlobeView: function(){
-    require(Application.globeViews.statictwitter.files , function(){
 
-      var views = Application.globeViews.statictwitter.views;
-      var collection = Application.globeViews.statictwitter.collection;
-      Application.router.initGlobeView(views, collection);
+    var that = this;
+    require(Application.globeViews.statictwitter.files , function(){
+ 
+      that.rootGlobeView = new Application.StaticTwitterRootGlobeView();
+      $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
+      that.rootGlobeView.render();
 
       //call fetch test
-      Application.router.rootGlobeView.globeView.collection.fetch({
+      that.rootGlobeView.globeView.collection.fetch({
         success: function(){
           // console.log(Application.router.rootGlobeView.globeView.collection);
         }
@@ -63,25 +75,30 @@ Application.GlobeRouter = Backbone.Router.extend({
   },
 
   initFlightPathGlobeView: function(){
+
+    var that = this;
     require(Application.globeViews.flightPath.files , function(){
 
-      var views = Application.globeViews.flightPath.views;
-      var collection = Application.globeViews.flightPath.collection;
-      Application.router.initGlobeView(views, collection);
+      // Very, very wrong!!! If there is a need, subclass from Application.RootGlobeView...
+      that.rootGlobeView = new Application.RootGlobeView();
+      that.rootGlobeView.globeView = new Application.FlightPathGlobeView();
 
+      $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
+      that.rootGlobeView.render();
     });
   },
 
   initDynamicGlobeView: function(){
 
+    var that = this;
     require(Application.globeViews.dynamic.files , function(){
 
-      var views = Application.globeViews.dynamic.views;
-      var collection = Application.globeViews.dynamic.collection;
-      Application.router.initGlobeView(views, collection);
+      that.rootGlobeView = new Application.DynamicRootGlobeView();
+      $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
+      that.rootGlobeView.render();
 
       //call fetch test
-      Application.router.rootGlobeView.globeView.collection.fetch({
+      that.rootGlobeView.globeView.collection.fetch({
         success: function(){
           // console.log(Application.router.rootGlobeView.globeView.collection);
         }
