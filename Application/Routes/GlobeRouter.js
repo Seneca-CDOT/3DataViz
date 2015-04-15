@@ -12,7 +12,7 @@ Application.GlobeRouter = Backbone.Router.extend({
     "globeView/statictwitter" : "initStaticTwitterGlobeView",
     "globeView/flightPath" : "initFlightPathGlobeView",
     "globeView/dynamic" : "initDynamicGlobeView",
-    //"globeView/population/:action" : "doSomething",
+    "globeView/spreadsheet/request/:id" : "request",
     //"globeView/flightPath/:action" : "doSomething",
     //"globeView/dynamic/:action" : "doSomething",
   },
@@ -88,6 +88,10 @@ Application.GlobeRouter = Backbone.Router.extend({
       });
 
     });
+  },
+  request: function (id) { 
+
+      Application.router.rootGlobeView.globeView.collection.trigger("grab", id );
   }
 
 });

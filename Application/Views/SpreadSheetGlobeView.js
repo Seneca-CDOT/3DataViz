@@ -12,6 +12,7 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
         this.moved = false; // for controls and mouse events
         this.orbitOn = false;
         this.sprites = [];
+        this.collection.on('change', this.addPoints.bind(this));
 
     },
     events: {

@@ -45,6 +45,7 @@ initialize: function() {
 	this.urlfield = new Application.URLField();
 	this.submitbtn = new Application.SubmitButton();
 	this.resetbtn = new Application.ResetButton();
+	//this.submitbtn.on('event', callback);
 },
 render: function() {
 	Application.ControlPanelGlobeView.prototype.render.call(this);
@@ -52,6 +53,11 @@ render: function() {
 	this.$el.append( this.submitbtn.render().$el );
 	this.$el.append( this.resetbtn.render().$el );
 	return this;
+},
+callback: function () {
+
+
+	// grab url
 }
 
 

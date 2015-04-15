@@ -141,16 +141,18 @@ Application.SubmitButton = Application.ControlElementsGlobeView.extend({
         return this;
     },
     action: function(e) {
-
         Application.ControlElementsGlobeView.prototype.action.call(this,e);
 
         var val = Application.router.rootGlobeView.views[0].controlPanel.urlfield.el.value;
-
+        
         if (val == '') val = '13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg'; // temporary
+      
+        Application.router.navigate('globeView/spreadsheet/request/' + val, true );
 
-        //console.log(val);
 
-        Application.router.rootGlobeView.views[0].updateCollection(val);
+        // //console.log(val);
+
+        // Application.router.rootGlobeView.views[0].updateCollection(val);
 
     }
 
