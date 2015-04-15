@@ -12,8 +12,7 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
         this.moved = false; // for controls and mouse events
         this.orbitOn = false;
         this.sprites = [];
-        this.collection.on('change', this.addPoints.bind(this));
-
+        this.suscribe();
     },
     events: {
 
@@ -29,6 +28,20 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
     destroy: function() {
 
         this.collection.reset();
+    },
+    suscribe: function() {
+       
+     this.controlPanel._vent.on('click/submit', this.submit.bind(this));
+     this.controlPanel._vent.on('click/reset', this.reset.bind(this));
+
+    },
+    submit: function() {
+
+        console.log('submit');
+    },
+    reset: function() {
+
+        console.log('reset');
     },
     updateCollection: function(val) {
 
