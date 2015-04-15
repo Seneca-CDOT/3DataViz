@@ -22,7 +22,7 @@ Application.GlobeRouter = Backbone.Router.extend({
   //   this.rootGlobeView = new Application.RootGlobeView(views, collection);
   //   $("#applicaitonRegion").empty().append(this.rootGlobeView.render().$el[0]);
   // },
-  
+
   // TODO: Dima
   initSpreadSheetGlobeView: function(){
 
@@ -38,7 +38,6 @@ Application.GlobeRouter = Backbone.Router.extend({
       // collection: {
       //     globeView: "Tweets"
       // }
-
 
       // var views = Application.globeViews.spreadsheet.views;
       // var collection = Application.globeViews.spreadsheet.collection;
@@ -59,7 +58,7 @@ Application.GlobeRouter = Backbone.Router.extend({
 
     var that = this;
     require(Application.globeViews.statictwitter.files , function(){
- 
+
       that.rootGlobeView = new Application.StaticTwitterRootGlobeView();
       $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
       that.rootGlobeView.render();
