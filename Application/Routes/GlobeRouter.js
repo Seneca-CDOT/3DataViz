@@ -8,24 +8,99 @@ var Application = Application || {};
 Application.GlobeRouter = Backbone.Router.extend({
 
   routes : {
-    "globeView/:type" : "initGlobeView"
+    "globeView/spreadsheet" : "initSpreadSheetGlobeView",
+    "globeView/statictwitter" : "initStaticTwitterGlobeView",
+    "globeView/flightPath" : "initFlightPathGlobeView",
+    "globeView/dynamic" : "initDynamicGlobeView",
+    //"globeView/population/:action" : "doSomething",
+    //"globeView/flightPath/:action" : "doSomething",
+    //"globeView/dynamic/:action" : "doSomething",
   },
 
-  /**
-   * Create GlobeView(CountryBaseGlobe) and append it to the page.
-   * @return null
-   */
-  initGlobeView: function(type){
+  initGlobeView: function(views, collection){
 
-    if(Application.globeViews[type]){
-      require(Application.globeViews[type].files , function(){
+    /**
+     * TODO:
+     * If this.rootGlobeView is not null and not same with previous globe,
+     * then clean up the view.
+     */
+    this.rootGlobeView = new Application.RootGlobeView(views, collection);
+    $("#applicaitonRegion").empty().append(this.rootGlobeView.render().$el[0]);
 
-        var rootGlobeView = new Application.RootGlobeView(new Application[Application.globeViews[type].view]);
-        $("#applicaitonRegion").empty().append(rootGlobeView.render().$el[0]);
+  },
+  initSpreadSheetGlobeView: function(){
+    require(Application.globeViews.spreadsheet.files , function(){
 
+      var views = Application.globeViews.spreadsheet.views;
+      var collection = Application.globeViews.spreadsheet.collection;
+      Application.router.initGlobeView(views, collection);
+
+      //call fetch test
+      Application.router.rootGlobeView.globeView.collection.fetch({
+        success: function(){
+          // console.log(Application.router.rootGlobeView.globeView.collection);
+        }
       });
-    }
 
+    });
   },
+
+  initStaticTwitterGlobeView: function(){
+    require(Application.globeViews.statictwitter.files , function(){
+
+      var views = Application.globeViews.statictwitter.views;
+      var collection = Application.globeViews.statictwitter.collection;
+      Application.router.initGlobeView(views, collection);
+
+      //call fetch test
+      Application.router.rootGlobeView.globeView.collection.fetch({
+        success: function(){
+          // console.log(Application.router.rootGlobeView.globeView.collection);
+        }
+      });
+
+    });
+  },
+
+  initFlightPathGlobeView: function(){
+    // require(Application.globeViews.flightPath.files , function(){
+
+    //   var views = Application.globeViews.flightPath.views;
+    //   var collection = Application.globeViews.flightPath.collection;
+    //   Application.router.initGlobeView(views, collection);
+
+    // });
+    require(Application.globeViews.flightPath.files , function(){
+
+      var views = Application.globeViews.flightPath.views;
+      var collection = Application.globeViews.flightPath.collection;
+      Application.router.initGlobeView(views, collection);
+
+      //call fetch test
+      Application.router.rootGlobeView.globeView.collection.fetch({
+        success: function(){
+          console.log("hue");
+        }
+      });
+    });
+  },
+
+  initDynamicGlobeView: function(){
+
+    require(Application.globeViews.dynamic.files , function(){
+
+      var views = Application.globeViews.dynamic.views;
+      var collection = Application.globeViews.dynamic.collection;
+      Application.router.initGlobeView(views, collection);
+
+      //call fetch test
+      Application.router.rootGlobeView.globeView.collection.fetch({
+        success: function(){
+          // console.log(Application.router.rootGlobeView.globeView.collection);
+        }
+      });
+
+    });
+  }
 
 });

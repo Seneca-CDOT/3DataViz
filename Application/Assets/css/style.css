@@ -18,8 +18,8 @@ body {
 }
 
 #rightcolumn {
-    background-color: white;
-    opacity: 0.2;
+    background-color: #1F1F2E;
+    /*opacity: 0.2;*/
     top: 0px;
     position: absolute;
     width: 15%;
@@ -39,14 +39,15 @@ body {
     top: 20%;
 }
 
-#search {
+#search, #url {
     position: absolute;
     width: 80%;
     left: 10%;
     top: 200px;
 }
 
-#tweets {
+
+#tweets, #submit {
     position: absolute;
     width: 80%;
     left: 10%;

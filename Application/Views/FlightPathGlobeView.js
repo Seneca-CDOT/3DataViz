@@ -2,6 +2,9 @@
  * @author Bruno Di Giuseppe / smokingcobra.com
  */
 
+var parsed1 = false;
+var parsed2 = false;
+
 var Application = Application || {};
 
 Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
@@ -19,6 +22,8 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
         this.airports = [];
         this.routes = [];
+        this.createdAirports = [];
+        this.movingGuys = [];
 
         this.factor = 3;
         this.texHeight = 1024 * this.factor;
@@ -26,10 +31,11 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
         this.tw = this.th = 1024;
 
-        this.parsed1 = false;
-        this.parsed2 = false;
-
         this.canvas, this.canvasCtx;
+
+
+        this.cylinderRadius = this.radius * 0.01;
+        this.cylinderHeight = this.radius / 500;
 
         //getting country's centre variables
         this.maxLon = maxLat = -180;
@@ -42,13 +48,8 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
         this.t = 0;
     },
-    render: function() {
-        Application.BaseGlobeView.prototype.render.call(this);
-        this.renderGlobe2();
-        return this;
-    },
     renderGlobe2: function(){
-        Application.BaseGlobeView.prototype.renderGlobe.call(this);
+        // Application.BaseGlobeView.prototype.renderGlobe.call(this);
         requestAnimationFrame(this.renderGlobe2.bind(this));
 
         if (this.orbitOn === true) {
@@ -104,8 +105,6 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
         canvas.width  = this.tw;
         canvas.height = this.th;
-
-        document.body.appendChild(canvas);
     },
     getAirports: function(data){
         //raw:
@@ -124,7 +123,6 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         //airports[i][4] Lat
         //airports[i][5] Lon
         //airports[i][6] ThreeJS.Vector3
-
         var x = data;
         var d = [];
         this.parsed1 = false;
@@ -162,7 +160,10 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         var x = data;
         var d = [];
        for( var i = 0 ; i < x.data.length ; i++ ){
-            if( typeof x.data[2] == "number" ){
+            if( x.data[i][5] != "\\N" && 
+                x.data[i][3] != "\\N" &&
+                x.data[i][1] != "\\N" 
+             ){
                 var tempAir = [
                     x.data[i][0],
                     x.data[i][3],
@@ -176,7 +177,8 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         this.routes = d;
         this.parsed2 = true;
     },
-    readCSV: function(file, callback){
+    readCSV: function(file, callback, callback2){
+        var that = self = this;
         this.parsed = false;
         var config = {
             delimiter : ",",
@@ -196,64 +198,73 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
             fastMode: true,
             complete: function(d) {
                 callback(d);
+                if ( parsed1 && parsed2 ) {
+                    callback2().bind(that);
+                }
             }
         };
         Papa.parse(file, config);
     },
-    readCSV2: function(file, callback, callback2){
-        var s = this.scene;
-        this.parsed = false;
-        var config = {
-            delimiter : ",",
-            newline : "",
-            header: false,
-            dynamicTyping: true,
-            preview: undefined,
-            encoding: "",
-            worker: false,
-            comments: false,
-            step: undefined,
-            // complete: undefined,
-            error: undefined,
-            download: true,
-            skipEmptyLines: false,
-            chunk: undefined,
-            fastMode: true,
-            complete: function(d) {
-                callback(d);
-                callback2(s);
-            }
-        };
-        Papa.parse(file, config);
-        this.scene = s;
+
+    getRandomInt: function(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     },
 
-    addPaths: function (data) {
-        var dataRecordIndex;
+    addAirport: function(id){
+        airport = airports[id];
 
-        for ( dataRecordIndex in data ) {
-    
-            var dataRecord = data[dataRecordIndex];
-            var phiFrom = dataRecord.from.lat * Math.PI / 180;
-            var thetaFrom = (dataRecord.from.lon + 90) * Math.PI / 180;
-            
-            // console.log(dataRecord);
-            //calculates "from" point
-            var xF = this.radius * Math.cos(phiFrom) * Math.sin(thetaFrom);
-            var yF = this.radius * Math.sin(phiFrom);
-            var zF = this.radius * Math.cos(phiFrom) * Math.cos(thetaFrom);
+        var geometry = new THREE.CylinderGeometry( this.cylinderRadius, this.cylinderRadius, this.cylinderHeight, 4 );
+        var material = new THREE.MeshBasicMaterial( {color: 0x0000ff, side: THREE.DoubleSide} );
+        var cylinderFrom = new THREE.Mesh( geometry, material );
 
-            var phiTo   =  dataRecord.to.lat * Math.PI / 180;
-            var thetaTo = (dataRecord.to.lon + 90) * Math.PI / 180;
+        cylinderFrom.position.copy(airport[6]);
 
-            //calculates "to" point
-            var xT = this.radius * Math.cos(phiTo) * Math.sin(thetaTo);
-            var yT = this.radius * Math.sin(phiTo);
-            var zT = this.radius * Math.cos(phiTo) * Math.cos(thetaTo);
+        cylinderFrom.rotation.y = airport[5] * Math.PI / 180;
 
-            //Sets up vectors
-            var vT = new THREE.Vector3(xT, yT, zT);
-            var vF = new THREE.Vector3(xF, yF, zF);
+        var xRotationSign = airport[5] + 90 > 90 ? -1 : 1;
+        cylinderFrom.rotation.x = xRotationSign * (90 - airport[4]) * Math.PI / 180;
+
+        this.createdAirports.push(id);
+
+        this.scene.add( cylinderFrom );
+    },
+
+    airportCreated: function(id){
+        for( var i = 0; i < this.createdAirports.length; i++ ){
+            if(this.createdAirports[i] == id){
+                return true;
+                break;
+            }
+        }
+        return false;
+    },
+
+    addPaths: function () {
+        var i = 0
+        var dataRecord;
+        var randomIndex;
+        // console.log(self);
+        // console.log(airports);
+        // console.log(routes);
+
+        for (dataRecordIndex in routes) {
+            ++i;
+            if(i > 700) break;            
+
+            randomIndex = self.getRandomInt(1, 65000);
+            dataRecord = routes[ randomIndex ];
+
+            console.log(dataRecord[2]);
+
+            var vT = airports[ dataRecord[2] ][6];
+            var vF = airports[ dataRecord[1] ][6];
+
+            if( !self.airportCreated( airports[dataRecord[1]][0] ) ){
+                self.addAirport( airports[dataRecord[1]][0] );
+            }
+            if( !self.airportCreated( airports[dataRecord[2]][0]) ){
+                self.addAirport( airports[dataRecord[2]][0] );
+            }
 
             //gets the distance between the points. Maxium = 2*radius
             var dist = vF.distanceTo(vT);
@@ -284,62 +295,33 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
             var geometry2 = new THREE.Geometry();
             geometry2.vertices = curve.getPoints( 50 );
 
-            var material2 = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+            var material2 = new THREE.LineBasicMaterial( { 
+                color : 0xff0000,
+                transparent: true,
+                opacity: .5,
+             } );
 
             // Create the final Object3d to add to the this.scene
             var curveObject = new THREE.Line( geometry2, material2 );
             paths.push(curve);
 
-            this.scene.add(curveObject);
+            self.scene.add(curveObject);
 
-            var cylinderRadius = this.radius * 0.01;
-            var cylinderHeight = this.radius / 500;
+            var speed = Application.Helper.map(dist, 0, 10, 0, 2.9);
 
-            //Create cylinder to reperesent "From" city
-            // TODO: create airports prior to creating airlines
-            //Using the real flight data it doesn't seem like a good idea create  a airport point
-            // for every path, for now I'll just disable.
-            // So, for now:
-            var createCylinders = false;
-            if(createCylinders){
-                var geometry = new THREE.CylinderGeometry( cylinderRadius, cylinderRadius, cylinderHeight, 32 );
-                var material = new THREE.MeshBasicMaterial( {color: 0xff0000} );
-                var cylinderFrom = new THREE.Mesh( geometry, material );
-
-                fromPoints.push(cylinderFrom);
-
-                cylinderFrom.position.copy(vF);
-
-                cylinderFrom.rotation.y = dataRecord.from.lon * Math.PI / 180;
-
-                var xRotationSign = dataRecord.from.lon + 90 > 90 ? -1 : 1;
-                cylinderFrom.rotation.x = xRotationSign * (90 - dataRecord.from.lat) * Math.PI / 180;
-
-                this.scene.add( cylinderFrom );
-
-                //Create cylinder to reperesent "To" city
-                var cylinderTo = new THREE.Mesh( geometry, material );
-
-                toPoints.push(cylinderTo);
-
-                cylinderTo.position.copy(vT);
-
-                cylinderTo.rotation.y = dataRecord.to.lon * Math.PI / 180;
-
-                xRotationSign = dataRecord.to.lon + 90 > 90 ? -1 : 1;
-                cylinderTo.rotation.x = xRotationSign * (90 - dataRecord.to.lat) * Math.PI / 180;
-
-                this.scene.add( cylinderTo );
-            }
-            //Create Shpere to follow along the path
-            geometry  = new THREE.SphereGeometry(cylinderRadius * 2, 32, 32);
-            material  = new THREE.MeshBasicMaterial( {color:0xff00000} );
+            geometry  = new THREE.TetrahedronGeometry(self.cylinderRadius);
+            material  = new THREE.MeshBasicMaterial( {color:0xa4c800} );
             var sphere  = new THREE.Mesh(geometry, material);
-
-            movingGuys.push(sphere);
+            var airplane = [
+                sphere,
+                (3 - speed) / 500,
+                0
+            ];
+    
+            self.movingGuys.push(airplane);
             //gets the path first position
             sphere.position.copy(curve.getPoint(0));
-            this.scene.add(sphere);
+            self.scene.add(sphere);
         }
     },
     startStuff: function(){
@@ -354,10 +336,11 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         var pathRoutes   = server + fileRoutes;
         
         this.setUpCanvas( this.hexMap );
-        this.addPaths( dataSetPath );
+        // this.addPaths( dataSetPath );
         // this.s = this.scene;
 
-        // this.readCSV( pathAirports, this.getAirports );
+        // this.readCSV( pathAirports, this.getAirports, null );
+        // this.readCSV( pathRoutes, this.getRoutes, this.addPaths );
         // this.readCSV2( pathRoutes, this.getRoutes, this.addPaths );
 
     },
