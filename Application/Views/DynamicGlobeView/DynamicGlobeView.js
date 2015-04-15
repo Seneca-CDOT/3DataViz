@@ -157,6 +157,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         });
     },
     onCountriesGeometryGet: function(data) {
+        
         this.addCountries(data);
         this.startDataStreaming();
     },
@@ -221,7 +222,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         var particle = new Application.DynamicGlobeParticle(dataRecord, this.globeRadius);
         particle.setLifeTime(5000);
 
-        Application.Debug.addAxes(particle.getMesh());
+        // Application.Debug.addAxes(particle.getMesh());
 
         this.scene.add(particle.getMesh());
         this.particles.pushBack(particle);

@@ -34,8 +34,6 @@ render: function() {
 	return this;
 }
 
-
-
 });
 
 Application.SpreadSheetControlPanel = Application.ControlPanelGlobeView.extend({
