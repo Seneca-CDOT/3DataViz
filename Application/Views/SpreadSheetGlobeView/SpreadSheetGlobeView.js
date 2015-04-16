@@ -358,18 +358,29 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
             color: 0xffffff,
             fog: true
         });
+        var time = 100;
+
+        array.models.sort(function(a, b) {
+            return b.get('longitude') - a.get('longitude');
+        });
 
         array.forEach(function(item) {
 
+            time = time + 20;
+
             var sprite = new THREE.Sprite(material);
 
-            that.scene.add(sprite);
+            setTimeout(function() {
 
-            var position = Application.Helper.geoToxyz(item.attributes.longitude, item.attributes.latitude, 51);
+                that.scene.add(sprite);
 
-            sprite.position.copy(position);
+                var position = Application.Helper.geoToxyz(item.attributes.longitude, item.attributes.latitude, 51);
 
-            that.sprites.push(sprite);
+                sprite.position.copy(position);
+
+                that.sprites.push(sprite);
+
+            }, time);
 
 
         });
