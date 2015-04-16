@@ -52,12 +52,10 @@ Application.SpreadSheetCollection = Backbone.Collection.extend({
     model: Application.SpreadSheetRecord,
     initialize: function() {
 
-        _.extend(this, Backbone.Events);
-        this.bind("grab", this.getData, this);
     },
     parse: function(response) {
 
-        console.log(response);
+        // console.log(response);
 
         var collection = this;
 
@@ -71,30 +69,13 @@ Application.SpreadSheetCollection = Backbone.Collection.extend({
             collection.push(obj);
         }
 
-
         return this.models;
     },
 
-    getData: function(id) {
-        this.url = 'https://spreadsheets.google.com/feeds/cells/' + id + '/1/public/basic?alt=json';
-        console.log('this is ' + id);
+    setURL: function( key ) {
 
-        var that = this;
-
-        this.fetch({
-
-            success: function(response) {
-
-                 console.log('Fetched', that.models);
-
-            },
-
-            error: function(err, response) {
-
-                console.log(err);
-
-            }
-        });
+        if (!key) return;
+        this.url = 'https://spreadsheets.google.com/feeds/cells/' + key + '/1/public/basic?alt=json';
     }
 });
 
