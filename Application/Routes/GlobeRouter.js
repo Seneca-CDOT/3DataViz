@@ -22,7 +22,6 @@ Application.GlobeRouter = Backbone.Router.extend({
   //   this.rootGlobeView = new Application.RootGlobeView(views, collection);
   //   $("#applicaitonRegion").empty().append(this.rootGlobeView.render().$el[0]);
   // },
-  
   initSpreadSheetGlobeView: function(){
 
     var that = this;
@@ -46,7 +45,7 @@ Application.GlobeRouter = Backbone.Router.extend({
 
     var that = this;
     require(Application.globeViews.statictwitter.files , function(){
- 
+
       that.rootGlobeView = new Application.StaticTwitterRootGlobeView();
       $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
       that.rootGlobeView.render();
