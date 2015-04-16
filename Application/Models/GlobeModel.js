@@ -186,8 +186,8 @@ Application.Tweets = Backbone.Collection.extend({
     initialize: function() {},
     parse: function(response) {
         var filter = {
-            longitude: "geo.coordinates[0]",
-            latitude: "geo.coordinates[1]",
+            longitude: "geo.coordinates[1]",
+            latitude: "geo.coordinates[0]",
             text: "text",
             timestamp: "timestamp_ms",
         }

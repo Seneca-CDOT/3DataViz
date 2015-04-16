@@ -132,6 +132,10 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
             } else {
 
                 this.scene.remove(particle.getMesh());
+
+                particle.getMesh().geometry.dispose();
+                particle.getMesh().material.dispose();
+
                 // TODO: eliminate use of private method
                 iterator = this.particlesToRemove._remove(iterator);
             }
@@ -159,7 +163,8 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     onCountriesGeometryGet: function(data) {
         
         this.addCountries(data);
-        this.startDataStreaming();
+        // this.startDataStreaming();
+        this.startDataSynchronization();
     },
     addCountries: function(data) {
 
@@ -188,6 +193,9 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         // TODO: review
         this.countries.push(this.globe);
     },
+
+    // streaming functionality
+
     // TODO: move to model
     // <script src="http://localhost:8080/socket.io/socket.io.js"></script>    
     startDataStreaming: function() {
@@ -217,10 +225,60 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         this.addParticleWithDataRecord(dataRecord);
     },
+
+    // synchronization functionality
+
+    startDataSynchronization: function() {
+
+        var that = this;
+        this.collection.fetch().done(function() {
+
+
+            that.showDataRecords(0, 100000);
+        });
+
+    },
+    showDataRecords: function(beginIndex, timeInterval) {
+
+        if (beginIndex >= this.collection.length)
+            return;
+
+        var count = 0;
+        var dataRecord = this.collection.at(beginIndex);
+        var startTime = Number(dataRecord.get("timestamp"));
+        var time = startTime;
+        while (startTime + timeInterval > time) {
+
+            var date = new Date();
+            dataRecord.set("timestamp", "" + date.getTime());
+
+            this.addParticleWithDataRecord(dataRecord);
+            ++count;
+            ++beginIndex;
+            if (beginIndex >= this.collection.length)
+                break;
+            dataRecord = this.collection.at(++beginIndex);
+            time = Number(dataRecord.get("timestamp"));
+        }
+
+        console.log("----------------");
+        console.log("Twittes Viewed: " + count + " Within Iterval Of: " + 0.001 * timeInterval + "sec.");
+        console.log("Twittes Viewed Total: " + beginIndex);
+        console.log("Twittes Left To View: " + (this.collection.length - beginIndex));
+
+        var that = this;
+        setTimeout(function() {
+
+            that.showDataRecords(beginIndex, timeInterval);
+        }, 5000);
+    },
+
+    // dynamic functionality
+
     addParticleWithDataRecord: function(dataRecord) {
 
         var particle = new Application.DynamicGlobeParticle(dataRecord, this.globeRadius);
-        particle.setLifeTime(5000);
+        particle.setLifeTime(3000);
 
         // Application.Debug.addAxes(particle.getMesh());
 
