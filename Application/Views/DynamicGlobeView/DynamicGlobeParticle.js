@@ -80,6 +80,9 @@ Application.DynamicGlobeParticle.prototype.setLifeTime = function(lifeTime) {
 
     if (lifeTime > 0 && this._life_time <= 0) {
 
+        // var date = new Date();
+        // this.getData().set("timestamp", date.getTime());
+
         this._life_time = lifeTime;
     }
 };

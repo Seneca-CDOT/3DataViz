@@ -11,8 +11,8 @@ Application.GlobeRouter = Backbone.Router.extend({
     "globeView/spreadsheet" : "initSpreadSheetGlobeView",
     "globeView/statictwitter" : "initStaticTwitterGlobeView",
     "globeView/flightPath" : "initFlightPathGlobeView",
-    "globeView/dynamic" : "initDynamicGlobeView",
-    //"globeView/population/:action" : "doSomething",
+    "globeView/dynamic" : "initDynamicGlobeView"
+    // "globeView/spreadsheet/request/:id" : "request",
     //"globeView/flightPath/:action" : "doSomething",
     //"globeView/dynamic/:action" : "doSomething",
   },
@@ -22,35 +22,21 @@ Application.GlobeRouter = Backbone.Router.extend({
   //   this.rootGlobeView = new Application.RootGlobeView(views, collection);
   //   $("#applicaitonRegion").empty().append(this.rootGlobeView.render().$el[0]);
   // },
-  
-  // TODO: Dima
   initSpreadSheetGlobeView: function(){
 
     var that = this;
     require(Application.globeViews.spreadsheet.files , function(){
 
-      // See examples below.
-
-      // from Applicaiton class
-      // views: {
-      //     globeView: "SpreadSheetGlobeView",
-      // },
-      // collection: {
-      //     globeView: "Tweets"
-      // }
-
-
-      // var views = Application.globeViews.spreadsheet.views;
-      // var collection = Application.globeViews.spreadsheet.collection;
-      // Application.router.initGlobeView(views, collection);
-
+      that.rootGlobeView = new Application.SpreadSheetRootGlobeView();
+      $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
+      that.rootGlobeView.render();
 
       //call fetch test
-      that.rootGlobeView.globeView.collection.fetch({
-        success: function(){
-          // console.log(Application.router.rootGlobeView.globeView.collection);
-        }
-      });
+      // that.rootGlobeView.globeView.collection.fetch({
+      //   success: function(){
+      //     // console.log(Application.router.rootGlobeView.globeView.collection);
+      //   }
+      // });
 
     });
   },
@@ -59,7 +45,7 @@ Application.GlobeRouter = Backbone.Router.extend({
 
     var that = this;
     require(Application.globeViews.statictwitter.files , function(){
- 
+
       that.rootGlobeView = new Application.StaticTwitterRootGlobeView();
       $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
       that.rootGlobeView.render();
@@ -99,6 +85,10 @@ Application.GlobeRouter = Backbone.Router.extend({
       });
 
     });
+  },
+  request: function (id) { 
+
+      Application.router.rootGlobeView.globeView.collection.trigger("grab", id );
   }
 
 });

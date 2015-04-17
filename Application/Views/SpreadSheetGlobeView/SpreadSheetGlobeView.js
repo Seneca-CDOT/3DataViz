@@ -4,15 +4,19 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
 
-    initialize: function() {
+    initialize: function(obj) {
         Application.BaseGlobeView.prototype.initialize.call(this);
-        this.controlPanel = new Application.SpreadSheetControlPanel();
+        this._vent = obj._event;
+        this.controlPanel = new Application.SpreadSheetControlPanel({
+            event: this._vent
+        });
         this.countries = [];
         this.intersected; // intersected mesh
         this.moved = false; // for controls and mouse events
         this.orbitOn = false;
         this.sprites = [];
-
+        this.suscribe();
+        console.log('https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
     },
     events: {
 
@@ -27,12 +31,37 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
-        this.remove();
-        this.unbind();
-        delete this.$el;
-        delete this.el;
+        this.collection.reset();
     },
+    suscribe: function() {
 
+        this._vent.on('click/submit', this.submit.bind(this));
+        this._vent.on('click/reset', this.reset.bind(this));
+
+    },
+    submit: function(key) {
+
+        var that = this;
+
+        this.collection.setURL(key);
+
+        this.collection.fetch({
+
+            success: function(response) {
+
+                that.addPoints(response);
+            },
+            error: function(error) {
+
+                console.log('Error: ', error);
+            }
+
+        });
+    },
+    reset: function() {
+
+        this.resetGlobe();
+    },
     // member methods
     renderGlobe: function() {
 
@@ -155,17 +184,16 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
         tween.start();
     },
 
-    resetCountries: function() {
-
-        // this.twittermode = false;
-        // $('.countryinfo').empty();
-        // $('#rank').empty();
+    resetGlobe: function() {
 
         var that = this;
 
         this.sprites.forEach(function(sprite) {
 
             that.scene.remove(sprite);
+
+            sprite.geometry.dispose();
+            sprite.material.dispose();
 
         });
     },
@@ -212,48 +240,9 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
             this.intersected = object;
             this.intersected.currentColor = this.intersected.material.color.getHex();
             this.intersected.material.color.setHex(0x0000FF);
-            // $('.countryinfo').empty();
-            // var countryname = '<div class="countryinfo" style="position:absolute;top:150px;right:50px;color:white;font-size:30px;opacity:0.7;">' + intersected.userData.name + '</div>';
-            // $(document.body).append(countryname);
-            // if (twittermode && typeof intersected.userData.tweets !== 'undefined') {
 
-            //     var tweets = '<div class="countryinfo" style="position:absolute;top:200px;right:50px;color:white;font-size:30px;opacity:0.7;">' + 'tweets: ' + intersected.userData.tweets + '</div>';
-            //     $(document.body).append(tweets);
-            // }
         }
     },
-
-    //     // ***********************     
-
-    //     // TODO: move out of this view
-
-    //     // Event listeners to distinguish a move and a click
-
-    //     // End of move and click event listeners section
-
-    //     showList: function (name) {
-    //         // if (name == '') $('.list').empty();
-    //         // for (var j = 0; j < countries.length; j++) {
-
-    //         //     if (name.charAt(0) == countries[j].userData.name[0].toLowerCase()) {
-    //         //         list.push(countries[j].userData.name);
-    //         //     }
-    //         // }
-
-    //         // $('.list').empty();
-    //         // var countrylist = '<div class="list" style="position:absolute;top:250px;right:50px;color:white;font-size:30px;opacity:0.7;">';
-    //         // for (var x = 0; x < list.length; x++) {
-
-    //         //     countrylist += list[x] + '<br>';
-    //         // }
-
-    //         // countrylist += '</div>';
-    //         // $('#webgl').append(countrylist);
-
-    //         // list = [];
-    // },
-
-    // // TODO: move out of this view
 
     getTweets: function() {
 
@@ -272,7 +261,6 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
             }
         });
     },
-    // *************************
 
     addCountries: function(data) {
 
@@ -370,18 +358,29 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
             color: 0xffffff,
             fog: true
         });
+        var time = 100;
+
+        array.models.sort(function(a, b) {
+            return b.get('longitude') - a.get('longitude');
+        });
 
         array.forEach(function(item) {
 
+            time = time + 20;
+
             var sprite = new THREE.Sprite(material);
 
-            that.scene.add(sprite);
+            setTimeout(function() {
 
-            var position = Application.Helper.geoToxyz(item.attributes.longitude, item.attributes.latitude, 51);
+                that.scene.add(sprite);
 
-            sprite.position.copy(position);
+                var position = Application.Helper.geoToxyz(item.attributes.longitude, item.attributes.latitude, 51);
 
-            that.sprites.push(sprite);
+                sprite.position.copy(position);
+
+                that.sprites.push(sprite);
+
+            }, time);
 
 
         });
