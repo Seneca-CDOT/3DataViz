@@ -50,10 +50,12 @@ Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
 
 Application.SpreadSheetCollection = Backbone.Collection.extend({
     model: Application.SpreadSheetRecord,
-    initialize: function() {},
+    initialize: function() {
+
+    },
     parse: function(response) {
 
-        console.log(response);
+        // console.log(response);
 
         var collection = this;
 
@@ -61,14 +63,19 @@ Application.SpreadSheetCollection = Backbone.Collection.extend({
 
             var obj = {};
             obj.city = response.feed.entry[i].content.$t;
-            obj.longitude = response.feed.entry[i+1].content.$t;
-            obj.latitude = response.feed.entry[i+2].content.$t;
+            obj.longitude = response.feed.entry[i + 1].content.$t;
+            obj.latitude = response.feed.entry[i + 2].content.$t;
             //obj.timestamp = response.feed.entry[i+3].content.$t;
             collection.push(obj);
         }
 
-
         return this.models;
+    },
+
+    setURL: function( key ) {
+
+        if (!key) return;
+        this.url = 'https://spreadsheets.google.com/feeds/cells/' + key + '/1/public/basic?alt=json';
     }
 });
 
@@ -154,10 +161,10 @@ Application.GlobeModel = Application.BaseGlobeModel.extend({
         var populationGeoDataRecords = new Application.PopulationGeoDataRecords(rawData);
         // var populationGeoDataRecords = new PopulationGeoDataRecords();
         // for (var index = 0; index < rawData.length; ++index) {
-        // 	// do some preprocessing if needed
+        //  // do some preprocessing if needed
 
-        // 	var populationGeoDataRecord = new PopulationGeoDataRecord(rawData[index])
-        // 	populationGeoDataRecords.add(populationGeoDataRecord);
+        //  var populationGeoDataRecord = new PopulationGeoDataRecord(rawData[index])
+        //  populationGeoDataRecords.add(populationGeoDataRecord);
         // }
         return populationGeoDataRecords;
     }

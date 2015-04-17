@@ -69,7 +69,8 @@ Application = {
         //configuration for SpreadSheetGlobeView
         spreadsheet: {
             files: [
-                'Views/SpreadSheetGlobeView.js',
+                'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
+                'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
                 'Views/ControlPanelGlobeView.js',
                 'Views/ControlElementsGlobeView.js'
             ]

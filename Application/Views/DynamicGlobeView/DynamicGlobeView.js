@@ -270,7 +270,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         setTimeout(function() {
 
             that.showDataRecords(beginIndex, timeInterval);
-        }, 5000);
+        }, 1000);
     },
 
     // dynamic functionality
