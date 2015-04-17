@@ -94,6 +94,12 @@ Application.AirportsCollection = Backbone.Collection.extend({
         
 	},
     fetchAirports: function(data){
+        //x.data[i][0] ID
+        //x.data[i][1] Airport
+        //x.data[i][2] City
+        //x.data[i][3] Country
+        //x.data[i][6] Lat
+        //x.data[i][7] Lon
         var x = data;
         var tempAir = {};
         for( var i = 0 ; i < x.data.length ; i++ ){
@@ -103,7 +109,7 @@ Application.AirportsCollection = Backbone.Collection.extend({
             tempAir.country    = x.data[i][3],
             tempAir.latitude   = x.data[i][6],
             tempAir.longitude  = x.data[i][7],
-            tempAir.position3D = Application.Helper.geoToxyz(x.data[i][6], x.data[i][7], this.radius);
+            tempAir.position3D = Application.Helper.geoToxyz2(x.data[i][7], x.data[i][6], 50);
             if( i >= x.data.length-1 )
                 this.parsed = true;
             this.push(tempAir);
@@ -129,6 +135,11 @@ Application.AirportRoutesCollection = Backbone.Collection.extend({
         Papa.parse("Models/data/routes.csv", config);
     },
     fetchAirportRoutes: function(data){
+        //x.data[i][0] route ID
+        //x.data[i][3] source Airport id
+        //x.data[i][5] destination airport id
+        //x.data[i][7] stops
+        //x.data[i][8] equipment
         var x = data;
         var temp = {};
         for( var i = 0 ; i < x.data.length ; i++ ){

@@ -51,7 +51,7 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         this.canvas, this.canvasCtx;
 
 
-        this.cylinderRadius = this.radius * 0.01;
+        this.cylinderRadius = this.radius * 0.0085;
         this.cylinderHeight = this.radius / 500;
 
         //getting country's centre variables
@@ -239,18 +239,24 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
     updateGlobe: function() {
 
         if (this.orbitOn === true) {
-
             TWEEN.update();
         }
 
         if( typeof(movingGuys) !== "undefined" &&
             typeof(paths)      !== "undefined"
              ){
-            for( var i = 0; i < movingGuys.length; i ++ ) {
-                      pt = paths[i].getPoint( this.t );
-                      movingGuys[i].position.set( pt.x, pt.y, pt.z );
+            for( var i = 0; i < this.movingGuys.length; i ++ ) {
+                if( this.movingGuys[i][2] >= 1 ){
+                    this.movingGuys[i][2] = 0;
+                }else{
+                    this.movingGuys[i][2] += this.movingGuys[i][1]
                 }
-                this.t = (this.t >= 1) ? 0 : this.t += 0.005;
+
+                (this.t >= 1) ? this.t=0 : this.t += 0.005;
+
+                pt = paths[i].getPoint( this.movingGuys[i][2] );
+                this.movingGuys[i][0].position.set( pt.x, pt.y, pt.z );  
+            }
         }
 
         Application.BaseGlobeView.prototype.updateGlobe.call(this);
@@ -272,130 +278,26 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         canvas.width  = this.tw;
         canvas.height = this.th;
     },
-    getAirports: function(data){
-        //raw:
-        //x.data[i][0] ID
-        //x.data[i][1] Airport
-        //x.data[i][2] City
-        //x.data[i][3] Country
-        //x.data[i][6] Lat
-        //x.data[i][7] Lon
-
-        //parsed:
-        //airports[i][0] ID
-        //airports[i][1] Airport
-        //airports[i][2] City
-        //airports[i][3] Country
-        //airports[i][4] Lat
-        //airports[i][5] Lon
-        //airports[i][6] ThreeJS.Vector3
-        var x = data;
-        var d = [];
-        this.parsed1 = false;
-        for( var i = 0 ; i < x.data.length ; i++ ){
-            var tempAir = [
-                x.data[i][0],
-                x.data[i][1],
-                x.data[i][2],
-                x.data[i][3],
-                x.data[i][6],
-                x.data[i][7],
-                Application.Helper.geoToxyz(x.data[i][6], x.data[i][7], this.radius)
-            ];
-            d.push(tempAir);
-        }
-        this.airports = d;
-        this.parsed1 = true;
-    },
-    getRoutes: function(data){
-
-        //x.data[i][0] route ID
-        //x.data[i][3] source Airport id
-        //x.data[i][5] destination airport id
-        //x.data[i][7] stops
-        //x.data[i][8] equipment
-
-        //routes[i][0] route ID
-        //routes[i][1] source Airport id
-        //routes[i][2] destination airport id
-        //routes[i][3] stops
-        //routes[i][4] equipment
-
-
-        this.parsed2 = false
-        var x = data;
-        var d = [];
-       for( var i = 0 ; i < x.data.length ; i++ ){
-            if( x.data[i][5] != "\\N" && 
-                x.data[i][3] != "\\N" &&
-                x.data[i][1] != "\\N" 
-             ){
-                var tempAir = [
-                    x.data[i][0],
-                    x.data[i][3],
-                    x.data[i][5],
-                    x.data[i][7],
-                    x.data[i][8],
-                ];
-                d.push(tempAir);
-            }
-        }
-        this.routes = d;
-        this.parsed2 = true;
-    },
-    readCSV: function(file, callback, callback2){
-        var that = self = this;
-        this.parsed = false;
-        var config = {
-            delimiter : ",",
-            newline : "",
-            header: false,
-            dynamicTyping: true,
-            preview: undefined,
-            encoding: "",
-            worker: false,
-            comments: false,
-            step: undefined,
-            // complete: undefined,
-            error: undefined,
-            download: true,
-            skipEmptyLines: false,
-            chunk: undefined,
-            fastMode: true,
-            complete: function(d) {
-                callback(d);
-                if ( parsed1 && parsed2 ) {
-                    callback2().bind(that);
-                }
-            }
-        };
-        Papa.parse(file, config);
-    },
-
     getRandomInt: function(min, max) {
 
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
-
-    addAirport: function(id){
-        airport = this.collection[0].models[id].attributes;
-
-        var geometry = new THREE.CylinderGeometry( this.cylinderRadius, this.cylinderRadius, this.cylinderHeight, 4 );
+    addAirport: function( airport ){
+        var geometry = new THREE.SphereGeometry( this.cylinderRadius, 8, 8 );
         var material = new THREE.MeshBasicMaterial( {color: 0x0000ff, side: THREE.DoubleSide} );
         var cylinderFrom = new THREE.Mesh( geometry, material );
 
-        cylinderFrom.position.copy(airport[6]);
+        cylinderFrom.position.copy(airport.position3D);
 
-        cylinderFrom.rotation.y = airport[5] * Math.PI / 180;
+        cylinderFrom.rotation.y = airport.latitude * Math.PI / 180;
 
-        var xRotationSign = airport[5] + 90 > 90 ? -1 : 1;
-        cylinderFrom.rotation.x = xRotationSign * (90 - airport[4]) * Math.PI / 180;
+        var xRotationSign = airport.latitude + 90 > 90 ? -1 : 1;
+        cylinderFrom.rotation.x = xRotationSign * (90 - airport.longitude) * Math.PI / 180;
 
-        this.createdAirports.push(id);
+        this.createdAirports.push(airport.ID);
 
         this.scene.add( cylinderFrom );
     },
-
     airportCreated: function(id){
         for( var i = 0; i < this.createdAirports.length; i++ ){
             if(this.createdAirports[i] == id){
@@ -405,30 +307,38 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         }
         return false;
     },
-
+    getAirport: function(id){
+        for ( i in this.collection[0].models )
+            if( id == this.collection[0].models[i].attributes.ID )
+                return this.collection[0].models[i].attributes;
+    },
     addPaths: function () {
         var i = 0
         var dataRecord;
         var randomIndex;
 
         var routes = this.collection[1].models;
-        var airports = this.collection[0].models;
+        var srcAirport;
+        var destAirport;
 
-        for ( dataRecordIndex in routes.length ) {
+        for ( dataRecordIndex in routes ) {
             ++i;
             if(i > 700) break;            
 
             randomIndex = this.getRandomInt(1, 65000);
             dataRecord = routes[ randomIndex ].attributes;
 
-            var vT = airports[ dataRecord[2] ].attributes[6];
-            var vF = airports[ dataRecord[1] ].attributes[6];
+            srcAirport = this.getAirport(dataRecord.sourceAirport);
+            destAirport = this.getAirport(dataRecord.destinationAirport);
 
-            if( !self.airportCreated( airports[dataRecord[1].attributes][0] ) ){
-                self.addAirport( airports[dataRecord[1]].attributes[0] );
+            var vT = srcAirport.position3D;
+            var vF = destAirport.position3D;
+
+            if( !this.airportCreated( srcAirport.ID ) ){
+                this.addAirport( srcAirport );
             }
-            if( !self.airportCreated( airports[dataRecord[2]].attributes[0]) ){
-                self.addAirport( airports[dataRecord[2]].attributes[0] );
+            if( !this.airportCreated( destAirport.ID ) ){
+                this.addAirport( destAirport );
             }
 
             //gets the distance between the points. Maxium = 2*radius
@@ -446,7 +356,7 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
             var smoothDist = Application.Helper.map(dist, 0, 10, 0, 15/dist);
 
-            mid.setLength( this.radius * smoothDist  );
+            mid.setLength( this.radius * smoothDist );
 
             cvT.add(mid);
             cvF.add(mid);
@@ -469,12 +379,11 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
             // Create the final Object3d to add to the this.scene
             var curveObject = new THREE.Line( geometry2, material2 );
             paths.push(curve);
+            this.scene.add(curveObject);
 
-            self.scene.add(curveObject);
+            var speed = Application.Helper.map(dist, 0, this.radius*2, 0, 2.9);
 
-            var speed = Application.Helper.map(dist, 0, 10, 0, 2.9);
-
-            geometry  = new THREE.TetrahedronGeometry(self.cylinderRadius);
+            geometry  = new THREE.TetrahedronGeometry(this.cylinderRadius);
             material  = new THREE.MeshBasicMaterial( {color:0xa4c800} );
             var sphere  = new THREE.Mesh(geometry, material);
             var airplane = [
@@ -483,31 +392,17 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
                 0
             ];
     
-            self.movingGuys.push(airplane);
+            this.movingGuys.push(airplane);
             //gets the path first position
             sphere.position.copy(curve.getPoint(0));
-            self.scene.add(sphere);
+            this.scene.add(sphere);
         }
     },
     startStuff: function(){
         //generates textures
         // readCountries(dataSet);
         // this.drawGlobe( this.textureMap );
-        var server       = "http://zenit.senecac.on.ca/~int322_142a07/cdot/bb/ver2/Application/Models/data/";
-        var fileAirports = "airports.csv";
-        var fileRoutes   = "routes.csv";
-
-        var pathAirports = server + fileAirports;
-        var pathRoutes   = server + fileRoutes;
-        
         this.setUpCanvas( this.hexMap );
-        // this.addPaths( dataSetPath );
-        // this.s = this.scene;
-
-        // this.readCSV( pathAirports, this.getAirports, null );
-        // this.readCSV( pathRoutes, this.getRoutes, this.addPaths );
-        // this.readCSV2( pathRoutes, this.getRoutes, this.addPaths );
-
     },
     cameraGoTo: function(country) {
 
