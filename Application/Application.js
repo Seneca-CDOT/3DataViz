@@ -51,7 +51,7 @@ Application = {
         'Libraries/text.js',
         'Libraries/font.js',
         'Libraries/map3d.js',
-        'Libraries/popcorn-complete.min.js',
+        // 'Libraries/popcorn-complete.min.js',
         'Libraries/papaparse.js'
     ],
 

@@ -63,9 +63,10 @@ Application.GlobeRouter = Backbone.Router.extend({
   initFlightPathGlobeView: function(){
     var that = this;
     require(Application.globeViews.flightPath.files , function(){
-    that.rootGlobeView = new Application.FlightPathRootGlobeView();
-    $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
-    that.rootGlobeView.render();
+      that.rootGlobeView = new Application.FlightPathRootGlobeView();
+      $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
+      that.rootGlobeView.render();
+    });
   },
 
   initDynamicGlobeView: function(){
