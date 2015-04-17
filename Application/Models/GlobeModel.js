@@ -25,7 +25,7 @@ Application.GeoDataRecord = Application.BaseDataRecord.extend({
 Application.AirportModel = Application.GeoDataRecord.extend({
 	defaults: _.extend({}, Application.GeoDataRecord.prototype.defaults,{
 		ID: 0,
-		Airport: "",
+		airport: "",
 		country: "",
 		position3D: ""
 	}),
@@ -35,7 +35,7 @@ Application.AirportModel = Application.GeoDataRecord.extend({
 });
 
 Application.AirportRouteModel = Application.BaseDataRecord.extend({
-	defaults: _.extend({}, Application.GeoDataRecord.prototype.defaults,{
+	defaults: _.extend({}, Application.BaseDataRecord.prototype.defaults,{
 		routeID: 0,
 		sourceAirport: 0,
 		destinationAirport: 0,
@@ -77,69 +77,73 @@ Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
 
 Application.AirportsCollection = Backbone.Collection.extend({
 	model: Application.AirportModel,
-	url: 'Models/data/airports.csv',
+	url: 'Models/data/test.json',
+    parsed: false,
 	initialize: function(){},
 	parse: function( response ){
-    	console.log(response);
-
+        var that = this;
         var config = {
+            dynamicTyping: true,
+            download: true,
             complete: function(d) {
-                this.fetchAirports(data);
-            	var collection = this;
-        		return this.models;
+                that.fetchAirports(d);
+                return that.models;
             }
         };
-        // Papa.parse(response, config);
+        Papa.parse("Models/data/airports.csv", config);
         
 	},
     fetchAirports: function(data){
         var x = data;
+        var tempAir = {};
         for( var i = 0 ; i < x.data.length ; i++ ){
-            var tempAir = [
-                x.data[i][0],
-                x.data[i][1],
-                x.data[i][2],
-                x.data[i][3],
-                x.data[i][6],
-                x.data[i][7],
-                Application.Helper.geoToxyz(x.data[i][6], x.data[i][7], this.radius)
-            ];
-            collection.push(tempAir);
+            tempAir.ID         = x.data[i][0],
+            tempAir.airport    = x.data[i][1],
+            tempAir.city       = x.data[i][2],
+            tempAir.country    = x.data[i][3],
+            tempAir.latitude   = x.data[i][6],
+            tempAir.longitude  = x.data[i][7],
+            tempAir.position3D = Application.Helper.geoToxyz(x.data[i][6], x.data[i][7], this.radius);
+            if( i >= x.data.length-1 )
+                this.parsed = true;
+            this.push(tempAir);
         }
     },
 });
 
 Application.AirportRoutesCollection = Backbone.Collection.extend({
 	model: Application.AirportRouteModel,
-	url: 'Models/data/routes.csv',
+    parsed: false,
+	url: 'Models/data/test.json',
 	initialize: function(){},
 	parse: function( response ){
-        console.log(response);
-
+        var collection = that = this;
         var config = {
+            dynamicTyping: true,
+            download: true,
             complete: function(d) {
-                this.fetchAirportRoutes(d);
-                var collection = this;
-                return this.models;
+                that.fetchAirportRoutes(d);
+                return that.models;
             }
         };
-        // Papa.parse(response, config);      
+        Papa.parse("Models/data/routes.csv", config);
     },
     fetchAirportRoutes: function(data){
         var x = data;
+        var temp = {};
         for( var i = 0 ; i < x.data.length ; i++ ){
             if( x.data[i][5] != "\\N" && 
                 x.data[i][3] != "\\N" &&
                 x.data[i][1] != "\\N" 
              ){
-                var tempAir = [
-                    x.data[i][0],
-                    x.data[i][3],
-                    x.data[i][5],
-                    x.data[i][7],
-                    x.data[i][8],
-                ];
-                collection.push(tempAir);
+                temp.routeID            = x.data[i][0],
+                temp.sourceAirport      = x.data[i][3],
+                temp.destinationAirport = x.data[i][5],
+                temp.numStops           = x.data[i][7],
+                temp.equipment          = x.data[i][8];
+                if( i >= x.data.length-1 )
+                    this.parsed = true;
+                this.push(temp);
             }
         }
     },

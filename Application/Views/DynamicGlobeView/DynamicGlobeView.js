@@ -43,7 +43,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         this.getCountriesGeometry().done(this.onCountriesGeometryGet.bind(this));
 
-// TODO: move out of this view
+        // TODO: move out of this view
         function onMouseUp(e) {
             if (!this.moved) {
                this.clickOn(e);

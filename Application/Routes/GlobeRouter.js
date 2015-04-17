@@ -75,36 +75,11 @@ Application.GlobeRouter = Backbone.Router.extend({
   },
 
   initFlightPathGlobeView: function(){
-<<<<<<< HEAD
-    // require(Application.globeViews.flightPath.files , function(){
-
-    //   var views = Application.globeViews.flightPath.views;
-    //   var collection = Application.globeViews.flightPath.collection;
-    //   Application.router.initGlobeView(views, collection);
-
-    // });
-=======
-
     var that = this;
->>>>>>> 7f8f7e9c0e990eaebe6a5799b3d5f560f51edc15
     require(Application.globeViews.flightPath.files , function(){
-
-      // Very, very wrong!!! If there is a need, subclass from Application.RootGlobeView...
-      that.rootGlobeView = new Application.RootGlobeView();
-      that.rootGlobeView.globeView = new Application.FlightPathGlobeView();
-
-<<<<<<< HEAD
-      //call fetch test
-      Application.router.rootGlobeView.globeView.collection.fetch({
-        success: function(){
-          console.log("hue");
-        }
-      });
-=======
-      $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
-      that.rootGlobeView.render();
->>>>>>> 7f8f7e9c0e990eaebe6a5799b3d5f560f51edc15
-    });
+    that.rootGlobeView = new Application.FlightPathRootGlobeView();
+    $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
+    that.rootGlobeView.render();
   },
 
   initDynamicGlobeView: function(){

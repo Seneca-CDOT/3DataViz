@@ -16,7 +16,6 @@ Application = {
         Backbone.history.start();
     },
 
-// <<<<<<< HEAD
   //Files which need to be imported for GlobeVisualization
   files : [
     'Routes/GlobeRouter.js',
@@ -33,7 +32,6 @@ Application = {
     'Libraries/map3d.js',
     'Libraries/papaparse.js'
   ],
-// =======
     //Files which need to be imported for GlobeVisualization
     files: [
         'Routes/GlobeRouter.js',
@@ -53,9 +51,9 @@ Application = {
         'Libraries/text.js',
         'Libraries/font.js',
         'Libraries/map3d.js',
-        'Libraries/popcorn-complete.min.js'
+        'Libraries/popcorn-complete.min.js',
+        'Libraries/papaparse.js'
     ],
-// >>>>>>> 5d3acc41c95638beeb7acdf6531d3da412f9415e
 
     globeViews: {
         //configuration for GloveView (Population)
@@ -71,25 +69,13 @@ Application = {
         //configuration for GloveView (Flight Path)
         flightPath: {
             files: [
-                'Views/FlightPathGlobeView.js',
+                'Views/FlightPathGlobeView/FlightPathRootGlobeView.js',
+                'Views/FlightPathGlobeView/FlightPathGlobeView.js',
                 'Models/data/path.js',
                 'Models/data/countriesList.js',
-// <<<<<<< HEAD
                 // 'Views/VideoView.js',
                 // 'Views/SliderControlView.js',
             ],
-            views: {
-                globeView: "FlightPathGlobeView",
-                // sliderlView : "SliderControlView",
-                // videoView   : "VideoView",
-            },
-
-            collection: {
-                globeView: "AirportRoutesCollection"
-            }
-// =======
-            ]
-// >>>>>>> 7f8f7e9c0e990eaebe6a5799b3d5f560f51edc15
         },
 
         //configuration for GloveView (Dynamic)
