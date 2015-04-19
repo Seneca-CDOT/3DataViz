@@ -61,14 +61,9 @@ Application.GlobeRouter = Backbone.Router.extend({
   },
 
   initFlightPathGlobeView: function(){
-
     var that = this;
     require(Application.globeViews.flightPath.files , function(){
-
-      // Very, very wrong!!! If there is a need, subclass from Application.RootGlobeView...
-      that.rootGlobeView = new Application.RootGlobeView();
-      that.rootGlobeView.globeView = new Application.FlightPathGlobeView();
-
+      that.rootGlobeView = new Application.FlightPathRootGlobeView();
       $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
       that.rootGlobeView.render();
     });

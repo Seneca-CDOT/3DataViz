@@ -16,6 +16,22 @@ Application = {
         Backbone.history.start();
     },
 
+  //Files which need to be imported for GlobeVisualization
+  files : [
+    'Routes/GlobeRouter.js',
+    'Views/RootGlobeView.js',
+    'Views/BaseGlobeView.js',
+    'Models/GlobeModel.js',
+    'Helpers/Helper.js',
+    'Helpers/Debug.js', // FOR DEBUG
+    'Libraries/OrbitControls.js',
+    'Libraries/stats.js',
+    'Libraries/tween.min.js',
+    'Libraries/text.js',
+    'Libraries/font.js',
+    'Libraries/map3d.js',
+    'Libraries/papaparse.js'
+  ],
     //Files which need to be imported for GlobeVisualization
     files: [
         'Routes/GlobeRouter.js',
@@ -35,6 +51,8 @@ Application = {
         'Libraries/text.js',
         'Libraries/font.js',
         'Libraries/map3d.js',
+        // 'Libraries/popcorn-complete.min.js',
+        'Libraries/papaparse.js'
     ],
 
     globeViews: {
@@ -51,10 +69,13 @@ Application = {
         //configuration for GloveView (Flight Path)
         flightPath: {
             files: [
-                'Views/FlightPathGlobeView.js',
+                'Views/FlightPathGlobeView/FlightPathRootGlobeView.js',
+                'Views/FlightPathGlobeView/FlightPathGlobeView.js',
                 'Models/data/path.js',
                 'Models/data/countriesList.js',
-            ]
+                // 'Views/VideoView.js',
+                // 'Views/SliderControlView.js',
+            ],
         },
 
         //configuration for GloveView (Dynamic)
