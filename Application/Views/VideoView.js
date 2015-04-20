@@ -26,7 +26,7 @@ Application.VideoView = Backbone.View.extend({
 
             this.pop.on("timeupdate", function(){
             if(!slideChange)
-              slider.val(this.currentTime());
+              slider.val(this.currentTime());  
             });
         // }
         });
