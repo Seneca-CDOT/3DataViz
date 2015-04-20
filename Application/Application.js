@@ -30,7 +30,7 @@ Application = {
     'Libraries/tween.min.js',
     'Libraries/text.js',
     'Libraries/font.js',
-    'Libraries/map3d.js'
+    'Libraries/map3d.js',
     'Libraries/popcorn-complete.min.js'
   ],
 
@@ -55,11 +55,15 @@ Application = {
     flightPath : {
       files: [
         'Views/FlightPathGlobeView.js',
+        'Views/VideoView.js',
+        'Views/SliderControlView.js',
         'Models/data/path.js',
         'Models/data/countriesList.js',
       ],
       views:{
-        globeView : "FlightPathGlobeView"
+        sliderlView : "SliderControlView",
+        videoView   : "VideoView",
+        globeView   : "FlightPathGlobeView",
       }
     },
 
@@ -67,12 +71,9 @@ Application = {
     dynamic : {
       files: [
         'Views/DynamicGlobeView.js',
-        'Views/VideoView.js',
-        'Views/SliderControlView.js',
       ],
       views:{
         globeView : "DynamicGlobeView",
-        controlPanel : "ControlPanelGlobeView"
       }
     }
   }

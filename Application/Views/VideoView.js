@@ -1,18 +1,25 @@
+var pop;
 Application.VideoView = Backbone.View.extend({
     tagName: "div",
     id: 'video',
-    width: "1024px",
-    heigth: "768px",
 
     initialize: function() {
-        this.this.pop;
-        this.slideChange = false; 
-        document.addEventListener("DOMContentLoaded", function () {
+        this.pop;
+        this.slideChange = false;
+        this.slider;
+    },
+    render: function () {
+        // var html = '<div id="video"></div>'
+        // $(this.el).html(html);
+        $(document).ready(function(){
+        // if( $("#video").length ){
             slider = $("#slider");
-            var wrapper = this.popcorn.HTMLYouTubeVideoElement("#video");
-            wrapper.src = "https://www.youtube.com/embed/Kbh9EFuFf0M";
-            this.pop = this.popcorn(wrapper);
+            this.wrapper = Popcorn.HTMLYouTubeVideoElement("#video");
+            this.wrapper.src = "https://www.youtube.com/embed/Kbh9EFuFf0M";
+            this.pop = Popcorn(this.wrapper);
             this.pop.load();
+            pop = this.pop;
+            console.log(this.pop);
             this.pop.on("durationchange", function(e){
                 slider.attr("max", this.pop.duration());
             }, false);
@@ -21,11 +28,8 @@ Application.VideoView = Backbone.View.extend({
             if(!slideChange)
               slider.val(this.currentTime());
             });
-
-            this.pop.play();
-        }, false);    
-    },
-    render: function () {
+        // }
+        });
         return this;
     },
     destroy: function () {

@@ -1,23 +1,17 @@
-Application.SliderControleView = Backbone.View.extend({
-	tagName: 'input',
-	type: 'range',
-	name:'slider',
-	id:'slider',
-	max:100,
-	step:1,
+Application.SliderControlView = Backbone.View.extend({
 	intialize: function() {},
 	render: function () {
+		var html = '<input type="range" id="slider" name="slider" max="100" min="0" step="1">'
+		$(this.el).html(html);
 		return this;
 	},
 
 	events :{
-		'mousedown': 'down',
-		'mouseup'  : 'up',
-		'click'	   : 'changeTime',
+		// 'mousedown': 'onMouseDown',
+		// 'mouseup'  : 'onMouseUp',
+		'click'	   : 'onClick',
 	},
-	changeTime: function(e){
-		Application.ControlElementsGlobeView.prototype.action.call(this);
-
+	onClick: function(e){
         e.stopPropagation();
         //TODO: find a way to integrate slider with popcorn video
 		pop.pop.pause();
@@ -26,7 +20,7 @@ Application.SliderControleView = Backbone.View.extend({
         pop.pop.play();
         pop.slideChange = false;
 
-	}
+	},
 	destroy: function () {
 		this.remove();
 		this.unbind();
