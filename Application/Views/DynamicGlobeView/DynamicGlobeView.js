@@ -101,15 +101,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         while (iterator !== this.particles.getEnd()) {
 
             var particle = iterator.getData();
-
-            var rotation = 2 * Math.PI * ratio;
-            particle.getMesh().rotation.z = rotation;
-
-            var scale = particle.getMesh().scale.x; // x, y, z are equal
-            if (scale < 2.5) {
-                scale += this.delta;
-                particle.getMesh().scale.set(scale, scale, scale);
-            }
+            particle.update(this.delta, ratio);
 
             iterator = iterator.getNext();
         }
@@ -118,23 +110,15 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         while (iterator !== this.particlesToRemove.getEnd()) {
 
             var particle = iterator.getData();
-
-            var scale = particle.getMesh().scale.x; 
-            if (scale > 0.01) {
-
-                var rotation = 2 * Math.PI * ratio;
-                particle.getMesh().rotation.z = rotation;
-
-                scale -= this.delta;
-                particle.getMesh().scale.set(scale, scale, scale);
+            particle.update(-this.delta, ratio);
+        
+            if (particle.isVisible()) {
 
                 iterator = iterator.getNext();
             } else {
 
                 this.scene.remove(particle.getMesh());
-
-                particle.getMesh().geometry.dispose();
-                particle.getMesh().material.dispose();
+                particle.dispose();
 
                 // TODO: eliminate use of private method
                 iterator = this.particlesToRemove._remove(iterator);
@@ -232,7 +216,6 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         var that = this;
         this.collection.fetch().done(function() {
-
 
             that.showDataRecords(0, 100000);
         });
