@@ -10,32 +10,52 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.initialize.call(this);
         this.intersects;
 
+        this.party = false;
+
+        this.radius = 50;
+        this.cylinderRadius = this.radius * 0.0085;
+        this.cylinderHeight = this.radius / 500;
+
+
+        // var airplaneSpriteTex = THREE.ImageUtils.loadTexture("Assets/images/airplane.png");
+
+        // this.airplaneSpriteMaterial = new THREE.SpriteMaterial({
+        //    map: airplaneSpriteTex,
+        //    // color: 0xffffff,
+        //    fog: true
+        // });
+
+        // var airportSpriteTex = THREE.ImageUtils.loadTexture("Assets/images/airport.png");
+
+        // this.airportSpriteMaterial = new THREE.SpriteMaterial({
+        //    map: airportSpriteTex,
+        //    // color: 0xffffff,
+        //    fog: true
+        // });
+
+        this.airportGeometry = new THREE.SphereGeometry( this.cylinderRadius, 8, 8 );
+        this.blueMaterial = new THREE.MeshBasicMaterial( {color: 0x0000ff, side: THREE.DoubleSide} );
+       
+        this.pathMaterial = new THREE.LineBasicMaterial( { 
+            color : 0xff0000,
+            transparent: true,
+            opacity: .5,
+        } );
+
+        this.airplaneGeometry = new THREE.TetrahedronGeometry(this.cylinderRadius);
+        this.airplaneMaterial  = new THREE.MeshBasicMaterial( {color:0xa4c800} );
+
         this.collection[0].bind("add", this.dataReady, this);
         this.collection[1].bind("add", this.dataReady, this);
 
-        this.collection[1].fetch( {
-            success: function(r){
-                // console.log("success Routes", r);
-            },
-            error: function(e){
-                // console.log("error " , e);
-            },
-        });
 
-        this.collection[0].fetch( {
-            success: function(a){
-                // console.log("success Airports", a);
-            },
-            error: function(e){
-                // console.log("error " , e);
-            }
-        });
+        this.collection[1].fetch();
+        this.collection[0].fetch();
 
         this.hexMap = 'Assets/images/textures/hexMapMin.png';
         this.textureMap = 'Assets/images/textures/worldMatrix.jpg';
 
         this.imgTex;
-        this.radius = 50;
 
         this.airports = [];
         this.routes = [];
@@ -49,10 +69,6 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         this.tw = this.th = 1024;
 
         this.canvas, this.canvasCtx;
-
-
-        this.cylinderRadius = this.radius * 0.0085;
-        this.cylinderHeight = this.radius / 500;
 
         //getting country's centre variables
         this.maxLon = maxLat = -180;
@@ -100,12 +116,14 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         document.addEventListener('mousemove', onMouseMove.bind(this), false);
         document.addEventListener('mouseup', onMouseUp.bind(this), false);
 
-        $(document).on("keyup", 'form', function(e) {
+        // $(document).on("keyup", 'form', function(e) {
             
-        });
+        // });
 
         $(document).on("keypress", function(e) {
-
+            if(e.keyCode == 32){
+                console.log(e.keyCode);
+            }
         });
 
         function addBorders2(coordinates, name, color) {
@@ -259,6 +277,10 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
             }
         }
 
+        if(this.party){
+
+        }
+
         Application.BaseGlobeView.prototype.updateGlobe.call(this);
     },
     //sets up canvas and loads hexMap for pixel clicking functionality
@@ -283,20 +305,20 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
     addAirport: function( airport ){
-        var geometry = new THREE.SphereGeometry( this.cylinderRadius, 8, 8 );
-        var material = new THREE.MeshBasicMaterial( {color: 0x0000ff, side: THREE.DoubleSide} );
-        var cylinderFrom = new THREE.Mesh( geometry, material );
+        var airportInstance = new THREE.Mesh( this.airportGeometry, this.blueMaterial );
+        // var airportInstance = new THREE.Sprite(this.airportSpriteMaterial);
 
-        cylinderFrom.position.copy(airport.position3D);
 
-        cylinderFrom.rotation.y = airport.latitude * Math.PI / 180;
+        airportInstance.position.copy(airport.position3D);
+
+        airportInstance.rotation.y = airport.latitude * Math.PI / 180;
 
         var xRotationSign = airport.latitude + 90 > 90 ? -1 : 1;
-        cylinderFrom.rotation.x = xRotationSign * (90 - airport.longitude) * Math.PI / 180;
+        airportInstance.rotation.x = xRotationSign * (90 - airport.longitude) * Math.PI / 180;
 
         this.createdAirports.push(airport.ID);
 
-        this.scene.add( cylinderFrom );
+        this.scene.add( airportInstance );
     },
     airportCreated: function(id){
         for( var i = 0; i < this.createdAirports.length; i++ ){
@@ -320,82 +342,82 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         var routes = this.collection[1].models;
         var srcAirport;
         var destAirport;
+        var time = 100;
+        var that = this;
 
         for ( dataRecordIndex in routes ) {
+            time = time + 10;
             ++i;
-            if(i > 700) break;            
+            if(i > 1000) break;            
+            setTimeout(function() {
 
-            randomIndex = this.getRandomInt(1, 65000);
-            dataRecord = routes[ randomIndex ].attributes;
+                randomIndex = that.getRandomInt(1, 65000);
+                dataRecord = routes[ randomIndex ].attributes;
 
-            srcAirport = this.getAirport(dataRecord.sourceAirport);
-            destAirport = this.getAirport(dataRecord.destinationAirport);
+                srcAirport = that.getAirport(dataRecord.sourceAirport);
+                destAirport = that.getAirport(dataRecord.destinationAirport);
 
-            var vT = srcAirport.position3D;
-            var vF = destAirport.position3D;
+                var vT = srcAirport.position3D;
+                var vF = destAirport.position3D;
 
-            if( !this.airportCreated( srcAirport.ID ) ){
-                this.addAirport( srcAirport );
-            }
-            if( !this.airportCreated( destAirport.ID ) ){
-                this.addAirport( destAirport );
-            }
+                if( !that.airportCreated( srcAirport.ID ) ){
+                    that.addAirport( srcAirport );
+                }
+                if( !that.airportCreated( destAirport.ID ) ){
+                    that.addAirport( destAirport );
+                }
 
-            //gets the distance between the points. Maxium = 2*radius
-            var dist = vF.distanceTo(vT);
+                //gets the distance between the points. Maxium = 2*radius
+                var dist = vF.distanceTo(vT);
 
-            //create
-            var cvT = vT.clone();
-            var cvF = vF.clone();
+                //create
+                var cvT = vT.clone();
+                var cvF = vF.clone();
 
-            var xC = ( 0.5 * (vF.x + vT.x) );
-            var yC = ( 0.5 * (vF.y + vT.y) );
-            var zC = ( 0.5 * (vF.z + vT.z) );
+                var xC = ( 0.5 * (vF.x + vT.x) );
+                var yC = ( 0.5 * (vF.y + vT.y) );
+                var zC = ( 0.5 * (vF.z + vT.z) );
 
-            var mid = new THREE.Vector3(xC, yC, zC);
+                var mid = new THREE.Vector3(xC, yC, zC);
 
-            var smoothDist = Application.Helper.map(dist, 0, 10, 0, 15/dist);
+                var smoothDist = Application.Helper.map(dist, 0, 10, 0, 15/dist);
 
-            mid.setLength( this.radius * smoothDist );
+                mid.setLength( that.radius * smoothDist );
 
-            cvT.add(mid);
-            cvF.add(mid);
+                cvT.add(mid);
+                cvF.add(mid);
 
-            cvT.setLength( this.radius * smoothDist );
-            cvF.setLength( this.radius * smoothDist );
+                cvT.setLength( that.radius * smoothDist );
+                cvF.setLength( that.radius * smoothDist );
 
-            //create the bezier curve
-            var curve = new THREE.CubicBezierCurve3( vF, cvF, cvT, vT );
+                //create the bezier curve
+                var pathGeometry = new THREE.Geometry();
+                var curve = new THREE.CubicBezierCurve3( vF, cvF, cvT, vT );
 
-            var geometry2 = new THREE.Geometry();
-            geometry2.vertices = curve.getPoints( 50 );
+                pathGeometry.vertices = curve.getPoints( 15 );
 
-            var material2 = new THREE.LineBasicMaterial( { 
-                color : 0xff0000,
-                transparent: true,
-                opacity: .5,
-             } );
+                // Create the final Object3d to add to the this.scene
 
-            // Create the final Object3d to add to the this.scene
-            var curveObject = new THREE.Line( geometry2, material2 );
-            paths.push(curve);
-            this.scene.add(curveObject);
+                var curveObject = new THREE.Line( pathGeometry, that.pathMaterial );
+                paths.push(curve);
+                that.scene.add(curveObject);
 
-            var speed = Application.Helper.map(dist, 0, this.radius*2, 0, 2.9);
-
-            geometry  = new THREE.TetrahedronGeometry(this.cylinderRadius);
-            material  = new THREE.MeshBasicMaterial( {color:0xa4c800} );
-            var sphere  = new THREE.Mesh(geometry, material);
-            var airplane = [
-                sphere,
-                (3 - speed) / 500,
-                0
-            ];
-    
-            this.movingGuys.push(airplane);
-            //gets the path first position
-            sphere.position.copy(curve.getPoint(0));
-            this.scene.add(sphere);
+                var speed = Application.Helper.map(dist, 0, that.radius*2, 0, 2.9);
+                
+                // var airplaneInstance = new THREE.Sprite(that.airplaneSpriteMaterial);
+                
+                var airplaneInstance  = new THREE.Mesh(that.airplaneGeometry, that.airplaneMaterial);
+                var airplane = [
+                    airplaneInstance,
+                    (3 - speed) / 500,
+                    0
+                ];
+        
+                that.movingGuys.push(airplane);
+                //gets the path first position
+                airplaneInstance.position.copy(curve.getPoint(0));
+                that.scene.add(airplaneInstance);
+            }, time );
         }
     },
     startStuff: function(){
