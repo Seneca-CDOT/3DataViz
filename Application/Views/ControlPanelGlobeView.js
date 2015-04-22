@@ -44,19 +44,19 @@ Application.SpreadSheetControlPanel = Application.ControlPanelGlobeView.extend({
         this._vent = obj.event;
 
         this.urlfield = new Application.InputField();
-        this.urlfield.$el[0].id = 'url';
-        this.urlfield.$el[0].className = 'form-control';
+        this.urlfield.$el.attr('id','url');
+        this.urlfield.$el.attr('class','form-control');
         this.urlfield.$el.on('mousedown', this.urlFieldAction.bind(this));
 
         this.submitbtn = new Application.Button();
-        this.submitbtn.$el[0].id = 'submit';
-        this.submitbtn.$el[0].className = 'btn btn-primary';
+        this.submitbtn.$el.attr('id','submit');
+        this.submitbtn.$el.attr('class','btn btn-primary');
         this.submitbtn.$el[0].innerText = 'submit';
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
         this.resetbtn = new Application.Button();
-        this.resetbtn.$el[0].id = 'reset';
-        this.resetbtn.$el[0].className = 'btn btn-danger';
+        this.resetbtn.$el.attr('id','reset');
+        this.resetbtn.$el.attr('class','btn btn-danger');
         this.resetbtn.$el[0].innerText = 'reset';
         this.resetbtn.$el.on('mousedown', this.resetAction.bind(this));
     },

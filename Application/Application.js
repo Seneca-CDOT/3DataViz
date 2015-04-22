@@ -57,7 +57,7 @@ Application = {
 
     globeViews: {
         //configuration for GloveView (Population)
-        statictwitter: {
+        staticTwitter: {
             files: [
                 'Views/StaticTwitterGlobeView/StaticTwitterRootGlobeView.js',
                 'Views/StaticTwitterGlobeView/StaticTwitterGlobeView.js',
@@ -88,10 +88,18 @@ Application = {
         },
 
         //configuration for SpreadSheetGlobeView
-        spreadsheet: {
+        spreadSheet: {
             files: [
                 'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
+                'Views/ControlPanelGlobeView.js',
+                'Views/ControlElementsGlobeView.js'
+            ]
+        },//configuration for SpreadSheetGlobeView
+        googleTrends: {
+            files: [
+                'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
+                'Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js',
                 'Views/ControlPanelGlobeView.js',
                 'Views/ControlElementsGlobeView.js'
             ]
