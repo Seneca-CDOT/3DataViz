@@ -75,6 +75,10 @@ Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
 
 // Data Records Collection
 
+// For flightPathView we need to parse the csv files.
+// This is the best way I found to keep the backbone structure designed and 
+// make my application work. So, yeah. Papaparse is doing the job
+// The test.json is an object that contains {x:1}
 Application.AirportsCollection = Backbone.Collection.extend({
 	model: Application.AirportModel,
 	url: 'Models/data/test.json',
@@ -90,6 +94,7 @@ Application.AirportsCollection = Backbone.Collection.extend({
                 return that.models;
             }
         };
+        // This is where I parse the CSV to a JSON object
         Papa.parse("Models/data/airports.csv", config);
         
 	},
@@ -110,6 +115,8 @@ Application.AirportsCollection = Backbone.Collection.extend({
             tempAir.latitude   = x.data[i][6],
             tempAir.longitude  = x.data[i][7],
             tempAir.position3D = Application.Helper.geoToxyz2(x.data[i][7], x.data[i][6], 50);
+            // I need to check if this is the last object to be added to make sure
+            // that when the View listens to it, the parsed flag is raised
             if( i >= x.data.length-1 )
                 this.parsed = true;
             this.push(tempAir);
