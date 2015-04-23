@@ -23,42 +23,42 @@ Application.GeoDataRecord = Application.BaseDataRecord.extend({
 });
 
 Application.AirportModel = Application.GeoDataRecord.extend({
-	defaults: _.extend({}, Application.GeoDataRecord.prototype.defaults,{
-		ID: 0,
-		airport: "",
-		country: "",
-		position3D: ""
-	}),
-	initialize: function(){
-		Application.GeoDataRecord.prototype.initialize.call(this);
-	}
+    defaults: _.extend({}, Application.GeoDataRecord.prototype.defaults, {
+        ID: 0,
+        airport: "",
+        country: "",
+        position3D: ""
+    }),
+    initialize: function() {
+        Application.GeoDataRecord.prototype.initialize.call(this);
+    }
 });
 
 Application.AirportRouteModel = Application.BaseDataRecord.extend({
-	defaults: _.extend({}, Application.BaseDataRecord.prototype.defaults,{
-		routeID: 0,
-		sourceAirport: 0,
-		destinationAirport: 0,
-		numStops: 0,
-		equipment: ""
-	}),
-	initialize: function(){
-		Application.GeoDataRecord.prototype.initialize.call(this);
-	}
-}),
-
-
-Application.StaticTwitterCountryRecord = Application.BaseDataRecord.extend({
-
-    defaults: _.extend({}, Application.BaseDataRecord.prototype.defaults, {
-        countrycode: "",
-        countryname: "",
-        total_tweets: 0
+        defaults: _.extend({}, Application.BaseDataRecord.prototype.defaults, {
+            routeID: 0,
+            sourceAirport: 0,
+            destinationAirport: 0,
+            numStops: 0,
+            equipment: ""
+        }),
+        initialize: function() {
+            Application.GeoDataRecord.prototype.initialize.call(this);
+        }
     }),
-    initialize: function() {
-        Application.BaseDataRecord.prototype.initialize.call(this);
-    }
-});
+
+
+    Application.StaticTwitterCountryRecord = Application.BaseDataRecord.extend({
+
+        defaults: _.extend({}, Application.BaseDataRecord.prototype.defaults, {
+            countrycode: "",
+            countryname: "",
+            total_tweets: 0
+        }),
+        initialize: function() {
+            Application.BaseDataRecord.prototype.initialize.call(this);
+        }
+    });
 
 
 Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
@@ -72,15 +72,80 @@ Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
 
 });
 
+Application.GoogleTrendsRecord = Application.BaseDataRecord.extend({
+
+    defaults: _.extend({}, Application.BaseDataRecord.prototype.defaults, {
+
+    }),
+    initialize: function() {
+        Application.BaseDataRecord.prototype.initialize.call(this);
+    }
+
+});
+
+Application.GoogleTrendsCollection = Backbone.Collection.extend({
+    model: Application.GoogleTrendsRecord,
+    initialize: function(obj) {
+
+        this._event = obj._event;
+        this.response; // response from google trends
+        var that = this;
+
+        window.google = {
+    visualization : {
+      Query: {
+        setResponse : function(data) {
+         that.response = data;
+         that._event.trigger('trends/changed');
+        }
+      }
+   }
+ }
+    this._event.on('trends/changed', this.parse.bind(this));
+
+
+    },
+    parse: function() {
+
+        var collection = this;
+
+        $.each(this.response.table.rows, function(index, value) {
+
+            var obj = {};
+            obj.countrycode = value.c[0].v; // country code
+            obj.percent = value.c[1].v; // percentage
+            collection.push(obj);
+
+        });
+
+         this._event.trigger('trends/parsed', this.models );
+    },
+    setURL: function(key) {
+
+        if (!key) return;
+        this.url = 'http://www.google.com/trends/fetchComponent?q=' + key + '&cid=GEO_TABLE_0_0&export=3';
+    },
+    request: function () {
+   
+     var that = this;
+       
+        var fileref=document.createElement('script');
+        fileref.setAttribute("type","text/javascript");
+        fileref.setAttribute("src", this.url);
+        document.getElementsByTagName("head")[0].appendChild(fileref);
+
+        }
+});
+
 
 // Data Records Collection
 
 Application.AirportsCollection = Backbone.Collection.extend({
-	model: Application.AirportModel,
-	url: 'Models/data/test.json',
+    model: Application.AirportModel,
+    url: 'Models/data/test.json',
     parsed: false,
-	initialize: function(){},
-	parse: function( response ){
+    initialize: function() {},
+    parse: function(response) {
         var that = this;
         var config = {
             dynamicTyping: true,
@@ -91,9 +156,9 @@ Application.AirportsCollection = Backbone.Collection.extend({
             }
         };
         Papa.parse("Models/data/airports.csv", config);
-        
-	},
-    fetchAirports: function(data){
+
+    },
+    fetchAirports: function(data) {
         //x.data[i][0] ID
         //x.data[i][1] Airport
         //x.data[i][2] City
@@ -102,15 +167,15 @@ Application.AirportsCollection = Backbone.Collection.extend({
         //x.data[i][7] Lon
         var x = data;
         var tempAir = {};
-        for( var i = 0 ; i < x.data.length ; i++ ){
-            tempAir.ID         = x.data[i][0],
-            tempAir.airport    = x.data[i][1],
-            tempAir.city       = x.data[i][2],
-            tempAir.country    = x.data[i][3],
-            tempAir.latitude   = x.data[i][6],
-            tempAir.longitude  = x.data[i][7],
-            tempAir.position3D = Application.Helper.geoToxyz2(x.data[i][7], x.data[i][6], 50);
-            if( i >= x.data.length-1 )
+        for (var i = 0; i < x.data.length; i++) {
+            tempAir.ID = x.data[i][0],
+                tempAir.airport = x.data[i][1],
+                tempAir.city = x.data[i][2],
+                tempAir.country = x.data[i][3],
+                tempAir.latitude = x.data[i][6],
+                tempAir.longitude = x.data[i][7],
+                tempAir.position3D = Application.Helper.geoToxyz2(x.data[i][7], x.data[i][6], 50);
+            if (i >= x.data.length - 1)
                 this.parsed = true;
             this.push(tempAir);
         }
@@ -118,11 +183,11 @@ Application.AirportsCollection = Backbone.Collection.extend({
 });
 
 Application.AirportRoutesCollection = Backbone.Collection.extend({
-	model: Application.AirportRouteModel,
+    model: Application.AirportRouteModel,
     parsed: false,
-	url: 'Models/data/test.json',
-	initialize: function(){},
-	parse: function( response ){
+    url: 'Models/data/test.json',
+    initialize: function() {},
+    parse: function(response) {
         var collection = that = this;
         var config = {
             dynamicTyping: true,
@@ -134,7 +199,7 @@ Application.AirportRoutesCollection = Backbone.Collection.extend({
         };
         Papa.parse("Models/data/routes.csv", config);
     },
-    fetchAirportRoutes: function(data){
+    fetchAirportRoutes: function(data) {
         //x.data[i][0] route ID
         //x.data[i][3] source Airport id
         //x.data[i][5] destination airport id
@@ -142,17 +207,17 @@ Application.AirportRoutesCollection = Backbone.Collection.extend({
         //x.data[i][8] equipment
         var x = data;
         var temp = {};
-        for( var i = 0 ; i < x.data.length ; i++ ){
-            if( x.data[i][5] != "\\N" && 
+        for (var i = 0; i < x.data.length; i++) {
+            if (x.data[i][5] != "\\N" &&
                 x.data[i][3] != "\\N" &&
-                x.data[i][1] != "\\N" 
-             ){
-                temp.routeID            = x.data[i][0],
-                temp.sourceAirport      = x.data[i][3],
-                temp.destinationAirport = x.data[i][5],
-                temp.numStops           = x.data[i][7],
-                temp.equipment          = x.data[i][8];
-                if( i >= x.data.length-1 )
+                x.data[i][1] != "\\N"
+            ) {
+                temp.routeID = x.data[i][0],
+                    temp.sourceAirport = x.data[i][3],
+                    temp.destinationAirport = x.data[i][5],
+                    temp.numStops = x.data[i][7],
+                    temp.equipment = x.data[i][8];
+                if (i >= x.data.length - 1)
                     this.parsed = true;
                 this.push(temp);
             }
@@ -186,7 +251,7 @@ Application.SpreadSheetCollection = Backbone.Collection.extend({
         return this.models;
     },
 
-    setURL: function( key ) {
+    setURL: function(key) {
 
         if (!key) return;
         this.url = 'https://spreadsheets.google.com/feeds/cells/' + key + '/1/public/basic?alt=json';
