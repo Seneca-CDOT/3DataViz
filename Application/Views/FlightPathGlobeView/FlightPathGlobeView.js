@@ -133,7 +133,6 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
             }
         };
         
-        window.addEventListener('resize', this.onWindowResize, false);
         document.addEventListener('mousemove', onMouseMove.bind(this), false);
         document.addEventListener('mouseup', onMouseUp.bind(this), false);
 
@@ -533,10 +532,6 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
         this.orbitOn = true;
         this.tween.start();
-    },
-    onWindowResize: function() {
-
-        Application.BaseGlobeView.prototype.onWindowResize()
     },
     clickOn: function(event) {
         var x = event.clientX;
