@@ -58,7 +58,7 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
         // Here I listen for collection entries to know when they are loaded. 
         // I don't really think I need it anymore, let me check...
-        // I think it is, so.... yeah.
+        // I think it is needed, so.... yeah. You do need it.
         this.collection[0].bind("add", this.dataReady, this);
         this.collection[1].bind("add", this.dataReady, this);
 
@@ -269,7 +269,7 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         // Application.BaseGlobeView.prototype.addGlobe.call(this);
 
         // this is my globe.
-        var geometry = new THREE.SphereGeometry(this.radius, 32, 16);
+        var geometry = new THREE.SphereGeometry(this.radius, 32, 32);
 
         var texture = THREE.ImageUtils.loadTexture( this.textureMap );
 
