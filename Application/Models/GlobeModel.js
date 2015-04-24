@@ -140,6 +140,10 @@ Application.GoogleTrendsCollection = Backbone.Collection.extend({
 
 // Data Records Collection
 
+// For flightPathView we need to parse the csv files.
+// This is the best way I found to keep the backbone structure designed and 
+// make my application work. So, yeah. Papaparse is doing the job
+// The test.json is an object that contains {x:1}
 Application.AirportsCollection = Backbone.Collection.extend({
     model: Application.AirportModel,
     url: 'Models/data/test.json',
@@ -155,6 +159,7 @@ Application.AirportsCollection = Backbone.Collection.extend({
                 return that.models;
             }
         };
+        // This is where I parse the CSV to a JSON object
         Papa.parse("Models/data/airports.csv", config);
 
     },
@@ -167,15 +172,17 @@ Application.AirportsCollection = Backbone.Collection.extend({
         //x.data[i][7] Lon
         var x = data;
         var tempAir = {};
-        for (var i = 0; i < x.data.length; i++) {
-            tempAir.ID = x.data[i][0],
-                tempAir.airport = x.data[i][1],
-                tempAir.city = x.data[i][2],
-                tempAir.country = x.data[i][3],
-                tempAir.latitude = x.data[i][6],
-                tempAir.longitude = x.data[i][7],
-                tempAir.position3D = Application.Helper.geoToxyz2(x.data[i][7], x.data[i][6], 50);
-            if (i >= x.data.length - 1)
+        for( var i = 0 ; i < x.data.length ; i++ ){
+            tempAir.ID         = x.data[i][0],
+            tempAir.airport    = x.data[i][1],
+            tempAir.city       = x.data[i][2],
+            tempAir.country    = x.data[i][3],
+            tempAir.latitude   = x.data[i][6],
+            tempAir.longitude  = x.data[i][7],
+            tempAir.position3D = Application.Helper.geoToxyz2(x.data[i][7], x.data[i][6], 50);
+            // I need to check if this is the last object to be added to make sure
+            // that when the View listens to it, the parsed flag is raised
+            if( i >= x.data.length-1 )
                 this.parsed = true;
             this.push(tempAir);
         }
