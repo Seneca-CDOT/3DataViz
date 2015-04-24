@@ -1,17 +1,33 @@
+/**
+ * @author Bruno Di Giuseppe / smokingcobra.com
+ */
+
+var parsed1 = false;
+var parsed2 = false;
+
 var Application = Application || {};
 
-Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
+Application.FlightPathGlobeView = Application.FlightPathRootGlobeView.extend({
 
 // *************************
     initialize: function() {
         Application.BaseGlobeView.prototype.initialize.call(this);
         this.intersects;
 
+        this.collection[0].fetch( {success: function(){
+            console.log(this.models);
+        }});
+
         this.hexMap = 'Assets/images/textures/hexMapMin.png';
         this.textureMap = 'Assets/images/textures/worldMatrix.jpg';
 
         this.imgTex;
         this.radius = 50;
+
+        this.airports = [];
+        this.routes = [];
+        this.createdAirports = [];
+        this.movingGuys = [];
 
         this.factor = 3;
         this.texHeight = 1024 * this.factor;
@@ -20,6 +36,10 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         this.tw = this.th = 1024;
 
         this.canvas, this.canvasCtx;
+
+
+        this.cylinderRadius = this.radius * 0.01;
+        this.cylinderHeight = this.radius / 500;
 
         //getting country's centre variables
         this.maxLon = maxLat = -180;
@@ -33,8 +53,28 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         this.t = 0;
     },
     render: function() {
-        Application.BaseGlobeView.prototype.render.call(this);
+        // Application.BaseGlobeView.prototype.render.call(this);
+        this.renderGlobe2();
         return this;
+    },
+    renderGlobe2: function(){
+        // Application.BaseGlobeView.prototype.renderGlobe.call(this);
+        requestAnimationFrame(this.renderGlobe2.bind(this));
+
+        if (this.orbitOn === true) {
+
+            TWEEN.update();
+        }
+
+        if( typeof(movingGuys) !== "undefined" &&
+            typeof(paths)      !== "undefined"
+             ){
+            for( var i = 0; i < movingGuys.length; i ++ ) {
+                      pt = paths[i].getPoint( this.t );
+                      movingGuys[i].position.set( pt.x, pt.y, pt.z );
+                }
+                this.t = (this.t >= 1) ? 0 : this.t += 0.005;
+        }
     },
 
     showGlobe: function() {
@@ -56,8 +96,7 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
         this.globe.userData.name = 'globe';
         this.globe.userData.code = '';
-        this.scene.add(this.globe);
-        
+        this.scene.add(this.globe);     
     },
     //sets up canvas and loads hexMap for pixel clicking functionality
     setUpCanvas: function (tex){
@@ -75,125 +114,244 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
         canvas.width  = this.tw;
         canvas.height = this.th;
+    },
+    getAirports: function(data){
+        //raw:
+        //x.data[i][0] ID
+        //x.data[i][1] Airport
+        //x.data[i][2] City
+        //x.data[i][3] Country
+        //x.data[i][6] Lat
+        //x.data[i][7] Lon
 
-        document.body.appendChild(canvas);
+        //parsed:
+        //airports[i][0] ID
+        //airports[i][1] Airport
+        //airports[i][2] City
+        //airports[i][3] Country
+        //airports[i][4] Lat
+        //airports[i][5] Lon
+        //airports[i][6] ThreeJS.Vector3
+        var x = data;
+        var d = [];
+        this.parsed1 = false;
+        for( var i = 0 ; i < x.data.length ; i++ ){
+            var tempAir = [
+                x.data[i][0],
+                x.data[i][1],
+                x.data[i][2],
+                x.data[i][3],
+                x.data[i][6],
+                x.data[i][7],
+                Application.Helper.geoToxyz(x.data[i][6], x.data[i][7], this.radius)
+            ];
+            d.push(tempAir);
+        }
+        this.airports = d;
+        this.parsed1 = true;
+    },
+    getRoutes: function(data){
+
+        //x.data[i][0] route ID
+        //x.data[i][3] source Airport id
+        //x.data[i][5] destination airport id
+        //x.data[i][7] stops
+        //x.data[i][8] equipment
+
+        //routes[i][0] route ID
+        //routes[i][1] source Airport id
+        //routes[i][2] destination airport id
+        //routes[i][3] stops
+        //routes[i][4] equipment
+
+
+        this.parsed2 = false
+        var x = data;
+        var d = [];
+       for( var i = 0 ; i < x.data.length ; i++ ){
+            if( x.data[i][5] != "\\N" && 
+                x.data[i][3] != "\\N" &&
+                x.data[i][1] != "\\N" 
+             ){
+                var tempAir = [
+                    x.data[i][0],
+                    x.data[i][3],
+                    x.data[i][5],
+                    x.data[i][7],
+                    x.data[i][8],
+                ];
+                d.push(tempAir);
+            }
+        }
+        this.routes = d;
+        this.parsed2 = true;
+    },
+    readCSV: function(file, callback, callback2){
+        var that = self = this;
+        this.parsed = false;
+        var config = {
+            delimiter : ",",
+            newline : "",
+            header: false,
+            dynamicTyping: true,
+            preview: undefined,
+            encoding: "",
+            worker: false,
+            comments: false,
+            step: undefined,
+            // complete: undefined,
+            error: undefined,
+            download: true,
+            skipEmptyLines: false,
+            chunk: undefined,
+            fastMode: true,
+            complete: function(d) {
+                callback(d);
+                if ( parsed1 && parsed2 ) {
+                    callback2().bind(that);
+                }
+            }
+        };
+        Papa.parse(file, config);
     },
 
-    addPaths: function (data) {
-      var dataRecordIndex;
+    getRandomInt: function(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
 
-      for (dataRecordIndex in data) {
+    addAirport: function(id){
+        airport = airports[id];
 
-        var dataRecord = data[dataRecordIndex];
-        var phiFrom = dataRecord.from.lat * Math.PI / 180;
-        var thetaFrom = (dataRecord.from.lon + 90) * Math.PI / 180;
-
-        //calculates "from" point
-        var xF = this.radius * Math.cos(phiFrom) * Math.sin(thetaFrom);
-        var yF = this.radius * Math.sin(phiFrom);
-        var zF = this.radius * Math.cos(phiFrom) * Math.cos(thetaFrom);
-
-        var phiTo   =  dataRecord.to.lat * Math.PI / 180;
-        var thetaTo = (dataRecord.to.lon + 90) * Math.PI / 180;
-
-        //calculates "to" point
-        var xT = this.radius * Math.cos(phiTo) * Math.sin(thetaTo);
-        var yT = this.radius * Math.sin(phiTo);
-        var zT = this.radius * Math.cos(phiTo) * Math.cos(thetaTo);
-
-        //Sets up vectors
-        var vT = new THREE.Vector3(xT, yT, zT);
-        var vF = new THREE.Vector3(xF, yF, zF);
-
-        //gets the distance between the points. Maxium = 2*radius
-        var dist = vF.distanceTo(vT);
-
-        //create
-        var cvT = vT.clone();
-        var cvF = vF.clone();
-
-        var xC = ( 0.5 * (vF.x + vT.x) );
-        var yC = ( 0.5 * (vF.y + vT.y) );
-        var zC = ( 0.5 * (vF.z + vT.z) );
-
-        var mid = new THREE.Vector3(xC, yC, zC);
-
-        var smoothDist = this.map(dist, 0, 10, 0, 15/dist );
-        var dist2 = Math.pow(15/dist,2);
-
-        mid.setLength( this.radius * smoothDist );
-
-        cvT.add(mid);
-        cvF.add(mid);
-
-        cvT.setLength( this.radius * smoothDist );
-        cvF.setLength( this.radius * smoothDist );
-
-        //create the bezier curve
-        var curve = new THREE.CubicBezierCurve3( vF, cvF, cvT, vT );
-
-        var geometry2 = new THREE.Geometry();
-        geometry2.vertices = curve.getPoints( 50 );
-
-        var material2 = new THREE.LineBasicMaterial( { color : 0xff0000 } );
-
-        // Create the final Object3d to add to the this.scene
-        var curveObject = new THREE.Line( geometry2, material2 );
-        paths.push(curve);
-        this.scene.add(curveObject);
-
-
-        var cylinderRadius = this.radius * 0.01;
-        var cylinderHeight = this.radius / 500;
-
-        //Create cylinder to reperesent "From" city
-        var geometry = new THREE.CylinderGeometry( cylinderRadius, cylinderRadius, cylinderHeight, 32 );
-        var material = new THREE.MeshBasicMaterial( {color: 0xff0000} );
+        var geometry = new THREE.CylinderGeometry( this.cylinderRadius, this.cylinderRadius, this.cylinderHeight, 4 );
+        var material = new THREE.MeshBasicMaterial( {color: 0x0000ff, side: THREE.DoubleSide} );
         var cylinderFrom = new THREE.Mesh( geometry, material );
 
-        fromPoints.push(cylinderFrom);
+        cylinderFrom.position.copy(airport[6]);
 
-        cylinderFrom.position.copy(vF);
+        cylinderFrom.rotation.y = airport[5] * Math.PI / 180;
 
-        cylinderFrom.rotation.y = dataRecord.from.lon * Math.PI / 180;
+        var xRotationSign = airport[5] + 90 > 90 ? -1 : 1;
+        cylinderFrom.rotation.x = xRotationSign * (90 - airport[4]) * Math.PI / 180;
 
-        var xRotationSign = dataRecord.from.lon + 90 > 90 ? -1 : 1;
-        cylinderFrom.rotation.x = xRotationSign * (90 - dataRecord.from.lat) * Math.PI / 180;
+        this.createdAirports.push(id);
 
         this.scene.add( cylinderFrom );
+    },
 
-        //Create cylinder to reperesent "To" city
-        var cylinderTo = new THREE.Mesh( geometry, material );
+    airportCreated: function(id){
+        for( var i = 0; i < this.createdAirports.length; i++ ){
+            if(this.createdAirports[i] == id){
+                return true;
+                break;
+            }
+        }
+        return false;
+    },
 
-        toPoints.push(cylinderTo);
+    addPaths: function () {
+        var i = 0
+        var dataRecord;
+        var randomIndex;
+        // console.log(self);
+        // console.log(airports);
+        // console.log(routes);
 
-        cylinderTo.position.copy(vT);
+        for (dataRecordIndex in routes) {
+            ++i;
+            if(i > 700) break;            
 
-        cylinderTo.rotation.y = dataRecord.to.lon * Math.PI / 180;
+            randomIndex = self.getRandomInt(1, 65000);
+            dataRecord = routes[ randomIndex ];
 
-        xRotationSign = dataRecord.to.lon + 90 > 90 ? -1 : 1;
-        cylinderTo.rotation.x = xRotationSign * (90 - dataRecord.to.lat) * Math.PI / 180;
+            console.log(dataRecord[2]);
 
-        this.scene.add( cylinderTo );
+            var vT = airports[ dataRecord[2] ][6];
+            var vF = airports[ dataRecord[1] ][6];
 
-        //Create Shpere to follow along the path
-        geometry  = new THREE.SphereGeometry(cylinderRadius * 2, 32, 32);
-        material  = new THREE.MeshBasicMaterial( {color:0xff00000} );
-        var sphere  = new THREE.Mesh(geometry, material);
+            if( !self.airportCreated( airports[dataRecord[1]][0] ) ){
+                self.addAirport( airports[dataRecord[1]][0] );
+            }
+            if( !self.airportCreated( airports[dataRecord[2]][0]) ){
+                self.addAirport( airports[dataRecord[2]][0] );
+            }
 
-        movingGuys.push(sphere);
-        //gets the path first position
-        sphere.position.copy(curve.getPoint(0));
-        this.scene.add(sphere);
+            //gets the distance between the points. Maxium = 2*radius
+            var dist = vF.distanceTo(vT);
 
-      }
+            //create
+            var cvT = vT.clone();
+            var cvF = vF.clone();
+
+            var xC = ( 0.5 * (vF.x + vT.x) );
+            var yC = ( 0.5 * (vF.y + vT.y) );
+            var zC = ( 0.5 * (vF.z + vT.z) );
+
+            var mid = new THREE.Vector3(xC, yC, zC);
+
+            var smoothDist = Application.Helper.map(dist, 0, 10, 0, 15/dist);
+
+            mid.setLength( this.radius * smoothDist  );
+
+            cvT.add(mid);
+            cvF.add(mid);
+
+            cvT.setLength( this.radius * smoothDist );
+            cvF.setLength( this.radius * smoothDist );
+
+            //create the bezier curve
+            var curve = new THREE.CubicBezierCurve3( vF, cvF, cvT, vT );
+
+            var geometry2 = new THREE.Geometry();
+            geometry2.vertices = curve.getPoints( 50 );
+
+            var material2 = new THREE.LineBasicMaterial( { 
+                color : 0xff0000,
+                transparent: true,
+                opacity: .5,
+             } );
+
+            // Create the final Object3d to add to the this.scene
+            var curveObject = new THREE.Line( geometry2, material2 );
+            paths.push(curve);
+
+            self.scene.add(curveObject);
+
+            var speed = Application.Helper.map(dist, 0, 10, 0, 2.9);
+
+            geometry  = new THREE.TetrahedronGeometry(self.cylinderRadius);
+            material  = new THREE.MeshBasicMaterial( {color:0xa4c800} );
+            var sphere  = new THREE.Mesh(geometry, material);
+            var airplane = [
+                sphere,
+                (3 - speed) / 500,
+                0
+            ];
+    
+            self.movingGuys.push(airplane);
+            //gets the path first position
+            sphere.position.copy(curve.getPoint(0));
+            self.scene.add(sphere);
+        }
     },
     startStuff: function(){
         //generates textures
         // readCountries(dataSet);
         // this.drawGlobe( this.textureMap );
+        var server       = "http://zenit.senecac.on.ca/~int322_142a07/cdot/bb/ver2/Application/Models/data/";
+        var fileAirports = "airports.csv";
+        var fileRoutes   = "routes.csv";
+
+        var pathAirports = server + fileAirports;
+        var pathRoutes   = server + fileRoutes;
+        
         this.setUpCanvas( this.hexMap );
-        this.addPaths( dataSetPath );
+        // this.addPaths( dataSetPath );
+        // this.s = this.scene;
+
+        // this.readCSV( pathAirports, this.getAirports, null );
+        // this.readCSV( pathRoutes, this.getRoutes, this.addPaths );
+        // this.readCSV2( pathRoutes, this.getRoutes, this.addPaths );
+
     },
     cameraGoTo: function(country) {
 
@@ -238,9 +396,6 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
         function onComplete(point, that) {
             that.orbitOn = false;
-
-            // document.addEventListener('mouseup', onMouseUp, false);
-            // this.controls.addMouse();
         }
 
         this.orbitOn = true;
@@ -272,80 +427,16 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
             var place = intersects[0].point;
             place.setLength(radius);
 
-            var color = this.getPixelClicked(place, canvasCtx)
+            var color = Application.Helper.getPixelClicked(place, canvasCtx)
 
-            var country = this.getCountryById(color);
-            console.log(color);
+            var country = Application.Helper.getCountryById(color);
             if(country)
                 this.cameraGoTo(country);
         }
     },
 
-map: function ( x,  in_min,  in_max,  out_min,  out_max){
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-  },
-  getPixelClicked: function (place, canvasContext){
-      var x = place.x;
-      var y = place.y;
-      var z = place.z;
-
-      var lat = Math.asin( y / radius) * (180/Math.PI); // LAT in radians
-      var lon = Math.atan2(z, x) * (180/Math.PI) * -1; // LON in radians
-
-      var p = this.geoToxy(lon,lat);
-
-      var imageData = canvasContext.getImageData(p.x, p.y, 1, 1);
-      var pixel = imageData.data;
-
-      var r = pixel[0],
-          g = pixel[1],
-          b = pixel[2];
-
-      var color = Application.Helper.decToHex(r) + 
-                  Application.Helper.decToHex(g) + 
-                  Application.Helper.decToHex(b);
-
-      return color;
-  },
-  getCountryById: function(id){
-      var country = countiresList[0].elements;
-      if(id == '000000')
-          return false;
-      for(var i = 0 ; i < country.length; i++){
-          if( country[i].id == id ){
-              return country[i];
-          }
-      }
-  },
-  getCountryByName: function(name){
-      var country = this.countiresList[0].elements;
-      if(id == '')
-          return false;
-      for(var i = 0 ; i < country.length; i++){
-          if( country[i].name == name ){
-              return country[i];
-          }
-      }
-  },
-  geoToxy: function(lon, lat) {
-
-      var r = r || 1;
-
-      var x = 0;
-      x = this.map(lon, -180, 180, 0, 1024);
-
-      var y = 0;
-      y = this.map(-lat,-90,90,0, 1024);
-
-      var z = 0;
-
-      return new THREE.Vector3(x, y, z);
-  },
-
     initGlobe: function() {
         Application.BaseGlobeView.prototype.initGlobe.call(this);
-        this.renderGlobe();
-        
         this.startStuff();
 
         function onMouseUp(e) {
@@ -357,12 +448,9 @@ map: function ( x,  in_min,  in_max,  out_min,  out_max){
 
         function onMouseMove(e) {
             if (e.which == 1) {
-
                 this.moved = true;
             }
         };
-
-    /* Common */
         
         window.addEventListener('resize', this.onWindowResize, false);
         document.addEventListener('mousemove', onMouseMove.bind(this), false);
@@ -396,14 +484,14 @@ map: function ( x,  in_min,  in_max,  out_min,  out_max){
             this.canvasCtx.lineWidth = "2";
             this.canvasCtx.strokeStyle = "#00f100";
 
-            point = geoToxy(coordinates[0][0], coordinates[0][1]);
+            point = Application.Helper.geoToxy(coordinates[0][0], coordinates[0][1]);
 
             this.canvasCtx.moveTo(point.x, point.y);
 
             maxLon = maxLat = -180;
             minLon = minLat =  180;
             avgLon = avgLat =    0;
-            dist               = 0;
+            dist            =    0;
 
             var k;
             for ( k = 1; k < coordinates.length; k++) {
@@ -415,7 +503,7 @@ map: function ( x,  in_min,  in_max,  out_min,  out_max){
                 if(coordinates[k][1] < minLat) minLat = coordinates[k][1];
 
 
-                point = geoToxy(coordinates[k][0], coordinates[k][1]);
+                point = Application.Helper.geoToxy(coordinates[k][0], coordinates[k][1]);
 
                 this.canvasCtx.lineTo(point.x, point.y);
             }
@@ -431,7 +519,6 @@ map: function ( x,  in_min,  in_max,  out_min,  out_max){
             this.canvasCtx.fillStyle = "#" + color;
 
             this.canvasCtx.fill();
-
         }
 
         function readCountries(data) {
@@ -482,9 +569,8 @@ map: function ( x,  in_min,  in_max,  out_min,  out_max){
             }
             console.log("]");
             console.log("}");
-
         }
-        /* Moved */
-        // this.container.addEventListener('dblclick', clickOn, false);
+
+        
     }
 });
