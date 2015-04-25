@@ -44,19 +44,20 @@ Application.SpreadSheetControlPanel = Application.ControlPanelGlobeView.extend({
         this._vent = obj.event;
 
         this.urlfield = new Application.InputField();
-        this.urlfield.$el[0].id = 'url';
-        this.urlfield.$el[0].className = 'form-control';
+        this.urlfield.$el.attr('id', 'url');
+        this.urlfield.$el.attr('class', 'form-control');
+        this.urlfield.$el.attr('placeholder', 'Submit the URL');
         this.urlfield.$el.on('mousedown', this.urlFieldAction.bind(this));
 
         this.submitbtn = new Application.Button();
-        this.submitbtn.$el[0].id = 'submit';
-        this.submitbtn.$el[0].className = 'btn btn-primary';
+        this.submitbtn.$el.attr('id', 'submit');
+        this.submitbtn.$el.attr('class', 'btn btn-primary');
         this.submitbtn.$el[0].innerText = 'submit';
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
         this.resetbtn = new Application.Button();
-        this.resetbtn.$el[0].id = 'reset';
-        this.resetbtn.$el[0].className = 'btn btn-danger';
+        this.resetbtn.$el.attr('id', 'reset');
+        this.resetbtn.$el.attr('class', 'btn btn-danger');
         this.resetbtn.$el[0].innerText = 'reset';
         this.resetbtn.$el.on('mousedown', this.resetAction.bind(this));
     },
@@ -70,11 +71,13 @@ Application.SpreadSheetControlPanel = Application.ControlPanelGlobeView.extend({
     urlFieldAction: function() {
 
     },
-    submitAction: function() {
+    submitAction: function(e) {
+
+        e.preventDefault();
 
         if (this.urlfield.$el.val().trim() == '') {
 
-            console.log(' enter the url ');
+            this.urlfield.$el.focus();
             return;
         }
 
@@ -85,8 +88,8 @@ Application.SpreadSheetControlPanel = Application.ControlPanelGlobeView.extend({
     },
     resetAction: function() {
 
-       this.urlfield.$el.val('');
-       this._vent.trigger('click/reset');
+        this.urlfield.$el.val('');
+        this._vent.trigger('click/reset');
 
     },
     parseKey: function(url) {
@@ -114,6 +117,77 @@ Application.SpreadSheetControlPanel = Application.ControlPanelGlobeView.extend({
         var key = url.slice(startindex, endindex);
 
         return key;
+
+    }
+
+});
+
+Application.GoogleTrendsControlPanel = Application.ControlPanelGlobeView.extend({
+
+    initialize: function(obj) {
+        Application.ControlPanelGlobeView.prototype.initialize.call(this);
+
+        this._vent = obj.event;
+
+        this.keywordfield = new Application.InputField();
+        this.keywordfield.$el.attr('id', 'url');
+        this.keywordfield.$el.attr('class', 'form-control');
+        this.keywordfield.$el.attr('placeholder', 'Enter the keyword');
+        this.keywordfield.$el.on('keyup', this.KeywordFieldAction.bind(this));
+
+        this.submitbtn = new Application.Button();
+        this.submitbtn.$el.attr('id', 'submit');
+        this.submitbtn.$el.attr('class', 'btn btn-primary');
+        this.submitbtn.$el[0].innerText = 'submit';
+        this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
+
+        this.resetbtn = new Application.Button();
+        this.resetbtn.$el.attr('id', 'reset');
+        this.resetbtn.$el.attr('class', 'btn btn-danger');
+        this.resetbtn.$el[0].innerText = 'reset';
+        this.resetbtn.$el.on('mousedown', this.resetAction.bind(this));
+    },
+    render: function() {
+        Application.ControlPanelGlobeView.prototype.render.call(this);
+        this.$el.append(this.keywordfield.render().$el);
+        this.$el.append(this.submitbtn.render().$el);
+        this.$el.append(this.resetbtn.render().$el);
+        return this;
+    },
+    KeywordFieldAction: function(e) {
+
+        if (e.which == 13) {
+
+            this.submitAction(e);
+        }
+
+    },
+    submitAction: function(e) {
+
+        e.preventDefault();
+
+        if (this.keywordfield.$el.val().trim() == '') {
+
+            this.keywordfield.$el.focus();
+
+            return;
+        }
+
+        var key = this.parseKey(this.keywordfield.$el.val());
+
+        this._vent.trigger('click/submit', key);
+
+    },
+    resetAction: function() {
+
+        this.keywordfield.$el.val('');
+        this._vent.trigger('click/reset');
+
+    },
+    parseKey: function(keyword) {
+
+        keyword = keyword.trim().replace(/ /g, ',');
+        return keyword;
 
     }
 
