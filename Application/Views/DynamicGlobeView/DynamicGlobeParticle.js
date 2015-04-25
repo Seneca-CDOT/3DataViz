@@ -8,7 +8,8 @@ Application.DynamicGlobeParticle = function(dataRecord, globeRadius) {
     this._data = (dataRecord !== undefined) ? dataRecord : null;
     this._life_time = 0;
 
-    this._createMesh(globeRadius);
+    this._createMesh();
+    this._positionMesh(globeRadius);
 };
 
 // mark - shaders
@@ -72,12 +73,7 @@ Application.DynamicGlobeParticle.prototype._getShaderMaterial = function() {
     return material;
 };
 
-Application.DynamicGlobeParticle.prototype._createMesh = function(globeRadius) {
-
-    if (globeRadius === undefined || this._data == null) {
-
-        return;
-    }
+Application.DynamicGlobeParticle.prototype._createMesh = function() {
 
     // var material = new THREE.MeshPhongMaterial({ 
     //                             color: 0xFF0000, 
@@ -92,11 +88,12 @@ Application.DynamicGlobeParticle.prototype._createMesh = function(globeRadius) {
 
     var material = this._getShaderMaterial();
     var geometry = new THREE.Geometry();
+    var count = 5;
 
-    for (var v = 0; v < 5; ++v) {
+    for (var v = 0; v < count; ++v) {
 
         var vertex = new THREE.Vector3()
-
+        
         // vertex.x = Math.random() * 2 - 1;
         // vertex.y = Math.random() * 2 - 1;
         // vertex.z = Math.random() * 2 - 1;
@@ -112,16 +109,20 @@ Application.DynamicGlobeParticle.prototype._createMesh = function(globeRadius) {
     var values_size = material.attributes.size.value;
     var values_color = material.attributes.customColor.value;
 
-    for (var v = 0; v < vertices.length; ++v) {
+    var length = vertices.length;
+    for (var v = 0; v < length; ++v) {
 
         values_size[v] = 0;
         values_color[v] = new THREE.Color(0xff0000);
     }
-
-    this._positionMesh(globeRadius);
 };
 
 Application.DynamicGlobeParticle.prototype._positionMesh = function(globeRadius) {
+
+    if (globeRadius === undefined || this.getData() == null) {
+
+        return;
+    }
 
     var particle = this.getMesh();
     var position = Application.Helper.geoToxyz(this.getData().get("longitude"), this.getData().get("latitude"), globeRadius);
@@ -197,10 +198,10 @@ Application.DynamicGlobeParticle.prototype.isVisible = function() {
 Application.DynamicGlobeParticle.prototype.update = function(deltaScale, rotationRatio) {
 
     var rotation = 2 * Math.PI * rotationRatio;
-    this.getMesh().rotation.z = rotation;
+    // this.getMesh().rotation.z = rotation;
 
     var scale = this.getMesh().scale.x; // x, y, z are equal
-    if ((scale > 0.01 && deltaScale < 0.0) || (scale < 2.5 && deltaScale > 0.0)) {
+    if ((scale > 0.01 && deltaScale < 0.0) || (scale < 20.5 && deltaScale > 0.0)) {
 
         scale += deltaScale;
         this.getMesh().scale.set(scale, scale, scale);
