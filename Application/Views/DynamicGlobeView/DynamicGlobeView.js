@@ -20,6 +20,10 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         this.timePeriod = 0;
         this.timePeriodMax = 100;
         this.delta = 0.05
+
+        this.lifePeriod = 100000;
+        this.period = 500;
+        this.particlesLifeTime = 2000;
     },
     render: function() {
 
@@ -217,14 +221,17 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         var that = this;
         this.collection.fetch().done(function() {
 
-            that.showDataRecords(0, 100000);
+            that.showDataRecords(0, that.lifePeriod);
         });
 
     },
     showDataRecords: function(beginIndex, timeInterval) {
 
         if (beginIndex >= this.collection.length)
+        {
+            this.startDataSynchronization();
             return;
+        }
 
         var count = 0;
         var dataRecord = this.collection.at(beginIndex);
@@ -253,7 +260,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         setTimeout(function() {
 
             that.showDataRecords(beginIndex, timeInterval);
-        }, 1000);
+        }, this.period);
     },
 
     // dynamic functionality
@@ -261,7 +268,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     addParticleWithDataRecord: function(dataRecord) {
 
         var particle = new Application.DynamicGlobeParticle(dataRecord, this.globeRadius);
-        particle.setLifeTime(3000);
+        particle.setLifeTime(this.particlesLifeTime);
 
         // Application.Debug.addAxes(particle.getMesh());
 
