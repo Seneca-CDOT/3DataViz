@@ -8,10 +8,11 @@ var Application = Application || {};
 Application.GlobeRouter = Backbone.Router.extend({
 
   routes : {
-    "globeView/spreadsheet" : "initSpreadSheetGlobeView",
-    "globeView/statictwitter" : "initStaticTwitterGlobeView",
+    "globeView/spreadSheet" : "initSpreadSheetGlobeView",
+    "globeView/staticTwitter" : "initStaticTwitterGlobeView",
     "globeView/flightPath" : "initFlightPathGlobeView",
-    "globeView/dynamic" : "initDynamicGlobeView"
+    "globeView/dynamic" : "initDynamicGlobeView",
+    "globeView/googleTrends" : "initGoogleTrendsGlobeView"
     // "globeView/spreadsheet/request/:id" : "request",
     //"globeView/flightPath/:action" : "doSomething",
     //"globeView/dynamic/:action" : "doSomething",
@@ -22,10 +23,28 @@ Application.GlobeRouter = Backbone.Router.extend({
   //   this.rootGlobeView = new Application.RootGlobeView(views, collection);
   //   $("#applicaitonRegion").empty().append(this.rootGlobeView.render().$el[0]);
   // },
+  initGoogleTrendsGlobeView: function(){
+
+    var that = this;
+    require(Application.globeViews.googleTrends.files , function(){
+
+      that.rootGlobeView = new Application.GoogleTrendsRootGlobeView();
+      $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
+      that.rootGlobeView.render();
+
+      //call fetch test
+      // that.rootGlobeView.globeView.collection.fetch({
+      //   success: function(){
+      //     // console.log(Application.router.rootGlobeView.globeView.collection);
+      //   }
+      // });
+
+    });
+  },
   initSpreadSheetGlobeView: function(){
 
     var that = this;
-    require(Application.globeViews.spreadsheet.files , function(){
+    require(Application.globeViews.spreadSheet.files , function(){
 
       that.rootGlobeView = new Application.SpreadSheetRootGlobeView();
       $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
@@ -44,7 +63,7 @@ Application.GlobeRouter = Backbone.Router.extend({
   initStaticTwitterGlobeView: function(){
 
     var that = this;
-    require(Application.globeViews.statictwitter.files , function(){
+    require(Application.globeViews.staticTwitter.files , function(){
 
       that.rootGlobeView = new Application.StaticTwitterRootGlobeView();
       $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
