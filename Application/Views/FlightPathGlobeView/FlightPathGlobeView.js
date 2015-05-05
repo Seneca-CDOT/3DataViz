@@ -3,11 +3,11 @@
 **/
 var Application = Application || {};
 
-Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
+Application.FlightPathGlobeView = Application.BaseTextureGlobeView.extend({
 
 // *************************
     initialize: function() {
-        Application.BaseGlobeView.prototype.initialize.call(this);
+        Application.BaseTextureGlobeView.prototype.initialize.call(this);
         this.intersects;
 
         // FUN FUN FUN
@@ -15,9 +15,8 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
 
         //variables used to set the size of the objects and camera/controls orientation
-        this.radius = 50;
-        this.cylinderRadius = this.radius * 0.0085;
-        this.cylinderHeight = this.radius / 500;
+        this.cylinderRadius = this.globeRadius * 0.0085;
+        this.cylinderHeight = this.globeRadius / 500;
 
 
         // in case you want to use sprites, they look terrible and there's
@@ -68,8 +67,8 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
         // HexMap is the map for clicking on countries.
         // TextureMap is the actual thing that's shown
-        this.hexMap = 'Assets/images/textures/hexMapMin.png';
-        this.textureMap = 'Assets/images/textures/worldMatrix.jpg';
+        this.hexMap = 'Assets/Images/textures/hexMapMin.png';
+        this.textureMap = 'Assets/Images/textures/worldMatrix.jpg';
 
         // Arrays for controlling the scene actors
         this.airports = [];
@@ -100,52 +99,29 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         this.t = 0;
     },
     render: function() {
-        Application.BaseGlobeView.prototype.render.call(this);
+
+        Application.BaseTextureGlobeView.prototype.render.call(this);
         return this;
     },
     // data ready checks to see if both csv's have loaded. if so,
     // start drawing the paths
     dataReady: function( dataId ){
+
         if( this.collection[0].parsed && this.collection[1].parsed ){
             this.addPaths();
         }
     },
     showGlobe: function() {
 
-        Application.BaseGlobeView.prototype.showGlobe.call(this);
+        Application.BaseTextureGlobeView.prototype.showGlobe.call(this);
     },
     initGlobe: function() {
-        Application.BaseGlobeView.prototype.initGlobe.call(this);
+        
+        Application.BaseTextureGlobeView.prototype.initGlobe.call(this);
+
         // start stuff used to do more stuff, like drawing the texture ant stuff.
         // as of now, it just calls the setUpCanvas() function.
         this.startStuff();
-
-        function onMouseUp(e) {
-            if (!this.moved) {
-               this.clickOn(e);
-            }
-            this.moved = false;
-        };
-
-        function onMouseMove(e) {
-            if (e.which == 1) {
-                this.moved = true;
-            }
-        };
-        
-        document.addEventListener('mousemove', onMouseMove.bind(this), false);
-        document.addEventListener('mouseup', onMouseUp.bind(this), false);
-
-        // $(document).on("keyup", 'form', function(e) {
-            
-        // });
-
-        // LET'S GET THE PARTY STARTED
-        $(document).on("keypress", function(e) {
-            if(e.keyCode == 32){
-                console.log(e.keyCode);
-            }
-        });
 
         // This are the functions for drawing the textures.
         // it works like this: readCountries() is going to read 
@@ -262,25 +238,24 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
     },
     renderGlobe: function() {
 
-        Application.BaseGlobeView.prototype.renderGlobe.call(this);
+        Application.BaseTextureGlobeView.prototype.renderGlobe.call(this);
     }, 
     addGlobe: function() {
-        // Application.BaseGlobeView.prototype.addGlobe.call(this);
 
-        // this is my globe.
-        var geometry = new THREE.SphereGeometry(this.radius, 32, 32);
+        Application.BaseTextureGlobeView.prototype.addGlobe.call(this);
 
         var texture = THREE.ImageUtils.loadTexture( this.textureMap );
-
         var material = new THREE.MeshBasicMaterial({
                                 color: 0xFFFFFF,
                                 map: texture
                             });
-        this.globe = new THREE.Mesh(geometry, material);
 
-        this.globe.userData.name = 'globe';
-        this.globe.userData.code = '';
-        this.scene.add(this.globe);     
+        if (this.globe.material != null) {
+
+            this.globe.material.dispose();
+            this.globe.material = null;
+        }
+        this.globe.material = material;
     },
     updateGlobe: function() {
 
@@ -315,24 +290,29 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
         }
 
-        Application.BaseGlobeView.prototype.updateGlobe.call(this);
+        Application.BaseTextureGlobeView.prototype.updateGlobe.call(this);
     },
     //sets up canvas and loads hexMap for pixel clicking functionality
     setUpCanvas: function (tex){
 
-        canvas = document.createElement('canvas');
-        canvas.backgrounColor = "0x000000";
+        this.canvas = document.createElement('canvas');
+        this.canvas.backgrounColor = "0x000000";
 
-        canvasCtx = canvas.getContext("2d");
+        this.canvasCtx = this.canvas.getContext("2d");
 
         var image = new Image();
-        image.onload = function () {
-            canvasCtx.drawImage(image, 0, 0); // draw the image on the canvas
-        }
         image.src = tex;
+        image.onload = (function(that) {
 
-        canvas.width  = this.tw;
-        canvas.height = this.th;
+            return function() {
+
+                // draw the image on the 'canvas'
+                that.canvasCtx.drawImage(image, 0, 0);
+            };
+        })(this);
+
+        this.canvas.width  = this.tw;
+        this.canvas.height = this.th;
     },
     // gives you a random number within a range
     getRandomInt: function(min, max) {
@@ -431,13 +411,13 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
                 var smoothDist = Application.Helper.map(dist, 0, 10, 0, 15/dist);
 
-                mid.setLength( that.radius * smoothDist );
+                mid.setLength( that.globeRadius * smoothDist );
 
                 cvT.add(mid);
                 cvF.add(mid);
 
-                cvT.setLength( that.radius * smoothDist );
-                cvF.setLength( that.radius * smoothDist );
+                cvT.setLength( that.globeRadius * smoothDist );
+                cvF.setLength( that.globeRadius * smoothDist );
 
                 //create the bezier curve
                 var pathGeometry = new THREE.Geometry();
@@ -454,7 +434,7 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
                 paths.push(curve);
                 that.scene.add(curveObject);
 
-                var speed = Application.Helper.map(dist, 0, that.radius*2, 0, 2.9);
+                var speed = Application.Helper.map(dist, 0, that.globeRadius*2, 0, 2.9);
                 
                 //airplane sprite
                 // var airplaneInstance = new THREE.Sprite(that.airplaneSpriteMaterial);
@@ -485,82 +465,20 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         // readCountries(dataSet);
         this.setUpCanvas( this.hexMap );
     },
-    cameraGoTo: function(country) {
 
-        // document.removeEventListener('mouseup', onMouseUp, false);
-        // this.controls.removeMouse();
-        
-        this.moved = true;
-
-        var current = this.controls.getPosition();
-        var destination = new THREE.Vector3(country.midPoint.x, country.midPoint.y, -1 * country.midPoint.z);
-        destination.setLength(this.controls.getRadius());
-
-        if (this.orbitOn == true) {
-            this.tween.stop();
-        }
-
-        this.tween = new TWEEN.Tween(current)
-        .to({
-            x: destination.x,
-            y: destination.y,
-            z: destination.z
-        }, 1000)
-        .easing(TWEEN.Easing.Sinusoidal.InOut)
-        .onUpdate((function(that) { 
-            return function () { 
-                onUpdate(this, that); 
-            };
-        })(this))
-        .onComplete((function(that) { 
-            return function () { 
-                onComplete(this, that); 
-            };
-        })(this));
-
-        function onUpdate(point, that) {
-            that.controls.updateView({
-                x: point.x,
-                y: point.y,
-                z: point.z
-            });
-        }
-
-        function onComplete(point, that) {
-            that.orbitOn = false;
-        }
-
-        this.orbitOn = true;
-        this.tween.start();
-    },
+    // interaction
     clickOn: function(event) {
-        var x = event.clientX;
-        var y = event.clientY;
 
-        x -= this.container.offsetLeft;
-        y -= this.container.offsetTop;
+        Application.BaseTextureGlobeView.prototype.clickOn.call(this, event);
 
-        var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
+        // TODO: flight path globe functionality
 
-        vector.unproject(this.camera);
+        // var point = intersects[0].point;
+        // point.setLength(radius);
 
-        var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
-
-        intersects = ray.intersectObject(this.globe); // returns an object in any intersected on click
-
-        if (intersects.length > 0) {
-
-            if (intersects[0].object.name == 'globe') return; // exclude invisible meshes from intersection
-
-            var place = intersects[0].point;
-            place.setLength(radius);
-
-            var color = Application.Helper.getPixelClicked(place, canvasCtx)
-
-            var country = Application.Helper.getCountryById(color);
-            if(country)
-                this.cameraGoTo(country);
-        }
-    },
-
+        // var color = Application.Helper.getPixelClicked(point, canvasCtx)
+        // var country = Application.Helper.getCountryById(color);
+        // if(country)
+        //     this.cameraGoTo(country);
+    }
 });

@@ -91,17 +91,18 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
         this.requestCountriesData().done(function(data) {
 
             that.addCountries(data);
-
         });
-
     },
+
+    // interaction
+    // TODO: move to base
+    // ---
     onMouseUp: function(e) {
 
         if (!this.moved) {
 
             this.clickOn(e);
         }
-
         this.moved = false;
     },
 
@@ -183,6 +184,50 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
         this.orbitOn = true;
         tween.start();
     },
+    
+    requestCountriesData: function() { // requesting initial data of country borders
+
+        return $.ajax({
+            type: 'GET',
+            url: 'Models/geodata.json',
+            dataType: 'json',
+            cache: false, // sometimes old info stuck in cache
+            error: function() {
+                console.log('An error occurred while processing a countries file.');
+            }
+        });
+    },
+
+    addCountries: function(data) {
+
+        var i = 10;
+
+        var that = this;
+
+        $.each(data, function(name, index) {
+
+            var countrycolor = Application.Helper.rgbToHex(10, i++, 0);
+
+            var material = new THREE.MeshPhongMaterial({
+                shininess: 0,
+                color: countrycolor
+            });
+            var geometry = new Map3DGeometry(data[name], 0);
+            data[name].mesh = new THREE.Mesh(geometry, material);
+            that.scene.add(data[name].mesh);
+
+            var scale = 50.5;
+            data[name].mesh.scale.set(scale, scale, scale);
+            data[name].mesh.geometry.computeBoundingSphere();
+            data[name].mesh.userData.name = name;
+            data[name].mesh.userData.code = data[name].code;
+            data[name].mesh.userData.used = false;
+            data[name].mesh.userData.countrycolor = countrycolor;
+            // countries[data[name].code] = data[name].mesh;
+            that.countries.push(data[name].mesh);
+        });
+    },
+    // ---
 
     resetGlobe: function() {
 
@@ -242,54 +287,6 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
             this.intersected.material.color.setHex(0x0000FF);
 
         }
-    },
-
-    getTweets: function() {
-
-        resetCountries();
-        socket.emit('countries');
-    },
-    requestCountriesData: function() { // requesting initial data of country borders
-
-        return $.ajax({
-            type: 'GET',
-            url: 'Models/geodata.json',
-            dataType: 'json',
-            cache: false, // sometimes old info stuck in cache
-            error: function() {
-                console.log('An error occurred while processing a countries file.');
-            }
-        });
-    },
-
-    addCountries: function(data) {
-
-        var i = 10;
-
-        var that = this;
-
-        $.each(data, function(name, index) {
-
-            var countrycolor = Application.Helper.rgbToHex(10, i++, 0);
-
-            var material = new THREE.MeshPhongMaterial({
-                shininess: 0,
-                color: countrycolor
-            });
-            var geometry = new Map3DGeometry(data[name], 0);
-            data[name].mesh = new THREE.Mesh(geometry, material);
-            that.scene.add(data[name].mesh);
-
-            var scale = 50.5;
-            data[name].mesh.scale.set(scale, scale, scale);
-            data[name].mesh.geometry.computeBoundingSphere();
-            data[name].mesh.userData.name = name;
-            data[name].mesh.userData.code = data[name].code;
-            data[name].mesh.userData.used = false;
-            data[name].mesh.userData.countrycolor = countrycolor;
-            // countries[data[name].code] = data[name].mesh;
-            that.countries.push(data[name].mesh);
-        });
     },
 
     numToScale: function(array, callback) {
