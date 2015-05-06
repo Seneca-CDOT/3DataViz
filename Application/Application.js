@@ -29,6 +29,8 @@ Application = {
         'Helpers/Debug.js',
         'Helpers/DataStructures.js',
 
+        'DataProcessor/DataProcessor.js',
+
         'Libraries/OrbitControls.js',
         'Libraries/stats.js',
         'Libraries/tween.min.js',

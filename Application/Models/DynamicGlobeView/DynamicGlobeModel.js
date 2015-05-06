@@ -22,12 +22,18 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
         Application.BaseGlobeCollection.prototype.initialize.call(this);
     },
     parse: function(response) {
-        var filter = {
-            longitude: "geo.coordinates[1]",
-            latitude: "geo.coordinates[0]",
-            text: "text",
-            timestamp: "timestamp_ms",
-        }
-        return Application.Filter.extractJSON(filter, response);
+
+        var pModule = Application.DataProcessor.ProcessorModule;
+
+        // TODO: test difference between singleton and module design pattern implementation
+        // var pModule2 = Application.DataProcessor.ProcessorModule;
+
+        var options = {
+
+            dataType: "tweet"
+        };
+        var pData = pModule.processData(response, options)
+        return pData;
+        
     }
 });

@@ -1,6 +1,6 @@
 var Application = Application || {};
 
-Application.DataStructures = {}
+Application.DataStructures = {};
 
 Application.DataStructures._NodeList = function() {
     
@@ -8,7 +8,7 @@ Application.DataStructures._NodeList = function() {
   this._previous = null;
 
   this._data = null;
-}
+};
 
 Application.DataStructures._NodeList.prototype.getNext = function() {
 
