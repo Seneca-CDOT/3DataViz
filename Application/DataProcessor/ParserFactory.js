@@ -214,5 +214,5 @@ Application.DataProcessor.CSVParser = (function() {
 	 	return data;
 	};
 
-	return CSVParse;
+	return CSVParser;
 })();
