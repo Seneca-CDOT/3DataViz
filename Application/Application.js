@@ -30,6 +30,8 @@ Application = {
         'Helpers/DataStructures.js',
 
         'DataProcessor/DataProcessor.js',
+        'DataProcessor/ParserFactory.js',
+        'DataProcessor/TransformerFactory.js',
 
         'Libraries/OrbitControls.js',
         'Libraries/stats.js',

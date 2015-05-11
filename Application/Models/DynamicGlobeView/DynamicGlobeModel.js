@@ -24,10 +24,6 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
     parse: function(response) {
 
         var pModule = Application.DataProcessor.ProcessorModule;
-
-        // TODO: test difference between singleton and module design pattern implementation
-        // var pModule2 = Application.DataProcessor.ProcessorModule;
-
         var options = {
 
             dataType: "tweet"
