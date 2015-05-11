@@ -7,7 +7,7 @@ Application.Helper = {
    * @param childObject A child object.
    * @param parentObject A parent object.
    */
-  inheritPrototype: function (childObject, parentObject) {
+  inherit: function (childObject, parentObject) {
 
     var copyOfParent = Object.create(parentObject.prototype);
 
