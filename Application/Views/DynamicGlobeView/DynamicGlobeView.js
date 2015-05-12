@@ -26,24 +26,6 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
     },
 
     // member methods
-    showGlobe: function() {
-
-        Application.BaseGeometryGlobeView.prototype.showGlobe.call(this);
-    },
-    addGlobe: function() {
-
-        Application.BaseGeometryGlobeView.prototype.addGlobe.call(this);
-    },
-    initGlobe: function() {
-
-        Application.BaseGeometryGlobeView.prototype.initGlobe.call(this);
-
-        // this.getCountriesGeometry().done(this.onCountriesGeometryGet.bind(this));
-    },
-    renderGlobe: function() {
-
-        Application.BaseGeometryGlobeView.prototype.renderGlobe.call(this);
-    },
     updateGlobe: function() {
 
         if (this.orbitOn === true) {

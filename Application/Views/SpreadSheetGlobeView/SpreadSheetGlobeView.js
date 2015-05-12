@@ -5,7 +5,7 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
     // framework methods
 
     initialize: function(obj) {
-        
+
         Application.BaseGeometryGlobeView.prototype.initialize.call(this);
         this._vent = obj._event;
         this.controlPanel = new Application.SpreadSheetControlPanel({
@@ -14,7 +14,6 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
         this.countries = [];
         this.intersected; // intersected mesh
         this.moved = false; // for controls and mouse events
-        this.orbitOn = false;
         this.timer; // represents timer for user mouse idle
         this.idle = true; // represents user mouse idle
         this.sprites = [];
@@ -36,7 +35,7 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
         this._vent.on('click/submit', this.submit.bind(this));
         this._vent.on('click/reset', this.reset.bind(this));
     },
-     onMouseMove: function(e) {
+    onMouseMove: function(e) {
 
         var that = this;
         Application.BaseGeometryGlobeView.prototype.onMouseMove.call(this,e);
@@ -65,32 +64,18 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
 
         this.resetGlobe();
     },
+
     // member methods
+
     renderGlobe: function() {
 
         Application.BaseGeometryGlobeView.prototype.renderGlobe.call(this);
-
-        if (this.orbitOn === true) {
-
-            TWEEN.update();
-        }
 
         if ( this.idle === true ) {
 
             this.globe.rotation.y -= 0.0003;
         }
     },
-    // showGlobe: function() {
-    //     Application.BaseGeometryGlobeView.prototype.showGlobe.call(this);
-    // },
-    // addGlobe: function() {
-    //     Application.BaseGeometryGlobeView.prototype.addGlobe.call(this);
-
-    //     // this.countries.push(this.globe);
-    // },
-    // initGlobe: function() {
-    //     Application.BaseGeometryGlobeView.prototype.initGlobe.call(this);
-    // },   
     resetGlobe: function() {
 
         var that = this;
@@ -200,7 +185,6 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
             //  }, 100);
         }.bind(this));
     },
-
     addPoints: function(array) {
 
         var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");

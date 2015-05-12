@@ -15,7 +15,6 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
         this.idle = true; // represents user mouse idle
         this.intersected; // intersected mesh
         this.moved = false; // for controls and mouse events
-        this.orbitOn = false;
         this.sprites = [];
         this.added = []; // list of countries participating and their old colors
         this.suscribe();
@@ -73,27 +72,11 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
 
         Application.BaseGeometryGlobeView.prototype.renderGlobe.call(this);
 
-        if (this.orbitOn === true) {
-
-            TWEEN.update();
-        }
-
         if (this.idle === true) {
 
             this.globe.rotation.y -= 0.0003;
         }
     },
-    // showGlobe: function() {
-    //     Application.BaseGeometryGlobeView.prototype.showGlobe.call(this);
-    // },
-    // addGlobe: function() {
-    //     Application.BaseGeometryGlobeView.prototype.addGlobe.call(this);
-
-    //     //this.countries.push(this.globe);
-    // },
-    // initGlobe: function() {
-    //     Application.BaseGeometryGlobeView.prototype.initGlobe.call(this);
-    // },
     resetGlobe: function() {
 
         var that = this;
