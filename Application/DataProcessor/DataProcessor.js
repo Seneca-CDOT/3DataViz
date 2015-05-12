@@ -21,6 +21,9 @@ Application.DataProcessor.ProcessorModule = (function() {
 			  break;
 			case "csv":
 			  options.parserType = "csvParser";
+			  break; 
+			  case "trends":
+			  options.parserType = "GoogleTrendsParser";
 			  break;    
 		}
 

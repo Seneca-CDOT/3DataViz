@@ -260,6 +260,7 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
         });
 
     },
+    
      didLoadGeometry: function() {
 
         var that = this;
