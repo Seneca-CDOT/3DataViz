@@ -48,9 +48,9 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
         this._vent.on('click/submit', this.submit.bind(this));
         this._vent.on('click/reset', this.reset.bind(this));
         this._vent.on('trends/parsed', this.showCountries.bind(this));
-
     },
     onMouseMove: function(e) {
+
         var that = this;
         Application.BaseGeometryGlobeView.prototype.onMouseMove.call(this,e);
         this.idle = false;
@@ -60,16 +60,10 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
     submit: function(key) {
 
         var that = this;
-
         this.collection.setURL(key);
-
         this.collection.reset();
-
         this.resetGlobe();
-
         this.collection.request();
-
-
     },
     reset: function() {
 
@@ -84,45 +78,32 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
             TWEEN.update();
         }
 
-         if ( this.idle === true ) {
+        if (this.idle === true) {
 
-         this.globe.rotation.y -= 0.0003;
-     }
-
+            this.globe.rotation.y -= 0.0003;
+        }
     },
-    showGlobe: function() {
-        Application.BaseGeometryGlobeView.prototype.showGlobe.call(this);
-    },
-    addGlobe: function() {
-        Application.BaseGeometryGlobeView.prototype.addGlobe.call(this);
+    // showGlobe: function() {
+    //     Application.BaseGeometryGlobeView.prototype.showGlobe.call(this);
+    // },
+    // addGlobe: function() {
+    //     Application.BaseGeometryGlobeView.prototype.addGlobe.call(this);
 
-        //this.countries.push(this.globe);
-    },
-    initGlobe: function() {
-        Application.BaseGeometryGlobeView.prototype.initGlobe.call(this);
-
-    },
-
-    cameraGoTo: function(countrymesh) {
-
-        Application.BaseGeometryGlobeView.prototype.cameraGoTo.call(this, countrymesh);
-
-        this.highlightCountry(countrymesh);
-
-    },
-
+    //     //this.countries.push(this.globe);
+    // },
+    // initGlobe: function() {
+    //     Application.BaseGeometryGlobeView.prototype.initGlobe.call(this);
+    // },
     resetGlobe: function() {
 
         var that = this;
-
         $.each(that.added, function(index, country) {
 
             country.mesh.material.color.setHex(country.color);
-
         });
     },
-
     findCountryMeshByName: function(name) {
+
         for (var i = 0; i < this.countries.length; i++) {
 
             if (this.countries[i].userData.name.toLowerCase() == name.toLowerCase()) {
@@ -131,7 +112,6 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
             }
         }
     },
-
     findCountryMeshByCode: function(code) {
 
         for (var i = 0; i < this.countries.length; i++) {
@@ -142,7 +122,6 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
             }
         }
     },
-
     highlightCountry: function(object) {
 
         if (this.intersected != object) {
@@ -154,50 +133,47 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
             this.intersected = object;
             this.intersected.currentColor = this.intersected.material.color.getHex();
             this.intersected.material.color.setHex(0x0000FF);
-
         }
     },
-
     showCountries: function(array) {
 
         var that = this;
-
         array.forEach(function(item, index) {
 
             var countrymesh = that.findCountryMeshByCode(item.attributes.countrycode);
 
-            if (!countrymesh) return;
+            if (!countrymesh) 
+                return;
 
             console.log(countrymesh.userData.name);
 
             var obj = {};
-
             obj.mesh = countrymesh;
             obj.color = countrymesh.material.color.getHex();
 
             that.added.push(obj);
-
             countrymesh.material.color.setHex(that.colors[index]);
-
         });
-
     },
+
+    cameraGoTo: function(countrymesh) {
+
+        Application.BaseGeometryGlobeView.prototype.cameraGoTo.call(this, countrymesh);
+
+        this.highlightCountry(countrymesh);
+    }, 
 
     didLoadGeometry: function() {
 
-        var that = this;
-
         Application.BaseGeometryGlobeView.prototype.didLoadGeometry.call(this);
 
+        var that = this;
         $.each(this.rayCatchers, function(index, catcher) {
 
             if (catcher != that.globe) {
 
                 that.countries.push(catcher);
-
             }
-
         });
     }
-
 });
