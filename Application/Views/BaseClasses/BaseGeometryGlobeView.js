@@ -54,7 +54,12 @@ Application.BaseGeometryGlobeView = Application.BaseGlobeView.extend({
             mesh.scale.set(scale, scale, scale);
             mesh.geometry.computeBoundingSphere();
 
-            this.scene.add(mesh);
+            mesh.userData.name = countryName;
+            mesh.userData.code = data[countryName].code;
+            mesh.userData.used = false;
+            mesh.userData.countrycolor = countryColor;
+
+            this.globe.add(mesh);
             this.rayCatchers.push(mesh);
         }
     },
