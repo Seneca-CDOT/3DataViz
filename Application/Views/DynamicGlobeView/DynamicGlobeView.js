@@ -26,24 +26,6 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
     },
 
     // member methods
-    showGlobe: function() {
-
-        Application.BaseGeometryGlobeView.prototype.showGlobe.call(this);
-    },
-    addGlobe: function() {
-
-        Application.BaseGeometryGlobeView.prototype.addGlobe.call(this);
-    },
-    initGlobe: function() {
-
-        Application.BaseGeometryGlobeView.prototype.initGlobe.call(this);
-
-        // this.getCountriesGeometry().done(this.onCountriesGeometryGet.bind(this));
-    },
-    renderGlobe: function() {
-
-        Application.BaseGeometryGlobeView.prototype.renderGlobe.call(this);
-    },
     updateGlobe: function() {
 
         if (this.orbitOn === true) {
@@ -78,17 +60,26 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
 
             var particle = iterator.getData();
             particle.update(-this.delta, ratio);
-        
+            
+            var canRemove = true;
             if (particle.isVisible()) {
 
                 iterator = iterator.getNext();
-            } else {
+                // canRemove = false;
+            } else if (canRemove) {
 
                 this.scene.remove(particle.getMesh());
                 particle.dispose();
 
-                // TODO: eliminate use of private method
-                iterator = this.particlesToRemove._remove(iterator);
+                if (iterator === this.particlesToRemove.getBegin()) {
+
+                    iterator = this.particlesToRemove.popFront(iterator);
+                }
+                else {
+
+                    throw 'Particles should be removed in chronological order';
+                }
+
             }
         }
     },
@@ -208,8 +199,14 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
 
                 this.particlesToRemove.pushBack(particle);
 
-                // TODO: eliminate use of private method
-                iterator = this.particles._remove(iterator);
+                if (iterator === this.particles.getBegin()) {
+
+                    iterator = this.particles.popFront(iterator);
+                }
+                else {
+
+                    throw 'Particles should be removed in chronological order';
+                }
             } else {
 
                 break;

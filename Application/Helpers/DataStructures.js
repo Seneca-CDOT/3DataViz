@@ -2,125 +2,155 @@ var Application = Application || {};
 
 Application.DataStructures = {};
 
-Application.DataStructures._NodeList = function() {
+Application.DataStructures._NodeList = (function() {
+
+  // TODO: make a memory efficient private store
+  function _NodeList() {
+  
+    this._next = null;
+    this._previous = null;
+
+    this._data = null;
+  };
+
+  _NodeList.prototype.getNext = function() {
+
+    return this._next;
+  };
+
+  _NodeList.prototype.setNext = function(next) {
+
+    this._next = next;
+  };
+
+  _NodeList.prototype.getPrevious = function() {
+
+    return this._previous;
+  };
+
+  _NodeList.prototype.setPrevious = function(previous) {
+
+    this._previous = previous;
+  };
+
+  _NodeList.prototype.getData = function() {
+
+    return this._data;
+  };
+
+  _NodeList.prototype.setData = function(data) {
+
+    this._data = data;
+  };
+
+  return _NodeList;
+})();
+
+
+Application.DataStructures.List = (function() {
     
-  this._next = null;
-  this._previous = null;
+  // TODO: make a memory efficient private store
+  function List() {
 
-  this._data = null;
-};
+    this._pre_head = new Application.DataStructures._NodeList();
+    this._post_tail = new Application.DataStructures._NodeList();
 
-Application.DataStructures._NodeList.prototype.getNext = function() {
+    this._pre_head._next = this._post_tail;
+    this._post_tail._previous = this._pre_head;
 
-  return this._next;
-};
+    this._length = 0;
+  };
 
-Application.DataStructures._NodeList.prototype.getPrevious = function() {
+  List.prototype.getLength = function() {
 
-  return this._previous;
-};
+    return _length;
+  };
 
-Application.DataStructures._NodeList.prototype.getData = function() {
+  List.prototype.getBegin = function() {
 
-  return this._data;
-};
+    return this._pre_head._next;
+  };
 
-Application.DataStructures.List = function() {
-    
-  // private
+  List.prototype.getEnd = function() {
 
-  this._pre_head = new Application.DataStructures._NodeList();
-  this._post_tail = new Application.DataStructures._NodeList();
+    return this._post_tail;
+  };
 
-  this._pre_head._next = this._post_tail;
-  this._post_tail._previous = this._pre_head;
+  List.prototype.getLength = function() {
 
-  this._length = 0;
-}
+    return this._length;
+  };
 
-  // private
+  List.prototype.isEmpty = function() {
 
-Application.DataStructures.List.prototype._insert = function(node, data) {
+    return (this.getLength() < 1);
+  };
 
-  var newNode = new Application.DataStructures._NodeList();
-  newNode._data = data;
+  List.prototype.pushBack = function(data) {
 
-  var next = node._next;
-  newNode._next = next;
-  next._previous = newNode;
+     privateMethods.insertNode.call(this, this.getEnd().getPrevious(), data);
+  };
 
-  node._next = newNode;
-  newNode._previous = node;
+  List.prototype.popBack = function() {
 
-  ++this._length;
-};
+    if (this._length > 0) {
 
-Application.DataStructures.List.prototype._remove = function(node) {
+      return privateMethods.removeNode.call(this, this.getEnd().getPrevious());
+    }
+    else {
 
-  var next = node._next;
-  var previous = node._previous;
+      throw 'List is empty.';
+    }
+  };
 
-  node._data = null;
-  node._next = null;
-  node._previous = null;
+  List.prototype.pushFront = function(data) {
 
-  next._previous = previous;
-  previous._next = next;
+     privateMethods.insertNode.call(this, this.getBegin().getPrevious(), data);
+  };
 
-  --this._length;
-  return next;
-};
+  List.prototype.popFront = function() {
 
-// public
+    if (this._length > 0) {
 
-Application.DataStructures.List.prototype.getLength = function() {
+      return privateMethods.removeNode.call(this, this.getBegin());
+    }
+    else {
 
-  return _length;
-};
+      throw 'List is empty.';
+    }
+  };
 
-Application.DataStructures.List.prototype.getBegin = function() {
+  var privateMethods = Object.create(List.prototype);
+  privateMethods.insertNode = function(node, data) {
 
-  return this._pre_head._next
-};
+    var newNode = new Application.DataStructures._NodeList();
+    newNode.setData(data);
 
-Application.DataStructures.List.prototype.getEnd = function() {
+    var next = node.getNext();
+    newNode.setNext(next);
+    next.setPrevious(newNode);
 
-  return this._post_tail;
-};
+    node.setNext(newNode);
+    newNode.setPrevious(node);
 
-Application.DataStructures.List.prototype.getLength = function() {
+    ++this._length;
+  };
 
-  return this._length;
-};
+  privateMethods.removeNode = function(node) {
 
-Application.DataStructures.List.prototype.isEmpty = function() {
+    var next = node.getNext();
+    var previous = node.getPrevious();
 
-  return (this._length < 1);
-};
+    node.setData(null);
+    node.setNext(null);
+    node.setPrevious(null);
 
-Application.DataStructures.List.prototype.pushBack = function(data) {
+    next.setPrevious(previous);
+    previous.setNext(next);
 
-   this._insert(this._post_tail._previous, data);
-};
+    --this._length;
+    return next;
+  };
 
-Application.DataStructures.List.prototype.popBack = function() {
-
-  if (this._length > 0) {
-
-    this._remove(this._post_tail._previous);
-  }
-};
-
-Application.DataStructures.List.prototype.pushFront = function(data) {
-
-   this._insert(this._pre_head, data);
-};
-
-Application.DataStructures.List.prototype.popFront = function() {
-
-  if (this._length > 0) {
-
-    this._remove(this._pre_head._next);
-  }
-};
-
+  return List;
+})();
