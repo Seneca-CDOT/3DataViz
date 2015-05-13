@@ -119,17 +119,6 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
         });
     },
 
-    hideUnusedCountries: function() {
-
-        $.each(this.countries, function(index, country) {
-
-            if (country.userData.used == false) {
-
-                country.material.color.set(0x62626C);
-            }
-        });
-    },
-
     findCountryMeshByName: function(name) {
         for (var i = 0; i < this.countries.length; i++) {
 
@@ -164,61 +153,6 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
             this.intersected.material.color.setHex(0x0000FF);
 
         }
-    },
-
-    numToScale: function(array, callback) {
-
-        var step = 100 / array.length;
-        var total = 0;
-        var r = 255; // red chanel
-        var g = 0; // green chanel
-        var b = 0; // blue chanel
-        var list = [];
-        // var index = 0;
-        array.sort(function(a, b) {
-            return b.attributes.total_tweets - a.attributes.total_tweets;
-        });
-        // var loop = setInterval(function() {
-        // var bottomcolor = 80;
-        // var colorstep = array[0].total_tweets / (255 - bottomcolor);
-
-        var maxscalefactor = 0.5;
-        var scalestep = maxscalefactor / array[0].attributes.total_tweets;
-
-
-        $.each(array, function(index, country) {
-
-            var countrymesh = this.findCountryMeshByCode(country.attributes.countrycode);
-
-            if (typeof countrymesh === 'undefined') {
-
-                console.log("Missing country " + country.attributes.country + " from globe dataset");
-                //index++;
-                return;
-            }
-
-            countrymesh.userData.used = true;
-
-            if (index < 10)
-                list.push((index + 1) + '. ' + country.attributes.country);
-
-            var scalar = scalestep * country.attributes.total_tweets;
-            console.log(scalar);
-            countrymesh.scale.multiplyScalar(1 + scalar);
-            countrymesh.userData.tweets = country.attributes.total_tweets;
-
-            if (index == array.length - 1) {
-
-                $.each(list, function(index, value) {
-                    //  $('#leftcolumn').append(value + '<br>');
-                });
-                console.log('100%');
-                // callback();
-            }
-
-            //   index++;
-            //  }, 100);
-        }.bind(this));
     },
 
     addPoints: function(array) {

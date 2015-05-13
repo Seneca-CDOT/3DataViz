@@ -21,20 +21,18 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         var that = this;
 
         window.google = {
-            visualization: {
+                visualization: {
 
-                Query: {
+                    Query: {
 
-                    setResponse : function(data) {
+                        setResponse: function(data) {
 
-                        //that.response = data;
-                       // that._event.trigger('trends/changed', [data]);
-                       that.parse(data);
+                            that.parse(data);
+                        }
                     }
                 }
             }
-        }
-       // this._event.on('trends/changed', this.parse.bind(this));
+            // this._event.on('trends/changed', this.parse.bind(this));
     },
     parse: function(response) {
 
@@ -44,23 +42,23 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
             dataType: "trends"
         };
         var pData = pModule.processData(response.table.rows, options)
-        // return pData;
+            // return pData;
 
-         this._event.trigger('trends/parsed', pData );
+        this._event.trigger('trends/parsed', pData);
     },
     setURL: function(key) {
 
         if (!key) return;
         this.url = 'http://www.google.com/trends/fetchComponent?q=' + key + '&cid=GEO_TABLE_0_0&export=3';
     },
-    request: function () {
-   
-     var that = this;
-       
-        var fileref=document.createElement('script');
-        fileref.setAttribute("type","text/javascript");
+    request: function() {
+
+        var that = this;
+
+        var fileref = document.createElement('script');
+        fileref.setAttribute("type", "text/javascript");
         fileref.setAttribute("src", this.url);
         document.getElementsByTagName("head")[0].appendChild(fileref);
 
-        }
+    }
 });

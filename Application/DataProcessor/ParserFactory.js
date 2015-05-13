@@ -30,7 +30,7 @@ Application.DataProcessor.ParserFactory = (function() {
             case "csvParser":
                 parserClass = Application.DataProcessor.CSVParser;
                 break;
-                case "GoogleTrendsParser":
+            case "GoogleTrendsParser":
                 parserClass = Application.DataProcessor.GoogleTrendsParser;
                 break;
         }
@@ -192,7 +192,7 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
     Application.Helper.inherit(GoogleTrendsParser, Application.DataProcessor.BaseParser);
 
     GoogleTrendsParser.prototype.process = function(data) {
-       
+
         var filter = {
             countrycode: "c[0].v",
             percent: "c[1].v"
@@ -239,9 +239,17 @@ Application.DataProcessor.SpreadSheetParser = (function() {
 
     SpreadSheetParser.prototype.process = function(data) {
 
-        // var pData = null;
-        // return pData;
-        return data;
+        var filter = {
+
+            name: "",
+            longitude: "",
+            latitude: ""
+
+        };
+
+        var pData = Application.Filter.extractSpreadSheet(filter, data);
+
+        return pData;
     };
 
     return SpreadSheetParser;
