@@ -5,6 +5,7 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
     // framework methods
 
     initialize: function(obj) {
+
         Application.BaseGeometryGlobeView.prototype.initialize.call(this);
         this._vent = obj._event;
         this.controlPanel = new Application.SpreadSheetControlPanel({
@@ -13,7 +14,6 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
         this.countries = [];
         this.intersected; // intersected mesh
         this.moved = false; // for controls and mouse events
-        this.orbitOn = false;
         this.timer; // represents timer for user mouse idle
         this.idle = true; // represents user mouse idle
         this.sprites = [];
@@ -21,6 +21,7 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
         console.log('https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
     },
     render: function() {
+
         Application.BaseGeometryGlobeView.prototype.render.call(this);
         this.$el.append(this.controlPanel.render().$el);
         return this;
@@ -33,9 +34,9 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
 
         this._vent.on('click/submit', this.submit.bind(this));
         this._vent.on('click/reset', this.reset.bind(this));
-
     },
-     onMouseMove: function(e) {
+    onMouseMove: function(e) {
+
         var that = this;
         Application.BaseGeometryGlobeView.prototype.onMouseMove.call(this,e);
         this.idle = false;
@@ -47,7 +48,6 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
         var that = this;
 
         this.collection.setURL(key);
-
         this.collection.fetch({
 
             success: function(response) {
@@ -58,68 +58,37 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
 
                 console.log('Error: ', error);
             }
-
         });
     },
     reset: function() {
 
         this.resetGlobe();
     },
+
     // member methods
+
     renderGlobe: function() {
 
         Application.BaseGeometryGlobeView.prototype.renderGlobe.call(this);
 
-        if (this.orbitOn === true) {
+        if ( this.idle === true ) {
 
-            TWEEN.update();
+            this.globe.rotation.y -= 0.0003;
         }
-
-
-         if ( this.idle === true ) {
-
-         this.globe.rotation.y -= 0.0003;
-     }
-
     },
-    showGlobe: function() {
-        Application.BaseGeometryGlobeView.prototype.showGlobe.call(this);
-    },
-    addGlobe: function() {
-        Application.BaseGeometryGlobeView.prototype.addGlobe.call(this);
-
-        this.countries.push(this.globe);
-    },
-    initGlobe: function() {
-        Application.BaseGeometryGlobeView.prototype.initGlobe.call(this);
-
-    
-    },
-
-   
-    cameraGoTo: function(countrymesh) {
-
-  Application.BaseGeometryGlobeView.prototype.cameraGoTo.call(this, countrymesh);
-
-        this.highlightCountry(countrymesh);
-
-    },
-   
     resetGlobe: function() {
 
         var that = this;
-
         this.sprites.forEach(function(sprite) {
 
             that.scene.remove(sprite);
 
             sprite.geometry.dispose();
             sprite.material.dispose();
-
         });
     },
-
     findCountryMeshByName: function(name) {
+
         for (var i = 0; i < this.countries.length; i++) {
 
             if (this.countries[i].userData.name.toLowerCase() == name.toLowerCase()) {
@@ -128,7 +97,6 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
             }
         }
     },
-
     findCountryMeshByCode: function(code) {
 
         for (var i = 0; i < this.countries.length; i++) {
@@ -139,77 +107,72 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
             }
         }
     },
-
     highlightCountry: function(object) {
 
         if (this.intersected != object) {
 
             if (this.intersected) {
 
-                this.intersected.material.color.setHex(this.intersected.currentColor); // for countries shapes
+                // for countries shapes
+                this.intersected.material.color.setHex(this.intersected.currentColor);
             }
             this.intersected = object;
             this.intersected.currentColor = this.intersected.material.color.getHex();
             this.intersected.material.color.setHex(0x0000FF);
-
         }
     },
-
     addPoints: function(array) {
 
-        var that = this;
-
         var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
-
         var material = new THREE.SpriteMaterial({
+
             map: map,
             color: 0xffffff,
             fog: true
         });
-        var time = 100;
 
         array.models.sort(function(a, b) {
+
             return b.get('longitude') - a.get('longitude');
         });
 
+        var that = this;
+        var time = 100;
         array.forEach(function(item) {
 
-            time = time + 20;
+            time += 20;
 
             var sprite = new THREE.Sprite(material);
-
             setTimeout(function() {
 
                 that.globe.add(sprite);
 
                 var position = Application.Helper.geoToxyz(item.attributes.longitude, item.attributes.latitude, 51);
-
                 sprite.position.copy(position);
 
                 that.sprites.push(sprite);
-
             }, time);
-
-
         });
+    },
 
+    cameraGoTo: function(countrymesh) {
+
+        Application.BaseGeometryGlobeView.prototype.cameraGoTo.call(this, countrymesh);
+
+        this.highlightCountry(countrymesh);
     },
     
-     didLoadGeometry: function() {
-
-        var that = this;
+    didLoadGeometry: function() {
 
         Application.BaseGeometryGlobeView.prototype.didLoadGeometry.call(this);
 
+        var that = this;
         $.each(this.rayCatchers, function(index, catcher) {
 
             if (catcher != that.globe) {
 
                 that.countries.push(catcher);
-
             }
-
         });
     }
-
 });

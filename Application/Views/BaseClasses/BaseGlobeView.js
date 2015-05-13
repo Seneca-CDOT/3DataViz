@@ -44,7 +44,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
     },
     showGlobe: function() {
-        
+
         this.initGlobe();
     },
     initGlobe: function() {
@@ -141,6 +141,11 @@ Application.BaseGlobeView = Backbone.View.extend({
     updateGlobe: function() {
 
         this.controls.update();
+
+        if (this.orbitOn === true) {
+             
+            TWEEN.update();
+        }
     },
     addControls: function() {
 

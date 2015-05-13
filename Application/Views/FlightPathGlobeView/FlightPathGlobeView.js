@@ -116,7 +116,7 @@ Application.FlightPathGlobeView = Application.BaseTextureGlobeView.extend({
         Application.BaseTextureGlobeView.prototype.showGlobe.call(this);
     },
     initGlobe: function() {
-        
+
         Application.BaseTextureGlobeView.prototype.initGlobe.call(this);
 
         // start stuff used to do more stuff, like drawing the texture ant stuff.
@@ -259,9 +259,6 @@ Application.FlightPathGlobeView = Application.BaseTextureGlobeView.extend({
     },
     updateGlobe: function() {
 
-        if (this.orbitOn === true) {
-            TWEEN.update();
-        }
 
         //this is going to move the airplanes around the world.
         // First we check to see if there are paths and planes

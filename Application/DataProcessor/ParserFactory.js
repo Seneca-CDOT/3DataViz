@@ -169,8 +169,8 @@ Application.DataProcessor.TweetParser = (function() {
         var collection = new Array();
         objects.forEach(function(object) {
 
-            var obj = {}
-            for (path in filter) {
+			var obj = {};
+			for (path in filter) {
 
                 obj[path] = that.getValue(filter[path], object);
             }
