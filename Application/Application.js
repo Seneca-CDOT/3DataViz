@@ -44,17 +44,6 @@ Application = {
     ],
 
     globeViews: {
-        //configuration for StaticTwitterGlobeView
-        staticTwitter: {
-            files: [
-                'Views/StaticTwitterGlobeView/StaticTwitterRootGlobeView.js',
-                'Views/BaseClasses/BaseGeometryGlobeView.js', 
-                'Views/StaticTwitterGlobeView/StaticTwitterGlobeView.js',
-                'Views/ControlPanelGlobeView.js',
-                'Views/ControlElementsGlobeView.js',
-                'Models/GlobeModel.js' // TODO: separate static twitter, spread sheet and other models
-            ]
-        },
 
         //configuration for FlightPathGlobeView
         flightPath: {

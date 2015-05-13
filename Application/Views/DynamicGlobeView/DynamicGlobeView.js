@@ -28,11 +28,6 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
     // member methods
     updateGlobe: function() {
 
-        if (this.orbitOn === true) {
-
-            TWEEN.update();
-        }
-
         Application.BaseGeometryGlobeView.prototype.updateGlobe.call(this);
 
         this.updateParticles();
