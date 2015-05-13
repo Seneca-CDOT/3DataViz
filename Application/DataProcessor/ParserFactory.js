@@ -14,30 +14,33 @@ var Application = Application || {};
 
 Application.DataProcessor.ParserFactory = (function() {
 
-	var parserClass = Application.DataProcessor.TweetParser;
+    var parserClass = Application.DataProcessor.TweetParser;
 
-	var publicMethods = {};
-	publicMethods.createParser = function(options) {
-		 
-		switch(options.parserType) {
+    var publicMethods = {};
+    publicMethods.createParser = function(options) {
 
-			case "tweetParser":
-			  parserClass = Application.DataProcessor.TweetParser;
-			  break;
-			case "spreadSheetParser":
-			  parserClass = Application.DataProcessor.SpreadSheetParser;
-			  break;
-			case "csvParser":
-			  parserClass = Application.DataProcessor.CSVParser;
-			  break;    
-		}
-		return new parserClass(options);
-	};
+        switch (options.parserType) {
 
-	return {
+            case "tweetParser":
+                parserClass = Application.DataProcessor.TweetParser;
+                break;
+            case "spreadSheetParser":
+                parserClass = Application.DataProcessor.SpreadSheetParser;
+                break;
+            case "csvParser":
+                parserClass = Application.DataProcessor.CSVParser;
+                break;
+            case "GoogleTrendsParser":
+                parserClass = Application.DataProcessor.GoogleTrendsParser;
+                break;
+        }
+        return new parserClass(options);
+    };
 
-		createParser: publicMethods.createParser
-	};
+    return {
+
+        createParser: publicMethods.createParser
+    };
 })();
 
 
@@ -45,53 +48,53 @@ Application.DataProcessor.ParserFactory = (function() {
 
 Application.DataProcessor.BaseStrategy = (function() {
 
-	// private store
-	var _ = {};
-	var uid = 0;
+    // private store
+    var _ = {};
+    var uid = 0;
 
-	function BaseStrategy() {
+    function BaseStrategy() {
 
-		this.testPublicVariable = "test-public";
+        this.testPublicVariable = "test-public";
 
-		_[this.id = uid++] = {};
-		_[this.id].testPrivateVariable = "test-private";
-	};
+        _[this.id = uid++] = {};
+        _[this.id].testPrivateVariable = "test-private";
+    };
+    // inherite the base interface if needed
+    // Application.Helper.inherit(...) 
 
-	BaseStrategy.prototype.process = function(data) {
+    BaseStrategy.prototype.process = function(data) {
 
-		throw 'Please, define an abstract interface.';
-	};
+        throw 'Please, define an abstract interface.';
+    };
 
-	// { *** for testing purposes
-	BaseStrategy.prototype.testPublicFunction1 = function(data) {
+    // { *** for testing purposes
+    BaseStrategy.prototype.testPublicFunction1 = function(data) {
 
-		// calling private function from public
-		privateMethods.testPrivateFunction1.call(this);
-	};
+        // calling private function from public
+        privateMethods.testPrivateFunction1.call(this);
+    };
 
-	BaseStrategy.prototype.testPublicFunction2 = function(data) {
+    BaseStrategy.prototype.testPublicFunction2 = function(data) {
 
-		// accessing public and private variables form public function
-		console.log("From public function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
-	};
-	// inherite the base interface if needed
-	// Application.Helper.inherit(...) 
+        // accessing public and private variables form public function
+        console.log("From public function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
+    };
 
-	// define private methods after prototype has been inhereted and defined
+    // define private methods after prototype has been inhereted and defined
 
-	// by doing this you have got an access to the public methods from private methods
-	var privateMethods = Object.create(BaseStrategy.prototype);
-	privateMethods.testPrivateFunction1 = function() {
+    // by doing this you have got an access to the public methods from private methods
+    var privateMethods = Object.create(BaseStrategy.prototype);
+    privateMethods.testPrivateFunction1 = function() {
 
-		// calling public function from private
-		privateMethods.testPublicFunction2.call(this);
+        // calling public function from private
+        privateMethods.testPublicFunction2.call(this);
 
-		// accessing public and private variables form private function
-		console.log("From private function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
-	};
-	// } ***
+        // accessing public and private variables form private function
+        console.log("From private function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
+    };
+    // } ***
 
-	return BaseStrategy;
+    return BaseStrategy;
 })();
 
 // Play with this.
@@ -102,117 +105,171 @@ Application.DataProcessor.BaseStrategy = (function() {
 
 Application.DataProcessor.BaseParser = (function() {
 
-	function BaseParser() {
+    function BaseParser() {
 
-		Application.DataProcessor.BaseStrategy.call(this);
-	};
-	Application.Helper.inherit(BaseParser, Application.DataProcessor.BaseStrategy);
+        Application.DataProcessor.BaseStrategy.call(this);
+    };
+    Application.Helper.inherit(BaseParser, Application.DataProcessor.BaseStrategy);
 
-	/**
-	* Get a value from the object in the path.
-	* @param  {String} path .
-	* @param  {Object} object [description]
-	* @return {String} value of the object.
-	*/
-	BaseParser.prototype.getValue = function(path, object) {
+    /**
+     * Get a value from the object in the path.
+     * @param  {String} path .
+     * @param  {Object} object [description]
+     * @return {String} value of the object.
+     */
+    BaseParser.prototype.getValue = function(path, object) {
 
-		path.split(/[.\[\]]/).forEach(function(item){
+        path.split(/[.\[\]]/).forEach(function(item) {
 
-		  object = (item !== "") ? object[item] : object;
-		});
-		return object;
-	};
+            object = (item !== "") ? object[item] : object;
+        });
+        return object;
+    };
 
-	var privateMethods = Object.create(BaseParser.prototype);
-	// privateMethods.myPrivateMethod = ...
+    var privateMethods = Object.create(BaseParser.prototype);
+    // privateMethods.myPrivateMethod = ...
 
-	return BaseParser;
+    return BaseParser;
 })();
 
 // tweet
 
 Application.DataProcessor.TweetParser = (function() {
 
-	function TweetParser() {
+    function TweetParser() {
 
-		Application.DataProcessor.BaseParser.call(this);
+        Application.DataProcessor.BaseParser.call(this);
 
-	};
-	Application.Helper.inherit(TweetParser, Application.DataProcessor.BaseParser);
+    };
+    Application.Helper.inherit(TweetParser, Application.DataProcessor.BaseParser);
 
-	TweetParser.prototype.process = function(data) {
+    TweetParser.prototype.process = function(data) {
 
-	 	var filter = {
-	        longitude: "geo.coordinates[1]",
-	        latitude: "geo.coordinates[0]",
-	        text: "text",
-	        timestamp: "timestamp_ms",
-	    };
-	    var pData = privateMethods.extract.call(this, filter, data);
-	 	return pData;
-	};
+        var filter = {
+            longitude: "geo.coordinates[1]",
+            latitude: "geo.coordinates[0]",
+            text: "text",
+            timestamp: "timestamp_ms",
+        };
+        var pData = privateMethods.extract.call(this, filter, data);
+        return pData;
+    };
 
 
-	var privateMethods = Object.create(TweetParser.prototype);
-	/**
-	* Extract data from objects. What data to extract from where is specified on filter object.
-	* @param  {Object} filter : it tells which information to take from the object.
-	* @param  {Object} object : original data to filter.
-	* @return {Array} filtered objects.
-	*/
-	privateMethods.extract = function(filter, objects) {
+    var privateMethods = Object.create(TweetParser.prototype);
+    /**
+     * Extract data from objects. What data to extract from where is specified on filter object.
+     * @param  {Object} filter : it tells which information to take from the object.
+     * @param  {Object} object : original data to filter.
+     * @return {Array} filtered objects.
+     */
+    privateMethods.extract = function(filter, objects) {
 
-		var that = this;
-		var collection = new Array();
-		objects.forEach(function(object) {
+        var that = this;
+        var collection = new Array();
+        objects.forEach(function(object) {
 
 			var obj = {};
 			for (path in filter) {
 
-				obj[path] = that.getValue(filter[path], object);
-			}
-			collection.push(obj);
-		});
-		return collection;
-	}
+                obj[path] = that.getValue(filter[path], object);
+            }
+            collection.push(obj);
+        });
+        return collection;
+    }
 
-	return TweetParser;
+    return TweetParser;
+})();
+
+// google trends
+
+Application.DataProcessor.GoogleTrendsParser = (function() {
+
+    function GoogleTrendsParser() {
+
+    };
+    Application.Helper.inherit(GoogleTrendsParser, Application.DataProcessor.BaseParser);
+
+    GoogleTrendsParser.prototype.process = function(data) {
+
+        var filter = {
+            countrycode: "c[0].v",
+            percent: "c[1].v"
+        };
+        var pData = privateMethods.extract.call(this, filter, data);
+        return pData;
+
+    }
+
+    var privateMethods = Object.create(GoogleTrendsParser.prototype);
+    /**
+     * Extract data from objects. What data to extract from where is specified on filter object.
+     * @param  {Object} filter : it tells which information to take from the object.
+     * @param  {Object} object : original data to filter.
+     * @return {Array} filtered objects.
+     */
+    privateMethods.extract = function(filter, objects) {
+
+        var that = this;
+        var collection = new Array();
+        objects.forEach(function(object) {
+
+            var obj = {}
+            for (path in filter) {
+
+                obj[path] = that.getValue(filter[path], object);
+            }
+            collection.push(obj);
+        });
+        return collection;
+    }
+
+    return GoogleTrendsParser;
 })();
 
 // spreadsheet
 
 Application.DataProcessor.SpreadSheetParser = (function() {
 
-	function SpreadSheetParser() {
+    function SpreadSheetParser() {
 
-	};
-	Application.Helper.inherit(SpreadSheetParser, Application.DataProcessor.BaseParser);
+    };
+    Application.Helper.inherit(SpreadSheetParser, Application.DataProcessor.BaseParser);
 
-	SpreadSheetParser.prototype.process = function(data) {
+    SpreadSheetParser.prototype.process = function(data) {
 
-		// var pData = null;
-	 	// return pData;
-	 	return data;
-	};
+        var filter = {
 
-	return SpreadSheetParser;
+            name: "",
+            longitude: "",
+            latitude: ""
+
+        };
+
+        var pData = Application.Filter.extractSpreadSheet(filter, data);
+
+        return pData;
+    };
+
+    return SpreadSheetParser;
 })();
 
 // csv
 
 Application.DataProcessor.CSVParser = (function() {
 
-	function CSVParser() {
+    function CSVParser() {
 
-	};
-	Application.Helper.inherit(CSVParser, Application.DataProcessor.BaseParser);
+    };
+    Application.Helper.inherit(CSVParser, Application.DataProcessor.BaseParser);
 
-	CSVParser.prototype.process = function(data) {
+    CSVParser.prototype.process = function(data) {
 
-		// var pData = null;
-	 	// return pData;
-	 	return data;
-	};
+        // var pData = null;
+        // return pData;
+        return data;
+    };
 
-	return CSVParser;
+    return CSVParser;
 })();

@@ -89,7 +89,7 @@ Application = {
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
                 'Views/ControlPanelGlobeView.js',
                 'Views/ControlElementsGlobeView.js',
-                'Models/GlobeModel.js' // TODO: separate static twitter, spread sheet and other models
+                'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
             ]
         },
 
@@ -101,7 +101,7 @@ Application = {
                 'Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js',
                 'Views/ControlPanelGlobeView.js',
                 'Views/ControlElementsGlobeView.js',
-                'Models/GlobeModel.js' // TODO: separate static twitter, spread sheet and other models
+                'Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'
             ]
         }
     }

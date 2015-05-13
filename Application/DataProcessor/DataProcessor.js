@@ -6,79 +6,82 @@ Application.DataProcessor = {};
 
 Application.DataProcessor.ProcessorModule = (function() {
 
-	// the literal object is returned
-	var privateMethods = {};
-	privateMethods.dataTypedProcessor = function(dOptions) {
-		
-		var options = {};
-		switch(dOptions.dataType) {
+    // the literal object is returned
+    var privateMethods = {};
+    privateMethods.dataTypedProcessor = function(dOptions) {
 
-			case "tweet":
-			  options.parserType = "tweetParser";
-			  break;
-			case "spreadSheet":
-			  options.parserType = "spreadSheetParser";
-			  break;
-			case "csv":
-			  options.parserType = "csvParser";
-			  break;    
-		}
+        var options = {};
+        switch (dOptions.dataType) {
 
-		var parser = Application.DataProcessor.ParserFactory.createParser(options);
-		var dtProcessor = new Application.DataProcessor.BaseProcessor(parser);
-		return dtProcessor;
-	};
+            case "tweet":
+                options.parserType = "tweetParser";
+                break;
+            case "spreadSheet":
+                options.parserType = "spreadSheetParser";
+                break;
+            case "csv":
+                options.parserType = "csvParser";
+                break;
+            case "trends":
+                options.parserType = "GoogleTrendsParser";
+                break;
+        }
 
-	privateMethods.visualizationTypedProcessor = function(vOptions) {
+        var parser = Application.DataProcessor.ParserFactory.createParser(options);
+        var dtProcessor = new Application.DataProcessor.BaseProcessor(parser);
+        return dtProcessor;
+    };
 
-		var vtProcessor = null;
-		return vtProcessor;
-	};
+    privateMethods.visualizationTypedProcessor = function(vOptions) {
 
-	// by doing this you have got an access to the public methods from private methods
-	var publicMethods = {};
-	publicMethods.processData = function(data, options) {
+        var vtProcessor = null;
+        return vtProcessor;
+    };
 
-		var pData = null;
+    // by doing this you have got an access to the public methods from private methods
+    var publicMethods = {};
+    publicMethods.processData = function(data, options) {
 
-		var dtProcessor = privateMethods.dataTypedProcessor(options);
-		// preprocess data depending on its type
-		pData = dtProcessor.process(data);
+        var pData = null;
 
-		var vtProcessor = privateMethods.visualizationTypedProcessor(options);
-		// transform preprocessed data depending on visualization type
+        var dtProcessor = privateMethods.dataTypedProcessor(options);
+        // preprocess data depending on its type
+        pData = dtProcessor.process(data);
 
-		return pData;
-	};
+        var vtProcessor = privateMethods.visualizationTypedProcessor(options);
+        // transform preprocessed data depending on visualization type
 
-	return {
+        return pData;
+    };
 
-		processData: publicMethods.processData
-	};
+    return {
+
+        processData: publicMethods.processData
+    };
 })();
 
 // processor
 
 Application.DataProcessor.BaseProcessor = (function() {
 
-	// private store
-	var _ = {};
-	var uid = 0;
+    // private store
+    var _ = {};
+    var uid = 0;
 
-	function BaseProcessor(strategy) {
+    function BaseProcessor(strategy) {
 
-		_[this.id = uid++] = {};
-		_[this.id].strategy = strategy;
-	};
+        _[this.id = uid++] = {};
+        _[this.id].strategy = strategy;
+    };
 
-	BaseProcessor.prototype.process = function(data) {
+    BaseProcessor.prototype.process = function(data) {
 
-	    var pData = _[this.id].strategy.process(data);
-	    return pData;
-	};
+        var pData = _[this.id].strategy.process(data);
+        return pData;
+    };
 
-	var privateMethods = Object.create(BaseProcessor.prototype);
-	// privateMethods.myPrivateMethod = ...
+    var privateMethods = Object.create(BaseProcessor.prototype);
+    // privateMethods.myPrivateMethod = ...
 
-	return BaseProcessor;
+    return BaseProcessor;
 })();
