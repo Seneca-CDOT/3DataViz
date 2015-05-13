@@ -65,6 +65,9 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
         this.collection.reset();
         this.resetGlobe();
         this.collection.request();
+
+        console.clear();
+
     },
     reset: function() {
 
@@ -125,7 +128,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
         var that = this;
         array.forEach(function(item, index) {
 
-            var countrymesh = that.findCountryMeshByCode(item.attributes.countrycode);
+            var countrymesh = that.findCountryMeshByCode(item.countrycode);
 
             if (!countrymesh)
                 return;
@@ -139,6 +142,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
             that.added.push(obj);
             countrymesh.material.color.setHex(that.colors[index]);
         });
+
     },
 
     cameraGoTo: function(countrymesh) {
