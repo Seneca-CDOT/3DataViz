@@ -30,7 +30,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
             '0xFFB2B2',
             '0xFFCCCC',
             '0xFFE6E6'
-        ]
+        ];
     },
 
     render: function() {
@@ -51,10 +51,12 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
     onMouseMove: function(e) {
 
         var that = this;
-        Application.BaseGeometryGlobeView.prototype.onMouseMove.call(this,e);
+        Application.BaseGeometryGlobeView.prototype.onMouseMove.call(this, e);
         this.idle = false;
         clearTimeout(this.timer);
-        this.timer = setTimeout( function() { that.idle = true } , 5000);
+        this.timer = setTimeout(function() {
+            that.idle = true
+        }, 5000);
     },
     submit: function(key) {
 
@@ -125,7 +127,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
 
             var countrymesh = that.findCountryMeshByCode(item.attributes.countrycode);
 
-            if (!countrymesh) 
+            if (!countrymesh)
                 return;
 
             console.log(countrymesh.userData.name);
@@ -144,7 +146,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
         Application.BaseGeometryGlobeView.prototype.cameraGoTo.call(this, countrymesh);
 
         this.highlightCountry(countrymesh);
-    }, 
+    },
 
     didLoadGeometry: function() {
 

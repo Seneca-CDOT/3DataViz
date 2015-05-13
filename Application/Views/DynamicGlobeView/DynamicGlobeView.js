@@ -19,13 +19,8 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
         this.period = 500;
         this.particlesLifeTime = 2000;
     },
-    render: function() {
 
-        Application.BaseGeometryGlobeView.prototype.render.call(this);
-        return this;
-    },
-
-    // member methods
+    // visualization specific functionality
     updateGlobe: function() {
 
         Application.BaseGeometryGlobeView.prototype.updateGlobe.call(this);
@@ -55,7 +50,7 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
 
             var particle = iterator.getData();
             particle.update(-this.delta, ratio);
-            
+
             var canRemove = true;
             if (particle.isVisible()) {
 
@@ -69,33 +64,30 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
                 if (iterator === this.particlesToRemove.getBegin()) {
 
                     iterator = this.particlesToRemove.popFront(iterator);
-                }
-                else {
+                } else {
 
                     throw 'Particles should be removed in chronological order';
                 }
-
             }
         }
     },
     addHelpers: function() {
-        
+
         Application.BaseGeometryGlobeView.prototype.addHelpers.call(this);
-        
+
         Application.Debug.addAxes(this.globe);
     },
     didLoadGeometry: function() {
-        
+
         // this.startDataStreaming();
         this.startDataSynchronization();
     },
 
     // streaming functionality
-
     // TODO: move to model
     // <script src="http://localhost:8080/socket.io/socket.io.js"></script>    
     startDataStreaming: function() {
-        
+
         var obj = {};
         // obj.track = "morning";
         obj.track = "love";
@@ -105,7 +97,7 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
         this.socket.on('tweet', this.onDataReceive.bind(this));
         // this.socket.off('tweet', ...);
 
-        this.socket.emit('start', obj); 
+        this.socket.emit('start', obj);
     },
     onDataReceive: function(data) {
 
@@ -116,14 +108,12 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
             "longitude": data.coordinates.coordinates[0],
             "latitude": data.coordinates.coordinates[1],
             "timestamp": data.timestamp_ms
-
         });
 
         this.addParticleWithDataRecord(dataRecord);
     },
 
-    // synchronization functionality
-
+    // db synchronization and vizualization functionality
     startDataSynchronization: function() {
 
         var that = this;
@@ -134,8 +124,8 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
     },
     showDataRecords: function(beginIndex, timeInterval) {
 
-        if (beginIndex >= this.collection.length)
-        {
+        if (beginIndex >= this.collection.length) {
+
             this.startDataSynchronization();
             return;
         }
@@ -170,8 +160,7 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
         }, this.period);
     },
 
-    // dynamic functionality
-
+    // particles life cycle functionality
     addParticleWithDataRecord: function(dataRecord) {
 
         var particle = new Application.DynamicGlobeParticle(dataRecord, this.globeRadius);
@@ -197,8 +186,7 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
                 if (iterator === this.particles.getBegin()) {
 
                     iterator = this.particles.popFront(iterator);
-                }
-                else {
+                } else {
 
                     throw 'Particles should be removed in chronological order';
                 }
