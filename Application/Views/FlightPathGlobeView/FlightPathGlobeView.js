@@ -11,7 +11,6 @@ Application.FlightPathGlobeView = Application.BaseTextureGlobeView.extend({
 
         //time factor for animations
         this.t = 0;
-        this.intersects;
 
         //variables used to set the size of the objects and camera/controls orientation
         this.cylinderRadius = this.globeRadius * 0.0085;
@@ -86,7 +85,7 @@ Application.FlightPathGlobeView = Application.BaseTextureGlobeView.extend({
     },
 
     // data ready checks to see if both csv's have been loaded
-    dataReady: function(dataId) {
+    dataReady: function() {
 
         if (this.collection[0].parsed && this.collection[1].parsed) {
             this.addPaths();
@@ -210,9 +209,13 @@ Application.FlightPathGlobeView = Application.BaseTextureGlobeView.extend({
     },
     // returns an airport from with a given ID
     getAirport: function(id) {
-        for (i in this.collection[0].models)
-            if (id == this.collection[0].models[i].attributes.ID)
+        for (i in this.collection[0].models) {
+
+            if (id == this.collection[0].models[i].attributes.ID) {
+
                 return this.collection[0].models[i].attributes;
+            }
+        }
     },
     // gives you a random number within a range
     getRandomInt: function(min, max) {

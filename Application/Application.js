@@ -51,9 +51,9 @@ Application = {
                 'Views/FlightPathGlobeView/FlightPathRootGlobeView.js',
                 'Views/BaseClasses/BaseTextureGlobeView.js', 
                 'Views/FlightPathGlobeView/FlightPathGlobeView.js',
+                'Models/FlightPathGlobeView/FlightPathGlobeModel.js',
                 'Models/data/path.js',
-                'Models/data/countriesList.js',
-                'Models/FlightPathGlobeView/FlightPathGlobeModel.js'
+                'Models/data/countriesList.js'
                 // 'Views/VideoView.js',
                 // 'Views/SliderControlView.js',
             ],
@@ -78,7 +78,7 @@ Application = {
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
                 'Views/ControlPanelGlobeView.js',
                 'Views/ControlElementsGlobeView.js',
-                'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
+                'Models/GlobeModel.js' // TODO: separate static twitter, spread sheet and other models
             ]
         },
 
@@ -90,7 +90,7 @@ Application = {
                 'Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js',
                 'Views/ControlPanelGlobeView.js',
                 'Views/ControlElementsGlobeView.js',
-                'Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'
+                'Models/GlobeModel.js' // TODO: separate static twitter, spread sheet and other models
             ]
         }
     }

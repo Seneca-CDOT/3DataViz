@@ -45,17 +45,19 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
             iterator = iterator.getNext();
         }
 
+        var canRemove = true;
         iterator = this.particlesToRemove.getBegin();
         while (iterator !== this.particlesToRemove.getEnd()) {
 
             var particle = iterator.getData();
             particle.update(-this.delta, ratio);
 
-            var canRemove = true;
             if (particle.isVisible()) {
 
                 iterator = iterator.getNext();
-                // canRemove = false;
+
+                // TODO: fix
+                canRemove = false;
             } else if (canRemove) {
 
                 this.scene.remove(particle.getMesh());
