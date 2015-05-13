@@ -19,7 +19,16 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.moved = false;
         this.orbitOn = false;
 
+        // represents user mouse idle
+        this.idle = true;
+        // represents timer for user mouse idle
+        this.timer; 
+
         this.globeRadius = 50;
+    },
+    destroy: function() {
+
+        this.collection.reset();
     },
     render: function() {
 
@@ -42,6 +51,21 @@ Application.BaseGlobeView = Backbone.View.extend({
 
             this.moved = true;
         }
+
+        function setTimer() {
+
+            this.idle = false;
+
+            clearTimeout(this.timer);
+
+            var that = this;
+            this.timer = setTimeout(function() {
+
+                that.idle = true
+            }, 5000);
+        }
+        // TODO: fix issue with particles then uncomment
+        // setTimer.call(this);
     },
     showGlobe: function() {
 
@@ -146,6 +170,12 @@ Application.BaseGlobeView = Backbone.View.extend({
              
             TWEEN.update();
         }
+
+        // TODO: fix issue with particles then uncomment
+        // if (this.idle === true) {
+
+        //     this.globe.rotation.y -= 0.0003;
+        // }
     },
     addControls: function() {
 

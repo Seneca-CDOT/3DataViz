@@ -42,35 +42,3 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         this.url = 'https://spreadsheets.google.com/feeds/cells/' + key + '/1/public/basic?alt=json';
     }
 });
-
-// static twitter
-
-Application.StaticTwitterCountryRecord = Application.BaseDataRecord.extend({
-
-    defaults: _.extend({}, Application.BaseDataRecord.prototype.defaults, {
-        countrycode: "",
-        countryname: "",
-        total_tweets: 0
-    }),
-    initialize: function() {
-
-        Application.BaseDataRecord.prototype.initialize.call(this);
-    }
-});
-
-Application.StaticTwitterCountriesCollection = Application.BaseGlobeCollection.extend({
-    model: Application.StaticTwitterCountryRecord,
-    url: "tweets/oscars",
-    initialize: function() {
-
-        Application.BaseGlobeCollection.prototype.initialize.call(this);
-    },
-    parse: function(response) {
-        var filter = {
-            countrycode: "_id.code",
-            countryname: "_id.country",
-            total_tweets: "total_tweets"
-        }
-        return Application.Filter.extractJSON(filter, response);
-    }
-});
