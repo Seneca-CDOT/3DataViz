@@ -20,20 +20,16 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
     parse: function(response) {
 
         // console.log(response);
+        var pModule = Application.DataProcessor.ProcessorModule;
+        
+        var options = {
 
-        var collection = this;
-
-        for (i = 3; i < response.feed.entry.length; i = i + 3) {
-
-            var obj = {};
-            obj.city = response.feed.entry[i].content.$t;
-            obj.longitude = response.feed.entry[i + 1].content.$t;
-            obj.latitude = response.feed.entry[i + 2].content.$t;
-            //obj.timestamp = response.feed.entry[i+3].content.$t;
-            collection.push(obj);
-        }
-
-        return this.models;
+            dataType: "spreadSheet"
+        };
+        
+        var pData = pModule.processData(response, options);
+        
+        return pData;
     },
 
     setURL: function(key) {

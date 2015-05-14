@@ -12,38 +12,26 @@ Application = {
 
     //Create Route which handles Views and Models
     init: function() {
+
         this.router = new this.GlobeRouter();
         Backbone.history.start();
     },
 
-  //Files which need to be imported for GlobeVisualization
-  files : [
-    'Routes/GlobeRouter.js',
-    'Views/RootGlobeView.js',
-    'Views/BaseGlobeView.js',
-    'Models/GlobeModel.js',
-    'Helpers/Helper.js',
-    'Helpers/Debug.js', // FOR DEBUG
-    'Libraries/OrbitControls.js',
-    'Libraries/stats.js',
-    'Libraries/tween.min.js',
-    'Libraries/text.js',
-    'Libraries/font.js',
-    'Libraries/map3d.js',
-    'Libraries/papaparse.js'
-  ],
     //Files which need to be imported for GlobeVisualization
     files: [
         'Routes/GlobeRouter.js',
         'Views/BaseClasses/RootGlobeView.js',
         'Views/BaseClasses/BaseGlobeView.js',
+        'Models/BaseClasses/BaseGlobeModel.js', 
 
+        'Helpers/Filter.js',
         'Helpers/Helper.js',
         'Helpers/Debug.js',
         'Helpers/DataStructures.js',
-        'Helpers/Filter.js',
 
-        'Models/GlobeModel.js',
+        'DataProcessor/DataProcessor.js',
+        'DataProcessor/ParserFactory.js',
+        'DataProcessor/TransformerFactory.js',
 
         'Libraries/OrbitControls.js',
         'Libraries/stats.js',
@@ -56,34 +44,29 @@ Application = {
     ],
 
     globeViews: {
-        //configuration for GloveView (Population)
-        staticTwitter: {
-            files: [
-                'Views/StaticTwitterGlobeView/StaticTwitterRootGlobeView.js',
-                'Views/StaticTwitterGlobeView/StaticTwitterGlobeView.js',
-                'Views/ControlPanelGlobeView.js',
-                'Views/ControlElementsGlobeView.js',
-            ]
-        },
 
-        //configuration for GloveView (Flight Path)
+        //configuration for FlightPathGlobeView
         flightPath: {
             files: [
                 'Views/FlightPathGlobeView/FlightPathRootGlobeView.js',
+                'Views/BaseClasses/BaseTextureGlobeView.js', 
                 'Views/FlightPathGlobeView/FlightPathGlobeView.js',
+                'Models/FlightPathGlobeView/FlightPathGlobeModel.js',
                 'Models/data/path.js',
-                'Models/data/countriesList.js',
+                'Models/data/countriesList.js'
                 // 'Views/VideoView.js',
                 // 'Views/SliderControlView.js',
             ],
         },
 
-        //configuration for GloveView (Dynamic)
+        //configuration for DynamicGlobeView
         dynamic: {
             files: [
                 'Views/DynamicGlobeView/DynamicRootGlobeView.js',
+                'Views/BaseClasses/BaseGeometryGlobeView.js', 
                 'Views/DynamicGlobeView/DynamicGlobeView.js',
                 'Views/DynamicGlobeView/DynamicGlobeParticle.js',
+                'Models/DynamicGlobeView/DynamicGlobeModel.js'
             ]
         },
 
@@ -91,17 +74,23 @@ Application = {
         spreadSheet: {
             files: [
                 'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
+                'Views/BaseClasses/BaseGeometryGlobeView.js', 
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
                 'Views/ControlPanelGlobeView.js',
-                'Views/ControlElementsGlobeView.js'
+                'Views/ControlElementsGlobeView.js',
+                'Models/GlobeModel.js' // TODO: separate static twitter, spread sheet and other models
             ]
-        },//configuration for SpreadSheetGlobeView
+        },
+
+        //configuration for GoogleTrendsGlobeView
         googleTrends: {
             files: [
                 'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
+                'Views/BaseClasses/BaseGeometryGlobeView.js', 
                 'Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js',
                 'Views/ControlPanelGlobeView.js',
-                'Views/ControlElementsGlobeView.js'
+                'Views/ControlElementsGlobeView.js',
+                'Models/GlobeModel.js' // TODO: separate static twitter, spread sheet and other models
             ]
         }
     }

@@ -11,10 +11,9 @@ Application.FlightPathRootGlobeView = Application.RootGlobeView.extend({
     // as amazing as it may sound, this works
     var obj = {};
     obj.collection = [];
-    obj.collection[0] = new Application.AirportsCollection();
-    obj.collection[1] = new Application.AirportRoutesCollection();
+    obj.collection.push(new Application.AirportsCollection());
+    obj.collection.push(new Application.AirportRoutesCollection());
     this.globeView = new Application.FlightPathGlobeView(obj);
-
   },
   render: function(options) {
 

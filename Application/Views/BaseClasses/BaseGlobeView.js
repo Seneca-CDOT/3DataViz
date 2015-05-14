@@ -3,25 +3,72 @@ var Application = Application || {};
 Application.BaseGlobeView = Backbone.View.extend({
     tagName: "div",
     template: _.template($("#globeViewTemplate").html()),
+    events: {
+
+        'mousemove': 'onMouseMove',
+        'mouseup': 'onMouseUp'
+    },
 
     // framework methods
-
     initialize: function() {
         this.container = this.$el[0];
+
+        this.rayCatchers = [];
     
         // TODO: review
+        this.moved = false;
         this.orbitOn = false;
+
+        // represents user mouse idle
+        this.idle = true;
+        // represents timer for user mouse idle
+        this.timer; 
 
         this.globeRadius = 50;
     },
-    render: function(options) {
+    destroy: function() {
+
+        this.collection.reset();
+    },
+    render: function() {
+
         this.showGlobe();
         return this;
     },
 
     // member methods
+    onMouseUp: function(e) {
 
+        if (!this.moved) {
+
+            this.clickOn(e);
+        }
+        this.moved = false;
+    },
+    onMouseMove: function(e) {
+
+        if (e.which == 1) {
+
+            this.moved = true;
+        }
+
+        function setTimer() {
+
+            this.idle = false;
+
+            clearTimeout(this.timer);
+
+            var that = this;
+            this.timer = setTimeout(function() {
+
+                that.idle = true
+            }, 5000);
+        }
+        // TODO: fix issue with particles then uncomment
+        // setTimer.call(this);
+    },
     showGlobe: function() {
+
         this.initGlobe();
     },
     initGlobe: function() {
@@ -34,8 +81,10 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         this.addHelpers();
 
-        // TODO: move out of this view        
+        // TODO: move out of this view
+        // ---        
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
+        // ---
 
         this.renderGlobe();
     },
@@ -91,11 +140,8 @@ Application.BaseGlobeView = Backbone.View.extend({
         });
         this.globe = new THREE.Mesh(geometry, material);
 
-        // TODO: review
-        this.globe.userData.name = 'globe';
-        this.globe.userData.code = '';
-
         this.scene.add(this.globe);
+        this.rayCatchers.push(this.globe);
     },
     addLight: function() {
 
@@ -119,6 +165,17 @@ Application.BaseGlobeView = Backbone.View.extend({
     updateGlobe: function() {
 
         this.controls.update();
+
+        if (this.orbitOn === true) {
+             
+            TWEEN.update();
+        }
+
+        // TODO: fix issue with particles then uncomment
+        // if (this.idle === true) {
+
+        //     this.globe.rotation.y -= 0.0003;
+        // }
     },
     addControls: function() {
 
@@ -137,5 +194,88 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+    },
+
+    // interaction
+    clickOn: function(event) {
+
+        var x = event.clientX;
+        var y = event.clientY;
+
+        x -= this.container.offsetLeft;
+        y -= this.container.offsetTop;
+
+        var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
+        vector.unproject(this.camera);
+
+        var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
+        var intersects = ray.intersectObjects(this.rayCatchers);
+
+        if (intersects.length > 0) {
+
+            var closestMesh = intersects[0].object;
+            if (closestMesh !== this.globe) {
+                
+                this.cameraGoTo(closestMesh);
+            }
+        }
+    },
+    cameraGoTo: function(mesh) {
+
+        // document.removeEventListener('mouseup', onMouseUp, false);
+        // this.controls.removeMouse();
+        
+        this.moved = true;
+
+        var current = this.controls.getPosition();
+        var destination = mesh.geometry.boundingSphere.center.clone();
+        destination.setLength(this.controls.getRadius());
+
+        if (this.orbitOn == true) {
+
+            this.tween.stop();
+        }
+
+        this.tween = new TWEEN.Tween(current)
+        .to({
+            x: destination.x,
+            y: destination.y,
+            z: destination.z
+        }, 1000)
+        .easing(TWEEN.Easing.Sinusoidal.InOut)
+        .onUpdate((function(that) { 
+
+            return function () { 
+
+                onUpdate(this, that); 
+            };
+        })(this))
+        .onComplete((function(that) { 
+
+            return function () { 
+
+                onComplete(this, that); 
+            };
+        })(this));
+
+        function onUpdate(point, that) {
+
+            that.controls.updateView({
+
+                x: point.x,
+                y: point.y,
+                z: point.z
+            });
+        }
+
+        function onComplete(point, that) {
+
+            that.orbitOn = false;
+            // document.addEventListener('mouseup', onMouseUp, false);
+            // this.controls.addMouse();
+        }
+
+        this.orbitOn = true;
+        this.tween.start();
     }
 });

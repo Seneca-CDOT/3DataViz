@@ -3,6 +3,19 @@ var Application = Application || {};
 Application.Helper = {
 
   /**
+   * Inherits prototype of the parent object and copies it into the child object.
+   * @param childObject A child object.
+   * @param parentObject A parent object.
+   */
+  inherit: function (childObject, parentObject) {
+
+    var copyOfParent = Object.create(parentObject.prototype);
+
+    copyOfParent.constructor = childObject;
+    childObject.prototype = copyOfParent;
+  },
+
+  /**
    * Convert Geo coordinates to XYZ coordinates
    * @return THREE.Vector3
    */

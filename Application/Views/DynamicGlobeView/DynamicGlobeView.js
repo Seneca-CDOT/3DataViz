@@ -1,94 +1,30 @@
 var Application = Application || {};
 
-Application.DynamicGlobeView = Application.BaseGlobeView.extend({
+Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
 
     // framework methods
-
     initialize: function() {
 
-        Application.BaseGlobeView.prototype.initialize.call(this);
-
-        this.countries = [];
+        Application.BaseGeometryGlobeView.prototype.initialize.call(this);
 
         this.particles = new Application.DataStructures.List();
         this.particlesToRemove = new Application.DataStructures.List();
 
-        // TODO: review
-        this.moved = false;
-
         // amimation
         this.timePeriod = 0;
         this.timePeriodMax = 100;
+
         this.delta = 0.05;
 
-        this.particlesLifeTime = 1000;
-        this.updateTimePeriod = 100;
-        this.mappedUpdateTimePeriod = 10000;
-    },
-    render: function() {
-
-        Application.BaseGlobeView.prototype.render.call(this);
-        return this;
+        this.lifePeriod = 100000;
+        this.period = 500;
+        this.particlesLifeTime = 2000;
     },
 
-    // member methods
-
-    showGlobe: function() {
-
-        Application.BaseGlobeView.prototype.showGlobe.call(this);
-    },
-    addGlobe: function() {
-
-        Application.BaseGlobeView.prototype.addGlobe.call(this);
-    },
-    initGlobe: function() {
-
-        Application.BaseGlobeView.prototype.initGlobe.call(this);
-
-        this.getCountriesGeometry().done(this.onCountriesGeometryGet.bind(this));
-
-        // TODO: move out of this view
-        function onMouseUp(e) {
-            if (!this.moved) {
-               this.clickOn(e);
-            }
-            this.moved = false;
-        };
-
-        function onMouseMove(e) {
-            if (e.which == 1) {
-
-                this.moved = true;
-            }
-        };
-
-        document.addEventListener('mousemove', onMouseMove.bind(this), false);
-        document.addEventListener('mouseup', onMouseUp.bind(this), false);
-
-        $(document).on("keyup", 'form', function(e) {
-        });
-
-        $(document).on("keypress", function(e) {
-        });
-
-        $('#tweets').on("click", function(e) {
-        });
-
-        $('#reset').on("click", function(e) {
-        });        
-    },
-    renderGlobe: function() {
-
-        Application.BaseGlobeView.prototype.renderGlobe.call(this);
-    },
+    // visualization specific functionality
     updateGlobe: function() {
 
-        if (this.orbitOn === true) {
-
-            TWEEN.update();
-        }
-
-        Application.BaseGlobeView.prototype.updateGlobe.call(this);
+        Application.BaseGeometryGlobeView.prototype.updateGlobe.call(this);
 
         this.updateParticles();
     },
@@ -110,84 +46,51 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
             iterator = iterator.getNext();
         }
 
+        var canRemove = true;
         iterator = this.particlesToRemove.getBegin();
         while (iterator !== this.particlesToRemove.getEnd()) {
 
             var particle = iterator.getData();
             particle.update(-this.delta, ratio);
-        
+
             if (particle.isVisible()) {
 
                 iterator = iterator.getNext();
-            } else {
+
+                // TODO: fix
+                canRemove = false;
+            } else if (canRemove) {
 
                 this.scene.remove(particle.getMesh());
                 particle.dispose();
 
-                // TODO: eliminate use of private method
-                iterator = this.particlesToRemove._remove(iterator);
+                if (iterator === this.particlesToRemove.getBegin()) {
+
+                    iterator = this.particlesToRemove.popFront(iterator);
+                } else {
+
+                    throw 'Particles should be removed in chronological order';
+                }
             }
         }
     },
     addHelpers: function() {
-        
-        Application.BaseGlobeView.prototype.addHelpers.call(this);
-        
+
+        Application.BaseGeometryGlobeView.prototype.addHelpers.call(this);
+
         Application.Debug.addAxes(this.globe);
     },
-    // TODO: move out of this view
-    getCountriesGeometry: function() { 
+    didLoadGeometry: function() {
 
-        return $.ajax({
-            type: 'GET',
-            url: 'Models/geodata.json',
-            dataType: 'json',
-            cache: false, 
-            error: function() {
-                console.log('An error occurred while processing a countries file.');
-            }
-        });
-    },
-    onCountriesGeometryGet: function(data) {
-        
-        this.addCountries(data);
         // this.startDataStreaming();
         this.startDataSynchronization();
     },
-    addCountries: function(data) {
-
-        var green = 1;
-        for (var countryName in data) {
-
-            green = (2 * green) % 100;
-
-            var countryColor = Application.Helper.rgbToHex(10, 50 + green, 0);
-            var material = new THREE.MeshPhongMaterial({
-                shininess: 0,
-                color: countryColor
-            });
-
-            var geometry = new Map3DGeometry(data[countryName], 0);
-            var mesh = new THREE.Mesh(geometry, material);
-
-            var scale = this.globeRadius + 0.5;
-            mesh.scale.set(scale, scale, scale);
-            mesh.geometry.computeBoundingSphere();
-
-            this.scene.add(mesh);
-            this.countries.push(mesh);
-        }
-
-        // TODO: review
-        this.countries.push(this.globe);
-    },
 
     // streaming functionality
-
     // TODO: move to model
     // <script src="http://localhost:8080/socket.io/socket.io.js"></script>    
     startDataStreaming: function() {
-        
+
         var obj = {};
         // obj.track = "morning";
         obj.track = "love";
@@ -197,7 +100,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         this.socket.on('tweet', this.onDataReceive.bind(this));
         // this.socket.off('tweet', ...);
 
-        this.socket.emit('start', obj); 
+        this.socket.emit('start', obj);
     },
     onDataReceive: function(data) {
 
@@ -208,27 +111,27 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
             "longitude": data.coordinates.coordinates[0],
             "latitude": data.coordinates.coordinates[1],
             "timestamp": data.timestamp_ms
-
         });
 
         this.addParticleWithDataRecord(dataRecord);
     },
 
-    // synchronization functionality
-
+    // db synchronization and vizualization functionality
     startDataSynchronization: function() {
 
         var that = this;
         this.collection.fetch().done(function() {
 
-            that.showDataRecords(0, that.mappedUpdateTimePeriod);
+            that.showDataRecords(0, that.lifePeriod);
         });
-
     },
     showDataRecords: function(beginIndex, timeInterval) {
 
-        if (beginIndex >= this.collection.length)
+        if (beginIndex >= this.collection.length) {
+
+            this.startDataSynchronization();
             return;
+        }
 
         var count = 0;
         var dataRecord = this.collection.at(beginIndex);
@@ -257,11 +160,10 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         setTimeout(function() {
 
             that.showDataRecords(beginIndex, timeInterval);
-        }, this.updateTimePeriod);
+        }, this.period);
     },
 
-    // dynamic functionality
-
+    // particles life cycle functionality
     addParticleWithDataRecord: function(dataRecord) {
 
         var particle = new Application.DynamicGlobeParticle(dataRecord, this.globeRadius);
@@ -284,88 +186,17 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
                 this.particlesToRemove.pushBack(particle);
 
-                // TODO: eliminate use of private method
-                iterator = this.particles._remove(iterator);
+                if (iterator === this.particles.getBegin()) {
+
+                    iterator = this.particles.popFront(iterator);
+                } else {
+
+                    throw 'Particles should be removed in chronological order';
+                }
             } else {
 
                 break;
             }
         }
-    },
-
-    // interaction
-
-    clickOn: function(event) {
-
-        var x = event.clientX;
-        var y = event.clientY;
-
-        x -= this.container.offsetLeft;
-        y -= this.container.offsetTop;
-
-        var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
-        vector.unproject(this.camera);
-
-        var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
-        var intersects = ray.intersectObjects(this.countries);
-        if (intersects.length > 0) {
-
-            var closestMesh = intersects[0].object;
-            if (closestMesh !== this.globe) {
-
-                this.cameraGoTo(closestMesh);
-            }
-        }
-    },
-    cameraGoTo: function(countryMesh) {
-
-        // document.removeEventListener('mouseup', onMouseUp, false);
-        // this.controls.removeMouse();
-        
-        this.moved = true;
-
-        var current = this.controls.getPosition();
-        var destination = countryMesh.geometry.boundingSphere.center.clone();
-        destination.setLength(this.controls.getRadius());
-
-        if (this.orbitOn == true) {
-            this.tween.stop();
-        }
-
-        this.tween = new TWEEN.Tween(current)
-        .to({
-            x: destination.x,
-            y: destination.y,
-            z: destination.z
-        }, 1000)
-        .easing(TWEEN.Easing.Sinusoidal.InOut)
-        .onUpdate((function(that) { 
-            return function () { 
-                onUpdate(this, that); 
-            };
-        })(this))
-        .onComplete((function(that) { 
-            return function () { 
-                onComplete(this, that); 
-            };
-        })(this));
-
-        function onUpdate(point, that) {
-            that.controls.updateView({
-                x: point.x,
-                y: point.y,
-                z: point.z
-            });
-        }
-
-        function onComplete(point, that) {
-            that.orbitOn = false;
-
-            // document.addEventListener('mouseup', onMouseUp, false);
-            // this.controls.addMouse();
-        }
-
-        this.orbitOn = true;
-        this.tween.start();
     }
 });

@@ -358,7 +358,7 @@ THREE.OrbitControls = function(object, domElement) {
         //   scope.pan( new THREE.Vector3( - movementX, movementY, 0 ) );
 
         // }
-        momentumOn = true;
+         momentumOn = true;
     }
 
     var momentumOn = false;
