@@ -57,20 +57,21 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
 
                 iterator = iterator.getNext();
 
-                // TODO: fix
-                canRemove = false;
+                // TODO:
+                // canRemove = false;
             } else if (canRemove) {
 
                 this.scene.remove(particle.getMesh());
                 particle.dispose();
 
-                if (iterator === this.particlesToRemove.getBegin()) {
+                iterator = this.particlesToRemove.removeNode(iterator);
+                // if (iterator === this.particlesToRemove.getBegin()) {
 
-                    iterator = this.particlesToRemove.popFront(iterator);
-                } else {
+                //     iterator = this.particlesToRemove.popFront(iterator);
+                // } else {
 
-                    throw 'Particles should be removed in chronological order';
-                }
+                //     throw 'Particles should be removed in chronological order';
+                // }
             }
         }
     },
@@ -83,7 +84,7 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
     didLoadGeometry: function() {
 
         // this.startDataStreaming();
-        // this.startDataSynchronization();
+        this.startDataSynchronization();
     },
 
     // streaming functionality
@@ -187,13 +188,14 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
 
                 this.particlesToRemove.pushBack(particle);
 
-                if (iterator === this.particles.getBegin()) {
+                iterator = this.particles.removeNode(iterator);
+                // if (iterator === this.particles.getBegin()) {
 
-                    iterator = this.particles.popFront(iterator);
-                } else {
+                //     iterator = this.particles.popFront(iterator);
+                // } else {
 
-                    throw 'Particles should be removed in chronological order';
-                }
+                //     throw 'Particles should be removed in chronological order';
+                // }
             } else {
 
                 break;
