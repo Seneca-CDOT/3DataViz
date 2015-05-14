@@ -83,7 +83,7 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
     didLoadGeometry: function() {
 
         // this.startDataStreaming();
-        this.startDataSynchronization();
+        // this.startDataSynchronization();
     },
 
     // streaming functionality
@@ -120,6 +120,7 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
     startDataSynchronization: function() {
 
         var that = this;
+        this.collection.reset();
         this.collection.fetch().done(function() {
 
             that.showDataRecords(0, that.lifePeriod);

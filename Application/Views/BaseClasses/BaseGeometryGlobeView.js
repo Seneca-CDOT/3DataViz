@@ -8,7 +8,7 @@ Application.BaseGeometryGlobeView = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.initialize.call(this);
 
         // intersected mesh
-        this.intersected; 
+        this.intersected = null; 
         this.countries = [];
     },
     render: function() {

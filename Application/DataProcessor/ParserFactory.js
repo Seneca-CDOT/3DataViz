@@ -177,7 +177,7 @@ Application.DataProcessor.TweetParser = (function() {
             collection.push(obj);
         });
         return collection;
-    }
+    };
 
     return TweetParser;
 })();
@@ -200,7 +200,7 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
         var pData = privateMethods.extract.call(this, filter, data);
         return pData;
 
-    }
+    };
 
     var privateMethods = Object.create(GoogleTrendsParser.prototype);
     /**
@@ -223,7 +223,7 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
             collection.push(obj);
         });
         return collection;
-    }
+    };
 
     return GoogleTrendsParser;
 })();

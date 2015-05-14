@@ -44,7 +44,6 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
     },
     submit: function(key) {
 
-        var that = this;
         this.collection.setURL(key);
         this.collection.reset();
         this.resetGlobe();
@@ -79,6 +78,8 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
             obj.color = countrymesh.material.color.getHex();
 
             that.added.push(obj);
+
+            // DANGER! Index can be out of range of the colors array!
             countrymesh.material.color.setHex(that.colors[index]);
         });
     }
