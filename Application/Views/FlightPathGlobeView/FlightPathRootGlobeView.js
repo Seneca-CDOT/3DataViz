@@ -14,6 +14,8 @@ Application.FlightPathRootGlobeView = Application.RootGlobeView.extend({
     obj.collection.push(new Application.AirportsCollection());
     obj.collection.push(new Application.AirportRoutesCollection());
     this.globeView = new Application.FlightPathGlobeView(obj);
+
+    this.globeView.decorators.push(new Application.GeometryGlobeDecorator());
   },
   render: function(options) {
 

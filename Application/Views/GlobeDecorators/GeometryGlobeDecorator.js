@@ -1,29 +1,33 @@
 var Application = Application || {};
 
-Application.BaseGeometryGlobeView = Application.BaseGlobeView.extend({
+Application.GeometryGlobeDecorator = (function() {
 
-    // framework methods
-    initialize: function() {
+    function GeometryGlobeDecorator() {
 
-        Application.BaseGlobeView.prototype.initialize.call(this);
-
-        // intersected mesh
+        // TODO: privatize
         this.intersected = null; 
         this.countries = [];
-    },
+    };
 
-    // member methods
-    initGlobe: function() {
+    // properties
+    GeometryGlobeDecorator.prototype.decorate = function(globe) {
 
-        Application.BaseGlobeView.prototype.initGlobe.call(this);
+        privateMethods.loadGeometry.call(this, globe);
+    };
 
-        this.loadGeometry();
-    },
-    loadGeometry: function() { 
+    // functionality
+    GeometryGlobeDecorator.prototype.cameraGoTo = function(globe, countryMesh) {
+
+        privateMethods.highlightCountry.call(this, countryMesh);
+    };
+
+
+    var privateMethods = Object.create(GeometryGlobeDecorator.prototype);
+     // visualization specific functionality
+    privateMethods.loadGeometry = function(globe) { 
 
         var that = this;
-
-        that.willLoadGeometry();
+        // that.willLoadGeometry();
         $.ajax({
             type: 'GET',
             url: 'Models/geodata.json',
@@ -35,12 +39,12 @@ Application.BaseGeometryGlobeView = Application.BaseGlobeView.extend({
             },
             success: function(data) {
 
-                that.addGeometry(data);
-                that.didLoadGeometry();
+                privateMethods.addGeometry.call(that, data, globe);
+                // that.didLoadGeometry();
             }
         });
-    },
-    addGeometry: function(data) {
+    };
+    privateMethods.addGeometry = function(data, globe) {
 
         var green = 1;
         for (var countryName in data) {
@@ -56,7 +60,9 @@ Application.BaseGeometryGlobeView = Application.BaseGlobeView.extend({
             var geometry = new Map3DGeometry(data[countryName], 0);
             var mesh = new THREE.Mesh(geometry, material);
 
-            var scale = this.globeRadius + 0.5;
+            // TODO: review
+            var scale = globe.globeRadius + 0.5;
+
             mesh.scale.set(scale, scale, scale);
             mesh.geometry.computeBoundingSphere();
 
@@ -64,59 +70,63 @@ Application.BaseGeometryGlobeView = Application.BaseGlobeView.extend({
             mesh.userData.code = data[countryName].code;
 
             // TODO: review
-            this.globe.add(mesh);
-            this.rayCatchers.push(mesh);
+            globe.globe.add(mesh);
+            globe.rayCatchers.push(mesh);
+
             this.countries.push(mesh);
         }
-    },
-    willLoadGeometry: function() {
+    };
 
-    },
-    didLoadGeometry: function() {
+    // privateMethods.willLoadGeometry = function() {
+    // };
 
-    },
+    // privateMethods..didLoadGeometry = function() {
+    // };
 
     // country selection functionality
-    findCountryMeshByName: function(name) {
+    privateMethods.findCountryMeshByName = function(name) {
 
-        for (var i = 0; i < this.countries.length; i++) {
+        var countries = this.countries;
+        for (var i = 0; i < countries.length; i++) {
 
-            if (this.countries[i].userData.name.toLowerCase() == name.toLowerCase()) {
+            if (countries[i].userData.name.toLowerCase() == name.toLowerCase()) {
 
-                return this.countries[i];
+                return countries[i];
             }
         }
-    },
-    findCountryMeshByCode: function(code) {
+    };
 
-        for (var i = 0; i < this.countries.length; i++) {
+    privateMethods.findCountryMeshByCode = function(code) {
 
-            if (this.countries[i].userData.code.toLowerCase() == code.toLowerCase()) {
+        var countries = this.countries;
+        for (var i = 0; i < countries.length; i++) {
 
-                return this.countries[i];
+            if (countries[i].userData.code.toLowerCase() == code.toLowerCase()) {
+
+                return countries[i];
             }
         }
-    },
-    highlightCountry: function(object) {
+    };
 
-        if (this.intersected != object) {
+    privateMethods.highlightCountry = function(object) {
+
+        var intersected = this.intersected;
+        if (intersected != object) {
 
             // for countries shapes
-            if (this.intersected) {
+            if (intersected) {
 
-                this.intersected.material.color.setHex(this.intersected.currentColor); 
+                intersected.material.color.setHex(intersected.currentColor); 
             }
+
             this.intersected = object;
-            this.intersected.currentColor = this.intersected.material.color.getHex();
-            this.intersected.material.color.setHex(0x0000FF);
+            intersected = this.intersected;
+
+            intersected.currentColor = intersected.material.color.getHex();
+            intersected.material.color.setHex(0x0000FF);
         }
-    },
+    };
 
-    // interaction
-    cameraGoTo: function(countrymesh) {
-
-        Application.BaseGlobeView.prototype.cameraGoTo.call(this, countrymesh);
-
-        this.highlightCountry(countrymesh);
-    }   
-});
+    return GeometryGlobeDecorator;
+})();
+   

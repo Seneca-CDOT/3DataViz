@@ -20,13 +20,6 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         this.period = 500;
         this.particlesLifeTime = 2000;
     },
-    initGlobe: function() {
-
-        Application.BaseGlobeView.prototype.initGlobe.call(this);
-        
-         // this.startDataStreaming();
-        this.startDataSynchronization();
-    },
 
     // visualization specific functionality
     updateGlobe: function() {
@@ -121,6 +114,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     },
 
     // db synchronization and vizualization functionality
+    // this.startDataStreaming();
     startDataSynchronization: function() {
 
         var that = this;

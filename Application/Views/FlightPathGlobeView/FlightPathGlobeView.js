@@ -13,7 +13,7 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         this.t = 0;
 
         //variables used to set the size of the objects and camera/controls orientation
-        this.cylinderRadius = this.globeRadius * 0.0085;
+        this.cylinderRadius = this.globeRadius * 0.01;
         this.cylinderHeight = this.globeRadius / 500;
 
         // Arrays for controlling the scene actors
@@ -42,6 +42,9 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         this.airplaneMaterial = new THREE.MeshBasicMaterial({
             color: 0xa4c800
         });
+    },
+
+    startDataSynchronization: function() {
 
         // Here I listen for collection entries to know when they are loaded. 
         // I don't really think I need it anymore, let me check...

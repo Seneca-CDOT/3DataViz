@@ -11,18 +11,18 @@ Application.BaseGlobeView = Backbone.View.extend({
 
     // framework methods
     initialize: function() {
+
         this.container = this.$el[0];
 
+        this.decorators = [];
         this.rayCatchers = [];
+        this.globeRadius = 50;
     
         // TODO: review
         this.moved = false;
         this.orbitOn = false;
-
         this.idle = true;
         this.timer = null; 
-
-        this.globeRadius = 50;
     },
     destroy: function() {
 
@@ -68,7 +68,10 @@ Application.BaseGlobeView = Backbone.View.extend({
     showGlobe: function() {
 
         this.initGlobe();
+        this.decorateProperties();
+        this.startDataSynchronization();
     },
+
     initGlobe: function() {
 
         this.addSceneAndRenderer();
@@ -86,6 +89,30 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         this.renderGlobe();
     },
+    decorateProperties: function() {
+
+        for(var i = 0; i < this.decorators.length; ++i) {
+
+            this.decorators[i].decorate(this);
+        }
+    },
+    decorateFunctionality: function(action, countryMesh) {
+
+        for(var i = 0; i < this.decorators.length; ++i) {
+
+            var act = this.decorators[i][action];
+            if (typeof act == 'function') {
+
+                act(this, countryMesh);
+            }
+        }
+    },
+
+    startDataSynchronization: function() {
+
+    },
+    
+
     addSceneAndRenderer: function() {
 
         this.scene = new THREE.Scene();
@@ -215,6 +242,8 @@ Application.BaseGlobeView = Backbone.View.extend({
             if (closestMesh !== this.globe) {
                 
                 this.cameraGoTo(closestMesh);
+                // TODO: review
+                this.decorateFunctionality('cameraGoTo', closestMesh)
             }
         }
     },

@@ -19,19 +19,6 @@ Application.Helper = {
    * Convert Geo coordinates to XYZ coordinates
    * @return THREE.Vector3
    */
-  geoToxyz2 : function(lon, lat, r) {
-
-    var r = r || 1;
-
-    var phi = lat * Math.PI / 180;
-    var theta = (lon + 90) * Math.PI / 180;
-    var x = r * Math.cos(phi) * Math.sin(theta);
-    var y = r * Math.sin(phi);
-    var z = r * Math.cos(phi) * Math.cos(theta);
-
-    return new THREE.Vector3(x, y, z);
-
-  },
   geoToxyz : function(lon, lat, r) {
 
     var r = r || 1;

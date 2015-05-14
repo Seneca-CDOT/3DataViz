@@ -66,7 +66,7 @@ Application.AirportsCollection = Application.BaseGlobeCollection.extend({
             tempAir.country    = x.data[i][3],
             tempAir.latitude   = x.data[i][6],
             tempAir.longitude  = x.data[i][7],
-            tempAir.position3D = Application.Helper.geoToxyz2(x.data[i][7], x.data[i][6], 50);
+            tempAir.position3D = Application.Helper.geoToxyz(x.data[i][7], x.data[i][6], 50);
             // I need to check if this is the last object to be added to make sure
             // that when the View listens to it, the parsed flag is raised
             if( i >= x.data.length-1 )

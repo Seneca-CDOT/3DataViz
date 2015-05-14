@@ -8,6 +8,8 @@ Application.DynamicRootGlobeView = Application.RootGlobeView.extend({
     var obj = {};
     obj.collection = new Application.Tweets();
     this.globeView = new Application.DynamicGlobeView(obj);
+    
+    this.globeView.decorators.push(new Application.GeometryGlobeDecorator());
   },
   render: function(options) {
 
