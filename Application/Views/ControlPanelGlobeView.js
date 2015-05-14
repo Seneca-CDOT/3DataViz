@@ -1,10 +1,30 @@
 Application.ControlPanelGlobeView = Backbone.View.extend({
     tagName: 'div',
     id: 'rightcolumn',
-    initialize: function() {
+    initialize: function(_vent) {
+
+        this._vent = _vent;
+
+        this.dataSourcesList = new Application.DropDownList();
+        this.dataSourcesList.$el.attr('id', 'datasourcesList');
+        this.dataSourcesList.$el.attr('class', 'form-control');
+        this.datalist = ['twitter','csv','spreadsheet','trends'];
+
+        this.visualizationList = new Application.DropDownList();
+        this.visualizationList.$el.attr('id', 'visualizationList');
+        this.visualizationList.$el.attr('class', 'form-control');
+        this.vislist = ['geometry','texture'];
+
+        this.templatesList = new Application.DropDownList();
+        this.templatesList.$el.attr('id', 'templatesList');
+        this.templatesList.$el.attr('class', 'form-control');
+        this.temlist = ['paths','points','countries','dynamic points'];
 
     },
     render: function() {
+        this.$el.append(this.dataSourcesList.render(this.datalist).$el);
+        this.$el.append(this.visualizationList.render(this.vislist).$el);
+        this.$el.append(this.templatesList.render(this.temlist).$el);
         return this;
     },
     destroy: function() {
@@ -38,10 +58,8 @@ Application.StaticTwitterControlPanel = Application.ControlPanelGlobeView.extend
 
 Application.SpreadSheetControlPanel = Application.ControlPanelGlobeView.extend({
 
-    initialize: function(obj) {
+    initialize: function() {
         Application.ControlPanelGlobeView.prototype.initialize.call(this);
-
-        this._vent = obj.event;
 
         this.urlfield = new Application.InputField();
         this.urlfield.$el.attr('id', 'url');
@@ -124,10 +142,12 @@ Application.SpreadSheetControlPanel = Application.ControlPanelGlobeView.extend({
 
 Application.GoogleTrendsControlPanel = Application.ControlPanelGlobeView.extend({
 
-    initialize: function(obj) {
+    initialize: function() {
         Application.ControlPanelGlobeView.prototype.initialize.call(this);
 
-        this._vent = obj.event;
+        this.datasourceslist = new Application.DataSourcesList();
+        this.datasourceslist.$el.attr('id', 'datasourceslist');
+        this.datasourceslist.$el.attr('class', 'form-control');
 
         this.keywordfield = new Application.InputField();
         this.keywordfield.$el.attr('id', 'url');
@@ -152,6 +172,7 @@ Application.GoogleTrendsControlPanel = Application.ControlPanelGlobeView.extend(
         this.$el.append(this.keywordfield.render().$el);
         this.$el.append(this.submitbtn.render().$el);
         this.$el.append(this.resetbtn.render().$el);
+        this.$el.append(this.datasourceslist.render().$el);
         return this;
     },
     KeywordFieldAction: function(e) {

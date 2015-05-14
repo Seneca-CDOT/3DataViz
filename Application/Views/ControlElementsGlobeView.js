@@ -1,5 +1,7 @@
 Application.ControlElementsGlobeView = Backbone.View.extend({
-    initialize: function() {},
+    initialize: function() {
+
+    },
     render: function() {
         return this;
     },
@@ -50,6 +52,42 @@ Application.Button = Application.ControlElementsGlobeView.extend({
     action: function(e) {
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
+
+    }
+});
+
+Application.DropDownList = Application.ControlElementsGlobeView.extend({
+    tagName: 'select',
+    initialize: function() {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this);
+        this.$el.on('change', this.action.bind(this));
+    },
+    events: {},
+    render: function(list) {
+
+        var that = this;
+
+        $.each(list, function(index, item) {
+
+            that.$el.append("<option value='" + item + "'>" + item + "</option>");
+        });
+
+        return this;
+    },
+    action: function(e) {
+
+        Application.ControlElementsGlobeView.prototype.action.call(this, e);
+
+        $.each( e.target.children, function (index, option) {
+           
+           if (option.selected == true ) {
+
+            console.log( e.target.value );
+
+            //Application.router.navigate('globeView/' + e.target.value, true);
+        }
+
+        });
 
     }
 });

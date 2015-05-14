@@ -22,7 +22,9 @@ Application = {
         'Routes/GlobeRouter.js',
         'Views/BaseClasses/RootGlobeView.js',
         'Views/BaseClasses/BaseGlobeView.js',
-        'Models/BaseClasses/BaseGlobeModel.js', 
+        'Models/BaseClasses/BaseGlobeModel.js',
+        'Views/ControlPanelGlobeView.js',
+        'Views/ControlElementsGlobeView.js', 
 
         'Helpers/Filter.js',
         'Helpers/Helper.js',
@@ -87,8 +89,6 @@ Application = {
                 'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
                 'Views/BaseClasses/BaseGeometryGlobeView.js', 
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
-                'Views/ControlPanelGlobeView.js',
-                'Views/ControlElementsGlobeView.js',
                 'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
             ]
         },
@@ -99,8 +99,6 @@ Application = {
                 'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
                 'Views/BaseClasses/BaseGeometryGlobeView.js', 
                 'Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js',
-                'Views/ControlPanelGlobeView.js',
-                'Views/ControlElementsGlobeView.js',
                 'Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'
             ]
         }

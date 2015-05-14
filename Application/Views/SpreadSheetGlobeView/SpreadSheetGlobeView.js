@@ -7,10 +7,7 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
     initialize: function(obj) {
 
         Application.BaseGeometryGlobeView.prototype.initialize.call(this);
-        this._vent = obj._event;
-        this.controlPanel = new Application.SpreadSheetControlPanel({
-            event: this._vent
-        });
+        this._vent = obj._vent;
         this.countries = [];
         this.intersected; // intersected mesh
         this.moved = false; // for controls and mouse events
@@ -23,7 +20,7 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
     render: function() {
 
         Application.BaseGeometryGlobeView.prototype.render.call(this);
-        this.$el.append(this.controlPanel.render().$el);
+        //this.$el.append(this.controlPanel.render().$el);
         return this;
     },
     destroy: function() {

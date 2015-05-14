@@ -6,10 +6,10 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
 
     initialize: function(obj) {
         Application.BaseGeometryGlobeView.prototype.initialize.call(this);
-        this._vent = obj._event;
-        this.controlPanel = new Application.GoogleTrendsControlPanel({
-            event: this._vent
-        });
+        this._vent = obj._vent;
+        // this.controlPanel = new Application.GoogleTrendsControlPanel({
+        //     event: this._vent
+        // });
         this.countries = [];
         this.timer; // represents timer for user mouse idle
         this.idle = true; // represents user mouse idle
@@ -35,7 +35,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
 
     render: function() {
         Application.BaseGeometryGlobeView.prototype.render.call(this);
-        this.$el.append(this.controlPanel.render().$el);
+        //this.$el.append(this.controlPanel.render().$el);
         return this;
     },
     destroy: function() {

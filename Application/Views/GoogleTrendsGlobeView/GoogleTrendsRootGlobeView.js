@@ -4,11 +4,9 @@ Application.GoogleTrendsRootGlobeView = Application.RootGlobeView.extend({
   initialize: function() {
 
     Application.RootGlobeView.prototype.initialize.call(this);
-    
-    this._vent = _.extend({}, Backbone.Events);
     var obj = {};
-    obj._event = this._vent;
-    obj.collection = new Application.GoogleTrendsCollection(obj);
+    obj._vent = this._vent;
+    obj.collection = new Application.GoogleTrendsCollection(obj._vent);
     this.globeView = new Application.GoogleTrendsGlobeView(obj);
   },
   render: function(options) {

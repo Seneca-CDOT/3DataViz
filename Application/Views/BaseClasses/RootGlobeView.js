@@ -10,16 +10,9 @@ Application.RootGlobeView = Backbone.View.extend({
     template: _.template($("#rootGlobeViewTemplate").html()),
 
   initialize: function() {
+    this._vent = _.extend({}, Backbone.Events);
+    this.controlPanel = new Application.ControlPanelGlobeView(this._vent);
 
-    // this.views = [];
-    // for(name in views){
-    //   var obj = {};
-    //   if(collection != null && collection[name] !== undefined){
-    //     obj.collection = new Application[collection[name]];
-    //   }
-    //   this[name] = new Application[views[name]](obj);
-    //   this.views.push(this[name]);
-    // }
   },
   render: function() {
 
@@ -37,6 +30,8 @@ Application.RootGlobeView = Backbone.View.extend({
 
     this.$el.append(this.globeView.$el);
     this.globeView.render();
+
+    this.$el.append(this.controlPanel.render().$el);
 
     // for(var i=0; i<this.views.length; i++){
     //   this.$el.append(this.views[i].$el);
