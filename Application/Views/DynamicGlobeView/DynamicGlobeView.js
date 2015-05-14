@@ -1,11 +1,11 @@
 var Application = Application || {};
 
-Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
+Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
     initialize: function() {
 
-        Application.BaseGeometryGlobeView.prototype.initialize.call(this);
+        Application.BaseGlobeView.prototype.initialize.call(this);
 
         this.particles = new Application.DataStructures.List();
         this.particlesToRemove = new Application.DataStructures.List();
@@ -20,11 +20,18 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
         this.period = 500;
         this.particlesLifeTime = 2000;
     },
+    initGlobe: function() {
+
+        Application.BaseGlobeView.prototype.initGlobe.call(this);
+        
+         // this.startDataStreaming();
+        this.startDataSynchronization();
+    },
 
     // visualization specific functionality
     updateGlobe: function() {
 
-        Application.BaseGeometryGlobeView.prototype.updateGlobe.call(this);
+        Application.BaseGlobeView.prototype.updateGlobe.call(this);
 
         this.updateParticles();
     },
@@ -64,6 +71,7 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
                 this.scene.remove(particle.getMesh());
                 particle.dispose();
 
+                // TODO:
                 iterator = this.particlesToRemove.removeNode(iterator);
                 // if (iterator === this.particlesToRemove.getBegin()) {
 
@@ -77,14 +85,9 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
     },
     addHelpers: function() {
 
-        Application.BaseGeometryGlobeView.prototype.addHelpers.call(this);
+        Application.BaseGlobeView.prototype.addHelpers.call(this);
 
         Application.Debug.addAxes(this.globe);
-    },
-    didLoadGeometry: function() {
-
-        // this.startDataStreaming();
-        this.startDataSynchronization();
     },
 
     // streaming functionality
@@ -188,6 +191,7 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
 
                 this.particlesToRemove.pushBack(particle);
 
+                // TODO:
                 iterator = this.particles.removeNode(iterator);
                 // if (iterator === this.particles.getBegin()) {
 

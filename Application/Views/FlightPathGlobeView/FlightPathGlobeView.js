@@ -3,11 +3,11 @@
  **/
 var Application = Application || {};
 
-Application.FlightPathGlobeView = Application.BaseTextureGlobeView.extend({
+Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
     initialize: function() {
 
-        Application.BaseTextureGlobeView.prototype.initialize.call(this);
+        Application.BaseGlobeView.prototype.initialize.call(this);
 
         //time factor for animations
         this.t = 0;
@@ -81,7 +81,7 @@ Application.FlightPathGlobeView = Application.BaseTextureGlobeView.extend({
             }
         }
 
-        Application.BaseTextureGlobeView.prototype.updateGlobe.call(this);
+        Application.BaseGlobeView.prototype.updateGlobe.call(this);
     },
 
     // data ready checks to see if both csv's have been loaded

@@ -21,18 +21,10 @@ Application.BaseTextureGlobeView = Application.BaseGlobeView.extend({
         this.texHeight = 1024 * this.factor;
         this.texWidth = this.texHeight * this.factor;
     },
-
     // member methods
     initGlobe: function() {
 
         Application.BaseGlobeView.prototype.initGlobe.call(this);
-
-        this.setUpCanvas();
-        // this.redrawTexture();
-    },
-    addGlobe: function() {
-
-        Application.BaseGlobeView.prototype.addGlobe.call(this);
 
         var texture = THREE.ImageUtils.loadTexture(this.textureMap);
         var material = new THREE.MeshBasicMaterial({
@@ -48,29 +40,10 @@ Application.BaseTextureGlobeView = Application.BaseGlobeView.extend({
         this.globe.material = material;
     },
 
-    //sets up canvas and loads hexMap for pixel clicking functionality
-    setUpCanvas: function() {
-
-        this.canvas = document.createElement('canvas');
-        var canvasCtx = this.canvas.getContext("2d");
-
-        this.canvas.backgrounColor = "0x000000";
-        this.canvas.width = this.tw;
-        this.canvas.height = this.th;
-
-        var image = new Image();
-        image.src = this.hexMap;
-        image.onload = (function(that) {
-
-            return function() {
-
-                canvasCtx.drawImage(image, 0, 0);
-            };
-        })(this);
-    },
-
     // call readCountries(), supplying the countries data, to redraw the texture
     redrawTexture: function() {
+
+        this.setUpCanvas();
 
         var midPoint;
         var dist = 0;
@@ -183,6 +156,26 @@ Application.BaseTextureGlobeView = Application.BaseGlobeView.extend({
             canvasCtx.fillStyle = "#" + color;
             canvasCtx.fill();
         }
+    },
+    //sets up canvas and loads hexMap for pixel clicking functionality
+    setUpCanvas: function() {
+
+        this.canvas = document.createElement('canvas');
+        var canvasCtx = this.canvas.getContext("2d");
+
+        this.canvas.backgrounColor = "0x000000";
+        this.canvas.width = this.tw;
+        this.canvas.height = this.th;
+
+        var image = new Image();
+        image.src = this.hexMap;
+        image.onload = (function(that) {
+
+            return function() {
+
+                canvasCtx.drawImage(image, 0, 0);
+            };
+        })(this);
     },
 
     // interaction

@@ -20,6 +20,8 @@ Application = {
     //Files which need to be imported for GlobeVisualization
     files: [
         'Routes/GlobeRouter.js',
+        'Views/GlobeDecorators/GeometryGlobeDecorator.js', 
+        'Views/GlobeDecorators/TextureGlobeDecorator.js', 
         'Views/BaseClasses/RootGlobeView.js',
         'Views/BaseClasses/BaseGlobeView.js',
         'Models/BaseClasses/BaseGlobeModel.js', 
@@ -49,7 +51,6 @@ Application = {
         flightPath: {
             files: [
                 'Views/FlightPathGlobeView/FlightPathRootGlobeView.js',
-                'Views/BaseClasses/BaseTextureGlobeView.js', 
                 'Views/FlightPathGlobeView/FlightPathGlobeView.js',
                 'Models/FlightPathGlobeView/FlightPathGlobeModel.js',
                 'Models/data/path.js',
@@ -63,7 +64,6 @@ Application = {
         dynamic: {
             files: [
                 'Views/DynamicGlobeView/DynamicRootGlobeView.js',
-                'Views/BaseClasses/BaseGeometryGlobeView.js', 
                 'Views/DynamicGlobeView/DynamicGlobeView.js',
                 'Views/DynamicGlobeView/DynamicGlobeParticle.js',
                 'Models/DynamicGlobeView/DynamicGlobeModel.js'
@@ -73,8 +73,7 @@ Application = {
         //configuration for SpreadSheetGlobeView
         spreadSheet: {
             files: [
-                'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
-                'Views/BaseClasses/BaseGeometryGlobeView.js', 
+                'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',            
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
                 'Views/ControlPanelGlobeView.js',
                 'Views/ControlElementsGlobeView.js',
@@ -86,7 +85,6 @@ Application = {
         googleTrends: {
             files: [
                 'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
-                'Views/BaseClasses/BaseGeometryGlobeView.js', 
                 'Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js',
                 'Views/ControlPanelGlobeView.js',
                 'Views/ControlElementsGlobeView.js',

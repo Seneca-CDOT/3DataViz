@@ -11,13 +11,15 @@ Application.BaseGeometryGlobeView = Application.BaseGlobeView.extend({
         this.intersected = null; 
         this.countries = [];
     },
-    render: function() {
 
-        Application.BaseGlobeView.prototype.render.call(this);
-        return this;
+    // member methods
+    initGlobe: function() {
+
+        Application.BaseGlobeView.prototype.initGlobe.call(this);
+
+        this.loadGeometry();
     },
-
-    _loadGeometry: function() { 
+    loadGeometry: function() { 
 
         var that = this;
 
@@ -33,12 +35,12 @@ Application.BaseGeometryGlobeView = Application.BaseGlobeView.extend({
             },
             success: function(data) {
 
-                that._addGeometry(data);
+                that.addGeometry(data);
                 that.didLoadGeometry();
             }
         });
     },
-    _addGeometry: function(data) {
+    addGeometry: function(data) {
 
         var green = 1;
         for (var countryName in data) {
@@ -66,14 +68,6 @@ Application.BaseGeometryGlobeView = Application.BaseGlobeView.extend({
             this.rayCatchers.push(mesh);
             this.countries.push(mesh);
         }
-    },
-
-    // member methods
-    initGlobe: function() {
-
-        Application.BaseGlobeView.prototype.initGlobe.call(this);
-
-        this._loadGeometry();
     },
     willLoadGeometry: function() {
 
