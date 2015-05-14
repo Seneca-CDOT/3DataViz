@@ -58,7 +58,7 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
     // visualization specific functionality
     addPoints: function(array) {
 
-        var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
+        var map = THREE.ImageUtils.loadTexture("Assets/Images/sprite.png");
         var material = new THREE.SpriteMaterial({
 
             map: map,
