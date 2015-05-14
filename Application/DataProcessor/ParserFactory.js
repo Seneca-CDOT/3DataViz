@@ -111,6 +111,17 @@ Application.DataProcessor.BaseParser = (function() {
     };
     Application.Helper.inherit(BaseParser, Application.DataProcessor.BaseStrategy);
 
+    BaseParser.prototype.process = function(data) {
+
+        var pData = this.parse(data);
+        return pData;
+    };
+
+    BaseParser.prototype.parse = function(data) {
+
+        throw 'Please, define an abstract interface.';
+    };
+
     /**
      * Get a value from the object in the path.
      * @param  {String} path .
@@ -143,7 +154,7 @@ Application.DataProcessor.TweetParser = (function() {
     };
     Application.Helper.inherit(TweetParser, Application.DataProcessor.BaseParser);
 
-    TweetParser.prototype.process = function(data) {
+    TweetParser.prototype.parse = function(data) {
 
         var filter = {
             longitude: "geo.coordinates[1]",
@@ -152,9 +163,9 @@ Application.DataProcessor.TweetParser = (function() {
             timestamp: "timestamp_ms",
         };
         var pData = privateMethods.extract.call(this, filter, data);
+        pData = privateMethods.transform.call(this, pData);
         return pData;
     };
-
 
     var privateMethods = Object.create(TweetParser.prototype);
     /**
@@ -179,6 +190,22 @@ Application.DataProcessor.TweetParser = (function() {
         return collection;
     };
 
+    // TODO: move to transformer
+    privateMethods.transform = function(data) {
+
+        for (var i = 0; i < data.length; ++i) {
+
+            if (data[i].timestamp !== "") {
+
+                data[i].timestamp = Number(data[i].timestamp);
+            } else {
+
+                data[i].timestamp = 0;
+            }
+        }
+        return data;
+    };
+
     return TweetParser;
 })();
 
@@ -191,7 +218,7 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
     };
     Application.Helper.inherit(GoogleTrendsParser, Application.DataProcessor.BaseParser);
 
-    GoogleTrendsParser.prototype.process = function(data) {
+    GoogleTrendsParser.prototype.parse = function(data) {
 
         var filter = {
             countrycode: "c[0].v",
@@ -237,7 +264,7 @@ Application.DataProcessor.SpreadSheetParser = (function() {
     };
     Application.Helper.inherit(SpreadSheetParser, Application.DataProcessor.BaseParser);
 
-    SpreadSheetParser.prototype.process = function(data) {
+    SpreadSheetParser.prototype.parse = function(data) {
 
         var filter = {
 
@@ -264,7 +291,7 @@ Application.DataProcessor.CSVParser = (function() {
     };
     Application.Helper.inherit(CSVParser, Application.DataProcessor.BaseParser);
 
-    CSVParser.prototype.process = function(data) {
+    CSVParser.prototype.parse = function(data) {
 
         // var pData = null;
         // return pData;

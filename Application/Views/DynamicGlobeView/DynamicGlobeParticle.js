@@ -171,9 +171,6 @@ Application.DynamicGlobeParticle.prototype.setLifeTime = function(lifeTime) {
 
     if (lifeTime > 0 && this._life_time <= 0) {
 
-        // var date = new Date();
-        // this.getData().set("timestamp", date.getTime());
-
         this._life_time = lifeTime;
     }
 };
@@ -182,7 +179,7 @@ Application.DynamicGlobeParticle.prototype.isDead = function(currentTime) {
 
     var isDead = true;
     if (this.getData() != null && currentTime !== undefined &&
-        (Number(this.getData().get("timestamp")) + this._life_time > currentTime)) {
+        (this.getData().get("timestamp") + this._life_time > currentTime)) {
 
         isDead = false;
     }

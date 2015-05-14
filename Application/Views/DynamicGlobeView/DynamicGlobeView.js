@@ -137,12 +137,12 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
 
         var count = 0;
         var dataRecord = this.collection.at(beginIndex);
-        var startTime = Number(dataRecord.get("timestamp"));
+        var startTime = dataRecord.get("timestamp");
         var time = startTime;
         while (startTime + timeInterval > time) {
 
             var date = new Date();
-            dataRecord.set("timestamp", "" + date.getTime());
+            dataRecord.set("timestamp", date.getTime());
 
             this.addParticleWithDataRecord(dataRecord);
             ++count;
@@ -150,7 +150,7 @@ Application.DynamicGlobeView = Application.BaseGeometryGlobeView.extend({
             if (beginIndex >= this.collection.length)
                 break;
             dataRecord = this.collection.at(++beginIndex);
-            time = Number(dataRecord.get("timestamp"));
+            time = dataRecord.get("timestamp");
         }
 
         console.log("----------------");
