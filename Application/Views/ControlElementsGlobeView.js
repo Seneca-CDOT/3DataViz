@@ -58,14 +58,18 @@ Application.Button = Application.ControlElementsGlobeView.extend({
 
 Application.DropDownList = Application.ControlElementsGlobeView.extend({
     tagName: 'select',
-    initialize: function() {
+    initialize: function( config ) {
         Application.ControlElementsGlobeView.prototype.initialize.call(this);
         this.$el.on('change', this.action.bind(this));
+        this.name = config.name;
+        this._vent = config.event;
     },
     events: {},
     render: function(list) {
 
         var that = this;
+
+        this.$el.append("<option value='' selected disabled>Choose a " + this.name + "</option>");
 
         $.each(list, function(index, item) {
 
@@ -76,15 +80,18 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
     },
     action: function(e) {
 
+        var that = this;
+
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
 
         $.each( e.target.children, function (index, option) {
            
-           if (option.selected == true ) {
+           if (option.selected == true && e.target.value != "") {
 
             console.log( e.target.value );
 
-            //Application.router.navigate('globeView/' + e.target.value, true);
+            that._vent.trigger('controls/' + this.name, [ e.target.value ] );
+
         }
 
         });

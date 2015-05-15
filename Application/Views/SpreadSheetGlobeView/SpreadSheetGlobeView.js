@@ -35,10 +35,12 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
     onMouseMove: function(e) {
 
         var that = this;
-        Application.BaseGeometryGlobeView.prototype.onMouseMove.call(this,e);
+        Application.BaseGeometryGlobeView.prototype.onMouseMove.call(this, e);
         this.idle = false;
         clearTimeout(this.timer);
-        this.timer = setTimeout( function() { that.idle = true } , 5000);
+        this.timer = setTimeout(function() {
+            that.idle = true
+        }, 5000);
     },
     submit: function(key) {
 
@@ -68,7 +70,7 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
 
         Application.BaseGeometryGlobeView.prototype.renderGlobe.call(this);
 
-        if ( this.idle === true ) {
+        if (this.idle === true) {
 
             this.globe.rotation.y -= 0.0003;
         }
@@ -158,7 +160,7 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
 
         this.highlightCountry(countrymesh);
     },
-    
+
     didLoadGeometry: function() {
 
         Application.BaseGeometryGlobeView.prototype.didLoadGeometry.call(this);

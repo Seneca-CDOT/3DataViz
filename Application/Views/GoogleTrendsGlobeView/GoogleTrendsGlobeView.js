@@ -130,7 +130,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
 
             var countrymesh = that.findCountryMeshByCode(item.countrycode);
 
-            if (!countrymesh) 
+            if (!countrymesh)
                 return;
 
             console.log(countrymesh.userData.name);
@@ -150,7 +150,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
         Application.BaseGeometryGlobeView.prototype.cameraGoTo.call(this, countrymesh);
 
         this.highlightCountry(countrymesh);
-    }, 
+    },
 
     didLoadGeometry: function() {
 

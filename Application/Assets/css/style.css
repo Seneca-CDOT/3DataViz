@@ -5,7 +5,10 @@ body {
     background: #000;
 }
 
-#applicaitonRegion {
+#applicationRegion {
+    text-align: center;
+}
+#vizRegion {
     text-align: center;
 }
 /*canvas {

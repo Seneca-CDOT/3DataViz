@@ -13,13 +13,16 @@ Application = {
     //Create Route which handles Views and Models
     init: function() {
 
-        this.router = new this.GlobeRouter();
+        this.rootRouter = new this.RootRouter();
+        this.globeRouter = new this.GlobeRouter();
         Backbone.history.start();
     },
 
     //Files which need to be imported for GlobeVisualization
     files: [
         'Routes/GlobeRouter.js',
+        'Routes/RootRouter.js',
+        'Views/BaseClasses/RootView.js',
         'Views/BaseClasses/RootGlobeView.js',
         'Views/BaseClasses/BaseGlobeView.js',
         'Models/BaseClasses/BaseGlobeModel.js',

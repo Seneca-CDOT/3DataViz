@@ -5,20 +5,21 @@ Application.ControlPanelGlobeView = Backbone.View.extend({
 
         this._vent = _vent;
 
-        this.dataSourcesList = new Application.DropDownList();
+        this.dataSourcesList = new Application.DropDownList({ name: 'datasource', event: _vent });
         this.dataSourcesList.$el.attr('id', 'datasourcesList');
         this.dataSourcesList.$el.attr('class', 'form-control');
         this.datalist = ['twitter','csv','spreadsheet','trends'];
 
-        this.visualizationList = new Application.DropDownList();
+        this.visualizationList = new Application.DropDownList({ name: 'visualization', event: _vent });
         this.visualizationList.$el.attr('id', 'visualizationList');
         this.visualizationList.$el.attr('class', 'form-control');
         this.vislist = ['geometry','texture'];
 
-        this.templatesList = new Application.DropDownList();
+        this.templatesList = new Application.DropDownList({ name: 'datalayer', event: _vent });
         this.templatesList.$el.attr('id', 'templatesList');
         this.templatesList.$el.attr('class', 'form-control');
-        this.temlist = ['paths','points','countries','dynamic points'];
+        //this.temlist = ['paths','points','countries','dynamic points'];
+        this.temlist = ['spreadSheet','staticTwitter','flightPath','dynamic','googleTrends'];
 
     },
     render: function() {
