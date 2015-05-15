@@ -16,6 +16,7 @@ Application.FlightPathRootGlobeView = Application.RootGlobeView.extend({
     this.globeView = new Application.FlightPathGlobeView(obj);
 
     this.globeView.decorators.push(new Application.GeometryGlobeDecorator());
+    // this.globeView.decorators.push(new Application.TextureGlobeDecorator());
   },
   render: function(options) {
 

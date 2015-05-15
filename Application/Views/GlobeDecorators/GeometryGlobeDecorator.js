@@ -8,23 +8,23 @@ Application.GeometryGlobeDecorator = (function() {
         this.intersected = null; 
         this.countries = [];
     };
+    Application.Helper.inherit(GeometryGlobeDecorator, Application.BaseGlobeDecorator);
 
     // properties
-    GeometryGlobeDecorator.prototype.decorate = function(globe) {
+    GeometryGlobeDecorator.prototype.decorate = function(globeView) {
 
-        privateMethods.loadGeometry.call(this, globe);
+        privateMethods.loadGeometry.call(this, globeView);
     };
 
     // functionality
-    GeometryGlobeDecorator.prototype.cameraGoTo = function(globe, countryMesh) {
+    GeometryGlobeDecorator.prototype.cameraGoTo = function(globeView, countryMesh) {
 
         privateMethods.highlightCountry.call(this, countryMesh);
     };
 
-
     var privateMethods = Object.create(GeometryGlobeDecorator.prototype);
      // visualization specific functionality
-    privateMethods.loadGeometry = function(globe) { 
+    privateMethods.loadGeometry = function(globeView) { 
 
         var that = this;
         // that.willLoadGeometry();
@@ -39,12 +39,13 @@ Application.GeometryGlobeDecorator = (function() {
             },
             success: function(data) {
 
-                privateMethods.addGeometry.call(that, data, globe);
+                privateMethods.addGeometry.call(that, data, globeView);
                 // that.didLoadGeometry();
             }
         });
     };
-    privateMethods.addGeometry = function(data, globe) {
+    
+    privateMethods.addGeometry = function(data, globeView) {
 
         var green = 1;
         for (var countryName in data) {
@@ -61,7 +62,7 @@ Application.GeometryGlobeDecorator = (function() {
             var mesh = new THREE.Mesh(geometry, material);
 
             // TODO: review
-            var scale = globe.globeRadius + 0.5;
+            var scale = globeView.globeRadius + 0.5;
 
             mesh.scale.set(scale, scale, scale);
             mesh.geometry.computeBoundingSphere();
@@ -70,8 +71,8 @@ Application.GeometryGlobeDecorator = (function() {
             mesh.userData.code = data[countryName].code;
 
             // TODO: review
-            globe.globe.add(mesh);
-            globe.rayCatchers.push(mesh);
+            globeView.globe.add(mesh);
+            globeView.rayCatchers.push(mesh);
 
             this.countries.push(mesh);
         }

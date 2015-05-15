@@ -19,22 +19,6 @@ Application = {
 
     //Files which need to be imported for GlobeVisualization
     files: [
-        'Routes/GlobeRouter.js',
-        'Views/GlobeDecorators/GeometryGlobeDecorator.js', 
-        'Views/GlobeDecorators/TextureGlobeDecorator.js', 
-        'Views/BaseClasses/RootGlobeView.js',
-        'Views/BaseClasses/BaseGlobeView.js',
-        'Models/BaseClasses/BaseGlobeModel.js', 
-
-        'Helpers/Filter.js',
-        'Helpers/Helper.js',
-        'Helpers/Debug.js',
-        'Helpers/DataStructures.js',
-
-        'DataProcessor/DataProcessor.js',
-        'DataProcessor/ParserFactory.js',
-        'DataProcessor/TransformerFactory.js',
-
         'Libraries/OrbitControls.js',
         'Libraries/stats.js',
         'Libraries/tween.min.js',
@@ -42,7 +26,26 @@ Application = {
         'Libraries/font.js',
         'Libraries/map3d.js',
         // 'Libraries/popcorn-complete.min.js',
-        'Libraries/papaparse.js'
+        'Libraries/papaparse.js',
+
+        'Helpers/Filter.js',
+        'Helpers/Helper.js',
+        'Helpers/Debug.js',
+        'Helpers/DataStructures.js',
+
+        'Routes/GlobeRouter.js',
+
+        'Views/GlobeDecorators/BaseGlobeDecorator.js', 
+        'Views/GlobeDecorators/GeometryGlobeDecorator.js', 
+        'Views/GlobeDecorators/TextureGlobeDecorator.js', 
+        
+        'Views/BaseClasses/RootGlobeView.js',
+        'Views/BaseClasses/BaseGlobeView.js',
+        'Models/BaseClasses/BaseGlobeModel.js', 
+
+        'DataProcessor/DataProcessor.js',
+        'DataProcessor/ParserFactory.js',
+        'DataProcessor/TransformerFactory.js'
     ],
 
     globeViews: {
