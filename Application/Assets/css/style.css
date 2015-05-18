@@ -41,14 +41,21 @@ body {
 
 #tweets,
 #submit,
-#search,
-#url,
-#keyword,
 #reset {
 
     width: 80%;
     margin-top: 20%;
+    /*margin-left: 10%;*/
+}
+
+#search,
+#url,
+#keyword {
+
+      width: 80%;
+    margin-top: 20%;
     margin-left: 10%;
+}
 }
 
 #configList {

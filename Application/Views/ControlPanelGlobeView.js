@@ -58,7 +58,6 @@ Application.MainConfigView = Backbone.View.extend({
 
         this.subview = this.getSubView(value);
         if (typeof this.subview !== 'undefined' ) {
-        //this.$el.empty();
         this.$el.append(this.subview.render().$el);
     }
 
