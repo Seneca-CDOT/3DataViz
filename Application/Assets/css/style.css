@@ -21,7 +21,7 @@ body {
     position: absolute;
 }
 
-#rightcolumn {
+#panel {
     background-color: #1F1F2E;
     /*opacity: 0.2;*/
     
@@ -45,8 +45,9 @@ body {
 }
 
 #search,
-#url {
-    position: absolute;
+#url,
+#keyword {
+    position: relative;
     width: 80%;
     left: 10%;
     top: 40%;
@@ -54,35 +55,41 @@ body {
 
 #tweets,
 #submit {
-    position: absolute;
+    position: relative;
     width: 80%;
     left: 10%;
     top: 50%;
 }
 
 #reset {
-    position: absolute;
+    position: relative;
     width: 80%;
     left: 10%;
     top: 60%;
 }
 
 #datasourcesList {
-    position: absolute;
+    position: relative;
     width: 80%;
     left: 10%;
     top: 10%;
 }
 
-#visualizationList {
+#configList {
     position: absolute;
+    width: 80%;
+    left: 10%;
+    top: 10%;
+}
+#visualizationList {
+    position: relative;
     width: 80%;
     left: 10%;
     top: 20%;
 }
 
 #templatesList {
-    position: absolute;
+    position: relative;
     width: 80%;
     left: 10%;
     top: 30%;
