@@ -21,6 +21,7 @@ Application.MainConfigView = Backbone.View.extend({
 
         this._vent = config.event;
         this.config = config;
+        this.subview;
 
         this.sourceslist = ['twitter', 'csv', 'spreadsheet', 'trends'];
         this.dataSourcesList = new Application.DropDownList(config, this.sourceslist);
@@ -57,29 +58,32 @@ Application.MainConfigView = Backbone.View.extend({
 
         this.subview = this.getSubView(value);
         if (typeof this.subview !== 'undefined' ) {
+        //this.$el.empty();
         this.$el.append(this.subview.render().$el);
     }
 
     },
     getSubView: function(value) {
 
+        if (this.subview !== undefined ) this.subview.destroy();
+
         switch (value[0]) {
 
             case 'twitter':
-                var subview = new Application.DynamicTwitterControlPanel(this.config);
+                 this.subview = new Application.DynamicTwitterControlPanel(this.config);
                 break;
             case 'csv':
-                var subview = new Application.CSVControlPanel(this.config);
+                this.subview = new Application.CSVControlPanel(this.config);
                 break;
             case 'spreadsheet':
-                var subview = new Application.SpreadSheetControlPanel(this.config);
+                this.subview = new Application.SpreadSheetControlPanel(this.config);
                 break;
             case 'trends':
-                var subview = new Application.GoogleTrendsControlPanel(this.config);
+                this.subview = new Application.GoogleTrendsControlPanel(this.config);
                 break;
         }
 
-        return subview;
+        return this.subview;
 
     }
 
@@ -91,10 +95,15 @@ Application.ButtonsView = Backbone.View.extend({
 
         this._vent = config.event;
         this.userInput = config.userInput;
+
     },
     render: function() {
-
+        
         return this;
+    },
+    destroy: function() {
+
+        this.$el.empty();
     }
 
 });
