@@ -125,7 +125,7 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
 
                 that.addToConfig(e.target.value);
 
-                that._vent.trigger('controlpanelsubview', [e.target.value]);
+                that._vent.trigger('controlpanelsubview/' + that.name, [e.target.value]);
 
             }
 

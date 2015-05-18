@@ -38,7 +38,7 @@ Application.MainConfigView = Backbone.View.extend({
         this.templatesList.$el.attr('id', 'templatesList');
         this.templatesList.$el.attr('class', 'form-control');
 
-        this._vent.on('controlpanelsubview', this.addSubView.bind(this));
+        this._vent.on('controlpanelsubview/dataSourcesList', this.addSubView.bind(this));
 
     },
     render: function() {
