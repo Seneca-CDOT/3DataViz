@@ -8,12 +8,6 @@ body {
 #applicationRegion {
     text-align: center;
 }
-#vizRegion {
-    text-align: center;
-}
-/*canvas {
-    position: absolute;
-}*/
 
 #main {
     width: 100%;
@@ -23,14 +17,11 @@ body {
 
 #panel {
     background-color: #1F1F2E;
-    /*opacity: 0.2;*/
-    
     top: 0px;
     position: absolute;
     width: 15%;
     right: 0px;
     height: 100%;
-    /*z-index: 9999;*/
 }
 
 #leftcolumn {
@@ -44,55 +35,31 @@ body {
     top: 20%;
 }
 
-#search,
-#url,
-#keyword {
-    position: relative;
-    width: 80%;
-    left: 10%;
-    top: 40%;
+#buttons {
+    width: 100%;
 }
 
 #tweets,
-#submit {
-    position: relative;
-    width: 80%;
-    left: 10%;
-    top: 50%;
-}
-
+#submit,
+#search,
+#url,
+#keyword,
 #reset {
-    position: relative;
-    width: 80%;
-    left: 10%;
-    top: 60%;
-}
 
-#datasourcesList {
-    position: relative;
     width: 80%;
-    left: 10%;
-    top: 10%;
+    margin-top: 20%;
+    margin-left: 10%;
 }
 
 #configList {
-    position: absolute;
-    width: 80%;
-    left: 10%;
+    width: 100%;
     top: 10%;
 }
-#visualizationList {
-    position: relative;
-    width: 80%;
-    left: 10%;
-    top: 20%;
-}
 
-#templatesList {
-    position: relative;
+#datasourcesList, #templatesList, #visualizationList {
     width: 80%;
-    left: 10%;
-    top: 30%;
+    margin-top: 20%;
+    margin-left: 10%;
 }
 
 .country {
