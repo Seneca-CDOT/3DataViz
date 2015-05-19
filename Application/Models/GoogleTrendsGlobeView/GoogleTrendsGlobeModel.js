@@ -13,10 +13,10 @@ Application.GoogleTrendsRecord = Application.BaseDataRecord.extend({
 
 Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
     model: Application.GoogleTrendsRecord,
-    initialize: function(obj) {
+    initialize: function(_vent) {
         Application.BaseGlobeCollection.prototype.initialize.call(this);
 
-        this._event = obj._event;
+        this._vent = _vent;
         this.response; // response from google trends
         var that = this;
 
@@ -32,7 +32,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
                     }
                 }
             }
-            // this._event.on('trends/changed', this.parse.bind(this));
+            // this._vent.on('trends/changed', this.parse.bind(this));
     },
     parse: function(response) {
 
@@ -44,7 +44,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         var pData = pModule.processData(response.table.rows, options)
             // return pData;
 
-        this._event.trigger('trends/parsed', pData);
+        this._vent.trigger('trends/parsed', pData);
     },
     setURL: function(key) {
 

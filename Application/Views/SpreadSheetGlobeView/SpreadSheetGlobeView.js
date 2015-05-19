@@ -5,12 +5,12 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
     // framework methods
     initialize: function(obj) {
         Application.BaseGeometryGlobeView.prototype.initialize.call(this);
-
-        this._vent = obj._event;
-        this.controlPanel = new Application.SpreadSheetControlPanel({
-            event: this._vent
-        });
-        
+        this._vent = obj._vent;
+        this.countries = [];
+        this.intersected; // intersected mesh
+        this.moved = false; // for controls and mouse events
+        this.timer; // represents timer for user mouse idle
+        this.idle = true; // represents user mouse idle
         this.sprites = [];
         this.suscribe();
 
@@ -19,7 +19,6 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
     render: function() {
 
         Application.BaseGeometryGlobeView.prototype.render.call(this);
-        this.$el.append(this.controlPanel.render().$el);
         return this;
     },
     suscribe: function() {
@@ -43,6 +42,12 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
             }
         });
     },
+    reset: function() {
+
+        this.resetGlobe();
+    },
+
+    // member methods
     resetGlobe: function() {
 
         var that = this;
@@ -87,6 +92,27 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
 
                 that.sprites.push(sprite);
             }, time);
+        });
+    },
+
+    cameraGoTo: function(countrymesh) {
+
+        Application.BaseGeometryGlobeView.prototype.cameraGoTo.call(this, countrymesh);
+
+        this.highlightCountry(countrymesh);
+    },
+
+    didLoadGeometry: function() {
+
+        Application.BaseGeometryGlobeView.prototype.didLoadGeometry.call(this);
+
+        var that = this;
+        $.each(this.rayCatchers, function(index, catcher) {
+
+            if (catcher != that.globe) {
+
+                that.countries.push(catcher);
+            }
         });
     }
 });

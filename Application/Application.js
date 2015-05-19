@@ -13,16 +13,21 @@ Application = {
     //Create Route which handles Views and Models
     init: function() {
 
-        this.router = new this.GlobeRouter();
+        this.rootRouter = new this.RootRouter();
+        this.globeRouter = new this.GlobeRouter();
         Backbone.history.start();
     },
 
     //Files which need to be imported for GlobeVisualization
     files: [
         'Routes/GlobeRouter.js',
+        'Routes/RootRouter.js',
+        'Views/BaseClasses/RootView.js',
         'Views/BaseClasses/RootGlobeView.js',
         'Views/BaseClasses/BaseGlobeView.js',
-        'Models/BaseClasses/BaseGlobeModel.js', 
+        'Models/BaseClasses/BaseGlobeModel.js',
+        'Views/ControlPanelGlobeView.js',
+        'Views/ControlElementsGlobeView.js', 
 
         'Helpers/Filter.js',
         'Helpers/Helper.js',
@@ -76,9 +81,7 @@ Application = {
                 'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
                 'Views/BaseClasses/BaseGeometryGlobeView.js', 
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
-                'Views/ControlPanelGlobeView.js',
-                'Views/ControlElementsGlobeView.js',
-                'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'
+                'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
             ]
         },
 
@@ -88,8 +91,6 @@ Application = {
                 'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
                 'Views/BaseClasses/BaseGeometryGlobeView.js', 
                 'Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js',
-                'Views/ControlPanelGlobeView.js',
-                'Views/ControlElementsGlobeView.js',
                 'Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'
             ]
         }
