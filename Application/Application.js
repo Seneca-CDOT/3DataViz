@@ -14,7 +14,6 @@ Application = {
     init: function() {
 
         this.rootRouter = new this.RootRouter();
-        this.globeRouter = new this.GlobeRouter();
         Backbone.history.start();
     },
 

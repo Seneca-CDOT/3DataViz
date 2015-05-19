@@ -9,9 +9,12 @@ Application.RootGlobeView = Backbone.View.extend({
     tagName: "div",
     template: _.template($("#rootGlobeViewTemplate").html()),
 
-    initialize: function() {
-        this._vent = _.extend({}, Backbone.Events);
+    initialize: function(config) {
 
+        var obj = {};
+        obj.collection = this.createCollection(config);
+        obj.decorators = this.createDecorators(config);
+        this.globeView = this.createGlobeView(obj);
     },
     render: function() {
 
@@ -27,16 +30,42 @@ Application.RootGlobeView = Backbone.View.extend({
         };
         this.globeView.options = options;
 
-        this.$el.append(this.globeView.$el);
-        this.globeView.render();
-
-        //    this.$el.append(this.controlPanel.render().$el);
-
-        // for(var i=0; i<this.views.length; i++){
-        //   this.$el.append(this.views[i].$el);
-        //   this.views[i].render();
-        // }
-
+        this.$el.append(this.globeView.render().$el);
         return this;
+    },
+    destroy: function() {
+
+        this.remove();
+        this.unbind();
+
+        this.globeView.destroy();
+        // this.globeView = null;
+    },
+
+    createGlobeView: function(config) {
+
+        return null;
+    },
+    createCollection: function(config) {
+
+        return null;
+    },
+    createDecorators: function(config) {
+
+        var decorators = [];
+        switch(config.visualizationList)
+        {
+            case "texture":
+            {  
+                decorators.push(new Application.TextureGlobeDecorator());
+                break;
+            }
+            case "geometry":
+            {
+                decorators.push(new Application.GeometryGlobeDecorator());
+                break;
+            }
+        }
+        return decorators;
     }
 });

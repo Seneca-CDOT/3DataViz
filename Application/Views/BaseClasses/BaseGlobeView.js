@@ -11,11 +11,17 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
 
     // framework methods
-    initialize: function() {
+    initialize: function(config) {
 
         this.container = this.$el[0];
+        this.requestedAnimationFrameId = null;
 
         this.decorators = [];
+        if (config.decorators !== undefined) {
+
+            this.decorators = config.decorators;
+        }
+
         this.rayCatchers = [];
         this.globeRadius = 50;
     
@@ -27,7 +33,23 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     destroy: function() {
 
-        this.collection.reset();
+        this.remove();
+        this.unbind();
+
+        // this.collection.reset();
+        // this.collection = null;
+
+        if (this.requestedAnimationFrameId) {
+
+            cancelAnimationFrame(this.requestedAnimationFrameId);
+            this.requestedAnimationFrameId = null;
+        }
+
+        this.globe.material.dispose();
+        this.globe.geometry.dispose();
+
+        // TODO: review
+        this.decorators = null;
     },
     render: function() {
 
@@ -163,7 +185,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     renderGlobe: function() {
 
-        requestAnimationFrame(this.renderGlobe.bind(this));
+        this.requestedAnimationFrameId = requestAnimationFrame(this.renderGlobe.bind(this));
 
         Application.Debug.stats.begin();
         this.updateGlobe();

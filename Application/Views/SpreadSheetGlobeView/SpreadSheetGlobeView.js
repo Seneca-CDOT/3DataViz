@@ -3,9 +3,9 @@ var Application = Application || {};
 Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
 
     // framework methods
-    initialize: function(obj) {
-        Application.BaseGeometryGlobeView.prototype.initialize.call(this);
-        this._vent = obj._vent;
+    initialize: function(config) {
+        Application.BaseGeometryGlobeView.prototype.initialize.call(this, config);
+        this._vent = config._vent;
         this.countries = [];
         this.intersected; // intersected mesh
         this.moved = false; // for controls and mouse events

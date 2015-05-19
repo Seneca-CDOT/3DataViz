@@ -32,7 +32,7 @@ Application.MainConfigView = Backbone.View.extend({
         this.config = config;
         this.subview;
 
-        this.sourceslist = ['twitter', 'csv', 'spreadsheet', 'trends'];
+        this.sourceslist = ['twitter', 'csv', 'spreadSheet', 'googleTrends'];
         this.dataSourcesList = new Application.DropDownList(config, this.sourceslist);
         this.dataSourcesList.$el.attr('id', 'dataSourcesList');
         this.dataSourcesList.$el.attr('class', 'form-control');
@@ -42,7 +42,7 @@ Application.MainConfigView = Backbone.View.extend({
         this.visualizationList.$el.attr('id', 'visualizationList');
         this.visualizationList.$el.attr('class', 'form-control');
 
-        this.temlist = ['spreadSheet', 'staticTwitter', 'flightPath', 'dynamic', 'googleTrends'];
+        this.temlist = ['static', 'dynamic', 'graph'];
         this.templatesList = new Application.DropDownList(config, this.temlist);
         this.templatesList.$el.attr('id', 'templatesList');
         this.templatesList.$el.attr('class', 'form-control');
@@ -83,10 +83,10 @@ Application.MainConfigView = Backbone.View.extend({
             case 'csv':
                 this.subview = new Application.CSVControlPanel(this.config);
                 break;
-            case 'spreadsheet':
+            case 'spreadSheet':
                 this.subview = new Application.SpreadSheetControlPanel(this.config);
                 break;
-            case 'trends':
+            case 'googleTrends':
                 this.subview = new Application.GoogleTrendsControlPanel(this.config);
                 break;
         }
@@ -111,9 +111,9 @@ Application.ButtonsView = Backbone.View.extend({
     },
     destroy: function() {
 
-        this.$el.empty();
+        this.remove();
+        //this.$el.empty();
     }
-
 });
 
 Application.CSVControlPanel = Application.ButtonsView.extend({

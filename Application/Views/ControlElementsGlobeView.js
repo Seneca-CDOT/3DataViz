@@ -37,8 +37,8 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
 
         // } else {
 
-            this.userInput[this.name] = value;
-// 
+        this.userInput[this.name] = value;
+
         // }
 
     }
@@ -83,9 +83,7 @@ Application.Button = Application.ControlElementsGlobeView.extend({
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
 
-        this._vent.trigger('controlpanel', [this.userInput]);
-
-
+        this._vent.trigger('controlpanel', this.userInput);
     }
 });
 
@@ -98,17 +96,15 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
     },
     events: {},
     render: function() {
+
         this.name = this.$el.attr('id');
 
         var that = this;
-
         this.$el.append("<option value='' selected disabled>Choose a " + this.name + "</option>");
-
         $.each(that.list, function(index, item) {
 
             that.$el.append("<option value='" + item + "'>" + item + "</option>");
         });
-
         return this;
     },
     action: function(e) {
@@ -122,14 +118,9 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
             if (option.selected == true && e.target.value != "") {
 
                 // console.log(e.target.value);
-
                 that.addToConfig(e.target.value);
-
                 that._vent.trigger('controlpanelsubview/' + that.name, [e.target.value]);
-
             }
-
         });
-
     }
 });

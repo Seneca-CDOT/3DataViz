@@ -1,21 +1,23 @@
 var Application = Application || {};
 
 Application.DynamicRootGlobeView = Application.RootGlobeView.extend({
-  initialize: function() {
 
-    Application.RootGlobeView.prototype.initialize.call(this);
-    
-    var obj = {};
-    obj.collection = new Application.Tweets();
-    this.globeView = new Application.DynamicGlobeView(obj);
-    
-    // this.globeView.decorators.push(new Application.GeometryGlobeDecorator());
-    this.globeView.decorators.push(new Application.TextureGlobeDecorator());
-  },
-  render: function(options) {
+    initialize: function(config) {
 
-    Application.RootGlobeView.prototype.render.call(this);
-    return this;
-  }
+        Application.RootGlobeView.prototype.initialize.call(this, config);
+    },
+    render: function(options) {
+
+        Application.RootGlobeView.prototype.render.call(this);
+        return this;
+    },
+
+    createCollection: function(config) {
+
+        return new Application.Tweets();
+    },
+    createGlobeView: function(config) {
+
+        return new Application.DynamicGlobeView(config);
+    }
 });
-

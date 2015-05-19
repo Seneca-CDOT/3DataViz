@@ -13,7 +13,7 @@ Application.DataProcessor.ProcessorModule = (function() {
         var options = {};
         switch (dOptions.dataType) {
 
-            case "tweet":
+            case "twitter":
                 options.parserType = "tweetParser";
                 break;
             case "spreadSheet":
@@ -22,8 +22,8 @@ Application.DataProcessor.ProcessorModule = (function() {
             case "csv":
                 options.parserType = "csvParser";
                 break;
-            case "trends":
-                options.parserType = "GoogleTrendsParser";
+            case "googleTrends":
+                options.parserType = "googleTrendsParser";
                 break;
         }
 

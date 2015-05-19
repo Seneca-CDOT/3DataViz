@@ -26,7 +26,7 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
 
-            dataType: "tweet"
+            dataType: "twitter"
         };
         var pData = pModule.processData(response, options)
         return pData;

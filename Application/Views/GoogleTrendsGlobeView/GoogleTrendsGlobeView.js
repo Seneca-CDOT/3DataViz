@@ -3,16 +3,16 @@ var Application = Application || {};
 Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
 
     // framework methods
-    initialize: function(obj) {
+    initialize: function(config) {
 
-        Application.BaseGeometryGlobeView.prototype.initialize.call(this);
-        this._vent = obj._vent;
+        Application.BaseGeometryGlobeView.prototype.initialize.call(this, config);
+        this._vent = config._vent;
         this.countries = [];
         this.timer; // represents timer for user mouse idle
         this.idle = true; // represents user mouse idle
         this.intersected; // intersected mesh
         this.moved = false; // for controls and mouse events
-        this._vent = obj._event;
+        
         this.sprites = [];
         this.suscribe();
         this.added = []; // list of countries participating and their old colors

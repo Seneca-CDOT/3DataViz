@@ -30,7 +30,7 @@ Application.DataProcessor.ParserFactory = (function() {
             case "csvParser":
                 parserClass = Application.DataProcessor.CSVParser;
                 break;
-            case "GoogleTrendsParser":
+            case "googleTrendsParser":
                 parserClass = Application.DataProcessor.GoogleTrendsParser;
                 break;
         }
@@ -42,7 +42,6 @@ Application.DataProcessor.ParserFactory = (function() {
         createParser: publicMethods.createParser
     };
 })();
-
 
 // strategy
 
@@ -274,6 +273,7 @@ Application.DataProcessor.SpreadSheetParser = (function() {
 
         };
 
+        // TODO: to Dima Yastretsky
         var pData = Application.Filter.extractSpreadSheet(filter, data);
 
         return pData;

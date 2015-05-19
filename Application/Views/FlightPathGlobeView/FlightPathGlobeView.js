@@ -5,9 +5,9 @@ var Application = Application || {};
 
 Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
-    initialize: function() {
+    initialize: function(config) {
 
-        Application.BaseGlobeView.prototype.initialize.call(this);
+        Application.BaseGlobeView.prototype.initialize.call(this, config);
 
         //time factor for animations
         this.t = 0;

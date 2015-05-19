@@ -1,27 +1,28 @@
 var Application = Application || {};
 
 Application.FlightPathRootGlobeView = Application.RootGlobeView.extend({
-  initialize: function() {
 
-    Application.RootGlobeView.prototype.initialize.call(this);
-    
-    // we need 2 collections:
-    // - airports around the world
-    // - routes
-    // as amazing as it may sound, this works
-    var obj = {};
-    obj.collection = [];
-    obj.collection.push(new Application.AirportsCollection());
-    obj.collection.push(new Application.AirportRoutesCollection());
-    this.globeView = new Application.FlightPathGlobeView(obj);
+  initialize: function(config) {
 
-    this.globeView.decorators.push(new Application.GeometryGlobeDecorator());
-    // this.globeView.decorators.push(new Application.TextureGlobeDecorator());
+    Application.RootGlobeView.prototype.initialize.call(this, config);
   },
   render: function(options) {
 
     Application.RootGlobeView.prototype.render.call(this);
     return this;
+  },
+
+  createCollection: function(config) {
+
+      var collection = [];
+      collection.push(new Application.AirportsCollection());
+      collection.push(new Application.AirportRoutesCollection());
+
+      return collection;
+  },
+  createGlobeView: function(config) {
+
+      return new Application.FlightPathGlobeView(config);
   }
 });
 

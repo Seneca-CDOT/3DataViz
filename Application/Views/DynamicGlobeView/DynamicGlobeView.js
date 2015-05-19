@@ -3,9 +3,9 @@ var Application = Application || {};
 Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
-    initialize: function() {
+    initialize: function(config) {
 
-        Application.BaseGlobeView.prototype.initialize.call(this);
+        Application.BaseGlobeView.prototype.initialize.call(this, config);
 
         this.particles = new Application.DataStructures.List();
         this.particlesToRemove = new Application.DataStructures.List();
