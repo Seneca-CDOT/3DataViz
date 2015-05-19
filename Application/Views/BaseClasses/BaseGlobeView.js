@@ -2,6 +2,7 @@ var Application = Application || {};
 
 Application.BaseGlobeView = Backbone.View.extend({
     tagName: "div",
+    id: 'baseGlobe',
     template: _.template($("#globeViewTemplate").html()),
     events: {
 
@@ -174,7 +175,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.controls.update();
 
         if (this.orbitOn === true) {
-             
+
             TWEEN.update();
         }
 
@@ -265,26 +266,26 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
 
         this.tween = new TWEEN.Tween(current)
-        .to({
-            x: destination.x,
-            y: destination.y,
-            z: destination.z
-        }, 1000)
-        .easing(TWEEN.Easing.Sinusoidal.InOut)
-        .onUpdate((function(that) { 
+            .to({
+                x: destination.x,
+                y: destination.y,
+                z: destination.z
+            }, 1000)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .onUpdate((function(that) {
 
-            return function () { 
+                return function() {
 
-                onUpdate(this, that); 
-            };
-        })(this))
-        .onComplete((function(that) { 
+                    onUpdate(this, that);
+                };
+            })(this))
+            .onComplete((function(that) {
 
-            return function () { 
+                return function() {
 
-                onComplete(this, that); 
-            };
-        })(this));
+                    onComplete(this, that);
+                };
+            })(this));
 
         function onUpdate(point, that) {
 

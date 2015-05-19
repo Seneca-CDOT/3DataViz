@@ -5,10 +5,9 @@ Application.SpreadSheetRootGlobeView = Application.RootGlobeView.extend({
 
     Application.RootGlobeView.prototype.initialize.call(this);
     
-    this._vent = _.extend({}, Backbone.Events);
     var obj = {};
-    obj._event = this._vent;
-    obj.collection = new Application.SpreadSheetCollection();
+    obj._vent = this._vent;
+    obj.collection = new Application.SpreadSheetCollection(obj._vent);
     this.globeView = new Application.SpreadSheetGlobeView(obj);
   },
   render: function(options) {

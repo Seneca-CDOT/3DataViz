@@ -6,15 +6,15 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
     initialize: function(obj) {
 
         Application.BaseGeometryGlobeView.prototype.initialize.call(this);
-
+        this._vent = obj._vent;
+        this.countries = [];
+        this.timer; // represents timer for user mouse idle
+        this.idle = true; // represents user mouse idle
+        this.intersected; // intersected mesh
+        this.moved = false; // for controls and mouse events
         this._vent = obj._event;
-        this.controlPanel = new Application.GoogleTrendsControlPanel({
-            event: this._vent
-        });        
-
         this.sprites = [];
         this.suscribe();
-
         this.added = []; // list of countries participating and their old colors
         this.colors = [
 
@@ -33,7 +33,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
     render: function() {
 
         Application.BaseGeometryGlobeView.prototype.render.call(this);
-        this.$el.append(this.controlPanel.render().$el);
+        //this.$el.append(this.controlPanel.render().$el);
         return this;
     },
     suscribe: function() {
@@ -78,9 +78,16 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
             obj.color = countrymesh.material.color.getHex();
 
             that.added.push(obj);
-
             // DANGER! Index can be out of range of the colors array!
             countrymesh.material.color.setHex(that.colors[index]);
         });
+
+    },
+
+    cameraGoTo: function(countrymesh) {
+
+        Application.BaseGeometryGlobeView.prototype.cameraGoTo.call(this, countrymesh);
+
+        this.highlightCountry(countrymesh);
     }
 });

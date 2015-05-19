@@ -13,7 +13,8 @@ Application = {
     //Create Route which handles Views and Models
     init: function() {
 
-        this.router = new this.GlobeRouter();
+        this.rootRouter = new this.RootRouter();
+        this.globeRouter = new this.GlobeRouter();
         Backbone.history.start();
     },
 
@@ -33,12 +34,18 @@ Application = {
         'Helpers/Debug.js',
         'Helpers/DataStructures.js',
 
+        'Routes/RootRouter.js',
         'Routes/GlobeRouter.js',
 
         'Views/GlobeDecorators/BaseGlobeDecorator.js', 
         'Views/GlobeDecorators/GeometryGlobeDecorator.js', 
         'Views/GlobeDecorators/TextureGlobeDecorator.js', 
         
+
+        'Views/ControlPanelGlobeView.js',
+        'Views/ControlElementsGlobeView.js', 
+
+        'Views/BaseClasses/RootView.js',
         'Views/BaseClasses/RootGlobeView.js',
         'Views/BaseClasses/BaseGlobeView.js',
         'Models/BaseClasses/BaseGlobeModel.js', 
@@ -78,9 +85,7 @@ Application = {
             files: [
                 'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',            
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
-                'Views/ControlPanelGlobeView.js',
-                'Views/ControlElementsGlobeView.js',
-                'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'
+                'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
             ]
         },
 
@@ -89,8 +94,6 @@ Application = {
             files: [
                 'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
                 'Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js',
-                'Views/ControlPanelGlobeView.js',
-                'Views/ControlElementsGlobeView.js',
                 'Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'
             ]
         }

@@ -7,108 +7,91 @@ var Application = Application || {};
  */
 Application.GlobeRouter = Backbone.Router.extend({
 
-  routes : {
-    "globeView/spreadSheet" : "initSpreadSheetGlobeView",
-    "globeView/staticTwitter" : "initStaticTwitterGlobeView",
-    "globeView/flightPath" : "initFlightPathGlobeView",
-    "globeView/dynamic" : "initDynamicGlobeView",
-    "globeView/googleTrends" : "initGoogleTrendsGlobeView"
-    // "globeView/spreadsheet/request/:id" : "request",
-    //"globeView/flightPath/:action" : "doSomething",
-    //"globeView/dynamic/:action" : "doSomething",
-  },
+    routes: {
+        "globeView/spreadSheet": "initSpreadSheetGlobeView",
+        "globeView/staticTwitter": "initStaticTwitterGlobeView",
+        "globeView/flightPath": "initFlightPathGlobeView",
+        "globeView/dynamic": "initDynamicGlobeView",
+        "globeView/googleTrends": "initGoogleTrendsGlobeView"
+    },
+    initGoogleTrendsGlobeView: function() {
+        var that = this;
+        require(Application.globeViews.googleTrends.files, function() {
 
-  // initGlobeView: function(views, collection){
+            that.rootGlobeView = new Application.GoogleTrendsRootGlobeView();
+            $("#applicationRegion").prepend(that.rootGlobeView.$el);
+            that.rootGlobeView.render();
 
-  //   this.rootGlobeView = new Application.RootGlobeView(views, collection);
-  //   $("#applicaitonRegion").empty().append(this.rootGlobeView.render().$el[0]);
-  // },
-  initGoogleTrendsGlobeView: function(){
+            //call fetch test
+            // that.rootGlobeView.globeView.collection.fetch({
+            //   success: function(){
+            //     // console.log(Application.router.rootGlobeView.globeView.collection);
+            //   }
+            // });
 
-    var that = this;
-    require(Application.globeViews.googleTrends.files , function(){
+        });
+    },
+    initSpreadSheetGlobeView: function() {
 
-      that.rootGlobeView = new Application.GoogleTrendsRootGlobeView();
-      $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
-      that.rootGlobeView.render();
+        var that = this;
+        require(Application.globeViews.spreadSheet.files, function() {
 
-      //call fetch test
-      // that.rootGlobeView.globeView.collection.fetch({
-      //   success: function(){
-      //     // console.log(Application.router.rootGlobeView.globeView.collection);
-      //   }
-      // });
+            that.rootGlobeView = new Application.SpreadSheetRootGlobeView();
+            $("#applicationRegion").prepend(that.rootGlobeView.$el);
+            that.rootGlobeView.render();
 
-    });
-  },
-  initSpreadSheetGlobeView: function(){
+            //call fetch test
+            // that.rootGlobeView.globeView.collection.fetch({
+            //   success: function(){
+            //     // console.log(Application.router.rootGlobeView.globeView.collection);
+            //   }
+            // });
 
-    var that = this;
-    require(Application.globeViews.spreadSheet.files , function(){
+        });
+    },
+    initStaticTwitterGlobeView: function() {
 
-      that.rootGlobeView = new Application.SpreadSheetRootGlobeView();
-      $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
-      that.rootGlobeView.render();
+        var that = this;
+        require(Application.globeViews.staticTwitter.files, function() {
 
-      //call fetch test
-      // that.rootGlobeView.globeView.collection.fetch({
-      //   success: function(){
-      //     // console.log(Application.router.rootGlobeView.globeView.collection);
-      //   }
-      // });
+            that.rootGlobeView = new Application.StaticTwitterRootGlobeView();
+            $("#applicationRegion").prepend(that.rootGlobeView.$el);
+            that.rootGlobeView.render();
 
-    });
-  },
+            //call fetch test
+            that.rootGlobeView.globeView.collection.fetch({
+                success: function() {
+                    // console.log(Application.router.rootGlobeView.globeView.collection);
+                }
+            });
 
-  initStaticTwitterGlobeView: function(){
+        });
+    },
+    initFlightPathGlobeView: function() {
+        var that = this;
+        require(Application.globeViews.flightPath.files, function() {
+            that.rootGlobeView = new Application.FlightPathRootGlobeView();
+            $("#applicationRegion").prepend(that.rootGlobeView.$el);
+            that.rootGlobeView.render();
+        });
+    },
+    initDynamicGlobeView: function() {
 
-    var that = this;
-    require(Application.globeViews.staticTwitter.files , function(){
+        var that = this;
+        require(Application.globeViews.dynamic.files, function() {
 
-      that.rootGlobeView = new Application.StaticTwitterRootGlobeView();
-      $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
-      that.rootGlobeView.render();
+            that.rootGlobeView = new Application.DynamicRootGlobeView();
+            $("#applicationRegion").prepend(that.rootGlobeView.$el);
+            that.rootGlobeView.render();
 
-      //call fetch test
-      that.rootGlobeView.globeView.collection.fetch({
-        success: function(){
-          // console.log(Application.router.rootGlobeView.globeView.collection);
-        }
-      });
+            //call fetch test
+            that.rootGlobeView.globeView.collection.fetch({
+                success: function() {
+                    // console.log(Application.router.rootGlobeView.globeView.collection);
+                }
+            });
 
-    });
-  },
-
-  initFlightPathGlobeView: function(){
-    var that = this;
-    require(Application.globeViews.flightPath.files , function(){
-      that.rootGlobeView = new Application.FlightPathRootGlobeView();
-      $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
-      that.rootGlobeView.render();
-    });
-  },
-
-  initDynamicGlobeView: function(){
-
-    var that = this;
-    require(Application.globeViews.dynamic.files , function(){
-
-      that.rootGlobeView = new Application.DynamicRootGlobeView();
-      $("#applicaitonRegion").empty().append(that.rootGlobeView.$el);
-      that.rootGlobeView.render();
-
-      //call fetch test
-      that.rootGlobeView.globeView.collection.fetch({
-        success: function(){
-          // console.log(Application.router.rootGlobeView.globeView.collection);
-        }
-      });
-
-    });
-  },
-  request: function (id) { 
-
-      Application.router.rootGlobeView.globeView.collection.trigger("grab", id );
-  }
+        });
+    }
 
 });

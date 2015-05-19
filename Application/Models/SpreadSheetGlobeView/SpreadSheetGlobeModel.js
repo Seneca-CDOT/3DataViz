@@ -5,8 +5,9 @@ Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
     defaults: _.extend({}, Application.GeoDataRecord.prototype.defaults, {
 
     }),
-    initialize: function() {
+    initialize: function(_vent) {
         Application.GeoDataRecord.prototype.initialize.call(this);
+        this._vent = _vent;
     }
 
 });

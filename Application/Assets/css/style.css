@@ -4,12 +4,10 @@ body {
     margin: 0px;
     background: #000;
 }
-#applicaitonRegion{
+
+#applicationRegion {
     text-align: center;
 }
-/*canvas {
-    position: absolute;
-}*/
 
 #main {
     width: 100%;
@@ -17,15 +15,13 @@ body {
     position: absolute;
 }
 
-#rightcolumn {
+#panel {
     background-color: #1F1F2E;
-    /*opacity: 0.2;*/
     top: 0px;
     position: absolute;
     width: 15%;
     right: 0px;
     height: 100%;
-    /*z-index: 9999;*/
 }
 
 #leftcolumn {
@@ -39,26 +35,39 @@ body {
     top: 20%;
 }
 
-#search, #url {
-    position: absolute;
-    width: 80%;
-    left: 10%;
-    top: 200px;
+#buttons {
+    width: 100%;
 }
 
-
-#tweets, #submit {
-    position: absolute;
-    width: 80%;
-    left: 10%;
-    top: 250px;
-}
-
+#tweets,
+#submit,
 #reset {
-    position: absolute;
+
     width: 80%;
-    left: 10%;
-    top: 290px;
+    margin-top: 20%;
+    /*margin-left: 10%;*/
+}
+
+#search,
+#url,
+#keyword,
+#userInput {
+
+      width: 80%;
+    margin-top: 20%;
+    margin-left: 10%;
+}
+}
+
+#configList {
+    width: 100%;
+    top: 10%;
+}
+
+#datasourcesList, #templatesList, #visualizationList {
+    width: 80%;
+    margin-top: 20%;
+    margin-left: 10%;
 }
 
 .country {
@@ -70,16 +79,19 @@ body {
     opacity: 0.7;
     top: 30%;
 }
-.menu{
+
+.menu {
     margin-top: 20px;
 }
-.menu li{
+
+.menu li {
     display: inline-block;
     background: #333;
     padding: 10px 20px;
     margin-bottom: 10px;
     border-radius: 6px;
 }
-.menu li a{
+
+.menu li a {
     color: #fff;
 }
