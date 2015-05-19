@@ -6,6 +6,10 @@ Application.BaseGeometryGlobeView = Application.BaseGlobeView.extend({
     initialize: function() {
 
         Application.BaseGlobeView.prototype.initialize.call(this);
+
+        // intersected mesh
+        this.intersected = null; 
+        this.countries = [];
     },
     render: function() {
 
@@ -56,11 +60,11 @@ Application.BaseGeometryGlobeView = Application.BaseGlobeView.extend({
 
             mesh.userData.name = countryName;
             mesh.userData.code = data[countryName].code;
-            mesh.userData.used = false;
-            mesh.userData.countrycolor = countryColor;
 
+            // TODO: review
             this.globe.add(mesh);
             this.rayCatchers.push(mesh);
+            this.countries.push(mesh);
         }
     },
 
@@ -75,6 +79,50 @@ Application.BaseGeometryGlobeView = Application.BaseGlobeView.extend({
 
     },
     didLoadGeometry: function() {
-        
-    }
+
+    },
+
+    // country selection functionality
+    findCountryMeshByName: function(name) {
+
+        for (var i = 0; i < this.countries.length; i++) {
+
+            if (this.countries[i].userData.name.toLowerCase() == name.toLowerCase()) {
+
+                return this.countries[i];
+            }
+        }
+    },
+    findCountryMeshByCode: function(code) {
+
+        for (var i = 0; i < this.countries.length; i++) {
+
+            if (this.countries[i].userData.code.toLowerCase() == code.toLowerCase()) {
+
+                return this.countries[i];
+            }
+        }
+    },
+    highlightCountry: function(object) {
+
+        if (this.intersected != object) {
+
+            // for countries shapes
+            if (this.intersected) {
+
+                this.intersected.material.color.setHex(this.intersected.currentColor); 
+            }
+            this.intersected = object;
+            this.intersected.currentColor = this.intersected.material.color.getHex();
+            this.intersected.material.color.setHex(0x0000FF);
+        }
+    },
+
+    // interaction
+    cameraGoTo: function(countrymesh) {
+
+        Application.BaseGlobeView.prototype.cameraGoTo.call(this, countrymesh);
+
+        this.highlightCountry(countrymesh);
+    }   
 });

@@ -120,6 +120,23 @@ Application.DataStructures.List = (function() {
     }
   };
 
+  // TODO:
+  List.prototype.removeNode = function(node) {
+
+    var next = node.getNext();
+    var previous = node.getPrevious();
+
+    node.setData(null);
+    node.setNext(null);
+    node.setPrevious(null);
+
+    next.setPrevious(previous);
+    previous.setNext(next);
+
+    --this._length;
+    return next;
+  };
+
   var privateMethods = Object.create(List.prototype);
   privateMethods.insertNode = function(node, data) {
 
@@ -136,21 +153,21 @@ Application.DataStructures.List = (function() {
     ++this._length;
   };
 
-  privateMethods.removeNode = function(node) {
+  // privateMethods.removeNode = function(node) {
 
-    var next = node.getNext();
-    var previous = node.getPrevious();
+  //   var next = node.getNext();
+  //   var previous = node.getPrevious();
 
-    node.setData(null);
-    node.setNext(null);
-    node.setPrevious(null);
+  //   node.setData(null);
+  //   node.setNext(null);
+  //   node.setPrevious(null);
 
-    next.setPrevious(previous);
-    previous.setNext(next);
+  //   next.setPrevious(previous);
+  //   previous.setNext(next);
 
-    --this._length;
-    return next;
-  };
+  //   --this._length;
+  //   return next;
+  // };
 
   return List;
 })();

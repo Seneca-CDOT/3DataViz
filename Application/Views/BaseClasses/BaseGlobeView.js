@@ -20,7 +20,14 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.moved = false;
         this.orbitOn = false;
 
+        this.idle = true;
+        this.timer = null; 
+
         this.globeRadius = 50;
+    },
+    destroy: function() {
+
+        this.collection.reset();
     },
     render: function() {
 
@@ -43,6 +50,21 @@ Application.BaseGlobeView = Backbone.View.extend({
 
             this.moved = true;
         }
+
+        // TODO: fix issue with particles then uncomment
+        // function setTimer() {
+
+        //     this.idle = false;
+
+        //     clearTimeout(this.timer);
+
+        //     var that = this;
+        //     this.timer = setTimeout(function() {
+
+        //         that.idle = true
+        //     }, 5000);
+        // };
+        // setTimer.call(this);
     },
     showGlobe: function() {
 
@@ -127,7 +149,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         dirLight.position.set(-100, 100, 100);
         dirLight.target = this.globe;
 
-        // scene.add(ambLight);
+        // this.scene.add(ambLight);
         this.camera.add(dirLight);
     },
     renderGlobe: function() {
@@ -147,6 +169,12 @@ Application.BaseGlobeView = Backbone.View.extend({
 
             TWEEN.update();
         }
+
+        // TODO: fix issue with particles then uncomment
+        // if (this.idle === true) {
+
+        //     this.globe.rotation.y -= 0.0003;
+        // }
     },
     addControls: function() {
 
@@ -237,14 +265,14 @@ Application.BaseGlobeView = Backbone.View.extend({
                 y: point.y,
                 z: point.z
             });
-        }
+        };
 
         function onComplete(point, that) {
 
             that.orbitOn = false;
             // document.addEventListener('mouseup', onMouseUp, false);
             // this.controls.addMouse();
-        }
+        };
 
         this.orbitOn = true;
         this.tween.start();
