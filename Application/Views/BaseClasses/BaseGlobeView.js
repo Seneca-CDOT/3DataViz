@@ -93,25 +93,12 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         for(var i = 0; i < this.decorators.length; ++i) {
 
-            this.decorators[i].decorate(this);
+            this.decorators[i].decorateGlobe(this);
         }
     },
-    decorateFunctionality: function(action, countryMesh) {
-
-        for(var i = 0; i < this.decorators.length; ++i) {
-
-            var act = this.decorators[i][action];
-            if (typeof act == 'function') {
-
-                act(this, countryMesh);
-            }
-        }
-    },
-
     startDataSynchronization: function() {
 
     },
-    
 
     addSceneAndRenderer: function() {
 
@@ -131,11 +118,6 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.container.style.position = "absolute";
         this.container.style.width = this.options.size.width;
         this.container.style.left = this.options.origin.x;
-
-        // TODO: move out of this view  
-        //          $(document.body).append('<form><input type="text" id="country" ' + 'style="position:absolute;top:50px;right:50px;font-size:30px;opacity:0.7;"></form>');
-        //          $(document.body).append('<button type="button" id="tweets" style="position:absolute;bottom:100px;right:50px;width: 200px;height: 50px">Tweets</button>');
-        //          $(document.body).append('<button type="button" id="reset" style="position:absolute;bottom:50px;right:50px;width: 200px;height: 50px">Reset</button>');
     },
     addCamera: function() {
 
@@ -238,25 +220,44 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         if (intersects.length > 0) {
 
-            var closestMesh = intersects[0].object;
-            if (closestMesh !== this.globe) {
-                
-                this.cameraGoTo(closestMesh);
-                // TODO: review
-                this.decorateFunctionality('cameraGoTo', closestMesh)
-            }
+            var closestIntersect = intersects[0];
+            this.clickOnIntersect(closestIntersect);
         }
     },
-    cameraGoTo: function(mesh) {
+    clickOnIntersect: function(intersect) {
 
-        // document.removeEventListener('mouseup', onMouseUp, false);
-        // this.controls.removeMouse();
-        
-        this.moved = true;
+        var destination = null;
+        var mesh = intersect.object;
+        if (mesh !== this.globe) {
+            
+            // TODO: review
+            for(var i = 0; i < this.decorators.length; ++i) {
+
+                this.decorators[i].clickOnIntersect(this, intersect);
+            }
+
+            destination = mesh.geometry.boundingSphere.center.clone();
+        } else {
+
+            destination = intersect.point;    
+        }
+
+        if (destination) {
+
+            destination.setLength(this.controls.getRadius());
+            this.cameraGoTo(destination);
+        }
+    },
+    cameraGoTo: function(destination) {
+
+        // TODO: review
+        for(var i = 0; i < this.decorators.length; ++i) {
+
+            this.decorators[i].cameraGoTo(this, destination);
+        }
 
         var current = this.controls.getPosition();
-        var destination = mesh.geometry.boundingSphere.center.clone();
-        destination.setLength(this.controls.getRadius());
+        this.moved = true;
 
         if (this.orbitOn == true) {
 

@@ -23,13 +23,13 @@ Application.TextureGlobeDecorator = (function(){
 	Application.Helper.inherit(TextureGlobeDecorator, Application.BaseGlobeDecorator);
 
 	 // properties
-    TextureGlobeDecorator.prototype.decorate = function(globeView) {
+    TextureGlobeDecorator.prototype.decorateGlobe = function(globeView) {
 
         privateMethods.loadTexture.call(this, globeView);
     };
 
     // functionality
-    TextureGlobeDecorator.prototype.cameraGoTo = function(globeView, countryMesh) {
+    TextureGlobeDecorator.prototype.clickOnIntersect = function(globeView, intersect) {
 
     	// var point = intersects[0].point;
         // point.setLength(radius);

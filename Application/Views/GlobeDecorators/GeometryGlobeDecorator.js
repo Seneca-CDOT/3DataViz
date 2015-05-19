@@ -11,15 +11,16 @@ Application.GeometryGlobeDecorator = (function() {
     Application.Helper.inherit(GeometryGlobeDecorator, Application.BaseGlobeDecorator);
 
     // properties
-    GeometryGlobeDecorator.prototype.decorate = function(globeView) {
+    GeometryGlobeDecorator.prototype.decorateGlobe = function(globeView) {
 
         privateMethods.loadGeometry.call(this, globeView);
     };
 
     // functionality
-    GeometryGlobeDecorator.prototype.cameraGoTo = function(globeView, countryMesh) {
+    GeometryGlobeDecorator.prototype.clickOnIntersect = function(globeView, intersect) {
 
-        privateMethods.highlightCountry.call(this, countryMesh);
+        var mesh = intersect.object;
+        privateMethods.highlightCountry.call(this, mesh);
     };
 
     var privateMethods = Object.create(GeometryGlobeDecorator.prototype);
@@ -27,7 +28,6 @@ Application.GeometryGlobeDecorator = (function() {
     privateMethods.loadGeometry = function(globeView) { 
 
         var that = this;
-        // that.willLoadGeometry();
         $.ajax({
             type: 'GET',
             url: 'Models/geodata.json',
@@ -39,13 +39,12 @@ Application.GeometryGlobeDecorator = (function() {
             },
             success: function(data) {
 
-                privateMethods.addGeometry.call(that, data, globeView);
-                // that.didLoadGeometry();
+                privateMethods.addGeometry.call(that, globeView, data);
             }
         });
     };
-    
-    privateMethods.addGeometry = function(data, globeView) {
+
+    privateMethods.addGeometry = function(globeView, data) {
 
         var green = 1;
         for (var countryName in data) {
@@ -77,12 +76,6 @@ Application.GeometryGlobeDecorator = (function() {
             this.countries.push(mesh);
         }
     };
-
-    // privateMethods.willLoadGeometry = function() {
-    // };
-
-    // privateMethods..didLoadGeometry = function() {
-    // };
 
     // country selection functionality
     privateMethods.findCountryMeshByName = function(name) {

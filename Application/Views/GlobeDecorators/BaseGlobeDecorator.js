@@ -6,14 +6,15 @@ Application.BaseGlobeDecorator = (function(){
 	};
 
 	// properties
-    BaseGlobeDecorator.prototype.decorate = function(globeView) {
-
-          throw 'Abstract interface is not implemented';
+    BaseGlobeDecorator.prototype.decorateGlobe = function(globeView) {
     };
 
-    // TODO:
     // functionality
-    // BaseGlobeDecorator.prototype. ... =
+    BaseGlobeDecorator.prototype.clickOnIntersect = function(globeView, intersect) {
+    };
+
+    BaseGlobeDecorator.prototype.cameraGoTo = function(globeView, destination) {
+    };
 
     // var privateMethods = Object.create(BaseGlobeDecorator.prototype);
     // privateMethods.privateMethod = ...
