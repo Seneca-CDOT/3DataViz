@@ -10,9 +10,10 @@ Application.RootView = Backbone.View.extend({
 
     initialize: function() {
         this._vent = _.extend({}, Backbone.Events);
-        this.controlPanel = new Application.ControlPanelRootView({
+        var config = {
             event: this._vent
-        });
+        }
+        this.controlPanel = new Application.ControlPanelRootView(config);
 
         /* Example */
         this._vent.on('controlpanel', function(data) {

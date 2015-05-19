@@ -82,7 +82,6 @@ Application = {
                 'Views/BaseClasses/BaseGeometryGlobeView.js', 
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
                 'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
-                'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'
             ]
         },
 
