@@ -1,6 +1,6 @@
 Application.ControlElementsGlobeView = Backbone.View.extend({
     initialize: function(config) {
-        this._vent = config.event;
+        //this._vent = config.event;
         this.name = '';
         this.userInput = config.userInput;
 
@@ -83,7 +83,7 @@ Application.Button = Application.ControlElementsGlobeView.extend({
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
 
-        this._vent.trigger('controlpanel', this.userInput);
+        Application._vent.trigger('controlpanel', this.userInput);
     }
 });
 
@@ -119,7 +119,7 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
 
                 // console.log(e.target.value);
                 that.addToConfig(e.target.value);
-                that._vent.trigger('controlpanelsubview/' + that.name, [e.target.value]);
+                Application._vent.trigger('controlpanelsubview/' + that.name, [e.target.value]);
             }
         });
     }

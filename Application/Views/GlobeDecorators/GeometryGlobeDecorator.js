@@ -5,8 +5,24 @@ Application.GeometryGlobeDecorator = (function() {
     function GeometryGlobeDecorator() {
 
         // TODO: privatize
-        this.intersected = null; 
+        this.intersected = null;
         this.countries = [];
+        this.results;
+        this.colors = [
+
+            '0xFF0000',
+            '0xFF1919',
+            '0xFF3333',
+            '0xFF4D4D',
+            '0xFF6666',
+            '0xFF8080',
+            '0xFF9999',
+            '0xFFB2B2',
+            '0xFFCCCC',
+            '0xFFE6E6'
+        ];
+        this.added = []; // list of countries participating and their old colors
+        Application._vent.on('trends/parsed', privateMethods.getResults.bind(this));
     };
     Application.Helper.inherit(GeometryGlobeDecorator, Application.BaseGlobeDecorator);
 
@@ -24,15 +40,15 @@ Application.GeometryGlobeDecorator = (function() {
     };
 
     var privateMethods = Object.create(GeometryGlobeDecorator.prototype);
-     // visualization specific functionality
-    privateMethods.loadGeometry = function(globeView) { 
+    // visualization specific functionality
+    privateMethods.loadGeometry = function(globeView) {
 
         var that = this;
         $.ajax({
             type: 'GET',
             url: 'Models/geodata.json',
             dataType: 'json',
-            cache: false, 
+            cache: false,
             error: function() {
 
                 console.log('An error occurred while processing a countries file.');
@@ -75,6 +91,41 @@ Application.GeometryGlobeDecorator = (function() {
 
             this.countries.push(mesh);
         }
+
+        privateMethods.showCountriesFromResults.call(this);
+
+    };
+
+    privateMethods.showCountriesFromResults = function() {
+
+        var that = this;
+
+        this.countries;
+
+        this.results.forEach(function(item, index) {
+
+            var countrymesh = privateMethods.findCountryMeshByCode.call(that, item.countrycode);
+
+            if (!countrymesh)
+                return;
+
+            console.log(countrymesh.userData.name);
+
+            var obj = {};
+            obj.mesh = countrymesh;
+            obj.color = countrymesh.material.color.getHex();
+
+             that.added.push(obj);
+            // DANGER! Index can be out of range of the colors array!
+            countrymesh.material.color.setHex(that.colors[index]);
+        });
+
+    };
+
+    privateMethods.getResults = function(array) {
+
+        this.results = array;
+
     };
 
     // country selection functionality
@@ -110,7 +161,7 @@ Application.GeometryGlobeDecorator = (function() {
             // for countries shapes
             if (intersected) {
 
-                intersected.material.color.setHex(intersected.currentColor); 
+                intersected.material.color.setHex(intersected.currentColor);
             }
 
             this.intersected = object;
@@ -123,4 +174,3 @@ Application.GeometryGlobeDecorator = (function() {
 
     return GeometryGlobeDecorator;
 })();
-   

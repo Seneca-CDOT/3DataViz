@@ -1,8 +1,7 @@
 Application.ControlPanelRootView = Backbone.View.extend({
     tagName: 'div',
     id: 'panel',
-    initialize: function(config) {
-        this._vent = config.event;
+    initialize: function() {
         
         var userInput = {
             dataSourcesList: '',
@@ -11,6 +10,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
             userInput: ''
 
         };
+        var config = {};
         config.userInput = userInput; //configuration object for storing user's activities in control panel
         
         this.userInput = config.userInput;
@@ -28,7 +28,6 @@ Application.MainConfigView = Backbone.View.extend({
     id: 'configList',
     initialize: function(config) {
 
-        this._vent = config.event;
         this.config = config;
         this.subview;
 
@@ -47,7 +46,7 @@ Application.MainConfigView = Backbone.View.extend({
         this.templatesList.$el.attr('id', 'templatesList');
         this.templatesList.$el.attr('class', 'form-control');
 
-        this._vent.on('controlpanelsubview/dataSourcesList', this.addSubView.bind(this));
+        Application._vent.on('controlpanelsubview/dataSourcesList', this.addSubView.bind(this));
 
     },
     render: function() {
@@ -101,7 +100,6 @@ Application.ButtonsView = Backbone.View.extend({
     id: 'buttons',
     initialize: function(config) {
 
-        this._vent = config.event;
         this.userInput = config.userInput;
 
     },
@@ -217,13 +215,13 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
 
         var key = this.parseKey(this.urlfield.$el.val());
 
-        this._vent.trigger('controlpanel/submit', key);
+        Application._vent.trigger('controlpanel/submit', key);
 
     },
     resetAction: function() {
 
         this.urlfield.$el.val('');
-        this._vent.trigger('controlpanel/reset');
+        Application._vent.trigger('controlpanel/reset');
 
     },
     parseKey: function(url) {
@@ -307,13 +305,13 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
 
         var key = this.parseKey(this.keywordfield.$el.val());
 
-        this._vent.trigger('controlpanel/submit', key);
+        Application._vent.trigger('controlpanel/submit', key);
 
     },
     resetAction: function() {
 
         this.keywordfield.$el.val('');
-        this._vent.trigger('controlpanel/reset');
+        Application._vent.trigger('controlpanel/reset');
 
     },
     parseKey: function(keyword) {

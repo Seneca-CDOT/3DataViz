@@ -13,11 +13,11 @@ Application.GoogleTrendsRecord = Application.BaseDataRecord.extend({
 
 Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
     model: Application.GoogleTrendsRecord,
-    initialize: function(_vent) {
+    initialize: function(config) {
         Application.BaseGlobeCollection.prototype.initialize.call(this);
 
-        this._vent = _vent;
         this.response; // response from google trends
+        this.url; // request by this url to google trends
         var that = this;
 
         window.google = {
@@ -32,7 +32,10 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
                     }
                 }
             }
-            // this._vent.on('trends/changed', this.parse.bind(this));
+
+            this.setURL(config.userInput);
+            this.request();
+
     },
     parse: function(response) {
 
@@ -42,9 +45,8 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
             dataType: "googleTrends"
         };
         var pData = pModule.processData(response.table.rows, options)
-            // return pData;
 
-        this._vent.trigger('trends/parsed', pData);
+        Application._vent.trigger('trends/parsed', pData);
     },
     setURL: function(key) {
 

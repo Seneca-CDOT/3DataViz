@@ -5,7 +5,7 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
     // framework methods
     initialize: function(config) {
         Application.BaseGeometryGlobeView.prototype.initialize.call(this, config);
-        this._vent = config._vent;
+       // this._vent = config._vent;
         this.countries = [];
         this.intersected; // intersected mesh
         this.moved = false; // for controls and mouse events
@@ -23,8 +23,8 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
     },
     suscribe: function() {
 
-        this._vent.on('click/submit', this.submit.bind(this));
-        this._vent.on('click/reset', this.resetGlobe.bind(this));
+        Application._vent.on('click/submit', this.submit.bind(this));
+        Application._vent.on('click/reset', this.resetGlobe.bind(this));
     },
     submit: function(key) {
 
