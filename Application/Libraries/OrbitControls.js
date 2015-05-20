@@ -321,8 +321,10 @@ THREE.OrbitControls = function(object, domElement) {
             rotateEnd.set(event.clientX, event.clientY);
             rotateDelta.subVectors(rotateEnd, rotateStart);
 
-            momentumLeft = event.webkitMovementX;
-            momentumUp = event.webkitMovementY;
+            // momentumLeft = event.webkitMovementX;
+            // momentumUp = event.webkitMovementY;
+            momentumLeft = event.webkitMovementX || event.mozMovementX || 0;
+            momentumUp = event.webkitMovementY || event.mozMovementY || 0;
             // momentumLeft += 2 * Math.PI * rotateDelta.x / PIXELS_PER_ROUND * scope.userRotateSpeed;
             // momentumUp   += 2 * Math.PI * rotateDelta.y / PIXELS_PER_ROUND * scope.userRotateSpeed;
 
