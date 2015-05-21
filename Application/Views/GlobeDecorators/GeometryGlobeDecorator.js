@@ -37,6 +37,26 @@ Application.GeometryGlobeDecorator = (function() {
     };
 
     // functionality
+    GeometryGlobeDecorator.prototype.destroy = function(globeView) {
+
+        for (var i = 0; i < this.countries.length; ++i) {
+
+            if (globeView.globe !== this.countries[i]) {
+
+                globeView.globe.remove(this.countries[i]);
+
+                this.countries[i].material.dispose();
+                this.countries[i].geometry.dispose();
+            }
+        }
+        this.countries = null;
+
+        this.colors = null;
+        this.added = null;
+
+        Application.BaseGlobeDecorator.prototype.destroy.call(this, globeView);
+    };
+
     GeometryGlobeDecorator.prototype.clickOnIntersect = function(globeView, intersect) {
 
         var mesh = intersect.object;
