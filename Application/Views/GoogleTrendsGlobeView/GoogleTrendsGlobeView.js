@@ -13,7 +13,8 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
         this.moved = false; // for controls and mouse events
         this.sprites = [];
         this.suscribe();
-        
+
+        this.collection.fetch();
         
     },
     render: function() {
@@ -25,6 +26,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
 
         Application._vent.on('click/submit', this.submit.bind(this));
         Application._vent.on('click/reset', this.resetGlobe.bind(this));
+        Application._vent.on('data/parsed', this.notifyDecorator.bind(this));
         
     },
     submit: function(key) {
@@ -49,5 +51,11 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     cameraGoTo: function(countrymesh) {
 
         Application.BaseGlobeView.prototype.cameraGoTo.call(this, countrymesh);
+    },
+    notifyDecorator: function(data) {
+
+    Application._vent.trigger('data/ready', data);
+
     }
+
 });

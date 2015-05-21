@@ -22,7 +22,7 @@ Application.GeometryGlobeDecorator = (function() {
             '0xFFE6E6'
         ];
         this.added = []; // list of countries participating and their old colors
-        Application._vent.on('trends/parsed', privateMethods.getResults.bind(this));
+        Application._vent.on('data/ready', privateMethods.getResults.bind(this));
     };
     Application.Helper.inherit(GeometryGlobeDecorator, Application.BaseGlobeDecorator);
 
