@@ -95,8 +95,6 @@ Application.GeometryGlobeDecorator = (function() {
 
             this.countries.push(mesh);
         }
-
-        privateMethods.showCountries.call(this);
     };
 
     // country selection functionality
