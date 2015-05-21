@@ -7,7 +7,7 @@ Application.GeometryGlobeDecorator = (function() {
         // TODO: privatize
         this.intersected = null;
         this.countries = [];
-        this.results = [];
+        
         this.colors = [
 
             '0xFF0000',
@@ -21,8 +21,10 @@ Application.GeometryGlobeDecorator = (function() {
             '0xFFCCCC',
             '0xFFE6E6'
         ];
-        this.added = []; // list of countries participating and their old colors
-        Application._vent.on('trends/parsed', privateMethods.getResults.bind(this));
+
+        // list of countries participating and their old colors
+        this.added = [];
+        Application._vent.on('trends/parsed', privateMethods.showCountries.bind(this));
     };
     Application.Helper.inherit(GeometryGlobeDecorator, Application.BaseGlobeDecorator);
 
@@ -92,17 +94,18 @@ Application.GeometryGlobeDecorator = (function() {
             this.countries.push(mesh);
         }
 
-        privateMethods.showCountriesFromResults.call(this);
+        privateMethods.showCountries.call(this);
 
     };
 
-    privateMethods.showCountriesFromResults = function() {
+    privateMethods.showCountries = function(countryCodes) {
 
-        if (this.results.length == 0) return;
+        if (countryCodes.length == 0) 
+            return;
 
         var that = this;
 
-        this.results.forEach(function(item, index) {
+        countryCodes.forEach(function(item, index) {
 
             var countrymesh = privateMethods.findCountryMeshByCode.call(that, item.countrycode);
 
@@ -115,16 +118,14 @@ Application.GeometryGlobeDecorator = (function() {
             obj.mesh = countrymesh;
             obj.color = countrymesh.material.color.getHex();
 
-             that.added.push(obj);
-            // DANGER! Index can be out of range of the colors array!
-            countrymesh.material.color.setHex(that.colors[index]);
+            that.added.push(obj);
+            
+            if (colors.length) {
+
+                var color = that.colors[index%colors.length]
+                countrymesh.material.color.setHex(color);
+            }
         });
-
-    };
-
-    privateMethods.getResults = function(array) {
-
-        this.results = array;
 
     };
 

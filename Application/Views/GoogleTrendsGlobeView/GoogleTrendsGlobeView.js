@@ -43,11 +43,5 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
 
             country.mesh.material.color.setHex(country.color);
         });
-    },
-
-    // visualization specific functionality
-    cameraGoTo: function(countrymesh) {
-
-        Application.BaseGlobeView.prototype.cameraGoTo.call(this, countrymesh);
     }
 });
