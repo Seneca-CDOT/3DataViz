@@ -95,6 +95,7 @@ Application.GeometryGlobeDecorator = (function() {
 
             this.countries.push(mesh);
         }
+
         privateMethods.showCountries.call(this);
     };
 
@@ -144,6 +145,9 @@ Application.GeometryGlobeDecorator = (function() {
 
     // TODO: to Dmitry Yastertsky
     privateMethods.showCountries = function(countryCodes) {
+
+        if (this.results.length == 0) 
+            return;
 
         var that = this;
         countryCodes.forEach(function(item, index) {

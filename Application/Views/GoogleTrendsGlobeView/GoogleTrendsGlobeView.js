@@ -11,14 +11,12 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
         this.idle = true; // represents user mouse idle
         this.intersected; // intersected mesh
         this.moved = false; // for controls and mouse events
-        
         this.sprites = [];
         this.suscribe();
     },
     render: function() {
 
         Application.BaseGlobeView.prototype.render.call(this);
-        //this.$el.append(this.controlPanel.render().$el);
         return this;
     },
     suscribe: function() {
