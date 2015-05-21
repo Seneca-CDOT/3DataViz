@@ -10,16 +10,10 @@ Application.RootView = Backbone.View.extend({
     tagName: "div",
     initialize: function() {
 
-        this._vent = _.extend({}, Backbone.Events);
-        var config = {
-            event: this._vent
-        };
-
-        // this.globeRouter = new Application.GlobeRouter();
-        this.controlPanel = new Application.ControlPanelRootView(config);
+        this.controlPanel = new Application.ControlPanelRootView();
         this.rootGlobeView = null;
 
-        this._vent.on('controlpanel', this.submitOn.bind(this));
+        Application._vent.on('controlpanel', this.submitOn.bind(this));
     },
     render: function() {
 

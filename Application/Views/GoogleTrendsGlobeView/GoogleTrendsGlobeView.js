@@ -1,12 +1,11 @@
 var Application = Application || {};
 
-Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
+Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
     initialize: function(config) {
 
-        Application.BaseGeometryGlobeView.prototype.initialize.call(this, config);
-        this._vent = config._vent;
+        Application.BaseGlobeView.prototype.initialize.call(this, config);
         this.countries = [];
         this.timer; // represents timer for user mouse idle
         this.idle = true; // represents user mouse idle
@@ -15,32 +14,20 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
         
         this.sprites = [];
         this.suscribe();
-        this.added = []; // list of countries participating and their old colors
-        this.colors = [
-
-            '0xFF0000',
-            '0xFF1919',
-            '0xFF3333',
-            '0xFF4D4D',
-            '0xFF6666',
-            '0xFF8080',
-            '0xFF9999',
-            '0xFFB2B2',
-            '0xFFCCCC',
-            '0xFFE6E6'
-        ];
+        
+        
     },
     render: function() {
 
-        Application.BaseGeometryGlobeView.prototype.render.call(this);
+        Application.BaseGlobeView.prototype.render.call(this);
         //this.$el.append(this.controlPanel.render().$el);
         return this;
     },
     suscribe: function() {
 
-        this._vent.on('click/submit', this.submit.bind(this));
-        this._vent.on('click/reset', this.resetGlobe.bind(this));
-        this._vent.on('trends/parsed', this.showCountries.bind(this));
+        Application._vent.on('click/submit', this.submit.bind(this));
+        Application._vent.on('click/reset', this.resetGlobe.bind(this));
+        
     },
     submit: function(key) {
 
@@ -61,32 +48,9 @@ Application.GoogleTrendsGlobeView = Application.BaseGeometryGlobeView.extend({
     },
 
     // visualization specific functionality
-    showCountries: function(array) {
-
-        var that = this;
-        array.forEach(function(item, index) {
-
-            var countrymesh = that.findCountryMeshByCode(item.countrycode);
-
-            if (!countrymesh)
-                return;
-
-            console.log(countrymesh.userData.name);
-
-            var obj = {};
-            obj.mesh = countrymesh;
-            obj.color = countrymesh.material.color.getHex();
-
-            that.added.push(obj);
-            // DANGER! Index can be out of range of the colors array!
-            countrymesh.material.color.setHex(that.colors[index]);
-        });
-
-    },
-
     cameraGoTo: function(countrymesh) {
 
-        Application.BaseGeometryGlobeView.prototype.cameraGoTo.call(this, countrymesh);
+        Application.BaseGlobeView.prototype.cameraGoTo.call(this, countrymesh);
 
         this.highlightCountry(countrymesh);
     }

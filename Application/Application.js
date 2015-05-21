@@ -19,6 +19,7 @@ Application = {
 
     //Files which need to be imported for GlobeVisualization
     files: [
+        'Events/events.js',
         'Libraries/OrbitControls.js',
         'Libraries/stats.js',
         'Libraries/tween.min.js',
@@ -36,18 +37,18 @@ Application = {
         'Routes/RootRouter.js',
         'Routes/GlobeRouter.js',
 
-        'Views/GlobeDecorators/BaseGlobeDecorator.js', 
-        'Views/GlobeDecorators/GeometryGlobeDecorator.js', 
-        'Views/GlobeDecorators/TextureGlobeDecorator.js', 
-        
+        'Views/GlobeDecorators/BaseGlobeDecorator.js',
+        'Views/GlobeDecorators/GeometryGlobeDecorator.js',
+        'Views/GlobeDecorators/TextureGlobeDecorator.js',
+
 
         'Views/ControlPanelGlobeView.js',
-        'Views/ControlElementsGlobeView.js', 
+        'Views/ControlElementsGlobeView.js',
 
         'Views/BaseClasses/RootView.js',
         'Views/BaseClasses/RootGlobeView.js',
         'Views/BaseClasses/BaseGlobeView.js',
-        'Models/BaseClasses/BaseGlobeModel.js', 
+        'Models/BaseClasses/BaseGlobeModel.js',
 
         'DataProcessor/DataProcessor.js',
         'DataProcessor/ParserFactory.js',
@@ -82,7 +83,7 @@ Application = {
         //configuration for SpreadSheetGlobeView
         spreadSheet: {
             files: [
-                'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',            
+                'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
                 'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
             ]
