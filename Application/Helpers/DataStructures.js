@@ -61,6 +61,19 @@ Application.DataStructures.List = (function() {
     this._length = 0;
   };
 
+  List.prototype.destroy = function() {
+
+    while (!this.isEmpty()) {
+
+      this.popBack();
+    }
+
+    this._pre_head._next = null;
+    this._post_tail._previous = null
+    this._pre_head = null;
+    this._post_tail = null
+  };
+
   List.prototype.getLength = function() {
 
     return _length;

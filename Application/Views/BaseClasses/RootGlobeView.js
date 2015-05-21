@@ -39,7 +39,6 @@ Application.RootGlobeView = Backbone.View.extend({
         this.unbind();
 
         this.globeView.destroy();
-        // this.globeView = null;
     },
 
     createGlobeView: function(config) {
@@ -53,19 +52,8 @@ Application.RootGlobeView = Backbone.View.extend({
     createDecorators: function(config) {
 
         var decorators = [];
-        switch(config.visualizationList)
-        {
-            case "texture":
-            {  
-                decorators.push(new Application.TextureGlobeDecorator());
-                break;
-            }
-            case "geometry":
-            {
-                decorators.push(new Application.GeometryGlobeDecorator());
-                break;
-            }
-        }
-        return decorators;
+        var decorator = Application.GlobeDecoratorFactory.createDecorator(config)
+
+        return [decorator];
     }
 });

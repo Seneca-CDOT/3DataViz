@@ -10,6 +10,9 @@ Application.BaseGlobeDecorator = (function(){
     };
 
     // functionality
+    BaseGlobeDecorator.prototype.destroy = function(globeView) {
+    };
+
     BaseGlobeDecorator.prototype.clickOnIntersect = function(globeView, intersect) {
     };
 
