@@ -11,7 +11,6 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
         this.idle = true; // represents user mouse idle
         this.intersected; // intersected mesh
         this.moved = false; // for controls and mouse events
-        
         this.sprites = [];
         this.suscribe();
         
@@ -20,7 +19,6 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     render: function() {
 
         Application.BaseGlobeView.prototype.render.call(this);
-        //this.$el.append(this.controlPanel.render().$el);
         return this;
     },
     suscribe: function() {
@@ -51,7 +49,5 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     cameraGoTo: function(countrymesh) {
 
         Application.BaseGlobeView.prototype.cameraGoTo.call(this, countrymesh);
-
-        this.highlightCountry(countrymesh);
     }
 });

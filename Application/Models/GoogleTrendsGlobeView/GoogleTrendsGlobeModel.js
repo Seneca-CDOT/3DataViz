@@ -33,8 +33,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
                 }
             }
 
-            this.setURL(config.userInput);
-            this.request();
+           this.initRequest(config);
 
     },
     parse: function(response) {
@@ -61,6 +60,13 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         fileref.setAttribute("type", "text/javascript");
         fileref.setAttribute("src", this.url);
         document.getElementsByTagName("head")[0].appendChild(fileref);
+
+    },
+    initRequest: function (config) {
+
+            if (config.userInput == '') return;
+            this.setURL(config.userInput);
+            this.request();
 
     }
 });

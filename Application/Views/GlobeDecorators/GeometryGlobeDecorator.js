@@ -7,7 +7,7 @@ Application.GeometryGlobeDecorator = (function() {
         // TODO: privatize
         this.intersected = null;
         this.countries = [];
-        this.results;
+        this.results = [];
         this.colors = [
 
             '0xFF0000',
@@ -98,9 +98,9 @@ Application.GeometryGlobeDecorator = (function() {
 
     privateMethods.showCountriesFromResults = function() {
 
-        var that = this;
+        if (this.results.length == 0) return;
 
-        this.countries;
+        var that = this;
 
         this.results.forEach(function(item, index) {
 
