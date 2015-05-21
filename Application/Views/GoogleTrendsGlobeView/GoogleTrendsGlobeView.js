@@ -14,8 +14,6 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
         
         this.sprites = [];
         this.suscribe();
-        
-        
     },
     render: function() {
 
@@ -45,13 +43,5 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
 
             country.mesh.material.color.setHex(country.color);
         });
-    },
-
-    // visualization specific functionality
-    cameraGoTo: function(countrymesh) {
-
-        Application.BaseGlobeView.prototype.cameraGoTo.call(this, countrymesh);
-
-        this.highlightCountry(countrymesh);
     }
 });
