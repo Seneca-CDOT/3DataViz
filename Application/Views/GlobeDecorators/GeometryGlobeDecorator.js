@@ -146,7 +146,7 @@ Application.GeometryGlobeDecorator = (function() {
     // TODO: to Dmitry Yastertsky
     privateMethods.showCountries = function(countryCodes) {
 
-        if (this.results.length == 0) 
+        if (countryCodes.length == 0) 
             return;
 
         var that = this;
