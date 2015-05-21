@@ -4,9 +4,6 @@ Application.GoogleTrendsRootGlobeView = Application.RootGlobeView.extend({
     initialize: function(config) {
 
         Application.RootGlobeView.prototype.initialize.call(this, config);
-        // var obj = {};
-        // obj.collection = new Application.GoogleTrendsCollection();
-        // this.globeView = new Application.GoogleTrendsGlobeView(obj);
     },
     render: function(options) {
 
