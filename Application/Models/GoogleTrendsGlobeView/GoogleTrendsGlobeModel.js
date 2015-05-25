@@ -16,8 +16,8 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
     initialize: function(config) {
         Application.BaseGlobeCollection.prototype.initialize.call(this);
 
-        this.response; // response from google trends
-        this.url; // request by this url to google trends
+        this.response = []; // response from google trends
+        this.url = ''; // request by this url to google trends
         var that = this;
         this.userInput = config.userInput;
 

@@ -5,16 +5,18 @@ Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
     defaults: _.extend({}, Application.GeoDataRecord.prototype.defaults, {
 
     }),
-    initialize: function(_vent) {
+    initialize: function() {
         Application.GeoDataRecord.prototype.initialize.call(this);
-        this._vent = _vent;
     }
 
 });
 
 Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
     model: Application.SpreadSheetRecord,
-    initialize: function() {
+    initialize: function(config) {
+        //this.url = '';
+        this.userInput = config.userInput;
+        this.setURL(config.userInput);
 
         Application.BaseGlobeCollection.prototype.initialize.call(this);
     },
@@ -22,15 +24,15 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
 
         // console.log(response);
         var pModule = Application.DataProcessor.ProcessorModule;
-        
+
         var options = {
 
             dataType: "spreadSheet"
         };
-        
+
         var pData = pModule.processData(response, options);
-        
-        return pData;
+
+        Application._vent.trigger('data/ready', pData);
     },
 
     setURL: function(key) {

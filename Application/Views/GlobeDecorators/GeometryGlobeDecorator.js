@@ -115,7 +115,7 @@ Application.GeometryGlobeDecorator = (function() {
             this.countries.push(mesh);
         }
 
-        Application._vent.trigger('geometry/ready'); // notifies about ready state of geometry
+        Application._vent.trigger('globe/ready'); // notifies about ready state of geometry
     };
 
     // country selection functionality

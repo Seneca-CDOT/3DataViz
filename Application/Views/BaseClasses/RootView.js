@@ -52,9 +52,9 @@ Application.RootView = Backbone.View.extend({
             }
             case "points":
             {  
-                files = Application.globeViews.googleTrends.files;
-                rootGlobeViewClass = 'GoogleTrendsRootGlobeView';
-                // rootGlobeViewClass = 'SpreadSheetRootGlobeView';
+                files = Application.globeViews.spreadSheet.files;
+                //rootGlobeViewClass = 'GoogleTrendsRootGlobeView';
+                rootGlobeViewClass = 'SpreadSheetRootGlobeView';
                 break;
             }
             case "dynamic":

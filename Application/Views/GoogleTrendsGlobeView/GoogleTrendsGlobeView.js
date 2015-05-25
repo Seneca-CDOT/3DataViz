@@ -38,7 +38,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     },
     suscribe: function() {
         Application._vent.on('data/ready', this.showResults.bind(this));
-        Application._vent.on('geometry/ready', this.processRequest.bind(this));
+        Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
     processRequest: function() {
 
