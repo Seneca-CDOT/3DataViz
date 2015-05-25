@@ -14,13 +14,18 @@ Application.BaseGlobeView = Backbone.View.extend({
     initialize: function(config) {
 
         this.container = this.$el[0];
-        this.requestedAnimationFrameId = null;
 
-        this.decorators = [];
-        if (config.decorators !== undefined) {
+        this.scene = null;
+        this.renderer = null;
+        this.camera = null;
+        this.scene = null;
+        this.controls = null;
+        this.tween = null;
 
+        if (config.decorators !== undefined)
             this.decorators = config.decorators;
-        }
+        else
+            this.decorators = [];
 
         this.rayCatchers = [];
         this.globeRadius = 50;
@@ -28,28 +33,58 @@ Application.BaseGlobeView = Backbone.View.extend({
         // TODO: review
         this.moved = false;
         this.orbitOn = false;
+
         this.idle = true;
-        this.timer = null; 
+        this.timer = null;
+
+        this.requestedAnimationFrameId = null;
+
+        // TODO: review
+        window.addEventListener('resize', this.onWindowResize.bind(this), false);
     },
     destroy: function() {
 
         this.remove();
         this.unbind();
 
-        // this.collection.reset();
-        // this.collection = null;
+        this.container = null;
 
+        // TODO: review
+        this.scene = null;
+        this.renderer = null;
+        this.camera = null;
+        this.scene = null;
+        this.controls = null;
+        this.tween = null;
+
+        // TODO: review
+        for(var i = 0; i < this.decorators.length; ++i) {
+
+            this.decorators[i].destroy(this);
+        }
+        this.decorators = null;
+
+        // TODO: review
+        this.rayCatchers = null;
+
+        this.globe.material.dispose();
+        this.globe.geometry.dispose();
+        this.globe = null;
+
+        if (this.timer) {
+
+            clearTimeout(this.timer);
+            this.timer = null;
+        }
+        
         if (this.requestedAnimationFrameId) {
 
             cancelAnimationFrame(this.requestedAnimationFrameId);
             this.requestedAnimationFrameId = null;
         }
 
-        this.globe.material.dispose();
-        this.globe.geometry.dispose();
-
         // TODO: review
-        this.decorators = null;
+        window.removeEventListener('resize', this.onWindowResize.bind(this), false);
     },
     render: function() {
 
@@ -104,11 +139,6 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.addControls();
 
         this.addHelpers();
-
-        // TODO: move out of this view
-        // ---        
-        window.addEventListener('resize', this.onWindowResize.bind(this), false);
-        // ---
 
         this.renderGlobe();
     },
@@ -322,8 +352,6 @@ Application.BaseGlobeView = Backbone.View.extend({
         function onComplete(point, that) {
 
             that.orbitOn = false;
-            // document.addEventListener('mouseup', onMouseUp, false);
-            // this.controls.addMouse();
         };
 
         this.orbitOn = true;

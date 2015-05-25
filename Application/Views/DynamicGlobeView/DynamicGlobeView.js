@@ -19,6 +19,50 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         this.lifePeriod = 100000;
         this.period = 500;
         this.particlesLifeTime = 2000;
+
+        this.particlesTimer = null;
+    },
+    destroy: function() {
+
+        // TODO: review
+        var iterator = this.particles.getBegin();
+        while (iterator !== this.particles.getEnd()) {
+
+            var particle = iterator.getData();
+            iterator.setData(null);
+
+            this.scene.remove(particle.getMesh());
+            particle.dispose();
+
+            iterator = iterator.getNext();
+        }
+
+        iterator = this.particlesToRemove.getBegin();
+        while (iterator !== this.particlesToRemove.getEnd()) {
+
+            var particle = iterator.getData();
+            iterator.setData(null);
+
+            this.scene.remove(particle.getMesh());
+            particle.dispose();
+
+            iterator = iterator.getNext();
+        }
+
+        this.particles.destroy();
+        this.particles = null;
+
+        this.particlesToRemove.destroy();
+        this.particlesToRemove = null;
+
+
+        if (this.particlesTimer) {
+
+            clearTimeout(this.particlesTimer);
+            this.particlesTimer = null;  
+        }
+
+        Application.BaseGlobeView.prototype.destroy.call(this);
     },
 
     // visualization specific functionality
@@ -156,7 +200,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         console.log("Twittes Left To View: " + (this.collection.length - beginIndex));
 
         var that = this;
-        setTimeout(function() {
+        this.particlesTimer = setTimeout(function() {
 
             that.showDataRecords(beginIndex, timeInterval);
         }, this.period);

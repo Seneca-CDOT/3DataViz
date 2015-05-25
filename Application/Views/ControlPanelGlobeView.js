@@ -122,7 +122,7 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
         this.submitbtn = new Application.Button(config);
         this.submitbtn.$el.attr('id', 'submit');
         this.submitbtn.$el.attr('class', 'btn btn-primary');
-        this.submitbtn.$el[0].innerText = 'submit';
+        this.submitbtn.$el[0].innerHTML = 'submit';
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
     },
     render: function() {
@@ -148,13 +148,13 @@ Application.DynamicTwitterControlPanel = Application.ButtonsView.extend({
         this.submitbtn = new Application.Button(config);
         this.submitbtn.$el.attr('id', 'submit');
         this.submitbtn.$el.attr('class', 'btn btn-primary');
-        this.submitbtn.$el[0].innerText = 'submit';
+        this.submitbtn.$el[0].innerHTML = 'submit';
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
         // this.resetbtn = new Application.Button(config);
         // this.resetbtn.$el.attr('id', 'reset');
         // this.resetbtn.$el.attr('class', 'btn btn-danger');
-        // this.resetbtn.$el[0].innerText = 'reset';
+        // this.resetbtn.$el[0].innerHTML = 'reset';
         // this.resetbtn.$el.on('mousedown', this.resetAction.bind(this));
     },
     render: function() {
@@ -184,13 +184,13 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
         this.submitbtn = new Application.Button(config);
         this.submitbtn.$el.attr('id', 'submit');
         this.submitbtn.$el.attr('class', 'btn btn-primary');
-        this.submitbtn.$el[0].innerText = 'submit';
+        this.submitbtn.$el[0].innerHTML = 'submit';
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
         // this.resetbtn = new Application.Button(config);
         // this.resetbtn.$el.attr('id', 'reset');
         // this.resetbtn.$el.attr('class', 'btn btn-danger');
-        // this.resetbtn.$el[0].innerText = 'reset';
+        // this.resetbtn.$el[0].innerHTML = 'reset';
         // this.resetbtn.$el.on('mousedown', this.resetAction.bind(this));
     },
     render: function() {
@@ -268,13 +268,13 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
         this.submitbtn = new Application.Button(config);
         this.submitbtn.$el.attr('id', 'submit');
         this.submitbtn.$el.attr('class', 'btn btn-primary');
-        this.submitbtn.$el[0].innerText = 'submit';
+        this.submitbtn.$el[0].innerHTML = 'submit';
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
         // this.resetbtn = new Application.Button(config);
         // this.resetbtn.$el.attr('id', 'reset');
         // this.resetbtn.$el.attr('class', 'btn btn-danger');
-        // this.resetbtn.$el[0].innerText = 'reset';
+        // this.resetbtn.$el[0].innerHTML = 'reset';
         // this.resetbtn.$el.on('mousedown', this.resetAction.bind(this));
     },
     render: function() {

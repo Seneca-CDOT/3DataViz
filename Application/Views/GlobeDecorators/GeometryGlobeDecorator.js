@@ -7,7 +7,8 @@ Application.GeometryGlobeDecorator = (function() {
         // TODO: privatize
         this.intersected = null;
         this.countries = [];
-        this.results = [];
+        this.results;
+
         this.colors = [
 
             '0xFF0000',
@@ -33,6 +34,26 @@ Application.GeometryGlobeDecorator = (function() {
     };
 
     // functionality
+    GeometryGlobeDecorator.prototype.destroy = function(globeView) {
+
+        for (var i = 0; i < this.countries.length; ++i) {
+
+            if (globeView.globe !== this.countries[i]) {
+
+                globeView.globe.remove(this.countries[i]);
+
+                this.countries[i].material.dispose();
+                this.countries[i].geometry.dispose();
+            }
+        }
+        this.countries = null;
+
+        this.colors = null;
+        this.added = null;
+
+        Application.BaseGlobeDecorator.prototype.destroy.call(this, globeView);
+    };
+
     GeometryGlobeDecorator.prototype.clickOnIntersect = function(globeView, intersect) {
 
         var mesh = intersect.object;
@@ -93,39 +114,6 @@ Application.GeometryGlobeDecorator = (function() {
         }
 
         privateMethods.showCountriesFromResults.call(this);
-
-    };
-
-    privateMethods.showCountriesFromResults = function() {
-
-        if (this.results.length == 0) return;
-
-        var that = this;
-
-        this.results.forEach(function(item, index) {
-
-            var countrymesh = privateMethods.findCountryMeshByCode.call(that, item.countrycode);
-
-            if (!countrymesh)
-                return;
-
-            console.log(countrymesh.userData.name);
-
-            var obj = {};
-            obj.mesh = countrymesh;
-            obj.color = countrymesh.material.color.getHex();
-
-             that.added.push(obj);
-            // DANGER! Index can be out of range of the colors array!
-            countrymesh.material.color.setHex(that.colors[index]);
-        });
-
-    };
-
-    privateMethods.getResults = function(array) {
-
-        this.results = array;
-
     };
 
     // country selection functionality
@@ -170,6 +158,41 @@ Application.GeometryGlobeDecorator = (function() {
             intersected.currentColor = intersected.material.color.getHex();
             intersected.material.color.setHex(0x0000FF);
         }
+    };
+
+    // TODO: to Dmitry Yastertsky
+    privateMethods.showCountriesFromResults = function(countryCodes) {
+
+        if (this.results.length == 0) return;
+
+        var that = this;
+
+        this.results.forEach(function(item, index) {
+
+            var countrymesh = privateMethods.findCountryMeshByCode.call(that, item.countrycode);
+
+            if (!countrymesh)
+                return;
+
+            console.log(countrymesh.userData.name);
+
+            var obj = {};
+            obj.mesh = countrymesh;
+            obj.color = countrymesh.material.color.getHex();
+
+             that.added.push(obj);
+
+            if (typeof that.colors[index] !== 'undefined' ) {
+            countrymesh.material.color.setHex(that.colors[index]);
+        }
+        
+        });
+    };
+
+    privateMethods.getResults = function(array) {
+
+        this.results = array;
+
     };
 
     return GeometryGlobeDecorator;

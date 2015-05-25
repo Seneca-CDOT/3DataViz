@@ -40,6 +40,7 @@ Application = {
         'Views/GlobeDecorators/BaseGlobeDecorator.js',
         'Views/GlobeDecorators/GeometryGlobeDecorator.js',
         'Views/GlobeDecorators/TextureGlobeDecorator.js',
+        'Views/GlobeDecorators/GlobeDecoratorFactory.js',
 
 
         'Views/ControlPanelGlobeView.js',
