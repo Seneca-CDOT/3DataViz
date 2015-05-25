@@ -43,7 +43,14 @@ Application.RootView = Backbone.View.extend({
         var rootGlobeViewClass = null;
         switch(config.templatesList) {
 
-            case "static":
+            case "countries":
+            {  
+                files = Application.globeViews.googleTrends.files;
+                rootGlobeViewClass = 'GoogleTrendsRootGlobeView';
+                // rootGlobeViewClass = 'SpreadSheetRootGlobeView';
+                break;
+            }
+            case "points":
             {  
                 files = Application.globeViews.googleTrends.files;
                 rootGlobeViewClass = 'GoogleTrendsRootGlobeView';

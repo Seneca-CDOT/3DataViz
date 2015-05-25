@@ -7,23 +7,11 @@ Application.GeometryGlobeDecorator = (function() {
         // TODO: privatize
         this.intersected = null;
         this.countries = [];
-        this.results;
+        this.results = [];
 
-        this.colors = [
-
-            '0xFF0000',
-            '0xFF1919',
-            '0xFF3333',
-            '0xFF4D4D',
-            '0xFF6666',
-            '0xFF8080',
-            '0xFF9999',
-            '0xFFB2B2',
-            '0xFFCCCC',
-            '0xFFE6E6'
-        ];
-        this.added = []; // list of countries participating and their old colors
-        Application._vent.on('data/ready', privateMethods.getResults.bind(this));
+        
+        
+        
     };
     Application.Helper.inherit(GeometryGlobeDecorator, Application.BaseGlobeDecorator);
 
@@ -49,7 +37,7 @@ Application.GeometryGlobeDecorator = (function() {
         this.countries = null;
 
         this.colors = null;
-        this.added = null;
+        //this.added = null;
 
         Application.BaseGlobeDecorator.prototype.destroy.call(this, globeView);
     };
@@ -58,6 +46,20 @@ Application.GeometryGlobeDecorator = (function() {
 
         var mesh = intersect.object;
         privateMethods.highlightCountry.call(this, mesh);
+    };
+
+    GeometryGlobeDecorator.prototype.findCountryMeshByCode = function(code) {
+
+           var mesh = privateMethods.findCountryMeshByCode.call(this, code);
+
+           return mesh;
+    };
+
+     GeometryGlobeDecorator.prototype.findCountryMeshByName = function(name) {
+
+           var mesh = privateMethods.findCountryMeshByName.call(this, name);
+
+           return mesh;
     };
 
     var privateMethods = Object.create(GeometryGlobeDecorator.prototype);
@@ -113,7 +115,7 @@ Application.GeometryGlobeDecorator = (function() {
             this.countries.push(mesh);
         }
 
-        privateMethods.showCountriesFromResults.call(this);
+        Application._vent.trigger('geometry/ready'); // notifies about ready state of geometry
     };
 
     // country selection functionality
@@ -160,40 +162,7 @@ Application.GeometryGlobeDecorator = (function() {
         }
     };
 
-    // TODO: to Dmitry Yastertsky
-    privateMethods.showCountriesFromResults = function(countryCodes) {
-
-        if (this.results.length == 0) return;
-
-        var that = this;
-
-        this.results.forEach(function(item, index) {
-
-            var countrymesh = privateMethods.findCountryMeshByCode.call(that, item.countrycode);
-
-            if (!countrymesh)
-                return;
-
-            console.log(countrymesh.userData.name);
-
-            var obj = {};
-            obj.mesh = countrymesh;
-            obj.color = countrymesh.material.color.getHex();
-
-             that.added.push(obj);
-
-            if (typeof that.colors[index] !== 'undefined' ) {
-            countrymesh.material.color.setHex(that.colors[index]);
-        }
-        
-        });
-    };
-
-    privateMethods.getResults = function(array) {
-
-        this.results = array;
-
-    };
+  
 
     return GeometryGlobeDecorator;
 })();

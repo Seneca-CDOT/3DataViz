@@ -44,7 +44,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         };
         var pData = pModule.processData(response.table.rows, options)
 
-        Application._vent.trigger('data/parsed', pData);
+        Application._vent.trigger('data/ready', pData);
 
     },
     setURL: function(key) {
