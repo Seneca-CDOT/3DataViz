@@ -17,43 +17,57 @@ Application = {
         Backbone.history.start();
     },
 
+    //Load files recursively.
+    loadFiles : function(files, index){
+        if(typeof files[index] == 'undefined'){
+            Application.init();
+        }else{
+            require(files[index], function() {
+                Application.loadFiles(Application.files, index+1);
+            });
+        }
+    },
+
     //Files which need to be imported for GlobeVisualization
     files: [
-        'Events/events.js',
-        'Libraries/OrbitControls.js',
-        'Libraries/stats.js',
-        'Libraries/tween.min.js',
-        'Libraries/text.js',
-        'Libraries/font.js',
-        'Libraries/map3d.js',
-        // 'Libraries/popcorn-complete.min.js',
-        'Libraries/papaparse.js',
+        [
+            'Helpers/Filter.js',
+            'Helpers/Helper.js',
+            'Helpers/Debug.js',
+            'Helpers/DataStructures.js',
+            'DataProcessor/DataProcessor.js',
+            'DataProcessor/ParserFactory.js',
+            'DataProcessor/TransformerFactory.js'
+        ],
+        [
+            'Events/events.js',
+            'Libraries/OrbitControls.js',
+            'Libraries/stats.js',
+            'Libraries/tween.min.js',
+            'Libraries/text.js',
+            'Libraries/font.js',
+            'Libraries/map3d.js',
+            // 'Libraries/popcorn-complete.min.js',
+            'Libraries/papaparse.js',
 
-        'Helpers/Filter.js',
-        'Helpers/Helper.js',
-        'Helpers/Debug.js',
-        'Helpers/DataStructures.js',
+            'Routes/RootRouter.js',
+            'Routes/GlobeRouter.js',
 
-        'Routes/RootRouter.js',
-        'Routes/GlobeRouter.js',
-
-        'Views/GlobeDecorators/BaseGlobeDecorator.js',
-        'Views/GlobeDecorators/GeometryGlobeDecorator.js',
-        'Views/GlobeDecorators/TextureGlobeDecorator.js',
-        'Views/GlobeDecorators/GlobeDecoratorFactory.js',
+            'Views/GlobeDecorators/BaseGlobeDecorator.js',
+            'Views/GlobeDecorators/GeometryGlobeDecorator.js',
+            'Views/GlobeDecorators/TextureGlobeDecorator.js',
+            'Views/GlobeDecorators/GlobeDecoratorFactory.js',
 
 
-        'Views/ControlPanelGlobeView.js',
-        'Views/ControlElementsGlobeView.js',
+            'Views/ControlPanelGlobeView.js',
+            'Views/ControlElementsGlobeView.js',
 
-        'Views/BaseClasses/RootView.js',
-        'Views/BaseClasses/RootGlobeView.js',
-        'Views/BaseClasses/BaseGlobeView.js',
-        'Models/BaseClasses/BaseGlobeModel.js',
+            'Views/BaseClasses/RootView.js',
+            'Views/BaseClasses/RootGlobeView.js',
+            'Views/BaseClasses/BaseGlobeView.js',
+            'Models/BaseClasses/BaseGlobeModel.js',
 
-        'DataProcessor/DataProcessor.js',
-        'DataProcessor/ParserFactory.js',
-        'DataProcessor/TransformerFactory.js'
+        ]
     ],
 
     globeViews: {
@@ -100,7 +114,4 @@ Application = {
         }
     }
 };
-
-require(Application.files, function() {
-    Application.init();
-});
+Application.loadFiles(Application.files, 0);
