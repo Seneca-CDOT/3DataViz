@@ -19,6 +19,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         this.response; // response from google trends
         this.url; // request by this url to google trends
         var that = this;
+        this.userInput = config.userInput;
 
         window.google = {
                 visualization: {
@@ -33,8 +34,6 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
                 }
             }
 
-           this.initRequest(config);
-
     },
     parse: function(response) {
 
@@ -45,7 +44,8 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         };
         var pData = pModule.processData(response.table.rows, options)
 
-        Application._vent.trigger('trends/parsed', pData);
+        Application._vent.trigger('data/parsed', pData);
+
     },
     setURL: function(key) {
 
@@ -62,10 +62,10 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         document.getElementsByTagName("head")[0].appendChild(fileref);
 
     },
-    initRequest: function (config) {
+    fetch: function () {
 
-            if (config.userInput == '') return;
-            this.setURL(config.userInput);
+            if (this.userInput == '') return;
+            this.setURL(this.userInput);
             this.request();
 
     }

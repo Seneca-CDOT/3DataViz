@@ -7,6 +7,7 @@ Application.GeometryGlobeDecorator = (function() {
         // TODO: privatize
         this.intersected = null;
         this.countries = [];
+        this.results;
 
         this.colors = [
 
@@ -21,12 +22,8 @@ Application.GeometryGlobeDecorator = (function() {
             '0xFFCCCC',
             '0xFFE6E6'
         ];
-
-        // list of countries participating and their old colors
-        this.added = []; 
-
-        // TODO: to Dmitry Yastertsky
-        Application._vent.on('trends/parsed', privateMethods.showCountries.bind(this));
+        this.added = []; // list of countries participating and their old colors
+        Application._vent.on('data/ready', privateMethods.getResults.bind(this));
     };
     Application.Helper.inherit(GeometryGlobeDecorator, Application.BaseGlobeDecorator);
 
@@ -115,6 +112,8 @@ Application.GeometryGlobeDecorator = (function() {
 
             this.countries.push(mesh);
         }
+
+        privateMethods.showCountriesFromResults.call(this);
     };
 
     // country selection functionality
@@ -162,13 +161,13 @@ Application.GeometryGlobeDecorator = (function() {
     };
 
     // TODO: to Dmitry Yastertsky
-    privateMethods.showCountries = function(countryCodes) {
+    privateMethods.showCountriesFromResults = function(countryCodes) {
 
-        if (countryCodes.length == 0) 
-            return;
+        if (this.results.length == 0) return;
 
         var that = this;
-        countryCodes.forEach(function(item, index) {
+
+        this.results.forEach(function(item, index) {
 
             var countrymesh = privateMethods.findCountryMeshByCode.call(that, item.countrycode);
 
@@ -181,14 +180,19 @@ Application.GeometryGlobeDecorator = (function() {
             obj.mesh = countrymesh;
             obj.color = countrymesh.material.color.getHex();
 
-            that.added.push(obj);
-            
-            if (colors.length) {
+             that.added.push(obj);
 
-                var color = that.colors[index%colors.length];
-                countrymesh.material.color.setHex(color);
-            }
+            if (typeof that.colors[index] !== 'undefined' ) {
+            countrymesh.material.color.setHex(that.colors[index]);
+        }
+        
         });
+    };
+
+    privateMethods.getResults = function(array) {
+
+        this.results = array;
+
     };
 
     return GeometryGlobeDecorator;

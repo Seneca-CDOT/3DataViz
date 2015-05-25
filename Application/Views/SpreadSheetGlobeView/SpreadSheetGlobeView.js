@@ -14,6 +14,8 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
         this.sprites = [];
         this.suscribe();
 
+    };
+
         console.log('https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
     },
     render: function() {
