@@ -29,7 +29,7 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         this.rayCatchers = [];
         this.globeRadius = 50;
-    
+
         // TODO: review
         this.moved = false;
         this.orbitOn = false;
@@ -58,7 +58,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.tween = null;
 
         // TODO: review
-        for(var i = 0; i < this.decorators.length; ++i) {
+        for (var i = 0; i < this.decorators.length; ++i) {
 
             this.decorators[i].destroy(this);
         }
@@ -76,7 +76,7 @@ Application.BaseGlobeView = Backbone.View.extend({
             clearTimeout(this.timer);
             this.timer = null;
         }
-        
+
         if (this.requestedAnimationFrameId) {
 
             cancelAnimationFrame(this.requestedAnimationFrameId);
@@ -144,7 +144,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     decorateProperties: function() {
 
-        for(var i = 0; i < this.decorators.length; ++i) {
+        for (var i = 0; i < this.decorators.length; ++i) {
 
             this.decorators[i].decorateGlobe(this);
         }
@@ -282,9 +282,9 @@ Application.BaseGlobeView = Backbone.View.extend({
         var destination = null;
         var mesh = intersect.object;
         if (mesh !== this.globe) {
-            
+
             // TODO: review
-            for(var i = 0; i < this.decorators.length; ++i) {
+            for (var i = 0; i < this.decorators.length; ++i) {
 
                 this.decorators[i].clickOnIntersect(this, intersect);
             }
@@ -292,7 +292,7 @@ Application.BaseGlobeView = Backbone.View.extend({
             destination = mesh.geometry.boundingSphere.center.clone();
         } else {
 
-            destination = intersect.point;    
+            destination = intersect.point;
         }
 
         if (destination) {
@@ -304,7 +304,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     cameraGoTo: function(destination) {
 
         // TODO: review
-        for(var i = 0; i < this.decorators.length; ++i) {
+        for (var i = 0; i < this.decorators.length; ++i) {
 
             this.decorators[i].cameraGoTo(this, destination);
         }

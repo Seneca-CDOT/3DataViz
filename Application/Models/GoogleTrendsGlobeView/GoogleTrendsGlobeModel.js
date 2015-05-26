@@ -16,8 +16,8 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
     initialize: function(config) {
         Application.BaseGlobeCollection.prototype.initialize.call(this);
 
-        this.response; // response from google trends
-        this.url; // request by this url to google trends
+        this.response = []; // response from google trends
+        this.url = ''; // request by this url to google trends
         var that = this;
         this.userInput = config.userInput;
 
@@ -44,7 +44,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         };
         var pData = pModule.processData(response.table.rows, options)
 
-        Application._vent.trigger('data/parsed', pData);
+        Application._vent.trigger('data/ready', pData);
 
     },
     setURL: function(key) {

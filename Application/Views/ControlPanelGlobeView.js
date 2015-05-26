@@ -41,7 +41,7 @@ Application.MainConfigView = Backbone.View.extend({
         this.visualizationList.$el.attr('id', 'visualizationList');
         this.visualizationList.$el.attr('class', 'form-control');
 
-        this.temlist = ['static', 'dynamic', 'graph'];
+        this.temlist = ['countries', 'points', 'dynamic', 'graph'];
         this.templatesList = new Application.DropDownList(config, this.temlist);
         this.templatesList.$el.attr('id', 'templatesList');
         this.templatesList.$el.attr('class', 'form-control');

@@ -59,6 +59,9 @@ Application.TextureGlobeDecorator = (function(){
             globeView.globe.material = null;
         }
         globeView.globe.material = material;
+    
+       Application._vent.trigger('globe/ready'); // notifies about ready state of geometry
+
     };
 
     // call readCountries(), supplying the countries data, to redraw the texture
@@ -177,6 +180,8 @@ Application.TextureGlobeDecorator = (function(){
             canvasCtx.fillStyle = "#" + color;
             canvasCtx.fill();
         };
+               
+
     };
 
     //sets up canvas and loads hexMap for pixel clicking functionality
