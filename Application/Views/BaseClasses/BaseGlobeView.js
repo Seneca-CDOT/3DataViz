@@ -356,5 +356,10 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         this.orbitOn = true;
         this.tween.start();
+    },
+    showResults: function (results) {
+
+     
+
     }
 });

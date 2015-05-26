@@ -61,9 +61,9 @@ Application = {
         //configuration for FlightPathGlobeView
         flightPath: {
             files: [
-                'Views/FlightPathGlobeView/FlightPathRootGlobeView.js',
+                //'Views/FlightPathGlobeView/FlightPathRootGlobeView.js',
                 'Views/FlightPathGlobeView/FlightPathGlobeView.js',
-                'Models/FlightPathGlobeView/FlightPathGlobeModel.js',
+               // 'Models/FlightPathGlobeView/FlightPathGlobeModel.js',
                 'Models/data/path.js',
                 'Models/data/countriesList.js'
                 // 'Views/VideoView.js',
@@ -74,17 +74,17 @@ Application = {
         //configuration for DynamicGlobeView
         dynamic: {
             files: [
-                'Views/DynamicGlobeView/DynamicRootGlobeView.js',
+                //'Views/DynamicGlobeView/DynamicRootGlobeView.js',
                 'Views/DynamicGlobeView/DynamicGlobeView.js',
                 'Views/DynamicGlobeView/DynamicGlobeParticle.js',
-                'Models/DynamicGlobeView/DynamicGlobeModel.js'
+               // 'Models/DynamicGlobeView/DynamicGlobeModel.js'
             ]
         },
 
         //configuration for SpreadSheetGlobeView
         spreadSheet: {
             files: [
-                'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
+                //'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
                 'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
             ]
@@ -93,9 +93,9 @@ Application = {
         //configuration for GoogleTrendsGlobeView
         googleTrends: {
             files: [
-                'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
+               // 'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
                 'Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js',
-                'Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'
+               // 'Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'
             ]
         }
     }

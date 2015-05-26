@@ -48,14 +48,14 @@ Application.GeometryGlobeDecorator = (function() {
         privateMethods.highlightCountry.call(this, mesh);
     };
 
-    GeometryGlobeDecorator.prototype.findCountryMeshByCode = function(code) {
+    GeometryGlobeDecorator.prototype.findCountryByCode = function(code) {
 
            var mesh = privateMethods.findCountryMeshByCode.call(this, code);
 
            return mesh;
     };
 
-     GeometryGlobeDecorator.prototype.findCountryMeshByName = function(name) {
+     GeometryGlobeDecorator.prototype.findCountryByName = function(name) {
 
            var mesh = privateMethods.findCountryMeshByName.call(this, name);
 

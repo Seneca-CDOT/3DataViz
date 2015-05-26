@@ -14,7 +14,8 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
         this.sprites = [];
         this.suscribe();
         this.results = [];
-        this.decorator = config.decorators[0];
+        //this.decorator = config.decorators[0];
+        this.collection = config.collection[0];
         this.added = []; // list of countries participating and their old colors
         this.colors = [
 
@@ -38,9 +39,9 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     },
     suscribe: function() {
         Application._vent.on('data/ready', this.showResults.bind(this));
-        Application._vent.on('globe/ready', this.processRequest.bind(this));
+       // Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
-    processRequest: function() {
+    startDataSynchronization: function() {
 
         this.collection.fetch();
 
@@ -64,7 +65,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
 
         results.forEach(function(item, index) {
 
-            var countrymesh = that.decorator.findCountryMeshByCode(item.countrycode);
+            var countrymesh = that.decorators[0].findCountryByCode(item.countrycode);
 
             if (!countrymesh)
                 return;

@@ -13,6 +13,7 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
         this.idle = true; // represents user mouse idle
         this.sprites = [];
         this.suscribe();
+        this.collection = config.collection[0];
 
         console.log('link: https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
         console.log('key: 13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg');
