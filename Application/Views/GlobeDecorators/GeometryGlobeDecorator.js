@@ -163,6 +163,7 @@ Application.GeometryGlobeDecorator = (function() {
     // TODO: to Dmitry Yastertsky
     privateMethods.showCountriesFromResults = function(countryCodes) {
 
+        console.log("showCountriesFromResults");
         if (this.results.length == 0) return;
 
         var that = this;
@@ -191,6 +192,7 @@ Application.GeometryGlobeDecorator = (function() {
 
     privateMethods.getResults = function(array) {
 
+        console.log("getResults");
         this.results = array;
 
     };

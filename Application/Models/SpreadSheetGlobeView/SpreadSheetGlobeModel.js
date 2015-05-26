@@ -25,7 +25,8 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         
         var options = {
 
-            dataType: "spreadSheet"
+            dataType: "spreadSheet",
+            visualizationType: "country"
         };
         
         var pData = pModule.processData(response, options);

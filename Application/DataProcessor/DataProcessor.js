@@ -32,9 +32,24 @@ Application.DataProcessor.ProcessorModule = (function() {
         return dtProcessor;
     };
 
-    privateMethods.visualizationTypedProcessor = function(vOptions) {
+    privateMethods.visualizationTypedProcessor = function(vOptions, data) {
 
-        var vtProcessor = null;
+        var options = {};
+        switch (vOptions.visualizationType) {
+
+            case "country":
+                options.transformerType = "countryVisualformer";
+                break;
+            case "points":
+                options.transformerType = "pointsVisualTransformer";
+                break;
+            case "flightPath":
+                options.transformerType = "flightPathTransformer";
+                break;
+        }
+
+        var transformer = Application.DataProcessor.TransformerFactory.createTransformer(options);
+        var vtProcessor = new Application.DataProcessor.BaseProcessor(transformer);
         return vtProcessor;
     };
 
@@ -49,8 +64,11 @@ Application.DataProcessor.ProcessorModule = (function() {
         pData = dtProcessor.process(data);
 
         var vtProcessor = privateMethods.visualizationTypedProcessor(options);
-        // transform preprocessed data depending on visualization type
 
+        // transform preprocessed data depending on visualization type
+        pData = vtProcessor.transform(pData);
+
+        // return tData;
         return pData;
     };
 
@@ -78,6 +96,12 @@ Application.DataProcessor.BaseProcessor = (function() {
 
         var pData = _[this.id].strategy.process(data);
         return pData;
+    };
+
+    BaseProcessor.prototype.transform = function(data) {
+
+        var tData = _[this.id].strategy.transform(data);
+        return tData;
     };
 
     var privateMethods = Object.create(BaseProcessor.prototype);

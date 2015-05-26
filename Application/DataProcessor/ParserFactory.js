@@ -45,13 +45,13 @@ Application.DataProcessor.ParserFactory = (function() {
 
 // strategy
 
-Application.DataProcessor.BaseStrategy = (function() {
+Application.DataProcessor.BaseParserStrategy = (function() {
 
     // private store
     var _ = {};
     var uid = 0;
 
-    function BaseStrategy() {
+    function BaseParserStrategy() {
 
         this.testPublicVariable = "test-public";
 
@@ -61,19 +61,19 @@ Application.DataProcessor.BaseStrategy = (function() {
     // inherite the base interface if needed
     // Application.Helper.inherit(...) 
 
-    BaseStrategy.prototype.process = function(data) {
+    BaseParserStrategy.prototype.process = function(data) {
 
         throw 'Please, define an abstract interface.';
     };
 
     // { *** for testing purposes
-    BaseStrategy.prototype.testPublicFunction1 = function(data) {
+    BaseParserStrategy.prototype.testPublicFunction1 = function(data) {
 
         // calling private function from public
         privateMethods.testPrivateFunction1.call(this);
     };
 
-    BaseStrategy.prototype.testPublicFunction2 = function(data) {
+    BaseParserStrategy.prototype.testPublicFunction2 = function(data) {
 
         // accessing public and private variables form public function
         console.log("From public function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
@@ -82,7 +82,7 @@ Application.DataProcessor.BaseStrategy = (function() {
     // define private methods after prototype has been inhereted and defined
 
     // by doing this you have got an access to the public methods from private methods
-    var privateMethods = Object.create(BaseStrategy.prototype);
+    var privateMethods = Object.create(BaseParserStrategy.prototype);
     privateMethods.testPrivateFunction1 = function() {
 
         // calling public function from private
@@ -93,7 +93,7 @@ Application.DataProcessor.BaseStrategy = (function() {
     };
     // } ***
 
-    return BaseStrategy;
+    return BaseParserStrategy;
 })();
 
 // Play with this.
@@ -106,9 +106,9 @@ Application.DataProcessor.BaseParser = (function() {
 
     function BaseParser() {
 
-        Application.DataProcessor.BaseStrategy.call(this);
+        Application.DataProcessor.BaseParserStrategy.call(this);
     };
-    Application.Helper.inherit(BaseParser, Application.DataProcessor.BaseStrategy);
+    Application.Helper.inherit(BaseParser, Application.DataProcessor.BaseParserStrategy);
 
     BaseParser.prototype.process = function(data) {
 

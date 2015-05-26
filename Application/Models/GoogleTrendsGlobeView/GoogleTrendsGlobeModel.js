@@ -40,7 +40,8 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
 
-            dataType: "googleTrends"
+            dataType: "googleTrends",
+            visualizationType: "country"
         };
         var pData = pModule.processData(response.table.rows, options)
 
