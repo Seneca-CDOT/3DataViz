@@ -12,48 +12,46 @@ Application = {
 
     //Create Route which handles Views and Models
     init: function() {
-
         this.rootRouter = new this.RootRouter();
         Backbone.history.start();
     },
 
     //Files which need to be imported for GlobeVisualization
     files: [
-        'Events/events.js',
-        'Libraries/OrbitControls.js',
-        'Libraries/stats.js',
-        'Libraries/tween.min.js',
-        'Libraries/text.js',
-        'Libraries/font.js',
-        'Libraries/map3d.js',
-        // 'Libraries/popcorn-complete.min.js',
-        'Libraries/papaparse.js',
+        [
+            'Helpers/Filter.js',
+            'Helpers/Debug.js',
+            'Helpers/DataStructures.js',
+            'DataProcessor/DataProcessor.js',
+            'DataProcessor/ParserFactory.js',
+            'DataProcessor/TransformerFactory.js',
+            'Events/events.js',
+            'Libraries/OrbitControls.js',
+            'Libraries/stats.js',
+            'Libraries/tween.min.js',
+            'Libraries/font.js',
+            'Libraries/map3d.js',
+            'Libraries/papaparse.js',
+            // 'Libraries/popcorn-complete.min.js',
+            // 'Libraries/text.js',
 
-        'Helpers/Filter.js',
-        'Helpers/Helper.js',
-        'Helpers/Debug.js',
-        'Helpers/DataStructures.js',
+            'Routes/GlobeRouter.js',
+            'Routes/RootRouter.js',
 
-        'Routes/RootRouter.js',
-        'Routes/GlobeRouter.js',
+            'Views/GlobeDecorators/BaseGlobeDecorator.js',
+            'Views/GlobeDecorators/GeometryGlobeDecorator.js',
+            'Views/GlobeDecorators/TextureGlobeDecorator.js',
+            'Views/GlobeDecorators/GlobeDecoratorFactory.js',
 
-        'Views/GlobeDecorators/BaseGlobeDecorator.js',
-        'Views/GlobeDecorators/GeometryGlobeDecorator.js',
-        'Views/GlobeDecorators/TextureGlobeDecorator.js',
-        'Views/GlobeDecorators/GlobeDecoratorFactory.js',
+            'Views/ControlPanelGlobeView.js',
+            'Views/ControlElementsGlobeView.js',
 
+            'Views/BaseClasses/RootView.js',
+            'Views/BaseClasses/RootGlobeView.js',
+            'Views/BaseClasses/BaseGlobeView.js',
 
-        'Views/ControlPanelGlobeView.js',
-        'Views/ControlElementsGlobeView.js',
-
-        'Views/BaseClasses/RootView.js',
-        'Views/BaseClasses/RootGlobeView.js',
-        'Views/BaseClasses/BaseGlobeView.js',
-        'Models/BaseClasses/BaseGlobeModel.js',
-
-        'DataProcessor/DataProcessor.js',
-        'DataProcessor/ParserFactory.js',
-        'DataProcessor/TransformerFactory.js'
+            'Models/BaseClasses/BaseGlobeModel.js',
+        ]
     ],
 
     globeViews: {
@@ -74,33 +72,40 @@ Application = {
         //configuration for DynamicGlobeView
         dynamic: {
             files: [
-                'Views/DynamicGlobeView/DynamicRootGlobeView.js',
-                'Views/DynamicGlobeView/DynamicGlobeView.js',
                 'Views/DynamicGlobeView/DynamicGlobeParticle.js',
-                'Models/DynamicGlobeView/DynamicGlobeModel.js'
+                'Views/DynamicGlobeView/DynamicGlobeView.js',
+                [
+                    'Views/DynamicGlobeView/DynamicRootGlobeView.js',
+                    'Models/DynamicGlobeView/DynamicGlobeModel.js'
+                ]
             ]
         },
 
         //configuration for SpreadSheetGlobeView
         spreadSheet: {
             files: [
-                'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
-                'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
+                [
+                    'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
+                    'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
+                ]
             ]
         },
 
         //configuration for GoogleTrendsGlobeView
         googleTrends: {
             files: [
-                'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
                 'Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js',
-                'Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'
+                [
+                    'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
+                    'Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'
+                ]
             ]
         }
     }
 };
-
-require(Application.files, function() {
-    Application.init();
+require(['Helpers/Helper.js'], function(){
+    Application.Helper.requireOrderly(Application.files, function(){
+        Application.init();
+    })
 });
