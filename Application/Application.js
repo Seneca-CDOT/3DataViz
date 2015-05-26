@@ -12,33 +12,21 @@ Application = {
 
     //Create Route which handles Views and Models
     init: function() {
-
         this.rootRouter = new this.RootRouter();
         Backbone.history.start();
     },
 
-    //Load files recursively.
-    loadFiles : function(files, index){
-        if(typeof files[index] == 'undefined'){
-            Application.init();
-        }else{
-            require(files[index], function() {
-                Application.loadFiles(Application.files, index+1);
-            });
-        }
-    },
-
     //Files which need to be imported for GlobeVisualization
     files: [
-        [
-            'Helpers/Filter.js',
-            'Helpers/Helper.js',
-            'Helpers/Debug.js',
-            'Helpers/DataStructures.js',
-            'DataProcessor/DataProcessor.js',
-            'DataProcessor/ParserFactory.js',
-            'DataProcessor/TransformerFactory.js'
-        ],
+
+        'Helpers/Helper.js',
+        'Helpers/Filter.js',
+        // 'Helpers/Helper.js',
+        'Helpers/Debug.js',
+        'Helpers/DataStructures.js',
+        'DataProcessor/DataProcessor.js',
+        'DataProcessor/ParserFactory.js',
+        'DataProcessor/TransformerFactory.js',
         [
             'Events/events.js',
             'Libraries/OrbitControls.js',
@@ -58,7 +46,6 @@ Application = {
             'Views/GlobeDecorators/TextureGlobeDecorator.js',
             'Views/GlobeDecorators/GlobeDecoratorFactory.js',
 
-
             'Views/ControlPanelGlobeView.js',
             'Views/ControlElementsGlobeView.js',
 
@@ -66,7 +53,6 @@ Application = {
             'Views/BaseClasses/RootGlobeView.js',
             'Views/BaseClasses/BaseGlobeView.js',
             'Models/BaseClasses/BaseGlobeModel.js',
-
         ]
     ],
 
@@ -114,4 +100,8 @@ Application = {
         }
     }
 };
-Application.loadFiles(Application.files, 0);
+require(['Helpers/Helper.js'], function(){
+    Application.Helper.requireOrderly(Application.files, function(){
+        Application.init();
+    })
+});

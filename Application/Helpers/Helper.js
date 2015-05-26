@@ -3,6 +3,42 @@ var Application = Application || {};
 Application.Helper = {
 
   /**
+   * Load files orderly.
+   * @param files An array of files.
+   * @param callback A callback function to be fired when it complete.
+   */
+  requireOrderly: function(files, callback){
+    Application.Helper.loadFiles(files, 0, function(){
+      if(typeof callback === 'function'){
+        callback();
+      }
+    });
+  },
+
+  /**
+   * Load files recursively.
+   */
+  loadFiles : function(files, index, callback){
+    if(typeof files[index] === 'undefined'){ // load completed.
+      if(typeof callback === 'function'){
+        callback();
+      }
+    }else{
+      var _files;
+      if(typeof files[index] === 'string'){
+        _files = [files[index]]; // to load individual file by require.js.
+      }else{
+        _files = files[index];
+      }
+      console.log(_files);
+      require(_files, function() {
+        console.log("loaded.");
+        Application.Helper.loadFiles(files, index+1, callback);
+      });
+    }
+  },
+
+  /**
    * Inherits prototype of the parent object and copies it into the child object.
    * @param childObject A child object.
    * @param parentObject A parent object.
