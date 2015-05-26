@@ -162,7 +162,6 @@ Application.DataProcessor.TweetParser = (function() {
             timestamp: "timestamp_ms",
         };
         var pData = privateMethods.extract.call(this, filter, data);
-        pData = privateMethods.transform.call(this, pData);
         return pData;
     };
 
@@ -187,22 +186,6 @@ Application.DataProcessor.TweetParser = (function() {
             collection.push(obj);
         });
         return collection;
-    };
-
-    // TODO: move to transformer
-    privateMethods.transform = function(data) {
-
-        for (var i = 0; i < data.length; ++i) {
-
-            if (data[i].timestamp !== "") {
-
-                data[i].timestamp = Number(data[i].timestamp);
-            } else {
-
-                data[i].timestamp = 0;
-            }
-        }
-        return data;
     };
 
     return TweetParser;
