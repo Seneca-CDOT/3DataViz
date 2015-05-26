@@ -18,28 +18,25 @@ Application = {
 
     //Files which need to be imported for GlobeVisualization
     files: [
-
-        'Helpers/Helper.js',
-        'Helpers/Filter.js',
-        // 'Helpers/Helper.js',
-        'Helpers/Debug.js',
-        'Helpers/DataStructures.js',
-        'DataProcessor/DataProcessor.js',
-        'DataProcessor/ParserFactory.js',
-        'DataProcessor/TransformerFactory.js',
         [
+            'Helpers/Filter.js',
+            'Helpers/Debug.js',
+            'Helpers/DataStructures.js',
+            'DataProcessor/DataProcessor.js',
+            'DataProcessor/ParserFactory.js',
+            'DataProcessor/TransformerFactory.js',
             'Events/events.js',
             'Libraries/OrbitControls.js',
             'Libraries/stats.js',
             'Libraries/tween.min.js',
-            'Libraries/text.js',
             'Libraries/font.js',
             'Libraries/map3d.js',
-            // 'Libraries/popcorn-complete.min.js',
             'Libraries/papaparse.js',
+            // 'Libraries/popcorn-complete.min.js',
+            // 'Libraries/text.js',
 
-            'Routes/RootRouter.js',
             'Routes/GlobeRouter.js',
+            'Routes/RootRouter.js',
 
             'Views/GlobeDecorators/BaseGlobeDecorator.js',
             'Views/GlobeDecorators/GeometryGlobeDecorator.js',
@@ -52,6 +49,7 @@ Application = {
             'Views/BaseClasses/RootView.js',
             'Views/BaseClasses/RootGlobeView.js',
             'Views/BaseClasses/BaseGlobeView.js',
+
             'Models/BaseClasses/BaseGlobeModel.js',
         ]
     ],
@@ -74,28 +72,34 @@ Application = {
         //configuration for DynamicGlobeView
         dynamic: {
             files: [
-                'Views/DynamicGlobeView/DynamicRootGlobeView.js',
-                'Views/DynamicGlobeView/DynamicGlobeView.js',
                 'Views/DynamicGlobeView/DynamicGlobeParticle.js',
-                'Models/DynamicGlobeView/DynamicGlobeModel.js'
+                'Views/DynamicGlobeView/DynamicGlobeView.js',
+                [
+                    'Views/DynamicGlobeView/DynamicRootGlobeView.js',
+                    'Models/DynamicGlobeView/DynamicGlobeModel.js'
+                ]
             ]
         },
 
         //configuration for SpreadSheetGlobeView
         spreadSheet: {
             files: [
-                'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
                 'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
-                'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
+                [
+                    'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
+                    'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
+                ]
             ]
         },
 
         //configuration for GoogleTrendsGlobeView
         googleTrends: {
             files: [
-                'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
                 'Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js',
-                'Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'
+                [
+                    'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
+                    'Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'
+                ]
             ]
         }
     }

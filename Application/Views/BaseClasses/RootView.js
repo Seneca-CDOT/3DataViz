@@ -67,7 +67,7 @@ Application.RootView = Backbone.View.extend({
         if (files && rootGlobeViewClass) {
 
             var that = this;
-            require(files, function() {
+            Application.Helper.requireOrderly(files, function() {
 
                 that.rootGlobeView = new Application[rootGlobeViewClass](config);
                 that.$el.prepend(that.rootGlobeView.render().$el);
