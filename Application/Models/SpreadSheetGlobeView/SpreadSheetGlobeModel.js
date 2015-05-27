@@ -17,6 +17,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         //this.url = '';
         this.userInput = config.userInput;
         this.setURL(config.userInput);
+        this.templatesList = config.templatesList;
 
         Application.BaseGlobeCollection.prototype.initialize.call(this);
     },
@@ -27,7 +28,8 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
 
         var options = {
 
-            dataType: "spreadSheet"
+            dataType: "spreadSheet",
+            visualizationType: this.templatesList
         };
 
         var pData = pModule.processData(response, options);

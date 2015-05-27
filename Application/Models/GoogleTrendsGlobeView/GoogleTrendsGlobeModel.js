@@ -20,6 +20,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         this.url = ''; // request by this url to google trends
         var that = this;
         this.userInput = config.userInput;
+        this.templatesList = config.templatesList;
 
         window.google = {
                 visualization: {
@@ -40,7 +41,8 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
 
-            dataType: "googleTrends"
+            dataType: "googleTrends",
+            visualizationType: this.templatesList
         };
         var pData = pModule.processData(response.table.rows, options)
 
