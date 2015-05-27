@@ -22,7 +22,6 @@ Application.RootView = Backbone.View.extend({
     },
     submitOn: function(config) {
 
-        // console.log(config);
         this.initGlobeView(config);
     },
 
@@ -34,60 +33,26 @@ Application.RootView = Backbone.View.extend({
             this.rootView = null;
         }
 
-      // {dataSourcesList: "", 
-      // visualizationList: "", 
-      // templatesList: "", 
-      // userInput: ""}
+        // {dataSourcesList: "", 
+        // visualizationList: "", 
+        // templatesList: "", 
+        // userInput: ""}
 
-        //var files = null;
         var rootViewClass = null;
-        switch(config.templatesList) {
+        switch (config.templatesList) {
 
-            // case "countries":
-            // {  
-            //     files = Application.globeViews.googleTrends.files;
-            //     rootGlobeViewClass = 'GoogleTrendsGlobeView';
-            //     // rootGlobeViewClass = 'SpreadSheetRootGlobeView';
-            //     break;
-            // }
-            // case "points":
-            // {  
-            //     files = Application.globeViews.spreadSheet.files;
-            //     //rootGlobeViewClass = 'GoogleTrendsRootGlobeView';
-            //     rootGlobeViewClass = 'SpreadSheetGlobeView';
-            //     break;
-            // }
-            // case "dynamic":
-            // {
-            //     files = Application.globeViews.dynamic.files;
-            //     rootGlobeViewClass = 'dynamic';
-            //     break;
-            // }
-            // case "graph":
-            // {
-            //     files = Application.globeViews.flightPath.files;
-            //     rootGlobeViewClass = 'flightpaths';
-            //     break;
-            // }
+            case "countries":
+            case "points":
+            case "dynamic":
+            case "graph":
+                {
+                    rootViewClass = 'RootGlobeView';
+                    break;
+                }
 
-             case "countries":
-             case "points":
-             case "dynamic":
-             case "graph":
-            {  
-               // files = Application.globeViews.googleTrends.files;
-                rootViewClass = 'RootGlobeView';
-                // rootGlobeViewClass = 'SpreadSheetRootGlobeView';
-                break;
-            }
-           
         }
 
-        //    var that = this;
-          //  require(files, function() {
-
-                this.rootView = new Application[rootViewClass](config);
-                this.$el.prepend(this.rootView.$el);
-//});
-        }
+        this.rootView = new Application[rootViewClass](config);
+        this.$el.prepend(this.rootView.$el);
+    }
 });
