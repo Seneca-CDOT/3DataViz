@@ -125,7 +125,7 @@ Application.DynamicGlobeParticle.prototype._positionMesh = function(globeRadius)
     }
 
     var particle = this.getMesh();
-    var position = Application.Helper.geoToxyz(this.getData().get("longitude"), this.getData().get("latitude"), globeRadius);
+    var position = Application.Helper.geoToxyz(this.getData().longitude, this.getData().latitude, globeRadius);
 
     // compute orientation parameters
     var objectNormal = new THREE.Vector3(0, 0, 1);
@@ -179,7 +179,7 @@ Application.DynamicGlobeParticle.prototype.isDead = function(currentTime) {
 
     var isDead = true;
     if (this.getData() != null && currentTime !== undefined &&
-        (this.getData().get("timestamp") + this._life_time > currentTime)) {
+        (this.getData().timestamp + this._life_time > currentTime)) {
 
         isDead = false;
     }

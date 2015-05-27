@@ -48,7 +48,8 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
     // visualization specific functionality
     showResults: function(results) {
-
+        console.log("showResults!!!");
+        console.log(results);
         var map = THREE.ImageUtils.loadTexture("Assets/Images/sprite.png");
         var material = new THREE.SpriteMaterial({
 
