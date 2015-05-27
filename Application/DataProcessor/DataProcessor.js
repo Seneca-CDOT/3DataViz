@@ -32,9 +32,27 @@ Application.DataProcessor.ProcessorModule = (function() {
         return dtProcessor;
     };
 
-    privateMethods.visualizationTypedProcessor = function(vOptions) {
+    privateMethods.visualizationTypedProcessor = function(vOptions, data) {
 
-        var vtProcessor = null;
+        var options = {};
+        switch (vOptions.visualizationType) {
+
+            case "countries":
+                options.transformerType = "countriesVisualformer";
+                break;
+            case "points":
+                options.transformerType = "pointsVisualTransformer";
+                break;
+            case "dynamic":
+                options.transformerType = "dynamicVisualTransformer";
+                break;
+            case "graph":
+                options.transformerType = "graphVisualTransformer";
+                break;
+        }
+
+        var transformer = Application.DataProcessor.TransformerFactory.createTransformer(options);
+        var vtProcessor = new Application.DataProcessor.BaseProcessor(transformer);
         return vtProcessor;
     };
 
@@ -42,15 +60,27 @@ Application.DataProcessor.ProcessorModule = (function() {
     var publicMethods = {};
     publicMethods.processData = function(data, options) {
 
+        console.log("Raw Data =====");
+        console.log(data);
+
         var pData = null;
 
         var dtProcessor = privateMethods.dataTypedProcessor(options);
         // preprocess data depending on its type
         pData = dtProcessor.process(data);
 
-        var vtProcessor = privateMethods.visualizationTypedProcessor(options);
-        // transform preprocessed data depending on visualization type
+        console.log("Processed Data =====");
+        console.log(pData);
 
+        var vtProcessor = privateMethods.visualizationTypedProcessor(options);
+
+        // transform preprocessed data depending on visualization type
+        pData = vtProcessor.transform(pData);
+
+        console.log("pData Data =====");
+        console.log(data);
+
+        // return tData;
         return pData;
     };
 
@@ -78,6 +108,12 @@ Application.DataProcessor.BaseProcessor = (function() {
 
         var pData = _[this.id].strategy.process(data);
         return pData;
+    };
+
+    BaseProcessor.prototype.transform = function(data) {
+
+        var tData = _[this.id].strategy.transform(data);
+        return tData;
     };
 
     var privateMethods = Object.create(BaseProcessor.prototype);
