@@ -35,14 +35,14 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.orbitOn = false;
 
         this.idle = true;
-        this.timer = null;
+        this.timer = [];
 
         this.requestedAnimationFrameId = null;
         var that = this;
 
-        $.each(config.collection, function (index, collection) {
-          
-          that.collection[index] = collection;     
+        $.each(config.collection, function(index, collection) {
+
+            that.collection[index] = collection;
 
         });
 
@@ -53,7 +53,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     suscribe: function() {
         Application._vent.on('data/ready', this.showResults.bind(this));
-       // Application._vent.on('globe/ready', this.processRequest.bind(this));
+        // Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
     destroy: function() {
 
@@ -80,15 +80,18 @@ Application.BaseGlobeView = Backbone.View.extend({
         // TODO: review
         this.rayCatchers = null;
 
+        if (this.timer) {
+
+            $.each(this.timer, function(index, id) {
+                clearTimeout(id);
+            });
+            this.timer = null;
+        }
+
         this.globe.material.dispose();
         this.globe.geometry.dispose();
         this.globe = null;
 
-        if (this.timer) {
-
-            clearTimeout(this.timer);
-            this.timer = null;
-        }
 
         if (this.requestedAnimationFrameId) {
 
@@ -371,7 +374,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.orbitOn = true;
         this.tween.start();
     },
-    showResults: function (results) {
+    showResults: function(results) {
 
     }
 });

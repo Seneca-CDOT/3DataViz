@@ -69,7 +69,7 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
             time += 20;
 
             var sprite = new THREE.Sprite(material);
-            setTimeout(function() {
+            var timer = setTimeout(function() {
 
                 that.globe.add(sprite);
 
@@ -78,6 +78,8 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
                 that.sprites.push(sprite);
             }, time);
+
+            that.timer.push(timer);
         });
     }
 });
