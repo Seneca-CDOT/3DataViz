@@ -12,11 +12,12 @@ Application.RootGlobeView = Backbone.View.extend({
     initialize: function(config) {
 
         this.obj = {};
+        //this.globeView = {};
         this.obj.collection = [];
         this.obj.decorators = [];
         this.obj.config = config;
+        this.createDecorators(config);
         this.createCollection(config);
-        this.globeView = {};
     },
     render: function() {
 
@@ -39,8 +40,12 @@ Application.RootGlobeView = Backbone.View.extend({
 
         this.remove();
         this.unbind();
-
+        this.obj.collection = null;
+        this.obj.decorators = null;
+        this.obj.config = null;
+        this.obj = null;
         this.globeView.destroy();
+        this.globeView = null;
     },
 
     createGlobeView: function(obj) {
@@ -50,42 +55,39 @@ Application.RootGlobeView = Backbone.View.extend({
 
             case "countries":
                 {
-                    files = Application.globeViews.googleTrends.files;
+                    // files = Application.globeViews.googleTrends.files;
                     rootGlobeViewClass = 'GoogleTrendsGlobeView';
                     // rootGlobeViewClass = 'SpreadSheetRootGlobeView';
                     break;
                 }
             case "points":
                 {
-                    files = Application.globeViews.spreadSheet.files;
+                    //files = Application.globeViews.spreadSheet.files;
                     //rootGlobeViewClass = 'GoogleTrendsRootGlobeView';
                     rootGlobeViewClass = 'SpreadSheetGlobeView';
                     break;
                 }
             case "dynamic":
                 {
-                    files = Application.globeViews.dynamic.files;
+                    // files = Application.globeViews.dynamic.files;
                     rootGlobeViewClass = 'DynamicGlobeView';
                     break;
                 }
             case "graph":
                 {
-                    files = Application.globeViews.flightPath.files;
+                    // files = Application.globeViews.flightPath.files;
                     rootGlobeViewClass = 'FlightPathGlobeView';
                     break;
                 }
         }
 
         var that = this;
-        require(files, function() {
+        require(Application.layers[obj.config.templatesList], function() {
 
             that.globeView = new Application[rootGlobeViewClass](obj);
-            //that.$el.prepend(that.globeView.render().$el);
             that.render();
         });
 
-        //  this.globeView = new Application[rootGlobeViewClass](config);
-        // return null;
     },
     createCollection: function(config) {
 
@@ -99,7 +101,7 @@ Application.RootGlobeView = Backbone.View.extend({
                 {
 
                     collectionClasses = ['Tweets'];
-                    files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
+                    //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
                     break;
 
                 }
@@ -107,14 +109,14 @@ Application.RootGlobeView = Backbone.View.extend({
                 {
 
                     collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
-                    files = ['Models/FlightPathGlobeView/FlightPathGlobeModel.js'];
+                    //files = ['Models/FlightPathGlobeView/FlightPathGlobeModel.js'];
                     break;
                 }
             case 'spreadSheet':
                 {
 
                     collectionClasses = ['SpreadSheetCollection'];
-                    files = ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'];
+                    // files = ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'];
                     break;
 
                 }
@@ -122,13 +124,13 @@ Application.RootGlobeView = Backbone.View.extend({
                 {
 
                     collectionClasses = ['GoogleTrendsCollection'];
-                    files = ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'];
+                    //  files = ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'];
                     break;
                 }
 
         }
 
-        require(files, function() {
+        require(Application.models[config.dataSourcesList], function() {
 
             $.each(collectionClasses, function(index, collectionName) {
 
@@ -137,8 +139,7 @@ Application.RootGlobeView = Backbone.View.extend({
             });
 
             that.obj.collection = collection;
-            that.obj.decorators = that.createDecorators(config);
-            that.globeView = that.createGlobeView(that.obj);
+            that.createGlobeView(that.obj);
 
         });
 
@@ -148,6 +149,6 @@ Application.RootGlobeView = Backbone.View.extend({
         var decorators = [];
         var decorator = Application.GlobeDecoratorFactory.createDecorator(config)
 
-        return [decorator];
+        this.obj.decorators = [decorator];
     }
 });

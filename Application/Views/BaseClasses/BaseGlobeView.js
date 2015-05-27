@@ -38,9 +38,22 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.timer = null;
 
         this.requestedAnimationFrameId = null;
+        var that = this;
+
+        $.each(config.collection, function (index, collection) {
+          
+          that.collection[index] = collection;     
+
+        });
+
+        this.suscribe();
 
         // TODO: review
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
+    },
+    suscribe: function() {
+        Application._vent.on('data/ready', this.showResults.bind(this));
+       // Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
     destroy: function() {
 
@@ -85,6 +98,7 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         // TODO: review
         window.removeEventListener('resize', this.onWindowResize.bind(this), false);
+        Application._vent.unbind('data/ready');
     },
     render: function() {
 
@@ -358,8 +372,6 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.tween.start();
     },
     showResults: function (results) {
-
-     
 
     }
 });

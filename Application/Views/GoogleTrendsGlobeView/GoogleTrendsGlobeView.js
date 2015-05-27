@@ -6,16 +6,16 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     initialize: function(config) {
 
         Application.BaseGlobeView.prototype.initialize.call(this, config);
-        this.countries = [];
-        this.timer; // represents timer for user mouse idle
-        this.idle = true; // represents user mouse idle
-        this.intersected; // intersected mesh
-        this.moved = false; // for controls and mouse events
-        this.sprites = [];
-        this.suscribe();
-        this.results = [];
+        // this.countries = [];
+        //this.timer; // represents timer for user mouse idle
+        //this.idle = true; // represents user mouse idle
+        //this.intersected; // intersected mesh
+        //this.moved = false; // for controls and mouse events
+        // this.sprites = [];
+        //this.suscribe();
+        // this.results = [];
         //this.decorator = config.decorators[0];
-        this.collection = config.collection[0];
+        //this.collection = config.collection[0];
         this.added = []; // list of countries participating and their old colors
         this.colors = [
 
@@ -37,13 +37,24 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.render.call(this);
         return this;
     },
+    destroy: function() {
+
+        Application.BaseGlobeView.prototype.destroy.call(this);
+
+        this.resetGlobe();
+        this.colors = null;
+        this.added = [];
+
+    },
     suscribe: function() {
-        Application._vent.on('data/ready', this.showResults.bind(this));
-       // Application._vent.on('globe/ready', this.processRequest.bind(this));
+        Application.BaseGlobeView.prototype.suscribe.call(this);
+        //Application._vent.on('data/ready', this.showResults.bind(this));
+        // Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
     startDataSynchronization: function() {
 
-        this.collection.fetch();
+        Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
+        this.collection[0].fetch();
 
     },
     resetGlobe: function() {
@@ -55,6 +66,8 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
         });
     },
     showResults: function(results) {
+
+        Application.BaseGlobeView.prototype.showResults.call(this, results);
 
         if (results.length == 0) {
             console.log('No data was returned from Google Trends');
