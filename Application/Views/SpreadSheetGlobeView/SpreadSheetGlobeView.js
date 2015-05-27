@@ -6,25 +6,32 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
     initialize: function(config) {
         Application.BaseGlobeView.prototype.initialize.call(this, config);
         // this._vent = config._vent;
-        this.countries = [];
-        this.intersected; // intersected mesh
-        this.moved = false; // for controls and mouse events
-        this.timer; // represents timer for user mouse idle
-        this.idle = true; // represents user mouse idle
+        //this.countries = [];
+        //this.intersected; // intersected mesh
+        //this.moved = false; // for controls and mouse events
+        //this.timer; // represents timer for user mouse idle
+        //this.idle = true; // represents user mouse idle
         this.sprites = [];
-        this.suscribe();
+        //this.suscribe();
+        //this.collection = config.collection[0];
 
         console.log('link: https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
         console.log('key: 13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg');
     },
     suscribe: function() {
 
-        Application._vent.on('data/ready', this.showResults.bind(this));
-        Application._vent.on('globe/ready', this.processRequest.bind(this));
+        Application.BaseGlobeView.prototype.suscribe.call(this);
+        //Application._vent.on('data/ready', this.showResults.bind(this));
+        // Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
-    processRequest: function() {
-
-        this.collection.fetch();
+    startDataSynchronization: function() {
+        Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
+        this.collection[0].fetch();
+    },
+    destroy: function() {
+        Application.BaseGlobeView.prototype.destroy.call(this);
+        this.sprites = null;
+        // Application._vent.unbind('globe/ready');
     },
     // member methods
     resetGlobe: function() {
@@ -62,7 +69,7 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
             time += 20;
 
             var sprite = new THREE.Sprite(material);
-            setTimeout(function() {
+            var timer = setTimeout(function() {
 
                 that.globe.add(sprite);
 
@@ -71,6 +78,8 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
                 that.sprites.push(sprite);
             }, time);
+
+            that.timer.push(timer);
         });
     }
 });

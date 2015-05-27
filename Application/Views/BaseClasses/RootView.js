@@ -11,7 +11,7 @@ Application.RootView = Backbone.View.extend({
     initialize: function() {
 
         this.controlPanel = new Application.ControlPanelRootView();
-        this.rootGlobeView = null;
+        this.rootView = null;
 
         Application._vent.on('controlpanel', this.submitOn.bind(this));
     },
@@ -22,63 +22,37 @@ Application.RootView = Backbone.View.extend({
     },
     submitOn: function(config) {
 
-        // console.log(config);
         this.initGlobeView(config);
     },
 
     initGlobeView: function(config) {
 
-        if (this.rootGlobeView) {
+        if (this.rootView) {
 
-            this.rootGlobeView.destroy();
-            this.rootGlobeView = null;
+            this.rootView.destroy();
+            this.rootView = null;
         }
 
-      // {dataSourcesList: "", 
-      // visualizationList: "", 
-      // templatesList: "", 
-      // userInput: ""}
+        // {dataSourcesList: "", 
+        // visualizationList: "", 
+        // templatesList: "", 
+        // userInput: ""}
 
-        var files = null;
-        var rootGlobeViewClass = null;
-        switch(config.templatesList) {
+        var rootViewClass = null;
+        switch (config.templatesList) {
 
             case "countries":
-            {  
-                files = Application.globeViews.googleTrends.files;
-                rootGlobeViewClass = 'GoogleTrendsRootGlobeView';
-                // rootGlobeViewClass = 'SpreadSheetRootGlobeView';
-                break;
-            }
             case "points":
-            {  
-                files = Application.globeViews.spreadSheet.files;
-                //rootGlobeViewClass = 'GoogleTrendsRootGlobeView';
-                rootGlobeViewClass = 'SpreadSheetRootGlobeView';
-                break;
-            }
             case "dynamic":
-            {
-                files = Application.globeViews.dynamic.files;
-                rootGlobeViewClass = 'DynamicRootGlobeView';
-                break;
-            }
             case "graph":
-            {
-                files = Application.globeViews.flightPath.files;
-                rootGlobeViewClass = 'FlightPathRootGlobeView';
-                break;
-            }
+                {
+                    rootViewClass = 'RootGlobeView';
+                    break;
+                }
+
         }
 
-        if (files && rootGlobeViewClass) {
-
-            var that = this;
-            Application.Helper.requireOrderly(files, function() {
-
-                that.rootGlobeView = new Application[rootGlobeViewClass](config);
-                that.$el.prepend(that.rootGlobeView.render().$el);
-            });
-        }
+        this.rootView = new Application[rootViewClass](config);
+        this.$el.prepend(this.rootView.$el);
     }
 });

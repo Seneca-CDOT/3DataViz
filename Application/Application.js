@@ -54,58 +54,24 @@ Application = {
         ]
     ],
 
-    globeViews: {
+    models: {
+        spreadSheet: ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'],
+        googleTrends: ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'],
+        twitter: ['Models/DynamicGlobeView/DynamicGlobeModel.js'],
+        csv: ['Models/FlightPathGlobeView/FlightPathGlobeModel.js','Models/data/path.js', 'Models/data/countriesList.js']
+    },
 
-        //configuration for FlightPathGlobeView
-        flightPath: {
-            files: [
-                'Views/FlightPathGlobeView/FlightPathRootGlobeView.js',
-                'Views/FlightPathGlobeView/FlightPathGlobeView.js',
-                'Models/FlightPathGlobeView/FlightPathGlobeModel.js',
-                'Models/data/path.js',
-                'Models/data/countriesList.js'
-                // 'Views/VideoView.js',
-                // 'Views/SliderControlView.js',
-            ],
-        },
+    layers: {
+        points: ['Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js'],
+        countries: ['Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js'],
+        dynamic: ['Views/DynamicGlobeView/DynamicGlobeView.js', 'Views/DynamicGlobeView/DynamicGlobeParticle.js'],
+        graph: ['Views/FlightPathGlobeView/FlightPathGlobeView.js']
 
-        //configuration for DynamicGlobeView
-        dynamic: {
-            files: [
-                'Views/DynamicGlobeView/DynamicGlobeParticle.js',
-                'Views/DynamicGlobeView/DynamicGlobeView.js',
-                [
-                    'Views/DynamicGlobeView/DynamicRootGlobeView.js',
-                    'Models/DynamicGlobeView/DynamicGlobeModel.js'
-                ]
-            ]
-        },
-
-        //configuration for SpreadSheetGlobeView
-        spreadSheet: {
-            files: [
-                'Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js',
-                [
-                    'Views/SpreadSheetGlobeView/SpreadSheetRootGlobeView.js',
-                    'Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js' // TODO: separate static twitter, spread sheet and other models
-                ]
-            ]
-        },
-
-        //configuration for GoogleTrendsGlobeView
-        googleTrends: {
-            files: [
-                'Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js',
-                [
-                    'Views/GoogleTrendsGlobeView/GoogleTrendsRootGlobeView.js',
-                    'Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'
-                ]
-            ]
-        }
     }
-};
+
+}
 require(['Helpers/Helper.js'], function(){
     Application.Helper.requireOrderly(Application.files, function(){
         Application.init();
-    })
+    });
 });

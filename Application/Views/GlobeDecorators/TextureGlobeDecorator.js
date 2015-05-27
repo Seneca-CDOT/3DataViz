@@ -1,12 +1,12 @@
 var Application = Application || {};
 
-Application.TextureGlobeDecorator = (function(){
+Application.TextureGlobeDecorator = (function() {
 
-	function TextureGlobeDecorator() {
+    function TextureGlobeDecorator() {
 
-		// TODO: privatize
+        // TODO: privatize
 
-		// HexMap is the map for clicking on countries.
+        // HexMap is the map for clicking on countries.
         // TextureMap is the actual thing that's shown
         this.hexMap = 'Assets/Images/textures/hexMapMin.png';
         this.textureMap = 'Assets/Images/textures/worldMatrix.jpg';
@@ -19,10 +19,10 @@ Application.TextureGlobeDecorator = (function(){
         this.factor = 3;
         this.texHeight = 1024 * this.factor;
         this.texWidth = this.texHeight * this.factor;
-	};
-	Application.Helper.inherit(TextureGlobeDecorator, Application.BaseGlobeDecorator);
+    };
+    Application.Helper.inherit(TextureGlobeDecorator, Application.BaseGlobeDecorator);
 
-	 // properties
+    // properties
     TextureGlobeDecorator.prototype.decorateGlobe = function(globeView) {
 
         privateMethods.loadTexture.call(this, globeView);
@@ -31,7 +31,7 @@ Application.TextureGlobeDecorator = (function(){
     // functionality
     TextureGlobeDecorator.prototype.clickOnIntersect = function(globeView, intersect) {
 
-    	// var point = intersects[0].point;
+        // var point = intersects[0].point;
         // point.setLength(radius);
 
         // var color = Application.Helper.getPixelClicked(point, canvasCtx)
@@ -40,13 +40,38 @@ Application.TextureGlobeDecorator = (function(){
         // this.cameraGoTo(country);
     };
 
+    TextureGlobeDecorator.prototype.findCountryByCode = function(code) {
+
+        var mesh = privateMethods.findCountryMeshByCode.call(this, code);
+
+        return mesh;
+    };
+
+    TextureGlobeDecorator.prototype.findCountryByName = function(name) {
+
+        var mesh = privateMethods.findCountryMeshByName.call(this, name);
+
+        return mesh;
+    };
+
     var privateMethods = Object.create(TextureGlobeDecorator.prototype);
+
+    privateMethods.findCountryMeshByName = function(name) {
+
+        return;
+
+    }
+    privateMethods.findCountryMeshByCode = function(code) {
+
+        return;
+    }
+
     privateMethods.loadTexture = function(globeView) {
 
         var texture = THREE.ImageUtils.loadTexture(this.textureMap);
-		// texture.wrapS = THREE.RepeatWrapping;
-		// var radians = - 0.5;
-		// texture.offset.x = radians;
+        // texture.wrapS = THREE.RepeatWrapping;
+        // var radians = - 0.5;
+        // texture.offset.x = radians;
 
         var material = new THREE.MeshBasicMaterial({
             color: 0xFFFFFF,
@@ -59,8 +84,8 @@ Application.TextureGlobeDecorator = (function(){
             globeView.globe.material = null;
         }
         globeView.globe.material = material;
-    
-       Application._vent.trigger('globe/ready'); // notifies about ready state of geometry
+
+        Application._vent.trigger('globe/ready'); // notifies about ready state of geometry
 
     };
 
@@ -180,7 +205,7 @@ Application.TextureGlobeDecorator = (function(){
             canvasCtx.fillStyle = "#" + color;
             canvasCtx.fill();
         };
-               
+
 
     };
 
@@ -198,9 +223,9 @@ Application.TextureGlobeDecorator = (function(){
         image.src = this.hexMap;
         image.onload = function() {
 
-			canvasCtx.drawImage(image, 0, 0);
+            canvasCtx.drawImage(image, 0, 0);
         };
     };
 
-	return TextureGlobeDecorator;
+    return TextureGlobeDecorator;
 })();
