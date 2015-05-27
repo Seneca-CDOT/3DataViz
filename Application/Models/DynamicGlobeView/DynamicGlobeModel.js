@@ -17,9 +17,10 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
 
     model: Application.Tweet,
     url: "tweets/apple",
-    initialize: function() {
+    initialize: function(config) {
 
         Application.BaseGlobeCollection.prototype.initialize.call(this);
+        this.templatesList = config.templatesList;
     },
     parse: function(response) {
 
@@ -27,7 +28,7 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
         var options = {
 
             dataType: "twitter",
-            visualizationType: "points"
+            visualizationType: this.templatesList
         };
         var pData = pModule.processData(response, options)
         return pData;

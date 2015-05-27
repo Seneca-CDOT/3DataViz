@@ -41,7 +41,7 @@ Application.MainConfigView = Backbone.View.extend({
         this.visualizationList.$el.attr('id', 'visualizationList');
         this.visualizationList.$el.attr('class', 'form-control');
 
-        this.temlist = ['static', 'dynamic', 'graph'];
+        this.temlist = ['country', 'dynamic', 'graph', 'points'];
         this.templatesList = new Application.DropDownList(config, this.temlist);
         this.templatesList.$el.attr('id', 'templatesList');
         this.templatesList.$el.attr('class', 'form-control');
@@ -213,8 +213,9 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
             return;
         }
 
-        var key = this.parseKey(this.urlfield.$el.val());
-
+        // var key = this.parseKey(this.urlfield.$el.val());
+        var key = this.urlfield.$el.val();
+        console.log("submitAction "+key);        
         Application._vent.trigger('controlpanel/submit', key);
 
     },
@@ -225,7 +226,7 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
 
     },
     parseKey: function(url) {
-
+        //TODO it doesn't work.
         var startindex = 0;
         var endindex = 0;
 
@@ -302,9 +303,8 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
 
             return;
         }
-
+        
         var key = this.parseKey(this.keywordfield.$el.val());
-
         Application._vent.trigger('controlpanel/submit', key);
 
     },

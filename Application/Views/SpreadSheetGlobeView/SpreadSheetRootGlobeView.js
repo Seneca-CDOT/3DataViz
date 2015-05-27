@@ -1,19 +1,21 @@
 var Application = Application || {};
 
 Application.SpreadSheetRootGlobeView = Application.RootGlobeView.extend({
-  initialize: function() {
-
-    Application.RootGlobeView.prototype.initialize.call(this);
-    
-    var obj = {};
-    obj._vent = this._vent;
-    obj.collection = new Application.SpreadSheetCollection(obj._vent);
-    this.globeView = new Application.SpreadSheetGlobeView(obj);
+  initialize: function(config) {
+    Application.RootGlobeView.prototype.initialize.call(this, config);
   },
   render: function(options) {
 
     Application.RootGlobeView.prototype.render.call(this);
     return this;
+  },
+  createCollection: function(config) {
+
+      return new Application.SpreadSheetCollection(config);
+  },
+  createGlobeView: function(config) {
+
+      return new Application.SpreadSheetGlobeView(config);
   }
 });
 

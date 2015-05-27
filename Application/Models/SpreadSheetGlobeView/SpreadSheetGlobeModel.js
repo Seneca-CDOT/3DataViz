@@ -14,19 +14,22 @@ Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
 
 Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
     model: Application.SpreadSheetRecord,
-    initialize: function() {
+    initialize: function(config) {
 
         Application.BaseGlobeCollection.prototype.initialize.call(this);
+        this.setURL(config.userInput);
+        this.templatesList = config.templatesList;
+
     },
     parse: function(response) {
-
-        // console.log(response);
+        console.log("SpreadSheet Parse");
+        console.log(response);
         var pModule = Application.DataProcessor.ProcessorModule;
         
         var options = {
 
             dataType: "spreadSheet",
-            visualizationType: "country"
+            visualizationType: this.templatesList
         };
         
         var pData = pModule.processData(response, options);
@@ -35,7 +38,6 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
     },
 
     setURL: function(key) {
-
         if (!key) return;
         this.url = 'https://spreadsheets.google.com/feeds/cells/' + key + '/1/public/basic?alt=json';
     }

@@ -22,12 +22,14 @@ Application.RootView = Backbone.View.extend({
     },
     submitOn: function(config) {
 
-        // console.log(config);
+        console.log("config--");
+        console.log(config);
         this.initGlobeView(config);
     },
 
     initGlobeView: function(config) {
-
+        console.log("initGlobeView");
+        console.log(config);
         if (this.rootGlobeView) {
 
             this.rootGlobeView.destroy();
@@ -43,11 +45,16 @@ Application.RootView = Backbone.View.extend({
         var rootGlobeViewClass = null;
         switch(config.templatesList) {
 
-            case "static":
+            case "points":
+            {  
+                files = Application.globeViews.spreadSheet.files;
+                rootGlobeViewClass = 'SpreadSheetRootGlobeView';
+                break;
+            }
+            case "country":
             {  
                 files = Application.globeViews.googleTrends.files;
                 rootGlobeViewClass = 'GoogleTrendsRootGlobeView';
-                // rootGlobeViewClass = 'SpreadSheetRootGlobeView';
                 break;
             }
             case "dynamic":
@@ -68,6 +75,9 @@ Application.RootView = Backbone.View.extend({
 
             var that = this;
             Application.Helper.requireOrderly(files, function() {
+
+                console.log("=======");
+                console.log(config);
 
                 that.rootGlobeView = new Application[rootGlobeViewClass](config);
                 that.$el.prepend(that.rootGlobeView.render().$el);

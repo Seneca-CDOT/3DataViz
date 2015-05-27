@@ -20,6 +20,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         this.url; // request by this url to google trends
         var that = this;
         this.userInput = config.userInput;
+        this.templatesList = config.templatesList;
 
         window.google = {
                 visualization: {
@@ -37,16 +38,20 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
     },
     parse: function(response) {
 
+        console.log(response);
+
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
 
             dataType: "googleTrends",
-            visualizationType: "country"
+            visualizationType: this.templatesList
         };
+
         var pData = pModule.processData(response.table.rows, options)
 
         Application._vent.trigger('data/parsed', pData);
 
+        console.log(pData);
     },
     setURL: function(key) {
 

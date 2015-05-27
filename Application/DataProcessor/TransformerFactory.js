@@ -2,11 +2,11 @@ var Application = Application || {};
 
 Application.DataProcessor.TransformerFactory = (function() {
 
-    var TransformerClass = Application.DataProcessor.PointVisualTransformer;
+    var TransformerClass = Application.DataProcessor.PointsVisualTransformer;
 
     var publicMethods = {};
     publicMethods.createTransformer = function(options) {
-        console.log(options);
+
         switch (options.transformerType) {
 
             case "countryVisualformer":
@@ -15,7 +15,11 @@ Application.DataProcessor.TransformerFactory = (function() {
                 break;
             case "pointsVisualTransformer":
                 console.log("pointsVisualTransformer");
-                TransformerClass = Application.DataProcessor.PointVisualTransformer;
+                TransformerClass = Application.DataProcessor.PointsVisualTransformer;
+                break;
+            case "dynamicVisualTransformer":
+                console.log("dynamicVisualTransformer");
+                TransformerClass = Application.DataProcessor.DynamicVisualTransformer;
                 break;
             case "flightPathTransformer":
                 console.log("flightPathTransformer");
@@ -116,16 +120,34 @@ Application.DataProcessor.CountryVisualTransformer = (function(){
 })();
 
 // point visual
-Application.DataProcessor.PointVisualTransformer = (function(){
+Application.DataProcessor.PointsVisualTransformer = (function(){
 
-    function PointVisualTransformer() {
+    function PointsVisualTransformer() {
 
         Application.DataProcessor.BaseTransformer.call(this);
     };
-    Application.Helper.inherit(PointVisualTransformer, Application.DataProcessor.BaseTransformer);
+    Application.Helper.inherit(PointsVisualTransformer, Application.DataProcessor.BaseTransformer);
 
-    PointVisualTransformer.prototype.transform = function(data) {
+    PointsVisualTransformer.prototype.transform = function(data) {
+        return data;
+    };
 
+    return PointsVisualTransformer;
+
+})();
+
+// point visual
+Application.DataProcessor.DynamicVisualTransformer = (function(){
+
+    function DynamicVisualTransformer() {
+
+        Application.DataProcessor.BaseTransformer.call(this);
+    };
+    Application.Helper.inherit(DynamicVisualTransformer, Application.DataProcessor.BaseTransformer);
+
+    DynamicVisualTransformer.prototype.transform = function(data) {
+
+        console.log("DynamicVisualTransformer transform called.");
         for (var i = 0; i < data.length; ++i) {
 
             if (data[i].timestamp !== "") {
@@ -139,7 +161,7 @@ Application.DataProcessor.PointVisualTransformer = (function(){
         return data;
     };
 
-    return PointVisualTransformer;
+    return DynamicVisualTransformer;
 
 })();
 

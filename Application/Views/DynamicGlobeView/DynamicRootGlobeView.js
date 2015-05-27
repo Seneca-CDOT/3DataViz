@@ -14,7 +14,7 @@ Application.DynamicRootGlobeView = Application.RootGlobeView.extend({
 
     createCollection: function(config) {
 
-        return new Application.Tweets();
+        return new Application.Tweets(config);
     },
     createGlobeView: function(config) {
 

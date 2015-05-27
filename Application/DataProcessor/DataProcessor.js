@@ -43,6 +43,9 @@ Application.DataProcessor.ProcessorModule = (function() {
             case "points":
                 options.transformerType = "pointsVisualTransformer";
                 break;
+            case "dynamic":
+                options.transformerType = "dynamicVisualTransformer";
+                break;
             case "flightPath":
                 options.transformerType = "flightPathTransformer";
                 break;
@@ -57,16 +60,25 @@ Application.DataProcessor.ProcessorModule = (function() {
     var publicMethods = {};
     publicMethods.processData = function(data, options) {
 
+        console.log("Raw Data =====");
+        console.log(data);
+
         var pData = null;
 
         var dtProcessor = privateMethods.dataTypedProcessor(options);
         // preprocess data depending on its type
         pData = dtProcessor.process(data);
 
+        console.log("Processed Data =====");
+        console.log(pData);
+
         var vtProcessor = privateMethods.visualizationTypedProcessor(options);
 
         // transform preprocessed data depending on visualization type
         pData = vtProcessor.transform(pData);
+
+        console.log("pData Data =====");
+        console.log(data);
 
         // return tData;
         return pData;

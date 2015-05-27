@@ -1,10 +1,11 @@
 var Application = Application || {};
 
-Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
+Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
     initialize: function(config) {
-        Application.BaseGeometryGlobeView.prototype.initialize.call(this, config);
+
+        Application.BaseGlobeView.prototype.initialize.call(this, config);
        // this._vent = config._vent;
         this.countries = [];
         this.intersected; // intersected mesh
@@ -12,30 +13,31 @@ Application.SpreadSheetGlobeView = Application.BaseGeometryGlobeView.extend({
         this.timer; // represents timer for user mouse idle
         this.idle = true; // represents user mouse idle
         this.sprites = [];
-        this.suscribe();
-
-    };
+        // this.suscribe();
+        // 
+        this.submit(config.userInput);
 
         console.log('https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
     },
     render: function() {
 
-        Application.BaseGeometryGlobeView.prototype.render.call(this);
+        Application.BaseGlobeView.prototype.render.call(this);
         return this;
     },
+    //TODO Seems this is not used.
     suscribe: function() {
 
+        console.log("suscribe");
         Application._vent.on('click/submit', this.submit.bind(this));
         Application._vent.on('click/reset', this.resetGlobe.bind(this));
     },
     submit: function(key) {
-
+        
         var that = this;
         this.collection.setURL(key);
         this.collection.fetch({
 
             success: function(response) {
-
                 that.addPoints(response);
             },
             error: function(error) {
