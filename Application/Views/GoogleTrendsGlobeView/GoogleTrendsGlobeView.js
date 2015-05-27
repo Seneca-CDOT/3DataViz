@@ -40,7 +40,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     destroy: function() {
 
         Application.BaseGlobeView.prototype.destroy.call(this);
-
+        Application._vent.unbind('globe/ready');
         this.resetGlobe();
         this.colors = null;
         this.added = [];
@@ -49,11 +49,10 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     suscribe: function() {
         Application.BaseGlobeView.prototype.suscribe.call(this);
         //Application._vent.on('data/ready', this.showResults.bind(this));
-        // Application._vent.on('globe/ready', this.processRequest.bind(this));
+        Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
-    startDataSynchronization: function() {
+    processRequest: function() {
 
-        Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
         this.collection[0].fetch();
 
     },
