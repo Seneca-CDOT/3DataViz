@@ -22,10 +22,10 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.suscribe.call(this);
         //Application._vent.on('data/ready', this.showResults.bind(this));
-        // Application._vent.on('globe/ready', this.processRequest.bind(this));
+        Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
-    startDataSynchronization: function() {
-        Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
+    processRequest: function() {
+      //  Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
         this.collection[0].fetch();
     },
     destroy: function() {
