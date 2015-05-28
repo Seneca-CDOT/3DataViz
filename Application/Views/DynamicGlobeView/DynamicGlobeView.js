@@ -161,48 +161,50 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     // this.startDataStreaming();
     startDataSynchronization: function() {
 
-        var that = this;
-        this.collection.reset();
-        this.collection.fetch().done(function() {
+        Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
 
-            that.showDataRecords(0, that.lifePeriod);
-        });
+        this.collection[0].reset();
+        this.collection[0].fetch();
+
     },
-    showDataRecords: function(beginIndex, timeInterval) {
+    showResults: function(results) {
+        this.showDataRecords(results, 0, this.lifePeriod);
+    },
+    showDataRecords: function(results, beginIndex, timeInterval) {
+      
+        if (beginIndex >= results.length) {
 
-        if (beginIndex >= this.collection.length) {
-
-            this.startDataSynchronization();
+            // this.showDataRecords(results, 0, this.lifePeriod)
             return;
         }
 
         var count = 0;
-        var dataRecord = this.collection.at(beginIndex);
-        var startTime = dataRecord.get("timestamp");
+        var dataRecord = results[beginIndex];
+        var startTime = dataRecord.timestamp;
         var time = startTime;
         while (startTime + timeInterval > time) {
 
             var date = new Date();
-            dataRecord.set("timestamp", date.getTime());
+            dataRecord.timestamp = date.getTime();
 
             this.addParticleWithDataRecord(dataRecord);
             ++count;
             ++beginIndex;
-            if (beginIndex >= this.collection.length)
+            if (beginIndex >= results.length)
                 break;
-            dataRecord = this.collection.at(++beginIndex);
-            time = dataRecord.get("timestamp");
+            dataRecord = results[++beginIndex];
+            time = dataRecord.timestamp;
         }
 
         console.log("----------------");
         console.log("Twittes Viewed: " + count + " Within Iterval Of: " + 0.001 * timeInterval + "sec.");
         console.log("Twittes Viewed Total: " + beginIndex);
-        console.log("Twittes Left To View: " + (this.collection.length - beginIndex));
+        console.log("Twittes Left To View: " + (results.length - beginIndex));
 
         var that = this;
         this.particlesTimer = setTimeout(function() {
 
-            that.showDataRecords(beginIndex, timeInterval);
+            that.showDataRecords(results, beginIndex, timeInterval);
         }, this.period);
     },
 
