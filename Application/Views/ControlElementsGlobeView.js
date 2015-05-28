@@ -26,21 +26,7 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
     addToConfig: function(value) {
 
         this.name = this.$el.attr('id');
-
-        // if (!this.userInput.hasOwnProperty(this.name)) {
-
-        //     Object.defineProperty(this.userInput, this.name, {
-
-        //         value: value,
-        //         writable: true,
-        //     });
-
-        // } else {
-
         this.userInput[this.name] = value;
-
-        // }
-
     }
 
 });

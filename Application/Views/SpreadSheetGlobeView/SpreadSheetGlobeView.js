@@ -48,8 +48,8 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
     // visualization specific functionality
     showResults: function(results) {
-        console.log("showResults!!!");
-        console.log(results);
+        var that = this;
+
         var map = THREE.ImageUtils.loadTexture("Assets/Images/sprite.png");
         var material = new THREE.SpriteMaterial({
 
@@ -58,23 +58,65 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
             fog: true
         });
 
-        results.sort(function(a, b) {
+       // var destination;
+        var hasGeo = false;
 
-            return b.longitude - a.longitude;
-        });
+        if (typeof results[0].longitude === "undefined" && typeof results[0].latitude === "undefined") {
 
-        var that = this;
+            $.each(results, function(index, item) {
+
+                if (item.countrycode != "") {
+                    var mesh = that.decorators[0].findCountryByCode(item.countrycode);
+                   var destination = mesh.geometry.boundingSphere.center.clone();
+                    destination.setLength(that.globeRadius + 1);
+                    results[index].destination = destination;
+
+                } else if (item.countryname != "") {
+                    var mesh = that.decorators[0].findCountryByName(item.countryname);
+                    var destination = mesh.geometry.boundingSphere.center.clone();
+                    destination.setLength(that.globeRadius + 1);
+                    results[index].destination = destination;
+                } else {
+
+                    console.log('Data has no country identified');
+                }
+
+
+
+            });
+        } else {
+
+            hasGeo = true;
+
+            results.sort(function(a, b) {
+
+                return b.longitude - a.longitude;
+            });
+
+        }
+
         var time = 100;
-        results.forEach(function(item) {
+
+        $.each(results, function(index, item) {
 
             time += 20;
 
             var sprite = new THREE.Sprite(material);
+            sprite.scale.multiplyScalar(5);
             var timer = setTimeout(function() {
 
                 that.globe.add(sprite);
 
-                var position = Application.Helper.geoToxyz(item.longitude, item.latitude, 51);
+
+                if (hasGeo) {
+
+                    var position = Application.Helper.geoToxyz(item.longitude, item.latitude, 51);
+
+                } else {
+
+                    var position = results[index].destination;
+
+                }
                 sprite.position.copy(position);
 
                 that.sprites.push(sprite);

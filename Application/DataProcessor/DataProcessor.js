@@ -38,7 +38,7 @@ Application.DataProcessor.ProcessorModule = (function() {
         switch (vOptions.visualizationType) {
 
             case "countries":
-                options.transformerType = "countriesVisualformer";
+                options.transformerType = "countriesVisualTransformer";
                 break;
             case "points":
                 options.transformerType = "pointsVisualTransformer";

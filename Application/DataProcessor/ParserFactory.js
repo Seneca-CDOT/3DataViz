@@ -178,8 +178,8 @@ Application.DataProcessor.TweetParser = (function() {
         var collection = new Array();
         objects.forEach(function(object) {
 
-			var obj = {};
-			for (path in filter) {
+            var obj = {};
+            for (path in filter) {
 
                 obj[path] = that.getValue(filter[path], object);
             }
@@ -203,8 +203,14 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
     GoogleTrendsParser.prototype.parse = function(data) {
 
         var filter = {
+            countryname: "",
             countrycode: "c[0].v",
-            percent: "c[1].v"
+            percent: "c[1].v",
+            longitude: "",
+            latitude: "",
+            timestamp: "",
+            text: ""
+
         };
         var pData = privateMethods.extract.call(this, filter, data);
         return pData;
@@ -226,8 +232,12 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
 
             var obj = {}
             for (path in filter) {
+                if (filter[path] == "") {
+                    obj[path] = "";
+                } else {
 
-                obj[path] = that.getValue(filter[path], object);
+                    obj[path] = that.getValue(filter[path], object);
+                }
             }
             collection.push(obj);
         });

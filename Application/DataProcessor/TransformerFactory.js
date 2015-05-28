@@ -9,8 +9,8 @@ Application.DataProcessor.TransformerFactory = (function() {
 
         switch (options.transformerType) {
 
-            case "countriesVisualformer":
-                console.log("countriesVisualformer");
+            case "countriesVisualTransformer":
+                console.log("countriesVisualTransformer");
                 TransformerClass = Application.DataProcessor.CountriesVisualTransformer;
                 break;
             case "pointsVisualTransformer":
@@ -112,7 +112,21 @@ Application.DataProcessor.CountriesVisualTransformer = (function(){
     Application.Helper.inherit(CountriesVisualTransformer, Application.DataProcessor.BaseTransformer);
 
     CountriesVisualTransformer.prototype.transform = function(data) {
-        return data;
+      
+      var transData = [];  
+      
+        $.each( data, function (index, item ) {
+          
+          var obj = {};
+          obj.countrycode = item.countrycode || "";
+          obj.countryname = item.countryname || "";
+          obj.percent = item.percent || 0;
+          transData.push(obj);
+
+         });
+
+
+        return transData;
     };
 
     return CountriesVisualTransformer;
@@ -129,7 +143,21 @@ Application.DataProcessor.PointsVisualTransformer = (function(){
     Application.Helper.inherit(PointsVisualTransformer, Application.DataProcessor.BaseTransformer);
 
     PointsVisualTransformer.prototype.transform = function(data) {
-        return data;
+         
+         var transData = [];  
+      
+        $.each( data, function (index, item ) {
+          
+          var obj = {};
+          obj.countrycode = item.countrycode || "";
+          obj.countryname = item.countryname || "";
+          obj.percent = item.percent || 0;
+          transData.push(obj);
+
+         });
+
+
+        return transData;
     };
 
     return PointsVisualTransformer;
