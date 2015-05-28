@@ -103,7 +103,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         Application._vent.unbind('data/ready');
     },
     render: function() {
-
+        
         this.showGlobe();
         return this;
     },
