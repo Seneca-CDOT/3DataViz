@@ -17,7 +17,7 @@ app.use(express.static('../public'));
 
 app.get('/tweets/apple', function(req, res) {
   
-  MongoClient.connect('mongodb://'+keys.user+':'+keys.password+'@ds043002.mongolab.com:43002/heroku_app37408641', function(err, db) {
+  MongoClient.connect('mongodb://'+keys.user+':'+keys.key+'@ds043062.mongolab.com:43062/heroku_app37412051', function(err, db) {
   // MongoClient.connect('mongodb://localhost:27017/tweets', function(err, db) {
     console.log(db);
 
@@ -34,7 +34,7 @@ app.get('/tweets/apple', function(req, res) {
 
 app.get('/tweets/oscars', function(req, res) {
 
-  MongoClient.connect('mongodb://'+keys.user+':'+keys.password+'@ds043002.mongolab.com:43002/heroku_app37408641', function(err, db) {
+  MongoClient.connect('mongodb://'+keys.user+':'+keys.password+'@ds043062.mongolab.com:43062/heroku_app37412051', function(err, db) {
   // MongoClient.connect('mongodb://<dbuser>:<dbpassword>@ds043002.mongolab.com:43002/heroku_app37408641', function(err, db) {
     console.log(db);
     
