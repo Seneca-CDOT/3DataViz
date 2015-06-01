@@ -1,0 +1,26 @@
+{
+  "name": "threedatavizdev",
+  "version": "0.1.1",
+  "description": "Server side scripting for 3DataViz",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "~4.9.x",
+    "mongodb": "~2.0.x"
+  },
+  "engines": {
+    "node": "0.12.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Seneca-CDOT/3DataViz/tree/master-server"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "MIT"
+}

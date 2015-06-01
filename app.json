@@ -1,0 +1,7 @@
+{
+  "name": "3DataViz",
+  "description": "3D Data Visualization Project",
+  "repository": "https://github.com/Seneca-CDOT/3DataViz/tree/master-server",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "keywords": ["node", "express", "static"]
+}
