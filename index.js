@@ -18,15 +18,12 @@ app.use(express.static('../public'));
 app.all('/tweets/apple', function(req, res) {
   
   MongoClient.connect('mongodb://'+keys.user+':'+keys.key+'@ds043062.mongolab.com:43062/heroku_app37412051', function(err, db) {
-  // MongoClient.connect('mongodb://localhost:27017/tweets', function(err, db) {
-    console.log(db);
 
     var col = db.collection('apple');
     col.find({"geo":{$ne:null}}).toArray(function(err, result) {
       if (err) throw err;
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Headers", "X-Requested-With");
-      // res.send("parseResponse(" + JSON.stringify(result) + ");");
       res.send(result);
       db.close();
     });
@@ -43,17 +40,20 @@ app.get('/tweets/oscars', function(req, res) {
     
     var col = db.collection('oscars');
     col.aggregate({
-        $group: {
-            _id: {
-                country: "$country",
-                code: "$country_code"
-            },
-            total_tweets: {
-                $sum: 1
-            }
-        }
+      $group: {
+          _id: {
+              country: "$country",
+              code: "$country_code"
+          },
+          total_tweets: {
+              $sum: 1
+          }
+      }
     }, function(err, result) {
-        res.send(result);
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Headers", "X-Requested-With");
+      res.send(result);
+      db.close();
     });
 
   });
