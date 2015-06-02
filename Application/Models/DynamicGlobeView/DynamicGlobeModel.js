@@ -16,7 +16,7 @@ Application.Tweet = Application.GeoDataRecord.extend({
 Application.Tweets = Application.BaseGlobeCollection.extend({
 
     model: Application.Tweet,
-    url: "tweets/apple",
+    url: "https://threedataviztest2.herokuapp.com/tweets/apple",
     initialize: function(config) {
 
         Application.BaseGlobeCollection.prototype.initialize.call(this);

@@ -163,8 +163,18 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
 
+        console.log("startDataSynchronization");
         this.collection[0].reset();
-        this.collection[0].fetch();
+        this.collection[0].fetch({
+           dataType: 'jsonp',
+           success : function (data) {
+             console.log(data);
+           },
+           error : function (e) {
+             console.log(e.message);
+           }
+        });
+        console.log("did fetch?");
 
     },
     showResults: function(results) {
