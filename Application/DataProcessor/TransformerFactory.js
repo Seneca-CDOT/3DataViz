@@ -160,21 +160,7 @@ Application.DataProcessor.PointsVisualTransformer = (function(){
 
             return transData;
         }
-
-        //  var transData = [];  
-      
-        // $.each( data, function (index, item ) {
-          
-        //   var obj = {};
-        //   obj.countrycode = item.countrycode || "";
-        //   obj.countryname = item.countryname || "";
-        //   obj.percent = item.percent || 0;
-        //   transData.push(obj);
-
-        //  });
-
-
-        // return transData;
+        
         return data
     };
 
