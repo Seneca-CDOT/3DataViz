@@ -24,7 +24,10 @@ app.get('/tweets/apple', function(req, res) {
     var col = db.collection('apple');
     col.find({"geo":{$ne:null}}).toArray(function(err, result) {
       if (err) throw err;
-      res.send("parseResponse(" + JSON.stringify(result) + ");");
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Headers", "X-Requested-With");
+      // res.send("parseResponse(" + JSON.stringify(result) + ");");
+      res.send(result);
       db.close();
     });
 
