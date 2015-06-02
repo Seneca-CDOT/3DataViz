@@ -30,29 +30,30 @@ Application.MainConfigView = Backbone.View.extend({
 
         this.config = config;
         this.subview;
+        this.subview;
 
         this.sourceslist = ['twitter', 'csv', 'spreadSheet', 'googleTrends'];
         this.dataSourcesList = new Application.DropDownList(config, this.sourceslist);
         this.dataSourcesList.$el.attr('id', 'dataSourcesList');
         this.dataSourcesList.$el.attr('class', 'form-control');
 
-        this.vislist = ['geometry', 'texture'];
-        this.visualizationList = new Application.DropDownList(config, this.vislist);
-        this.visualizationList.$el.attr('id', 'visualizationList');
-        this.visualizationList.$el.attr('class', 'form-control');
+        // this.vislist = ['geometry', 'texture'];
+        // this.visualizationList = new Application.DropDownList(config, this.vislist);
+        // this.visualizationList.$el.attr('id', 'visualizationList');
+        // this.visualizationList.$el.attr('class', 'form-control');
 
-        this.temlist = ['countries', 'points', 'dynamic', 'graph'];
-        this.templatesList = new Application.DropDownList(config, this.temlist);
-        this.templatesList.$el.attr('id', 'templatesList');
-        this.templatesList.$el.attr('class', 'form-control');
+        // this.temlist = ['countries', 'points', 'dynamic', 'graph'];
+        // this.templatesList = new Application.DropDownList(config, this.temlist);
+        // this.templatesList.$el.attr('id', 'templatesList');
+        // this.templatesList.$el.attr('class', 'form-control');
 
         Application._vent.on('controlpanelsubview/dataSourcesList', this.addSubView.bind(this));
 
     },
     render: function() {
         this.$el.append(this.dataSourcesList.render().$el);
-        this.$el.append(this.visualizationList.render().$el);
-        this.$el.append(this.templatesList.render().$el);
+        // this.$el.append(this.visualizationList.render().$el);
+        // this.$el.append(this.templatesList.render().$el);
         return this;
     },
     destroy: function() {
@@ -63,6 +64,14 @@ Application.MainConfigView = Backbone.View.extend({
         delete this.el;
     },
     addSubView: function(value) {
+
+        this.subview = this.getSubView(value);
+        if (typeof this.subview !== 'undefined') {
+            this.$el.append(this.subview.render().$el);
+        }
+
+    },
+    addTemplateOptions: function(value) {
 
         this.subview = this.getSubView(value);
         if (typeof this.subview !== 'undefined') {
@@ -92,7 +101,31 @@ Application.MainConfigView = Backbone.View.extend({
 
         return this.subview;
 
+    },
+    getTemplateListView: function(value) {
+
+        if (this.subview !== undefined) this.subview.destroy();
+
+        switch (value[0]) {
+
+            case 'twitter':
+                this.subview = new Application.DynamicTwitterControlPanel(this.config);
+                break;
+            case 'csv':
+                this.subview = new Application.CSVControlPanel(this.config);
+                break;
+            case 'spreadSheet':
+                this.subview = new Application.SpreadSheetControlPanel(this.config);
+                break;
+            case 'googleTrends':
+                this.subview = new Application.GoogleTrendsControlPanel(this.config);
+                break;
+        }
+
+        return this.subview;
+
     }
+
 
 });
 
@@ -142,7 +175,7 @@ Application.DynamicTwitterControlPanel = Application.ButtonsView.extend({
         this.search = new Application.InputField(config);
         this.search.$el.attr('id', 'userInput');
         this.search.$el.attr('class', 'form-control');
-        this.search.$el.attr('placeholder', 'Submit the URL');
+        this.search.$el.attr('placeholder', 'Enter the Keyword');
         this.search.$el.on('mousedown', this.searchFieldAction.bind(this));
 
         this.submitbtn = new Application.Button(config);
@@ -306,6 +339,75 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
         var key = this.parseKey(this.keywordfield.$el.val());
 
         Application._vent.trigger('controlpanel/submit', key);
+
+    },
+    resetAction: function() {
+
+        this.keywordfield.$el.val('');
+        Application._vent.trigger('controlpanel/reset');
+
+    },
+    parseKey: function(keyword) {
+
+        keyword = keyword.trim().replace(/ /g, ',');
+        return keyword;
+
+    }
+
+});
+
+
+Application.TemplateListControlPanel = Application.ButtonsView.extend({
+
+    initialize: function(config) {
+        Application.ButtonsView.prototype.initialize.call(this, config);
+
+        this.vislist = ['geometry', 'texture'];
+        this.visualizationList = new Application.DropDownList(config, this.vislist);
+        this.visualizationList.$el.attr('id', 'visualizationList');
+        this.visualizationList.$el.attr('class', 'form-control');
+
+        this.temlist = ['countries', 'points', 'dynamic', 'graph'];
+        this.templatesList = new Application.DropDownList(config, this.temlist);
+        this.templatesList.$el.attr('id', 'templatesList');
+        this.templatesList.$el.attr('class', 'form-control');
+
+        this.submitbtn = new Application.Button(config);
+        this.submitbtn.$el.attr('id', 'submit');
+        this.submitbtn.$el.attr('class', 'btn btn-primary');
+        this.submitbtn.$el[0].innerHTML = 'visualize';
+        this.submitbtn.$el.on('mousedown', this.submitAction.bind(this))
+
+    },
+    render: function() {
+        Application.ButtonsView.prototype.render.call(this);
+        this.$el.append(this.keywordfield.render().$el);
+        this.$el.append(this.submitbtn.render().$el);
+        //this.$el.append(this.resetbtn.render().$el);
+        return this;
+    },
+    KeywordFieldAction: function(e) {
+
+        if (e.which == 13) {
+
+            this.submitAction(e);
+        }
+
+    },
+    submitAction: function(e) {
+
+        e.preventDefault();
+
+        if (this.keywordfield.$el.val().trim() == '') {
+
+            this.keywordfield.$el.focus();
+
+            return;
+        }
+
+        var key = this.parseKey(this.keywordfield.$el.val());
+
+        Application._vent.trigger('controlpanel/visualize', key);
 
     },
     resetAction: function() {

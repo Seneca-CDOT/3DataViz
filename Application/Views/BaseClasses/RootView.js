@@ -38,21 +38,21 @@ Application.RootView = Backbone.View.extend({
         // templatesList: "", 
         // userInput: ""}
 
-        var rootViewClass = null;
-        switch (config.templatesList) {
+        // var rootViewClass = null;
+        // switch (config.templatesList) {
 
-            case "countries":
-            case "points":
-            case "dynamic":
-            case "graph":
-                {
-                    rootViewClass = 'RootGlobeView';
-                    break;
-                }
+        //     case "countries":
+        //     case "points":
+        //     case "dynamic":
+        //     case "graph":
+        //         {
+        //             rootViewClass = 'RootGlobeView';
+        //             break;
+        //         }
 
-        }
+        // }
 
-        this.rootView = new Application[rootViewClass](config);
+        this.rootView = new Application['RootGlobeView'](config);
         this.$el.prepend(this.rootView.$el);
     }
 });
