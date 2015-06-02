@@ -23,6 +23,7 @@ app.all('/tweets/apple', function(req, res) {
     col.find({"geo":{$ne:null}}).toArray(function(err, result) {
       if (err) throw err;
       res.header("Access-Control-Allow-Origin", "*");
+      // res.header("Access-Control-Allow-Origin", "http://seneca-cdot.github.io/");
       res.header("Access-Control-Allow-Headers", "X-Requested-With");
       res.send(result);
       db.close();
@@ -35,8 +36,6 @@ app.all('/tweets/apple', function(req, res) {
 app.get('/tweets/oscars', function(req, res) {
 
   MongoClient.connect('mongodb://'+keys.user+':'+keys.password+'@ds043062.mongolab.com:43062/heroku_app37412051', function(err, db) {
-  // MongoClient.connect('mongodb://<dbuser>:<dbpassword>@ds043002.mongolab.com:43002/heroku_app37408641', function(err, db) {
-    console.log(db);
     
     var col = db.collection('oscars');
     col.aggregate({
@@ -51,6 +50,7 @@ app.get('/tweets/oscars', function(req, res) {
       }
     }, function(err, result) {
       res.header("Access-Control-Allow-Origin", "*");
+      // res.header("Access-Control-Allow-Origin", "http://seneca-cdot.github.io/");
       res.header("Access-Control-Allow-Headers", "X-Requested-With");
       res.send(result);
       db.close();
