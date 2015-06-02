@@ -32,7 +32,8 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
         };
         var pData = pModule.processData(response, options)
 
-        Application._vent.trigger('data/ready', pData);
+        // Application._vent.trigger('data/ready', pData);
+        Application._vent.trigger('data/parsed', pData);
         
     }
 });

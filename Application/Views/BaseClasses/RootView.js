@@ -13,6 +13,7 @@ Application.RootView = Backbone.View.extend({
         this.controlPanel = new Application.ControlPanelRootView();
         this.rootView = null;
 
+        // Application._vent.on('controlpanel', this.submitOn.bind(this));
         Application._vent.on('controlpanel', this.submitOn.bind(this));
     },
     render: function() {

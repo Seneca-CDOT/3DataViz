@@ -72,12 +72,19 @@ Application.DataProcessor.ProcessorModule = (function() {
         console.log("Processed Data =====");
         console.log(pData);
 
+        return pData;
+    };
+
+    publicMethods.transformData = function(data, options) {
+
+        var pData = null;
+
         var vtProcessor = privateMethods.visualizationTypedProcessor(options);
 
         // transform preprocessed data depending on visualization type
         pData = vtProcessor.transform(pData);
 
-        console.log("pData Data =====");
+        console.log("transformed Data =====");
         console.log(pData);
 
         // return tData;

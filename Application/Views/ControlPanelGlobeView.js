@@ -30,7 +30,7 @@ Application.MainConfigView = Backbone.View.extend({
 
         this.config = config;
         this.subview;
-        this.subview;
+        this.templateview;
 
         this.sourceslist = ['twitter', 'csv', 'spreadSheet', 'googleTrends'];
         this.dataSourcesList = new Application.DropDownList(config, this.sourceslist);
@@ -48,6 +48,7 @@ Application.MainConfigView = Backbone.View.extend({
         // this.templatesList.$el.attr('class', 'form-control');
 
         Application._vent.on('controlpanelsubview/dataSourcesList', this.addSubView.bind(this));
+        Application._vent.on('data/parsed', this.addTemplateListView.bind(this));
 
     },
     render: function() {
@@ -66,6 +67,17 @@ Application.MainConfigView = Backbone.View.extend({
     addSubView: function(value) {
 
         this.subview = this.getSubView(value);
+        if (typeof this.subview !== 'undefined') {
+            this.$el.append(this.subview.render().$el);
+        }
+
+    },
+    addTemplateListView: function(pData) {
+        
+        console.log("addTemplateListView");
+        console.log(pData);
+
+        this.subview = this.getTemplateListView(this.config);
         if (typeof this.subview !== 'undefined') {
             this.$el.append(this.subview.render().$el);
         }
@@ -104,25 +116,10 @@ Application.MainConfigView = Backbone.View.extend({
     },
     getTemplateListView: function(value) {
 
-        if (this.subview !== undefined) this.subview.destroy();
-
-        switch (value[0]) {
-
-            case 'twitter':
-                this.subview = new Application.DynamicTwitterControlPanel(this.config);
-                break;
-            case 'csv':
-                this.subview = new Application.CSVControlPanel(this.config);
-                break;
-            case 'spreadSheet':
-                this.subview = new Application.SpreadSheetControlPanel(this.config);
-                break;
-            case 'googleTrends':
-                this.subview = new Application.GoogleTrendsControlPanel(this.config);
-                break;
-        }
-
-        return this.subview;
+        if (this.templateview !== undefined) this.templateview.destroy();
+        this.templateview = new Application.TemplateListControlPanel(this.config);
+        
+        return this.templateview;
 
     }
 
@@ -373,7 +370,7 @@ Application.TemplateListControlPanel = Application.ButtonsView.extend({
         this.templatesList.$el.attr('class', 'form-control');
 
         this.submitbtn = new Application.Button(config);
-        this.submitbtn.$el.attr('id', 'submit');
+        this.submitbtn.$el.attr('id', 'visualize');
         this.submitbtn.$el.attr('class', 'btn btn-primary');
         this.submitbtn.$el[0].innerHTML = 'visualize';
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this))
@@ -381,7 +378,8 @@ Application.TemplateListControlPanel = Application.ButtonsView.extend({
     },
     render: function() {
         Application.ButtonsView.prototype.render.call(this);
-        this.$el.append(this.keywordfield.render().$el);
+        this.$el.append(this.visualizationList.render().$el);
+        this.$el.append(this.templatesList.render().$el);
         this.$el.append(this.submitbtn.render().$el);
         //this.$el.append(this.resetbtn.render().$el);
         return this;
@@ -395,6 +393,8 @@ Application.TemplateListControlPanel = Application.ButtonsView.extend({
 
     },
     submitAction: function(e) {
+
+        console.log("submitAction");
 
         e.preventDefault();
 
