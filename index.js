@@ -15,7 +15,7 @@ app.listen(port);
 
 app.use(express.static('../public'));
 
-app.get('/tweets/apple', function(req, res) {
+app.all('/tweets/apple', function(req, res) {
   
   MongoClient.connect('mongodb://'+keys.user+':'+keys.key+'@ds043062.mongolab.com:43062/heroku_app37412051', function(err, db) {
   // MongoClient.connect('mongodb://localhost:27017/tweets', function(err, db) {
