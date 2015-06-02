@@ -49,7 +49,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.suscribe();
 
         // TODO: review
-        window.addEventListener('resize', this.onWindowResize.bind(this), false);
+        $(window).bind('resize', this.onWindowResize.bind(this));
     },
     suscribe: function() {
         Application._vent.on('data/ready', this.showResults.bind(this));
@@ -99,11 +99,11 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
 
         // TODO: review
-        window.removeEventListener('resize');
+        $(window).unbind('resize');
         Application._vent.unbind('data/ready');
     },
     render: function() {
-        
+
         this.showGlobe();
         return this;
     },
