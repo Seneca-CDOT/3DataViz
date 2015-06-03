@@ -19,9 +19,9 @@ Application.RootGlobeView = Backbone.View.extend({
         this.obj.decorators = [];
         this.obj.config = config;
         // this.createDecorators(config);
-        this.createCollection(config);
+       // this.createCollection(config);
 
-        Application._vent.on('controlpanelsubview/visualize', this.visualize.bind(config));
+     //   Application._vent.on('controlpanelsubview/visualize', this.visualize.bind(config));
     },
     render: function() {
 
@@ -99,67 +99,67 @@ Application.RootGlobeView = Backbone.View.extend({
         });
 
     },
-    createCollection: function(config) {
+    // createCollection: function(config) {
 
-        console.log("createCollection");
-        console.log(config);
-        var collection = [];
-        var collectionClasses = [];
-        var files = [];
-        var that = this;
-        switch (config.dataSourcesList) {
+    //     console.log("createCollection");
+    //     console.log(config);
+    //     var collection = [];
+    //     var collectionClasses = [];
+    //     var files = [];
+    //     var that = this;
+    //     switch (config.dataSourcesList) {
 
-            case 'twitter':
-                {
+    //         case 'twitter':
+    //             {
 
-                    collectionClasses = ['Tweets'];
-                    //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
-                    break;
+    //                 collectionClasses = ['Tweets'];
+    //                 //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
+    //                 break;
 
-                }
-            case 'csv':
-                {
+    //             }
+    //         case 'csv':
+    //             {
 
-                    collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
-                    //files = ['Models/FlightPathGlobeView/FlightPathGlobeModel.js'];
-                    break;
-                }
-            case 'spreadSheet':
-                {
+    //                 collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
+    //                 //files = ['Models/FlightPathGlobeView/FlightPathGlobeModel.js'];
+    //                 break;
+    //             }
+    //         case 'spreadSheet':
+    //             {
 
-                    collectionClasses = ['SpreadSheetCollection'];
-                    // files = ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'];
-                    break;
+    //                 collectionClasses = ['SpreadSheetCollection'];
+    //                 // files = ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'];
+    //                 break;
 
-                }
-            case 'googleTrends':
-                {
+    //             }
+    //         case 'googleTrends':
+    //             {
 
-                    collectionClasses = ['GoogleTrendsCollection'];
-                    //  files = ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'];
-                    break;
-                }
+    //                 collectionClasses = ['GoogleTrendsCollection'];
+    //                 //  files = ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'];
+    //                 break;
+    //             }
 
-        }
+    //     }
 
-        require(Application.models[config.dataSourcesList], function() {
+    //     require(Application.models[config.dataSourcesList], function() {
 
-            $.each(collectionClasses, function(index, collectionName) {
+    //         $.each(collectionClasses, function(index, collectionName) {
 
-                collection.push(new Application[collectionName](config));
+    //             collection.push(new Application[collectionName](config));
 
-            });
+    //         });
 
-            that.obj.collection = collection;
+    //         that.obj.collection = collection;
 
-            $.each(that.obj.collection, function(index, collection){
-                collection.fetch();
-            });
-            // that.createGlobeView(that.obj);
+    //         $.each(that.obj.collection, function(index, collection){
+    //             collection.fetch();
+    //         });
+    //         // that.createGlobeView(that.obj);
 
-        });
+    //     });
 
-    },
+    // },
     createDecorators: function(config) {
 
         console.log("createDecorators");

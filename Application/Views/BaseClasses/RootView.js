@@ -12,9 +12,10 @@ Application.RootView = Backbone.View.extend({
 
         this.controlPanel = new Application.ControlPanelRootView();
         this.rootView = null;
+        this.collections = [];
 
-        // Application._vent.on('controlpanel', this.submitOn.bind(this));
-        Application._vent.on('controlpanel', this.submitOn.bind(this));
+        Application._vent.on('data/parsed', this.submitOn.bind(this));
+        Application._vent.on('controlpanel/parse', this.createCollection.bind(this));
     },
     render: function() {
 
@@ -24,6 +25,7 @@ Application.RootView = Backbone.View.extend({
     submitOn: function(config) {
 
         this.initGlobeView(config);
+        console.log('data/ready');
     },
 
     initGlobeView: function(config) {
@@ -55,5 +57,60 @@ Application.RootView = Backbone.View.extend({
 
         this.rootView = new Application['RootGlobeView'](config);
         this.$el.prepend(this.rootView.$el);
-    }
+    },
+    createCollection: function(config) {
+
+        this.collections.length = 0;
+
+        console.log("createCollection");
+        console.log(config);
+        var collectionClasses = [];
+        var that = this;
+        switch (config.userChoice.dataSource) {
+
+            case 'twitter':
+                {
+
+                    collectionClasses = ['Tweets'];
+                    //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
+                    break;
+
+                }
+            case 'csv':
+                {
+
+                    collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
+                    //files = ['Models/FlightPathGlobeView/FlightPathGlobeModel.js'];
+                    break;
+                }
+            case 'spreadSheet':
+                {
+
+                    collectionClasses = ['SpreadSheetCollection'];
+                    // files = ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'];
+                    break;
+
+                }
+            case 'googleTrends':
+                {
+
+                    collectionClasses = ['GoogleTrendsCollection'];
+                    //  files = ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'];
+                    break;
+                }
+
+        }
+
+        require(Application.models[config.userChoice.dataSource], function() {
+
+            $.each(collectionClasses, function(index, collectionName) {
+
+                that.collections.push(new Application[collectionName](config));
+                that.collections[index].fetch();
+
+            });
+
+        });
+
+    },
 });

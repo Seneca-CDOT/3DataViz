@@ -19,7 +19,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         this.response = []; // response from google trends
         this.url = ''; // request by this url to google trends
         var that = this;
-        this.userInput = config.userInput;
+        this.config = config;
         this.templatesList = config.templatesList;
 
         window.google = {
@@ -67,8 +67,8 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
     },
     fetch: function () {
 
-            if (this.userInput == '') return;
-            this.setURL(this.userInput);
+            if (this.config.userChoice.input == '') return;
+            this.setURL(this.config.userChoice.input);
             this.request();
 
     }
