@@ -42,7 +42,7 @@ app.all('/tweets/apple', function(req, res) {
 
 });
 
-http.listen(8080);
+http.listen(port);
 io.on('connection', function(socket){
 
   /**
