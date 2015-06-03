@@ -162,7 +162,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     startDataSynchronization: function() {
 
         Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
-
+        
         this.collection[0].reset();
         this.collection[0].fetch();
 

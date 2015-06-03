@@ -99,7 +99,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
 
         // TODO: review
-        window.removeEventListener('resize');
+        window.removeEventListener('resize', this.onWindowResize);
         Application._vent.unbind('data/ready');
     },
     render: function() {

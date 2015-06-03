@@ -144,20 +144,24 @@ Application.DataProcessor.PointsVisualTransformer = (function(){
 
     PointsVisualTransformer.prototype.transform = function(data) {
          
-         var transData = [];  
+        if(data[0].latitude == "" && data[0].longitude == ""){
+             var transData = [];  
       
-        $.each( data, function (index, item ) {
-          
-          var obj = {};
-          obj.countrycode = item.countrycode || "";
-          obj.countryname = item.countryname || "";
-          obj.percent = item.percent || 0;
-          transData.push(obj);
+            $.each( data, function (index, item ) {
+              
+              var obj = {};
+              obj.countrycode = item.countrycode || "";
+              obj.countryname = item.countryname || "";
+              obj.percent = item.percent || 0;
+              transData.push(obj);
 
-         });
+             });
 
 
-        return transData;
+            return transData;
+        }
+        
+        return data
     };
 
     return PointsVisualTransformer;
