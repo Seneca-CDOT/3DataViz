@@ -71,7 +71,7 @@ wss.on("connection", function(ws) {
 
 app.all('/tweets/apple', function(req, res) {
   
-  MongoClient.connect('mongodb://'+keys.user+':'+keys.key+'@ds043062.mongolab.com:43062/heroku_app37412051', function(err, db) {
+  MongoClient.connect('mongodb://'+keys.user+':'+keys.key+'@ds061611.mongolab.com:61611/heroku_app37445837', function(err, db) {
 
     var col = db.collection('apple');
     col.find({"geo":{$ne:null}}).toArray(function(err, result) {
