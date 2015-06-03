@@ -1,4 +1,8 @@
 {
     "user": "readonly",
-    "key": "xjZrqoS/qg9sqQRwTwJBNK4P7AvHpa7XFrZAXOFJ"
+    "key": "xjZrqoS/qg9sqQRwTwJBNK4P7AvHpa7XFrZAXOFJ",
+    "consumer_key" : "QQAcvp4EqQ7kzt7X1hzbz8TcV",
+    "consumer_secret" : "2gJthr5qPeuBdxOZBIoQIfrEm8ilFYpn5uJ7h5cvLigWiGLjEL",
+    "token" : "2969256611-shFx17Q57hCL3cZzDmLiNmdSKkQKVGcnjwTwf7q",
+    "token_secret" : "VE5IFO9IGgd2EjG5IPCSlZbQN3Xpl9UHf0vrUvyAfb7su"
 }
