@@ -7,6 +7,7 @@ var kfs = require('fs');
 var Twitter = require('twitter');
 var MongoClient = require('mongodb').MongoClient;
 var client;
+var isOn = false;
 
 kfs.readFile('keys.json', 'utf8', function(err, data) {
   keys = JSON.parse(data);
@@ -20,25 +21,29 @@ server.listen(port)
 
 var wss = new WebSocketServer({server: server})
 wss.on("connection", function(ws) {
-  console.log("websocket connection open")
+  isOn = true;
   ws.onmessage = function (event) {
     
     var data = JSON.parse(event.data);
+    var count = 0;
     switch(data.type){
       case "start":
-
         var obj = {};
         var count =0;
         if(data.track) obj.track = data.track;        
         client.stream('statuses/filter',
           obj, function(stream) {
           stream.on('data', function(tweet) {
-            if(tweet.coordinates){
-              var msg = {
-                "type": "tweets",
-                "data": tweet
+            if(isOn){
+              if(tweet.coordinates){
+                var msg = {
+                  "type": "tweets",
+                  "data": tweet
+                }
+                ws.send(JSON.stringify(msg));
               }
-              ws.send(JSON.stringify(msg));
+            }else{
+              stream.destroy();
             }
           });
           stream.on('end', function() {
@@ -51,17 +56,14 @@ wss.on("connection", function(ws) {
         break;
 
       case "stop":
-
+        isOn = false;
         break;
+
     }
   };
   
   ws.on("close", function() {
-    
-    process.exit();
-    // client.stream.end();
-    // client.stream.destroy();
-    console.log("websocket connection close")
+    isOn = false;
   })
 
 });
