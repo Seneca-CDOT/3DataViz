@@ -130,25 +130,49 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     // streaming functionality
     // TODO: move to model
     // <script src="http://localhost:8080/socket.io/socket.io.js"></script>    
-    startDataStreaming: function() {
+    initializeDataStreaming: function(){
+        var ws = new WebSocket("ws://threedataviztest2.herokuapp.com");
+        var that = this;
+        ws.onopen = function(){
+            var msg = {
+              type: "start",
+              track: "love"
+            }
+            console.log(event);
+            console.log(ws);
+            ws.send(JSON.stringify(msg));
+            
+        };
+        ws.onmessage = function(data){
+            var data = JSON.parse(data.data).data;
+            console.log(data);
+            var dataRecord = new Application.GeoDataRecord({
+                "longitude": data.coordinates.coordinates[0],
+                "latitude": data.coordinates.coordinates[1],
+                "timestamp": data.timestamp_ms
+            });
 
-        var obj = {};
-        // obj.track = "morning";
-        obj.track = "love";
-        // obj.language = "en";
+            that.addParticleWithDataRecord(dataRecord);
+        };
 
-        this.socket = io('http://localhost:8080');
-        this.socket.on('tweet', this.onDataReceive.bind(this));
-        // this.socket.off('tweet', ...);
+    },
+    startDataStreaming: function(event) {
 
-        this.socket.emit('start', obj);
+        // var obj = {};
+        // // obj.track = "morning";
+        // obj.track = "love";
+        // // obj.language = "en";
+
+        // this.socket = io('http://localhost:8080');
+        // this.socket.on('tweet', this.onDataReceive.bind(this));
+        // // this.socket.off('tweet', ...);
+
+        // this.socket.emit('start', obj);
     },
     onDataReceive: function(data) {
 
-        console.log(data);
-
+        var data = JSON.parse(data.data).data;
         var dataRecord = new Application.GeoDataRecord({
-
             "longitude": data.coordinates.coordinates[0],
             "latitude": data.coordinates.coordinates[1],
             "timestamp": data.timestamp_ms
@@ -164,7 +188,8 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
         
         this.collection[0].reset();
-        this.collection[0].fetch();
+        // this.collection[0].fetch();
+        this.initializeDataStreaming();
 
     },
     showResults: function(results) {
@@ -210,6 +235,8 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
     // particles life cycle functionality
     addParticleWithDataRecord: function(dataRecord) {
+        console.log("addParticleWithDataRecord");
+        console.log(dataRecord);
 
         var particle = new Application.DynamicGlobeParticle(dataRecord, this.globeRadius);
         particle.setLifeTime(this.particlesLifeTime);
