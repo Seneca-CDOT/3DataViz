@@ -246,7 +246,14 @@ Application.DynamicTwitterControlPanel = Application.ButtonsView.extend({
         //  this.$el.append(this.resetbtn.render().$el);
         return this;
     },
-    searchFieldAction: function(e) {},
+    searchFieldAction: function(e) {
+
+        if (e.which == 13) {
+
+            this.submitAction(e);
+        }
+
+    },
     submitAction: function(e) {
 
         var key = this.search.$el.val();
@@ -284,6 +291,10 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
         return this;
     },
     urlFieldAction: function() {
+        if (e.which == 13) {
+
+            this.submitAction(e);
+        }
 
     },
     submitAction: function(e) {
