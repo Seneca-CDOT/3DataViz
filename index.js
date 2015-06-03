@@ -50,7 +50,8 @@ wss.on("connection", function(ws) {
             console.log("end");
           });
           stream.on('error', function(error) {
-            throw error;
+            console.log("Please try again after a couple minutes..");
+            // throw error;
           });
         });
         break;
