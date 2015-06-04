@@ -13,8 +13,16 @@ Application.RootView = Backbone.View.extend({
         this.controlPanel = new Application.ControlPanelRootView();
         this.rootView = null;
         this.collections = [];
+       
+        Application.userConfig = {
+            dataSource: '',
+            vizType: '',
+            vizLayer: '',
+            input: ''
 
-        Application._vent.on('data/parsed', this.submitOn.bind(this));
+        };
+
+        Application._vent.on('visualize', this.submitOn.bind(this));
         Application._vent.on('controlpanel/parse', this.createCollection.bind(this));
     },
     render: function() {
@@ -22,13 +30,13 @@ Application.RootView = Backbone.View.extend({
         this.$el.append(this.controlPanel.render().$el);
         return this;
     },
-    submitOn: function(config) {
+    submitOn: function() {
 
-        this.initGlobeView(config);
+        this.initGlobeView();
         console.log('data/ready');
     },
 
-    initGlobeView: function(config) {
+    initGlobeView: function() {
 
         if (this.rootView) {
 
@@ -55,18 +63,19 @@ Application.RootView = Backbone.View.extend({
 
         // }
 
-        this.rootView = new Application['RootGlobeView'](config);
+        this.rootView = new Application['RootGlobeView'](this.collections);
+        //this.rootView.collection = this.collections;
         this.$el.prepend(this.rootView.$el);
     },
-    createCollection: function(config) {
+    createCollection: function() {
 
         this.collections.length = 0;
 
         console.log("createCollection");
-        console.log(config);
+       // console.log(config);
         var collectionClasses = [];
         var that = this;
-        switch (config.userChoice.dataSource) {
+        switch (Application.userConfig.dataSource) {
 
             case 'twitter':
                 {
@@ -101,11 +110,11 @@ Application.RootView = Backbone.View.extend({
 
         }
 
-        require(Application.models[config.userChoice.dataSource], function() {
+        require(Application.models[Application.userConfig.dataSource], function() {
 
             $.each(collectionClasses, function(index, collectionName) {
 
-                that.collections.push(new Application[collectionName](config));
+                that.collections.push(new Application[collectionName]);
                 that.collections[index].fetch();
 
             });

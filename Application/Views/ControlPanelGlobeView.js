@@ -3,18 +3,6 @@ Application.ControlPanelRootView = Backbone.View.extend({
     id: 'panel',
     initialize: function() {
 
-        var userChoice = {
-            dataSource: '',
-            VizType: '',
-            VizLayer: '',
-            input: ''
-
-        };
-        var config = {};
-        config.userChoice = userChoice; //configuration object for storing user's activities in control panel
-        config.currentAttribute = ''; // current attribute of user's choice
-        this.config = config;
-
         this.addDataSourcesView();
         Application._vent.on('data/parsed', this.addVisualizationsView.bind(this));
 
@@ -28,11 +16,11 @@ Application.ControlPanelRootView = Backbone.View.extend({
     destroy: function() {},
     addDataSourcesView: function() {
 
-        this.dataSourcesView = new Application.DataSourcesView(this.config);
+        this.dataSourcesView = new Application.DataSourcesView();
     },
     addVisualizationsView: function() {
 
-        this.visualizationsView = new Application.VisualizationsView(this.config);
+        this.visualizationsView = new Application.VisualizationsView();
         this.$el.append(this.visualizationsView.render().$el);
     }
 });
@@ -40,15 +28,16 @@ Application.ControlPanelRootView = Backbone.View.extend({
 Application.DataSourcesView = Backbone.View.extend({
     tagName: 'div',
     className: 'configList',
-    initialize: function(config) {
+    initialize: function() {
 
-        this.config = config;
         this.subview = null;
         //this.templateView = null;
 
-        this.config.list = ['twitter', 'csv', 'spreadSheet', 'googleTrends'];
-        this.config.currentAttribute = 'dataSource';
-        this.dataSourcesList = new Application.DropDownList(config);
+        this.viewConfig = {
+            name: 'dataSource',
+            list: ['twitter', 'csv', 'spreadSheet', 'googleTrends']
+        };
+        this.dataSourcesList = new Application.DropDownList(this.viewConfig);
         this.dataSourcesList.$el.attr('id', 'dataSourcesList');
 
         Application._vent.on('controlpanelsubview/dataSource', this.addSubView.bind(this));
@@ -72,60 +61,64 @@ Application.DataSourcesView = Backbone.View.extend({
 
         if (this.subview) this.subview.destroy();
 
-        this.subview = this.getSubView(this.config.userChoice[this.config.currentAttribute]);
+        this.subview = this.getSubView();
         this.$el.append(this.subview.render().$el);
 
     },
-    addTemplateListView: function(pData) {
+    // addTemplateListView: function(pData) {
 
-        console.log("addTemplateListView");
-        console.log(pData);
+    //     console.log("addTemplateListView");
+    //     console.log(pData);
 
-        this.subview = this.getTemplateListView(this.config);
-        if (typeof this.subview !== 'undefined') {
-            this.$el.append(this.subview.render().$el);
-        }
+    //     this.subview = this.getTemplateListView(this.config);
+    //     if (typeof this.subview !== 'undefined') {
+    //         this.$el.append(this.subview.render().$el);
+    //     }
 
-    },
-    addTemplateOptions: function(value) {
+    // },
+    // addTemplateOptions: function(value) {
 
-        this.subview = this.getSubView(value);
-        if (typeof this.subview !== 'undefined') {
-            this.$el.append(this.subview.render().$el);
-        }
+    //     this.subview = this.getSubView(value);
+    //     if (typeof this.subview !== 'undefined') {
+    //         this.$el.append(this.subview.render().$el);
+    //     }
 
-    },
-    getSubView: function(value) {
+    // },
+    getSubView: function() {
 
-        this.config.currentAttribute = 'input';
+       this.viewConfig.subView = {
+            name: 'input'
+        };
 
-        switch (value) {
+        var subViewConfig = this.viewConfig.subView;
+
+        switch (Application.userConfig.dataSource) {
 
             case 'twitter':
-                this.subview = new Application.DynamicTwitterControlPanel(this.config);
+                this.subview = new Application.DynamicTwitterControlPanel(subViewConfig);
                 break;
             case 'csv':
-                this.subview = new Application.CSVControlPanel(this.config);
+                this.subview = new Application.CSVControlPanel(subViewConfig);
                 break;
             case 'spreadSheet':
-                this.subview = new Application.SpreadSheetControlPanel(this.config);
+                this.subview = new Application.SpreadSheetControlPanel(subViewConfig);
                 break;
             case 'googleTrends':
-                this.subview = new Application.GoogleTrendsControlPanel(this.config);
+                this.subview = new Application.GoogleTrendsControlPanel(subViewConfig);
                 break;
         }
 
         return this.subview;
 
     },
-    getTemplateListView: function(value) {
+    // getTemplateListView: function(value) {
 
-        if (this.templateview !== undefined) this.templateview.destroy();
-        this.templateview = new Application.TemplateListControlPanel(this.config);
+    //     if (this.templateview !== undefined) this.templateview.destroy();
+    //     this.templateview = new Application.TemplateListControlPanel(this.config);
 
-        return this.templateview;
+    //     return this.templateview;
 
-    }
+    // }
 
 
 });
@@ -133,19 +126,20 @@ Application.DataSourcesView = Backbone.View.extend({
 Application.VisualizationsView = Backbone.View.extend({
     tagName: 'div',
     className: 'configList',
-    initialize: function(config) {
-        this.config = config;
+    initialize: function() {
+        // this.config = config;
 
         this.subview = null;
+        this.visualizebtn = null;
 
-        this.config.list = ['geometry', 'texture'];
-        this.config.currentAttribute = 'VizType';
-        this.visualizationList = new Application.DropDownList(config);
+        this.viewConfig = {
+            name: 'vizType',
+            list: ['geometry', 'texture']
+        };
+        this.visualizationList = new Application.DropDownList(this.viewConfig);
         this.visualizationList.$el.attr('id', 'visualizationList');
 
-        Application._vent.on('controlpanelsubview/VizType', this.addSubView.bind(this));
-
-
+        Application._vent.on('controlpanelsubview/vizType', this.addSubView.bind(this));
 
 
     },
@@ -163,34 +157,56 @@ Application.VisualizationsView = Backbone.View.extend({
     addSubView: function() {
 
         if (this.subview) this.subview.destroy();
+        if (this.visualizebtn) this.visualizebtn.destroy(); // to rework
 
-        this.subview = this.getSubView(this.config.userChoice[this.config.currentAttribute]);
-        this.$el.append(this.subview.render().$el);
+        this.subview = this.getSubView(this.viewConfig);
+
 
     },
-    getSubView: function(value) {
+    getSubView: function(viewConfig) {
 
-        this.config.list = ['countries', 'points', 'dynamic', 'graph'];
-        this.layersList = new Application.DropDownList(this.config);
-        this.layersList.$el.attr('id', 'templatesList');
-        this.$el.append(this.layersList.render().$el);
 
-        this.submitbtn = new Application.SubmitButton(this.config); // to do submit button in elements
-        this.submitbtn.$el.attr('id', 'visualize');
-        this.submitbtn.$el.attr('class', 'btn btn-primary');
-        this.submitbtn.$el[0].innerHTML = 'visualize';
-        this.submitbtn.$el.on('mousedown', this.submitAction.bind(this))
+        switch (Application.userConfig.vizType) {
+
+            case 'geometry':
+                this.viewConfig.subView = {
+                    name: 'vizLayer',
+                    list: ['countries', 'points', 'dynamic', 'graph']
+                };
+                break;
+            case 'texture':
+                this.viewConfig.subView = {
+                    name: 'vizLayer',
+                    list: ['points', 'dynamic', 'graph']
+                };
+                break;
+        }
+        var subViewConfig = this.viewConfig.subView;
+        this.subview = new Application.DropDownList(subViewConfig);
+        this.subview.$el.attr('id', 'templatesList');
+        this.$el.append(this.subview.render().$el);
+
+        this.visualizebtn = new Application.Button(subViewConfig); // to do submit button in elements
+        this.visualizebtn.$el.text('visualize');
+        this.visualizebtn.$el.on('mousedown', this.submitAction.bind(this));
+        this.$el.append(this.visualizebtn.render().$el);
+
 
         return this.subview;
 
     },
+    submitAction: function(e) {
+      console.log(Application.userConfig);
+      Application._vent.trigger('visualize');
+
+    }
 
 });
 
 Application.ButtonsView = Backbone.View.extend({
     id: 'buttons',
-    initialize: function(config) {
-        this.config = config;
+    initialize: function(viewConfig) {
+        this.viewConfig = viewConfig;
 
     },
     render: function() {
@@ -206,11 +222,12 @@ Application.ButtonsView = Backbone.View.extend({
 
 Application.CSVControlPanel = Application.ButtonsView.extend({
 
-    initialize: function(config) {
+    initialize: function(viewConfig) {
 
-        Application.ButtonsView.prototype.initialize.call(this, config);
+        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
 
-        this.submitbtn = new Application.ParseButton(config);
+        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn.$el.text('submit');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
     },
     render: function() {
@@ -220,22 +237,23 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
     },
     submitAction: function() {
 
-        Application._vent.trigger('controlpanel/parse', this.config);
+        Application._vent.trigger('controlpanel/parse');
     }
 });
 
 Application.DynamicTwitterControlPanel = Application.ButtonsView.extend({
 
-    initialize: function(config) {
-        Application.ButtonsView.prototype.initialize.call(this, config);
+    initialize: function(viewConfig) {
+        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
 
-        this.search = new Application.InputField(config);
+        this.search = new Application.InputField(viewConfig);
         this.search.$el.attr('id', 'userInput');
         this.search.$el.attr('class', 'form-control');
         this.search.$el.attr('placeholder', 'Enter the Keyword');
         this.search.$el.on('keyup', this.searchFieldAction.bind(this));
 
-        this.submitbtn = new Application.ParseButton(config);
+        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn.$el.text('submit');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
     },
@@ -257,24 +275,25 @@ Application.DynamicTwitterControlPanel = Application.ButtonsView.extend({
     submitAction: function(e) {
 
         var key = this.search.$el.val();
-        this.config.userChoice.input = key;
-        Application._vent.trigger('controlpanel/parse', this.config);
+        Application.userConfig.input = key;
+        Application._vent.trigger('controlpanel/parse');
 
     }
 });
 
 Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
 
-    initialize: function(config) {
-        Application.ButtonsView.prototype.initialize.call(this, config);
+    initialize: function(viewConfig) {
+        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
 
-        this.urlfield = new Application.InputField(config);
+        this.urlfield = new Application.InputField(viewConfig);
         this.urlfield.$el.attr('id', 'userInput');
         this.urlfield.$el.attr('class', 'form-control');
         this.urlfield.$el.attr('placeholder', 'Submit the URL');
         this.urlfield.$el.on('mousedown', this.urlFieldAction.bind(this));
 
-        this.submitbtn = new Application.ParseButton(config);
+        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn.$el.text('submit');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
         // this.resetbtn = new Application.Button(config);
@@ -308,8 +327,8 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
         }
 
         var key = this.parseKey(this.urlfield.$el.val());
-        this.config.userChoice.input = key;
-        Application._vent.trigger('controlpanel/parse', this.config);
+        Application.userConfig.input = key;
+        Application._vent.trigger('controlpanel/parse');
 
     },
     resetAction: function() {
@@ -350,19 +369,17 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
 
 Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
 
-    initialize: function(config) {
-        Application.ButtonsView.prototype.initialize.call(this, config);
+    initialize: function(viewConfig) {
+        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
 
-        this.keywordfield = new Application.InputField(config);
+        this.keywordfield = new Application.InputField(viewConfig);
         this.keywordfield.$el.attr('id', 'userInput');
         this.keywordfield.$el.attr('class', 'form-control');
         this.keywordfield.$el.attr('placeholder', 'Enter the keyword');
         this.keywordfield.$el.on('keyup', this.KeywordFieldAction.bind(this));
 
-        this.submitbtn = new Application.ParseButton(config);
-        // this.submitbtn.$el.attr('id', 'submit');
-        // this.submitbtn.$el.attr('class', 'btn btn-primary');
-        // this.submitbtn.$el[0].innerHTML = 'submit';
+        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn.$el.text('submit');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
         // this.resetbtn = new Application.Button(config);
@@ -398,82 +415,9 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
         }
 
         var key = this.parseKey(this.keywordfield.$el.val());
-        this.config.userChoice.input = key;
+        Application.userConfig.input = key;
 
-        Application._vent.trigger('controlpanel/parse', this.config);
-
-    },
-    parseKey: function(keyword) {
-
-        keyword = keyword.trim().replace(/ /g, ',');
-        return keyword;
-
-    }
-
-});
-
-
-Application.TemplateListControlPanel = Application.ButtonsView.extend({
-
-    initialize: function(config) {
-        Application.ButtonsView.prototype.initialize.call(this, config);
-
-        this.vislist = ['geometry', 'texture'];
-        this.visualizationList = new Application.DropDownList(config, this.vislist);
-        this.visualizationList.$el.attr('id', 'visualizationList');
-        this.visualizationList.$el.attr('class', 'form-control');
-
-        this.temlist = ['countries', 'points', 'dynamic', 'graph'];
-        this.templatesList = new Application.DropDownList(config, this.temlist);
-        this.templatesList.$el.attr('id', 'templatesList');
-        this.templatesList.$el.attr('class', 'form-control');
-
-        this.submitbtn = new Application.Button(config);
-        this.submitbtn.$el.attr('id', 'visualize');
-        this.submitbtn.$el.attr('class', 'btn btn-primary');
-        this.submitbtn.$el[0].innerHTML = 'visualize';
-        this.submitbtn.$el.on('mousedown', this.submitAction.bind(this))
-
-    },
-    render: function() {
-        Application.ButtonsView.prototype.render.call(this);
-        this.$el.append(this.visualizationList.render().$el);
-        this.$el.append(this.templatesList.render().$el);
-        this.$el.append(this.submitbtn.render().$el);
-        //this.$el.append(this.resetbtn.render().$el);
-        return this;
-    },
-    KeywordFieldAction: function(e) {
-
-        if (e.which == 13) {
-
-            this.submitAction(e);
-        }
-
-    },
-    submitAction: function(e) {
-
-        console.log("submitAction");
-
-        e.preventDefault();
-
-        if (this.keywordfield.$el.val().trim() == '') {
-
-            this.keywordfield.$el.focus();
-
-            return;
-        }
-
-        var key = this.parseKey(this.keywordfield.$el.val());
-        this.config.userChoice.input = key;
-
-        Application._vent.trigger('controlpanel/visualize', key);
-
-    },
-    resetAction: function() {
-
-        this.keywordfield.$el.val('');
-        Application._vent.trigger('controlpanel/reset');
+        Application._vent.trigger('controlpanel/parse');
 
     },
     parseKey: function(keyword) {
@@ -484,3 +428,76 @@ Application.TemplateListControlPanel = Application.ButtonsView.extend({
     }
 
 });
+
+
+// Application.TemplateListControlPanel = Application.ButtonsView.extend({
+
+//     initialize: function(viewConfig) {
+//         Application.ButtonsView.prototype.initialize.call(this, viewConfig);
+
+//         this.vislist = ['geometry', 'texture'];
+//         this.visualizationList = new Application.DropDownList(config, this.vislist);
+//         this.visualizationList.$el.attr('id', 'visualizationList');
+//         this.visualizationList.$el.attr('class', 'form-control');
+
+//         this.temlist = ['countries', 'points', 'dynamic', 'graph'];
+//         this.templatesList = new Application.DropDownList(config, this.temlist);
+//         this.templatesList.$el.attr('id', 'templatesList');
+//         this.templatesList.$el.attr('class', 'form-control');
+
+//         this.submitbtn = new Application.Button(config);
+//         this.submitbtn.$el.attr('id', 'visualize');
+//         this.submitbtn.$el.attr('class', 'btn btn-primary');
+//         this.submitbtn.$el[0].innerHTML = 'visualize';
+//         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this))
+
+//     },
+//     render: function() {
+//         Application.ButtonsView.prototype.render.call(this);
+//         this.$el.append(this.visualizationList.render().$el);
+//         this.$el.append(this.templatesList.render().$el);
+//         this.$el.append(this.submitbtn.render().$el);
+//         //this.$el.append(this.resetbtn.render().$el);
+//         return this;
+//     },
+//     KeywordFieldAction: function(e) {
+
+//         if (e.which == 13) {
+
+//             this.submitAction(e);
+//         }
+
+//     },
+//     submitAction: function(e) {
+
+//         console.log("submitAction");
+
+//         e.preventDefault();
+
+//         if (this.keywordfield.$el.val().trim() == '') {
+
+//             this.keywordfield.$el.focus();
+
+//             return;
+//         }
+
+//         var key = this.parseKey(this.keywordfield.$el.val());
+//         Application.userConfig.input = key;
+
+//         Application._vent.trigger('controlpanel/visualize', key);
+
+//     },
+//     resetAction: function() {
+
+//         this.keywordfield.$el.val('');
+//         Application._vent.trigger('controlpanel/reset');
+
+//     },
+//     parseKey: function(keyword) {
+
+//         keyword = keyword.trim().replace(/ /g, ',');
+//         return keyword;
+
+//     }
+
+// });

@@ -9,16 +9,18 @@ Application.RootGlobeView = Backbone.View.extend({
     tagName: "div",
     template: _.template($("#rootGlobeViewTemplate").html()),
 
-    initialize: function(config) {
+    initialize: function(collection) {
 
         console.log("initialize");
 
         this.obj = {};
+        this.collection = collection;
         //this.globeView = {};
-        this.obj.collection = [];
+       // this.obj.collection = [];
         this.obj.decorators = [];
-        this.obj.config = config;
-        // this.createDecorators(config);
+       // this.obj.config = config;
+       var decorator =  this.createDecorators(Application.userConfig.vizType);
+        this.createGlobeView(Application.userConfig.vizLayer, decorator, collection);
        // this.createCollection(config);
 
      //   Application._vent.on('controlpanelsubview/visualize', this.visualize.bind(config));
@@ -56,12 +58,12 @@ Application.RootGlobeView = Backbone.View.extend({
         this.createDecorators(config);
         this.createGlobeView(this.obj);
     },
-    createGlobeView: function(obj) {
+    createGlobeView: function(layer, decorator, collection) {
 
         console.log("createGlobeView");
-        console.log(obj);
+        // console.log(obj);
         var rootGlobeViewClass = null;
-        switch (obj.config.templatesList) {
+        switch (layer) {
 
             case "countries":
                 {
@@ -92,9 +94,9 @@ Application.RootGlobeView = Backbone.View.extend({
         }
 
         var that = this;
-        require(Application.layers[obj.config.templatesList], function() {
+        require(Application.layers[layer], function() {
 
-            that.globeView = new Application[rootGlobeViewClass](obj);
+            that.globeView = new Application[rootGlobeViewClass](decorator, collection);
             that.render();
         });
 
@@ -167,6 +169,6 @@ Application.RootGlobeView = Backbone.View.extend({
         var decorators = [];
         var decorator = Application.GlobeDecoratorFactory.createDecorator(config)
 
-        this.obj.decorators = [decorator];
+        return [decorator];
     }
 });
