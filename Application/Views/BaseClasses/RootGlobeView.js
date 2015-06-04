@@ -9,18 +9,18 @@ Application.RootGlobeView = Backbone.View.extend({
     tagName: "div",
     template: _.template($("#rootGlobeViewTemplate").html()),
 
-    initialize: function(collection) {
+    initialize: function(collections) {
 
         console.log("initialize");
 
         this.obj = {};
-        this.collection = collection;
+        this.collections = collections;
         //this.globeView = {};
        // this.obj.collection = [];
         this.obj.decorators = [];
        // this.obj.config = config;
        var decorator =  this.createDecorators(Application.userConfig.vizType);
-        this.createGlobeView(Application.userConfig.vizLayer, decorator, collection);
+        this.createGlobeView(Application.userConfig.vizLayer, decorator, collections);
        // this.createCollection(config);
 
      //   Application._vent.on('controlpanelsubview/visualize', this.visualize.bind(config));
@@ -58,7 +58,7 @@ Application.RootGlobeView = Backbone.View.extend({
         this.createDecorators(config);
         this.createGlobeView(this.obj);
     },
-    createGlobeView: function(layer, decorator, collection) {
+    createGlobeView: function(layer, decorator, collections) {
 
         console.log("createGlobeView");
         // console.log(obj);
@@ -96,7 +96,7 @@ Application.RootGlobeView = Backbone.View.extend({
         var that = this;
         require(Application.layers[layer], function() {
 
-            that.globeView = new Application[rootGlobeViewClass](decorator, collection);
+            that.globeView = new Application[rootGlobeViewClass](decorator, collections);
             that.render();
         });
 

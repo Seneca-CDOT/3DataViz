@@ -38,6 +38,8 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
     },
     parse: function(response) {
 
+        var that = this;
+
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
 
@@ -48,7 +50,9 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
 
         // Application._vent.trigger('data/ready', pData);
         Application._vent.trigger('data/parsed', pData);
-        return that.models;
+        
+        that.models = pData;
+       // return that.models;
 
     },
     setURL: function(key) {

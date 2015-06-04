@@ -11,7 +11,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
 
     // framework methods
-    initialize: function(decorators, collection) {
+    initialize: function(decorators, collections) {
 
         this.container = this.$el[0];
 
@@ -40,7 +40,9 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.requestedAnimationFrameId = null;
         var that = this;
 
-        $.each(collection, function(index, collection) {
+        this.collection = [];
+
+        $.each(collections, function(index, collection) {
 
             that.collection[index] = collection;
 
