@@ -154,10 +154,16 @@ Application.DataProcessor.TweetParser = (function() {
     Application.Helper.inherit(TweetParser, Application.DataProcessor.BaseParser);
 
     TweetParser.prototype.parse = function(data) {
-
+        
+        // var filter = {
+        //     longitude: "geo.coordinates[1]",
+        //     latitude: "geo.coordinates[0]",
+        //     text: "text",
+        //     timestamp: "timestamp_ms",
+        // };
         var filter = {
-            longitude: "geo.coordinates[1]",
-            latitude: "geo.coordinates[0]",
+            longitude: "coordinates.coordinates[0]",
+            latitude: "coordinates.coordinates[1]",
             text: "text",
             timestamp: "timestamp_ms",
         };

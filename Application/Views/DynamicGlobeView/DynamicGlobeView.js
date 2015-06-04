@@ -18,7 +18,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         this.lifePeriod = 100000;
         this.period = 500;
-        this.particlesLifeTime = 2000;
+        this.particlesLifeTime = 2500;
 
         this.particlesTimer = null;
     },
@@ -62,6 +62,9 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
             this.particlesTimer = null;  
         }
 
+        console.log(this.collection);
+        this.collection[0].disconnect();
+
         Application.BaseGlobeView.prototype.destroy.call(this);
     },
 
@@ -73,6 +76,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         this.updateParticles();
     },
     updateParticles: function() {
+
         this.removeParticleIfNeeded();
 
         ++this.timePeriod;
@@ -130,55 +134,28 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     // streaming functionality
     // TODO: move to model
     // <script src="http://localhost:8080/socket.io/socket.io.js"></script>    
-    initializeDataStreaming: function(){
-        var ws = new WebSocket("ws://threedataviztest2.herokuapp.com");
+    startDataStreaming: function(){
+        this.ws = new WebSocket("ws://threedataviz.herokuapp.com");
         var that = this;
-        ws.onopen = function(){
+        this.ws.onopen = function(){
             var msg = {
               type: "start",
               track: "love"
             }
-            console.log(event);
-            console.log(ws);
-            ws.send(JSON.stringify(msg));
-            
+            that.ws.send(JSON.stringify(msg));
         };
-        ws.onmessage = function(data){
-            var data = JSON.parse(data.data).data;
-            console.log(data);
-            var dataRecord = new Application.GeoDataRecord({
+        this.ws.onmessage = function(results){
+            var data = JSON.parse(results.data).data;
+
+            var dataRecord = {
                 "longitude": data.coordinates.coordinates[0],
                 "latitude": data.coordinates.coordinates[1],
-                "timestamp": data.timestamp_ms
-            });
+                "timestamp": Number(data.timestamp_ms)
+            };
 
-            that.addParticleWithDataRecord(dataRecord);
+            that.addParticleWithDataRecord(dataRecord[0]);
         };
 
-    },
-    startDataStreaming: function(event) {
-
-        // var obj = {};
-        // // obj.track = "morning";
-        // obj.track = "love";
-        // // obj.language = "en";
-
-        // this.socket = io('http://localhost:8080');
-        // this.socket.on('tweet', this.onDataReceive.bind(this));
-        // // this.socket.off('tweet', ...);
-
-        // this.socket.emit('start', obj);
-    },
-    onDataReceive: function(data) {
-
-        var data = JSON.parse(data.data).data;
-        var dataRecord = new Application.GeoDataRecord({
-            "longitude": data.coordinates.coordinates[0],
-            "latitude": data.coordinates.coordinates[1],
-            "timestamp": data.timestamp_ms
-        });
-
-        this.addParticleWithDataRecord(dataRecord);
     },
 
     // db synchronization and vizualization functionality
@@ -188,12 +165,13 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
         
         this.collection[0].reset();
-        // this.collection[0].fetch();
-        this.initializeDataStreaming();
+        this.collection[0].fetch();
 
     },
     showResults: function(results) {
-        this.showDataRecords(results, 0, this.lifePeriod);
+
+        this.addParticleWithDataRecord(results[0]);
+        // this.showDataRecords(results, 0, this.lifePeriod);
     },
     showDataRecords: function(results, beginIndex, timeInterval) {
       
@@ -235,8 +213,6 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
     // particles life cycle functionality
     addParticleWithDataRecord: function(dataRecord) {
-        console.log("addParticleWithDataRecord");
-        console.log(dataRecord);
 
         var particle = new Application.DynamicGlobeParticle(dataRecord, this.globeRadius);
         particle.setLifeTime(this.particlesLifeTime);
@@ -245,6 +221,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         this.scene.add(particle.getMesh());
         this.particles.pushBack(particle);
+        // console.log(this.particles);
     },
     removeParticleIfNeeded: function() {
 
