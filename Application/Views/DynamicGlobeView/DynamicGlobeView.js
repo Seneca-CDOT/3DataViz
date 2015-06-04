@@ -21,6 +21,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         this.particlesLifeTime = 2500;
 
         this.particlesTimer = null;
+    
     },
     destroy: function() {
 
@@ -62,7 +63,6 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
             this.particlesTimer = null;  
         }
 
-        console.log(this.collection);
         this.collection[0].disconnect();
 
         Application.BaseGlobeView.prototype.destroy.call(this);
@@ -131,33 +131,6 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         Application.Debug.addAxes(this.globe);
     },
 
-    // streaming functionality
-    // TODO: move to model
-    // <script src="http://localhost:8080/socket.io/socket.io.js"></script>    
-    startDataStreaming: function(){
-        this.ws = new WebSocket("ws://threedataviz.herokuapp.com");
-        var that = this;
-        this.ws.onopen = function(){
-            var msg = {
-              type: "start",
-              track: "love"
-            }
-            that.ws.send(JSON.stringify(msg));
-        };
-        this.ws.onmessage = function(results){
-            var data = JSON.parse(results.data).data;
-
-            var dataRecord = {
-                "longitude": data.coordinates.coordinates[0],
-                "latitude": data.coordinates.coordinates[1],
-                "timestamp": Number(data.timestamp_ms)
-            };
-
-            that.addParticleWithDataRecord(dataRecord[0]);
-        };
-
-    },
-
     // db synchronization and vizualization functionality
     // this.startDataStreaming();
     startDataSynchronization: function() {
@@ -172,6 +145,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         this.addParticleWithDataRecord(results[0]);
         // this.showDataRecords(results, 0, this.lifePeriod);
+    
     },
     showDataRecords: function(results, beginIndex, timeInterval) {
       
@@ -221,7 +195,6 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
         this.scene.add(particle.getMesh());
         this.particles.pushBack(particle);
-        // console.log(this.particles);
     },
     removeParticleIfNeeded: function() {
 
