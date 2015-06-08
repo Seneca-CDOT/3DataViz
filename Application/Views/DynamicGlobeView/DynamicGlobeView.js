@@ -3,9 +3,9 @@ var Application = Application || {};
 Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
-    initialize: function(config) {
+    initialize: function(decorator, collections) {
 
-        Application.BaseGlobeView.prototype.initialize.call(this, config);
+        Application.BaseGlobeView.prototype.initialize.call(this, decorator, collections);
 
         this.particles = new Application.DataStructures.List();
         this.particlesToRemove = new Application.DataStructures.List();
@@ -59,7 +59,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         if (this.particlesTimer) {
 
             clearTimeout(this.particlesTimer);
-            this.particlesTimer = null;  
+            this.particlesTimer = null;
         }
 
         Application.BaseGlobeView.prototype.destroy.call(this);
@@ -129,7 +129,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
     // streaming functionality
     // TODO: move to model
-    // <script src="http://localhost:8080/socket.io/socket.io.js"></script>    
+    // <script src="http://localhost:8080/socket.io/socket.io.js"></script>
     startDataStreaming: function() {
 
         var obj = {};
@@ -171,7 +171,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         this.showDataRecords(results, 0, this.lifePeriod);
     },
     showDataRecords: function(results, beginIndex, timeInterval) {
-      
+
         if (beginIndex >= results.length) {
 
             // this.showDataRecords(results, 0, this.lifePeriod)

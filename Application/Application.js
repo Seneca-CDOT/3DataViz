@@ -35,7 +35,6 @@ Application = {
             // 'Libraries/popcorn-complete.min.js',
             // 'Libraries/text.js',
 
-            'Routes/GlobeRouter.js',
             'Routes/RootRouter.js',
 
             'Views/GlobeDecorators/BaseGlobeDecorator.js',

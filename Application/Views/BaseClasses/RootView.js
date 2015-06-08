@@ -13,7 +13,7 @@ Application.RootView = Backbone.View.extend({
         this.controlPanel = new Application.ControlPanelRootView();
         this.rootView = null;
         this.collections = [];
-       
+
         Application.userConfig = {
             dataSource: '',
             vizType: '',
@@ -44,9 +44,9 @@ Application.RootView = Backbone.View.extend({
             this.rootView = null;
         }
 
-        // {dataSourcesList: "", 
-        // visualizationList: "", 
-        // templatesList: "", 
+        // {dataSourcesList: "",
+        // visualizationList: "",
+        // templatesList: "",
         // userInput: ""}
 
         // var rootViewClass = null;
@@ -64,6 +64,7 @@ Application.RootView = Backbone.View.extend({
         // }
 
         this.rootView = new Application['RootGlobeView'](this.collections);
+
         //this.rootView.collection = this.collections;
         this.$el.prepend(this.rootView.$el);
     },

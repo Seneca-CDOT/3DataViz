@@ -42,6 +42,9 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         this.collection = [];
 
+        console.log("??");
+        console.log(collections);
+
         $.each(collections, function(index, collection) {
 
             that.collection[index] = collection;
@@ -105,7 +108,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         Application._vent.unbind('data/ready');
     },
     render: function() {
-        
+
         this.showGlobe();
         return this;
     },

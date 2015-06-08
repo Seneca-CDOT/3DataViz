@@ -309,12 +309,10 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
         // this.$el.append(this.resetbtn.render().$el);
         return this;
     },
-    urlFieldAction: function() {
+    urlFieldAction: function(e) {
         if (e.which == 13) {
-
             this.submitAction(e);
         }
-
     },
     submitAction: function(e) {
 
@@ -339,27 +337,32 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
     },
     parseKey: function(url) {
 
-        var startindex = 0;
-        var endindex = 0;
+        if(url.match(/^http:\/\/|^https:\/\//g)){
 
-        for (var i = 0; i < url.length; i++) {
+            var startindex = 0;
+            var endindex = 0;
 
+            for (var i = 0; i < url.length; i++) {
 
-            if (url[i] === "/" && url[i + 1] === "d" && url[i + 2] === "/") {
+                if (url[i] === "/" && url[i + 1] === "d" && url[i + 2] === "/") {
 
-                startindex = (i + 3);
-                i = i + 3;
+                    startindex = (i + 3);
+                    i = i + 3;
 
+                }
+                if (url[i] === "/" && startindex !== 0) {
+
+                    endindex = i;
+                }
+
+                if (endindex !== 0) break;
             }
-            if (url[i] === "/" && startindex !== 0) {
 
-                endindex = i;
-            }
+            var key = url.slice(startindex, endindex);
 
-            if (endindex !== 0) break;
+        }else{
+            key = url
         }
-
-        var key = url.slice(startindex, endindex);
 
         return key;
 

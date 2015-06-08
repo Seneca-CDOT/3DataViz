@@ -3,8 +3,8 @@ var Application = Application || {};
 Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
-    initialize: function(config) {
-        Application.BaseGlobeView.prototype.initialize.call(this, config);
+    initialize: function(decorator, collections) {
+        Application.BaseGlobeView.prototype.initialize.call(this, decorator, collections);
         // this._vent = config._vent;
         //this.countries = [];
         //this.intersected; // intersected mesh
@@ -47,7 +47,9 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
     },
 
     // visualization specific functionality
-    showResults: function(results) {
+    showResults: function() {
+
+        var results = this.collection[0].models;
         var that = this;
 
         var map = THREE.ImageUtils.loadTexture("Assets/Images/sprite.png");
