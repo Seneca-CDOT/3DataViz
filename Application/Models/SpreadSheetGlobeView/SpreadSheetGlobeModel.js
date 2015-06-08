@@ -23,7 +23,6 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
     },
     parse: function(response) {
 
-        var that = this;
         // console.log(response);
         var pModule = Application.DataProcessor.ProcessorModule;
 
@@ -35,10 +34,9 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
 
         var pData = pModule.processData(response, options);
 
-        // Application._vent.trigger('data/ready', pData);
         Application._vent.trigger('data/parsed', pData);
 
-        that.models = pData;
+        this.models = pData;
 
     },
     setURL: function(key) {

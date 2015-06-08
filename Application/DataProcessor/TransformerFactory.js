@@ -52,7 +52,7 @@ Application.DataProcessor.BaseTransformerStrategy = (function() {
         _[this.id].testPrivateVariable = "test-private";
     };
     // inherite the base interface if needed
-    // Application.Helper.inherit(...) 
+    // Application.Helper.inherit(...)
 
     BaseTransformerStrategy.prototype.transform = function(data) {
 
@@ -112,11 +112,11 @@ Application.DataProcessor.CountriesVisualTransformer = (function(){
     Application.Helper.inherit(CountriesVisualTransformer, Application.DataProcessor.BaseTransformer);
 
     CountriesVisualTransformer.prototype.transform = function(data) {
-      
-      var transData = [];  
-      
+
+      var transData = [];
+
         $.each( data, function (index, item ) {
-          
+
           var obj = {};
           obj.countrycode = item.countrycode || "";
           obj.countryname = item.countryname || "";
@@ -143,11 +143,11 @@ Application.DataProcessor.PointsVisualTransformer = (function(){
     Application.Helper.inherit(PointsVisualTransformer, Application.DataProcessor.BaseTransformer);
 
     PointsVisualTransformer.prototype.transform = function(data) {
-         
-         var transData = [];  
-      
+
+         var transData = [];
+
         $.each( data, function (index, item ) {
-          
+
           var obj = {};
           obj.countrycode = item.countrycode || "";
           obj.countryname = item.countryname || "";
@@ -175,14 +175,10 @@ Application.DataProcessor.DynamicVisualTransformer = (function(){
 
     DynamicVisualTransformer.prototype.transform = function(data) {
 
-        console.log("DynamicVisualTransformer transform called.");
         for (var i = 0; i < data.length; ++i) {
-
             if (data[i].timestamp !== "") {
-
                 data[i].timestamp = Number(data[i].timestamp);
             } else {
-
                 data[i].timestamp = 0;
             }
         }

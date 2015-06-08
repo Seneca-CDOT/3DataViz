@@ -22,6 +22,8 @@ Application.ControlPanelRootView = Backbone.View.extend({
 
         this.visualizationsView = new Application.VisualizationsView();
         this.$el.append(this.visualizationsView.render().$el);
+
+        Application._vent.unbind('data/parsed');
     }
 });
 
@@ -326,6 +328,7 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
 
         var key = this.parseKey(this.urlfield.$el.val());
         Application.userConfig.input = key;
+
         Application._vent.trigger('controlpanel/parse');
 
     },

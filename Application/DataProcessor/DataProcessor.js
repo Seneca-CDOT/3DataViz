@@ -82,7 +82,7 @@ Application.DataProcessor.ProcessorModule = (function() {
         var vtProcessor = privateMethods.visualizationTypedProcessor(options);
 
         // transform preprocessed data depending on visualization type
-        pData = vtProcessor.transform(pData);
+        pData = vtProcessor.transform(data);
 
         console.log("transformed Data =====");
         console.log(pData);
@@ -93,7 +93,8 @@ Application.DataProcessor.ProcessorModule = (function() {
 
     return {
 
-        processData: publicMethods.processData
+        processData: publicMethods.processData,
+        transformData: publicMethods.transformData
     };
 })();
 
