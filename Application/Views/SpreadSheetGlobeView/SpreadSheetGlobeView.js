@@ -22,7 +22,7 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.suscribe.call(this);
         //Application._vent.on('data/ready', this.showResults.bind(this));
-        Application._vent.on('globe/ready', this.processRequest.bind(this));
+        //Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
     destroy: function() {
         Application.BaseGlobeView.prototype.destroy.call(this);
