@@ -25,6 +25,7 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
         //Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
     destroy: function() {
+
         Application.BaseGlobeView.prototype.destroy.call(this);
         this.sprites = null;
         // Application._vent.unbind('globe/ready');
@@ -103,8 +104,9 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
             sprite.scale.multiplyScalar(5);
             var timer = setTimeout(function() {
 
-                that.globe.add(sprite);
+                if(that.globe == null){ return; };
 
+                that.globe.add(sprite);
 
                 if (hasGeo) {
 
@@ -118,9 +120,11 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
                 sprite.position.copy(position);
 
                 that.sprites.push(sprite);
+
             }, time);
 
-            that.timer.push(timer);
+            if(that.timer != null) that.timer.push(timer);
+
         });
     }
 });

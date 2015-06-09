@@ -67,6 +67,7 @@ Application.RootView = Backbone.View.extend({
 
         //this.rootView.collection = this.collections;
         this.$el.prepend(this.rootView.$el);
+
     },
     createCollection: function() {
 
