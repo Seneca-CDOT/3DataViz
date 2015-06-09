@@ -3,9 +3,9 @@ var Application = Application || {};
 Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
-    initialize: function(config) {
+    initialize: function(decorator, collections) {
 
-        Application.BaseGlobeView.prototype.initialize.call(this, config);
+        Application.BaseGlobeView.prototype.initialize.call(this, decorator, collections);
         // this.countries = [];
         //this.timer; // represents timer for user mouse idle
         //this.idle = true; // represents user mouse idle
@@ -15,7 +15,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
         //this.suscribe();
         // this.results = [];
         //this.decorator = config.decorators[0];
-        //this.collection = config.collection[0];
+       // this.collection = collection;
         this.added = []; // list of countries participating and their old colors
         this.colors = [
 
@@ -49,7 +49,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     suscribe: function() {
         Application.BaseGlobeView.prototype.suscribe.call(this);
         //Application._vent.on('data/ready', this.showResults.bind(this));
-        Application._vent.on('globe/ready', this.processRequest.bind(this));
+        //Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
     processRequest: function() {
 
@@ -64,9 +64,13 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
             country.mesh.material.color.setHex(country.color);
         });
     },
-    showResults: function(results) {
+    showResults: function() {
 
         Application.BaseGlobeView.prototype.showResults.call(this, results);
+
+      //  this.collection[0];
+
+        var results = this.collection[0].models;
 
         if (results.length == 0) {
             console.log('No data was returned from Google Trends');

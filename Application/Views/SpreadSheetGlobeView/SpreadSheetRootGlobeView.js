@@ -2,9 +2,9 @@ var Application = Application || {};
 
 Application.SpreadSheetRootGlobeView = Application.RootGlobeView.extend({
   initialize: function(config) {
-
+    console.log("testsssss");
     Application.RootGlobeView.prototype.initialize.call(this, config);
-    
+
     // var obj = {};
     // obj._vent = this._vent;
     // obj.collection = new Application.SpreadSheetCollection(obj._vent);

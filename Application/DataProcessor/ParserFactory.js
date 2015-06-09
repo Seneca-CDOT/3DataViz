@@ -2,7 +2,7 @@ var Application = Application || {};
 
 // { ***
 
-// To get some additional explanations about the coding style 
+// To get some additional explanations about the coding style
 // and conventions that are used here, please review this article.
 
 // http://philipwalton.com/articles/implementing-private-and-protected-members-in-javascript/
@@ -59,7 +59,7 @@ Application.DataProcessor.BaseStrategy = (function() {
         _[this.id].testPrivateVariable = "test-private";
     };
     // inherite the base interface if needed
-    // Application.Helper.inherit(...) 
+    // Application.Helper.inherit(...)
 
     BaseStrategy.prototype.process = function(data) {
 

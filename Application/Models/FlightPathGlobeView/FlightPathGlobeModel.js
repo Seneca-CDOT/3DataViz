@@ -92,7 +92,8 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
             download: true,
             complete: function(d) {
                 that.fetchAirportRoutes(d);
-                return that.models;
+                //return that.models;
+                 Application._vent.trigger('data/parsed');
             }
         };
         Papa.parse("Models/data/routes.csv", config);

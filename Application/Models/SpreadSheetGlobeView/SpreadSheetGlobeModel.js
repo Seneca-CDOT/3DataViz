@@ -14,12 +14,12 @@ Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
 Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
     model: Application.SpreadSheetRecord,
     initialize: function(config) {
-        //this.url = '';
-        this.userInput = config.userInput;
-        this.setURL(config.userInput);
-        this.templatesList = config.templatesList;
 
+        this.setURL(Application.userConfig.input);
+        // this.url = '';
+        // this.templatesList = config.templatesList;
         Application.BaseGlobeCollection.prototype.initialize.call(this);
+
     },
     parse: function(response) {
 
@@ -34,9 +34,11 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
 
         var pData = pModule.processData(response, options);
 
-        Application._vent.trigger('data/ready', pData);
-    },
+        Application._vent.trigger('data/parsed', pData);
 
+        this.models = pData;
+
+    },
     setURL: function(key) {
 
         if (!key) return;

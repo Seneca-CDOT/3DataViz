@@ -9,15 +9,21 @@ Application.RootGlobeView = Backbone.View.extend({
     tagName: "div",
     template: _.template($("#rootGlobeViewTemplate").html()),
 
-    initialize: function(config) {
+    initialize: function(collections) {
+
+        console.log("initialize");
 
         this.obj = {};
+        this.collections = collections;
         //this.globeView = {};
-        this.obj.collection = [];
+       // this.obj.collection = [];
         this.obj.decorators = [];
-        this.obj.config = config;
-        this.createDecorators(config);
-        this.createCollection(config);
+       // this.obj.config = config;
+       var decorator =  this.createDecorators(Application.userConfig.vizType);
+        this.createGlobeView(Application.userConfig.vizLayer, decorator, collections);
+       // this.createCollection(config);
+
+     //   Application._vent.on('controlpanelsubview/visualize', this.visualize.bind(config));
     },
     render: function() {
 
@@ -47,11 +53,17 @@ Application.RootGlobeView = Backbone.View.extend({
         this.globeView.destroy();
         this.globeView = null;
     },
+    visualize: function(config){
+        console.log("visualize");
+        this.createDecorators(config);
+        this.createGlobeView(this.obj);
+    },
+    createGlobeView: function(layer, decorator, collections) {
 
-    createGlobeView: function(obj) {
-
+        console.log("createGlobeView");
+        // console.log(obj);
         var rootGlobeViewClass = null;
-        switch (obj.config.templatesList) {
+        switch (layer) {
 
             case "countries":
                 {
@@ -82,73 +94,81 @@ Application.RootGlobeView = Backbone.View.extend({
         }
 
         var that = this;
-        require(Application.layers[obj.config.templatesList], function() {
+        require(Application.layers[layer], function() {
 
-            that.globeView = new Application[rootGlobeViewClass](obj);
+            that.globeView = new Application[rootGlobeViewClass](decorator, collections);
             that.render();
         });
 
     },
-    createCollection: function(config) {
+    // createCollection: function(config) {
 
-        var collection = [];
-        var collectionClasses = [];
-        var files = [];
-        var that = this;
-        switch (config.dataSourcesList) {
+    //     console.log("createCollection");
+    //     console.log(config);
+    //     var collection = [];
+    //     var collectionClasses = [];
+    //     var files = [];
+    //     var that = this;
+    //     switch (config.dataSourcesList) {
 
-            case 'twitter':
-                {
+    //         case 'twitter':
+    //             {
 
-                    collectionClasses = ['Tweets'];
-                    //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
-                    break;
+    //                 collectionClasses = ['Tweets'];
+    //                 //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
+    //                 break;
 
-                }
-            case 'csv':
-                {
+    //             }
+    //         case 'csv':
+    //             {
 
-                    collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
-                    //files = ['Models/FlightPathGlobeView/FlightPathGlobeModel.js'];
-                    break;
-                }
-            case 'spreadSheet':
-                {
+    //                 collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
+    //                 //files = ['Models/FlightPathGlobeView/FlightPathGlobeModel.js'];
+    //                 break;
+    //             }
+    //         case 'spreadSheet':
+    //             {
 
-                    collectionClasses = ['SpreadSheetCollection'];
-                    // files = ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'];
-                    break;
+    //                 collectionClasses = ['SpreadSheetCollection'];
+    //                 // files = ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'];
+    //                 break;
 
-                }
-            case 'googleTrends':
-                {
+    //             }
+    //         case 'googleTrends':
+    //             {
 
-                    collectionClasses = ['GoogleTrendsCollection'];
-                    //  files = ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'];
-                    break;
-                }
+    //                 collectionClasses = ['GoogleTrendsCollection'];
+    //                 //  files = ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'];
+    //                 break;
+    //             }
 
-        }
+    //     }
 
-        require(Application.models[config.dataSourcesList], function() {
+    //     require(Application.models[config.dataSourcesList], function() {
 
-            $.each(collectionClasses, function(index, collectionName) {
+    //         $.each(collectionClasses, function(index, collectionName) {
 
-                collection.push(new Application[collectionName](config));
+    //             collection.push(new Application[collectionName](config));
 
-            });
+    //         });
 
-            that.obj.collection = collection;
-            that.createGlobeView(that.obj);
+    //         that.obj.collection = collection;
 
-        });
+    //         $.each(that.obj.collection, function(index, collection){
+    //             collection.fetch();
+    //         });
+    //         // that.createGlobeView(that.obj);
 
-    },
+    //     });
+
+    // },
     createDecorators: function(config) {
 
+        console.log("createDecorators");
+        console.log(config);
         var decorators = [];
         var decorator = Application.GlobeDecoratorFactory.createDecorator(config)
 
-        this.obj.decorators = [decorator];
+        return [decorator];
     }
 });
