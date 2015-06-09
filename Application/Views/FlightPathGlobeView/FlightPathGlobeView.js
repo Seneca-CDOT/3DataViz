@@ -5,9 +5,9 @@ var Application = Application || {};
 
 Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
-    initialize: function(config) {
+    initialize: function(decorator, collections) {
 
-        Application.BaseGlobeView.prototype.initialize.call(this, config);
+        Application.BaseGlobeView.prototype.initialize.call(this, decorator, collections);
 
         //time factor for animations
         this.t = 0;
@@ -44,19 +44,6 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
         });
     },
 
-    startDataSynchronization: function() {
-
-        // Here I listen for collection entries to know when they are loaded. 
-        // I don't really think I need it anymore, let me check...
-        // I think it is needed, so.... yeah. You do need it.
-        this.collection[0].bind("add", this.dataReady, this);
-        this.collection[1].bind("add", this.dataReady, this);
-
-        // Simple, fetch the collections
-        this.collection[1].fetch();
-        this.collection[0].fetch();
-    },
-
     // visualization specific functionality
     updateGlobe: function() {
 
@@ -88,7 +75,9 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
     },
 
     // data ready checks to see if both csv's have been loaded
-    dataReady: function() {
+    showResults: function() {
+
+        console.log("showResults");
 
         if (this.collection[0].parsed && this.collection[1].parsed) {
             this.addPaths();
