@@ -12,20 +12,31 @@ Application.RootView = Backbone.View.extend({
 
         this.controlPanel = new Application.ControlPanelRootView();
         this.rootView = null;
+        this.collections = [];
 
-        Application._vent.on('controlpanel', this.submitOn.bind(this));
+        Application.userConfig = {
+            dataSource: '',
+            vizType: '',
+            vizLayer: '',
+            input: ''
+
+        };
+
+        Application._vent.on('visualize', this.submitOn.bind(this));
+        Application._vent.on('controlpanel/parse', this.createCollection.bind(this));
     },
     render: function() {
 
         this.$el.append(this.controlPanel.render().$el);
         return this;
     },
-    submitOn: function(config) {
+    submitOn: function() {
 
-        this.initGlobeView(config);
+        this.initGlobeView();
+        console.log('data/ready');
     },
 
-    initGlobeView: function(config) {
+    initGlobeView: function() {
 
         if (this.rootView) {
 
@@ -33,26 +44,83 @@ Application.RootView = Backbone.View.extend({
             this.rootView = null;
         }
 
-        // {dataSourcesList: "", 
-        // visualizationList: "", 
-        // templatesList: "", 
+        // {dataSourcesList: "",
+        // visualizationList: "",
+        // templatesList: "",
         // userInput: ""}
 
-        var rootViewClass = null;
-        switch (config.templatesList) {
+        // var rootViewClass = null;
+        // switch (config.templatesList) {
 
-            case "countries":
-            case "points":
-            case "dynamic":
-            case "graph":
+        //     case "countries":
+        //     case "points":
+        //     case "dynamic":
+        //     case "graph":
+        //         {
+        //             rootViewClass = 'RootGlobeView';
+        //             break;
+        //         }
+
+        // }
+
+        this.rootView = new Application['RootGlobeView'](this.collections);
+
+        //this.rootView.collection = this.collections;
+        this.$el.prepend(this.rootView.$el);
+    },
+    createCollection: function() {
+
+        this.collections.length = 0;
+
+        console.log("createCollection");
+       // console.log(config);
+        var collectionClasses = [];
+        var that = this;
+        switch (Application.userConfig.dataSource) {
+
+            case 'twitter':
                 {
-                    rootViewClass = 'RootGlobeView';
+
+                    collectionClasses = ['Tweets'];
+                    //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
+                    break;
+
+                }
+            case 'csv':
+                {
+
+                    collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
+                    //files = ['Models/FlightPathGlobeView/FlightPathGlobeModel.js'];
+                    break;
+                }
+            case 'spreadSheet':
+                {
+
+                    collectionClasses = ['SpreadSheetCollection'];
+                    // files = ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'];
+                    break;
+
+                }
+            case 'googleTrends':
+                {
+
+                    collectionClasses = ['GoogleTrendsCollection'];
+                    //  files = ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'];
                     break;
                 }
 
         }
 
-        this.rootView = new Application[rootViewClass](config);
-        this.$el.prepend(this.rootView.$el);
-    }
+        require(Application.models[Application.userConfig.dataSource], function() {
+
+            $.each(collectionClasses, function(index, collectionName) {
+
+                that.collections.push(new Application[collectionName]);
+                that.collections[index].fetch();
+
+            });
+
+        });
+
+    },
 });

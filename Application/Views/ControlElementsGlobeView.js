@@ -1,8 +1,8 @@
 Application.ControlElementsGlobeView = Backbone.View.extend({
-    initialize: function(config) {
+    initialize: function(viewConfig) {
         //this._vent = config.event;
-        this.name = '';
-        this.userInput = config.userInput;
+        //this.name = '';
+        this.viewConfig = viewConfig;
 
     },
     render: function() {
@@ -25,16 +25,15 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
     },
     addToConfig: function(value) {
 
-        this.name = this.$el.attr('id');
-        this.userInput[this.name] = value;
+        Application.userConfig[this.viewConfig.name] = value;
     }
 
 });
 
 Application.InputField = Application.ControlElementsGlobeView.extend({
     tagName: 'input',
-    initialize: function(config) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, config);
+    initialize: function(viewConfig) {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
         this.$el.on('keyup', this.grabInput.bind(this));
     },
     render: function() {
@@ -48,8 +47,6 @@ Application.InputField = Application.ControlElementsGlobeView.extend({
     },
     grabInput: function() {
 
-        //console.log( this.$el.val() );
-
         this.addToConfig(this.$el.val());
 
     }
@@ -59,8 +56,13 @@ Application.InputField = Application.ControlElementsGlobeView.extend({
 
 Application.Button = Application.ControlElementsGlobeView.extend({
     tagName: 'button',
-    initialize: function(config) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, config);
+    className: 'btn btn-primary button',
+    initialize: function(viewConfig) {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+    },
+    events: {
+
+        'mousedown':'action'
     },
     render: function() {
         return this;
@@ -69,25 +71,45 @@ Application.Button = Application.ControlElementsGlobeView.extend({
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
 
-        Application._vent.trigger('controlpanel', this.userInput);
+      //  Application._vent.trigger('controlpanel/parse');
+    }
+});
+
+Application.VizButton = Application.ControlElementsGlobeView.extend({
+    tagName: 'button',
+    initialize: function(viewConfig) {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+    },
+    render: function() {
+        return this;
+    },
+    action: function(e) {
+
+        Application.ControlElementsGlobeView.prototype.action.call(this, e);
+
+       // Application._vent.trigger('controlpanel', this.userInput);
     }
 });
 
 Application.DropDownList = Application.ControlElementsGlobeView.extend({
     tagName: 'select',
-    initialize: function(config, list) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, config);
-        this.$el.on('change', this.action.bind(this));
-        this.list = list;
+    className: 'form-control',
+    initialize: function(viewConfig) {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+       // this.config = config; // list of the options
+       // this.name = null; // name of the option in the list
     },
-    events: {},
+    events: {
+
+        'change': 'action'
+    },
     render: function() {
 
-        this.name = this.$el.attr('id');
-
         var that = this;
-        this.$el.append("<option value='' selected disabled>Choose a " + this.name + "</option>");
-        $.each(that.list, function(index, item) {
+        //this.name = this.$el.attr('id');
+
+        this.$el.append("<option value='' selected disabled>Choose a " + this.viewConfig.name + "</option>");
+        $.each(this.viewConfig.list, function(index, item) {
 
             that.$el.append("<option value='" + item + "'>" + item + "</option>");
         });
@@ -103,9 +125,8 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
 
             if (option.selected == true && e.target.value != "") {
 
-                // console.log(e.target.value);
                 that.addToConfig(e.target.value);
-                Application._vent.trigger('controlpanelsubview/' + that.name, [e.target.value]);
+                Application._vent.trigger('controlpanelsubview/' + that.viewConfig.name);
             }
         });
     }

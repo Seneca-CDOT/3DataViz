@@ -3,9 +3,9 @@ var Application = Application || {};
 Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
     // framework methods
-    initialize: function(config) {
+    initialize: function(decorator, collections) {
 
-        Application.BaseGlobeView.prototype.initialize.call(this, config);
+        Application.BaseGlobeView.prototype.initialize.call(this, decorator, collections);
 
         this.particles = new Application.DataStructures.List();
         this.particlesToRemove = new Application.DataStructures.List();
@@ -21,6 +21,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         this.particlesLifeTime = 2000;
 
         this.particlesTimer = null;
+
     },
     destroy: function() {
 
@@ -59,7 +60,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         if (this.particlesTimer) {
 
             clearTimeout(this.particlesTimer);
-            this.particlesTimer = null;  
+            this.particlesTimer = null;
         }
 
         Application.BaseGlobeView.prototype.destroy.call(this);
@@ -73,6 +74,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         this.updateParticles();
     },
     updateParticles: function() {
+
         this.removeParticleIfNeeded();
 
         ++this.timePeriod;
@@ -127,22 +129,6 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         Application.Debug.addAxes(this.globe);
     },
 
-    // streaming functionality
-    // TODO: move to model
-    // <script src="http://localhost:8080/socket.io/socket.io.js"></script>    
-    startDataStreaming: function() {
-
-        var obj = {};
-        // obj.track = "morning";
-        obj.track = "love";
-        // obj.language = "en";
-
-        this.socket = io('http://localhost:8080');
-        this.socket.on('tweet', this.onDataReceive.bind(this));
-        // this.socket.off('tweet', ...);
-
-        this.socket.emit('start', obj);
-    },
     onDataReceive: function(data) {
 
         console.log(data);
@@ -159,19 +145,23 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
     // db synchronization and vizualization functionality
     // this.startDataStreaming();
-    startDataSynchronization: function() {
+    // startDataSynchronization: function() {
+    //     Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
+    //     this.collection[0].reset();
+    //     this.collection[0].fetch();
+    // },
 
-        Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
-        
-        this.collection[0].reset();
-        this.collection[0].fetch();
-
-    },
     showResults: function(results) {
-        this.showDataRecords(results, 0, this.lifePeriod);
+
+        var that = this;
+        this.collection[0].bind("add", function(data){
+          var results = that.collection[0].models;
+          that.addParticleWithDataRecord(results[results.length-1].attributes);
+        });
     },
+
     showDataRecords: function(results, beginIndex, timeInterval) {
-      
+
         if (beginIndex >= results.length) {
 
             // this.showDataRecords(results, 0, this.lifePeriod)

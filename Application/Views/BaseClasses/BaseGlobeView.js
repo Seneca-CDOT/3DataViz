@@ -11,7 +11,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
 
     // framework methods
-    initialize: function(config) {
+    initialize: function(decorators, collections) {
 
         this.container = this.$el[0];
 
@@ -22,8 +22,8 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.controls = null;
         this.tween = null;
 
-        if (config.decorators !== undefined)
-            this.decorators = config.decorators;
+        if (decorators !== undefined)
+            this.decorators = decorators;
         else
             this.decorators = [];
 
@@ -40,7 +40,9 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.requestedAnimationFrameId = null;
         var that = this;
 
-        $.each(config.collection, function(index, collection) {
+        this.collection = [];
+
+        $.each(collections, function(index, collection) {
 
             that.collection[index] = collection;
 
@@ -52,7 +54,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
     },
     suscribe: function() {
-        Application._vent.on('data/ready', this.showResults.bind(this));
+        Application._vent.on('globe/ready', this.showResults.bind(this));
     },
     destroy: function() {
 
@@ -103,7 +105,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         Application._vent.unbind('data/ready');
     },
     render: function() {
-        
+
         this.showGlobe();
         return this;
     },

@@ -9,7 +9,7 @@ Application.GlobeDecoratorFactory = (function() {
     var publicMethods = {};
     publicMethods.createDecorator = function(options) {
 
-        switch(options.visualizationList) {
+        switch(options) {
 
             case "texture":
                 decoratorClass = Application.TextureGlobeDecorator;
