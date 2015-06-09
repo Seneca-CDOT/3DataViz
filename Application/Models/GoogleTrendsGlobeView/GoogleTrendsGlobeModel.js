@@ -49,7 +49,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         var pData = pModule.processData(response.table.rows, options)
 
         // Application._vent.trigger('data/ready', pData);
-        Application._vent.trigger('data/parsed', pData);
+        Application._vent.trigger('data/parsed', this.getViewConfigs(pData));
         
         that.models = pData;
        // return that.models;
@@ -76,5 +76,18 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
             this.setURL(Application.userConfig.input);
             this.request();
 
+    },
+    getViewConfigs: function(data){
+        var defaults = {
+            vizType: {
+                name: 'vizType',
+                list: ['geometry']
+            },
+            vizLayer: {
+                name: 'vizLayer',
+                list: ['countries']
+            }
+        }
+        return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
     }
 });

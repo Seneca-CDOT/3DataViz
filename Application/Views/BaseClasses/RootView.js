@@ -32,8 +32,8 @@ Application.RootView = Backbone.View.extend({
     },
     submitOn: function() {
 
-        this.initGlobeView();
         console.log('data/ready');
+        this.initGlobeView();
     },
 
     initGlobeView: function() {
@@ -62,7 +62,6 @@ Application.RootView = Backbone.View.extend({
         //         }
 
         // }
-
         this.rootView = new Application['RootGlobeView'](this.collections);
 
         //this.rootView.collection = this.collections;
