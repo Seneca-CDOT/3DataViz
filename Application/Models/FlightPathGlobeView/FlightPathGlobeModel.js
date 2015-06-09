@@ -93,7 +93,7 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
             complete: function(d) {
                 that.fetchAirportRoutes(d);
                 //return that.models;
-                 Application._vent.trigger('data/parsed');
+                 Application._vent.trigger('data/parsed', this.getViewConfigs(pData));
             }
         };
         Papa.parse("Models/data/routes.csv", config);
@@ -122,4 +122,17 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
             }
         }
     },
+    getViewConfigs: function(data){
+        var defaults = {
+            vizType: {
+                name: 'vizType',
+                list: ['geometry', 'texture']        
+            },
+            vizLayer: {
+                name: 'vizLayer',
+                list: ['graph']
+            }
+        }
+        return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
+    }
 });
