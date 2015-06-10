@@ -18,7 +18,9 @@ Application.RootView = Backbone.View.extend({
             dataSource: '',
             vizType: '',
             vizLayer: '',
-            input: ''
+            input: '',
+            timeFrom: '',
+            timeTo: ''
 
         };
 
@@ -73,15 +75,23 @@ Application.RootView = Backbone.View.extend({
         this.collections.length = 0;
 
         console.log("createCollection");
-       // console.log(config);
+        // console.log(config);
         var collectionClasses = [];
         var that = this;
         switch (Application.userConfig.dataSource) {
 
-            case 'twitter':
+            case 'twitterLive':
                 {
 
-                    collectionClasses = ['Tweets'];
+                    collectionClasses = ['TweetsLive'];
+                    //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
+                    break;
+
+                }
+            case 'twitterDB':
+                {
+
+                    collectionClasses = ['TweetsDB'];
                     //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
                     break;
 

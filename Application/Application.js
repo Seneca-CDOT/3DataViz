@@ -56,7 +56,8 @@ Application = {
     models: {
         spreadSheet: ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'],
         googleTrends: ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'],
-        twitter: ['Models/DynamicGlobeView/DynamicGlobeModel.js'],
+        twitterDB: ['Models/TwitterModels/TwitterDBModel.js'],
+        twitterLive: ['Models/TwitterModels/TwitterLiveModel.js'],
         csv: ['Models/FlightPathGlobeView/FlightPathGlobeModel.js','Models/data/path.js', 'Models/data/countriesList.js']
     },
 

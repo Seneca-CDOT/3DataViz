@@ -7,12 +7,59 @@ app.listen(port);
 
 app.use(express.static('../public'));
 
-app.get('/tweets/apple', function(req, res) {
+// app.get('/tweets/apple', function(req, res) {
 
-  MongoClient.connect('mongodb://localhost:27017/tweets', function(err, db) {
+//   MongoClient.connect('mongodb://localhost:27017/tweets', function(err, db) {
 
-    var col = db.collection('apple');
-    col.find({"geo":{$ne:null}}).toArray(function(err, result) {
+//     var col = db.collection('apple');
+//     col.find({"geo":{$ne:null}}).toArray(function(err, result) {
+//       if (err) throw err;
+//       res.send(result);
+//       db.close();
+//     });
+
+//   });
+
+// });
+
+
+app.get('/twitterDB/apple/timefrom', function(req, res) {
+
+  MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+
+    var col = db.collection('wwdc2015');
+    col.find({"geo":{$ne:null}}).sort({$natural:1}).limit(1).toArray(function(err, result) {
+      if (err) throw err;
+      res.send(result);
+      db.close();
+    });
+
+  });
+
+});
+
+app.get('/twitterDB/apple/timeto', function(req, res) {
+
+  MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+
+    var col = db.collection('wwdc2015');
+    col.find({"geo":{$ne:null}}).sort({$natural:-1}).limit(1).toArray(function(err, result) {
+      if (err) throw err;
+      res.send(result);
+      db.close();
+    });
+
+  });
+
+});
+
+
+app.get('/twitterDB/apple', function(req, res) {
+
+  MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+
+    var col = db.collection('wwdc2015');
+    col.find({"geo":{$ne:null}, "timestamp_ms": { $gt: "1433736000000", $lt: "1433822400000" }}).toArray(function(err, result) {
       if (err) throw err;
       res.send(result);
       db.close();
@@ -44,3 +91,6 @@ app.get('/tweets/oscars', function(req, res) {
   });
 
 });
+
+// db.wwdc2015.find({"geo":{$ne:null}}).sort({$natural:-1}).limit(1).pretty();  // the latest record 1433795674843
+// db.wwdc2015.find({"geo":{$ne:null}}).sort({$natural:1}).limit(1).pretty();  // the earliest record 1433782572667

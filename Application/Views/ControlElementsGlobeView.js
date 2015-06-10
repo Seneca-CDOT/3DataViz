@@ -54,6 +54,30 @@ Application.InputField = Application.ControlElementsGlobeView.extend({
 
 });
 
+Application.DateTime = Application.ControlElementsGlobeView.extend({
+    tagName: 'input',
+    initialize: function(viewConfig) {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+        this.$el.on('keyup', this.grabInput.bind(this));
+    },
+    render: function() {
+
+        return this;
+    },
+    action: function(e) {
+
+        Application.ControlElementsGlobeView.prototype.action.call(this, e);
+
+    },
+    grabInput: function() {
+
+        this.addToConfig(this.$el.val());
+
+    }
+
+
+});
+
 Application.Button = Application.ControlElementsGlobeView.extend({
     tagName: 'button',
     className: 'btn btn-primary button',
@@ -74,6 +98,8 @@ Application.Button = Application.ControlElementsGlobeView.extend({
       //  Application._vent.trigger('controlpanel/parse');
     }
 });
+
+
 
 Application.VizButton = Application.ControlElementsGlobeView.extend({
     tagName: 'button',

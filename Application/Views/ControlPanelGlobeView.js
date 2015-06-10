@@ -37,7 +37,7 @@ Application.DataSourcesView = Backbone.View.extend({
 
         this.viewConfig = {
             name: 'dataSource',
-            list: ['twitter', 'csv', 'spreadSheet', 'googleTrends']
+            list: ['twitterDB', 'twitterLive', 'csv', 'spreadSheet', 'googleTrends']
         };
         this.dataSourcesList = new Application.DropDownList(this.viewConfig);
         this.dataSourcesList.$el.attr('id', 'dataSourcesList');
@@ -88,7 +88,7 @@ Application.DataSourcesView = Backbone.View.extend({
     // },
     getSubView: function() {
 
-       this.viewConfig.subView = {
+        this.viewConfig.subView = {
             name: 'input'
         };
 
@@ -96,8 +96,11 @@ Application.DataSourcesView = Backbone.View.extend({
 
         switch (Application.userConfig.dataSource) {
 
-            case 'twitter':
-                this.subview = new Application.DynamicTwitterControlPanel(subViewConfig);
+            case 'twitterDB':
+                this.subview = new Application.DynamicTwitterDBControlPanel(subViewConfig);
+                break;
+            case 'twitterLive':
+                this.subview = new Application.DynamicTwitterLiveControlPanel(subViewConfig);
                 break;
             case 'csv':
                 this.subview = new Application.CSVControlPanel(subViewConfig);
@@ -198,8 +201,8 @@ Application.VisualizationsView = Backbone.View.extend({
 
     },
     submitAction: function(e) {
-      console.log(Application.userConfig);
-      Application._vent.trigger('visualize');
+        console.log(Application.userConfig);
+        Application._vent.trigger('visualize');
 
     }
 
@@ -243,14 +246,13 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
     }
 });
 
-Application.DynamicTwitterControlPanel = Application.ButtonsView.extend({
+Application.DynamicTwitterLiveControlPanel = Application.ButtonsView.extend({
 
     initialize: function(viewConfig) {
         Application.ButtonsView.prototype.initialize.call(this, viewConfig);
 
         this.search = new Application.InputField(viewConfig);
-        this.search.$el.attr('id', 'userInput');
-        this.search.$el.attr('class', 'form-control');
+        this.search.$el.attr('class', 'form-control userInput');
         this.search.$el.attr('placeholder', 'Enter the Keyword');
         this.search.$el.on('keyup', this.searchFieldAction.bind(this));
 
@@ -279,6 +281,103 @@ Application.DynamicTwitterControlPanel = Application.ButtonsView.extend({
         var key = this.search.$el.val();
         Application.userConfig.input = key;
         Application._vent.trigger('controlpanel/parse');
+
+    }
+});
+
+Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
+
+    initialize: function(viewConfig) {
+        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
+
+        this.requestTimeFrom();
+        this.requestTimeTo();
+
+
+        this.timeFrom = new Application.InputField(viewConfig);
+        this.timeFrom.$el.attr('class', 'form-control userInput');
+        this.timeFrom.$el.attr('placeholder', 'Enter time from');
+        this.timeFrom.$el.on('keyup', this.timeFieldAction.bind(this));
+
+        this.timeTo = new Application.InputField(viewConfig);
+        this.timeTo.$el.attr('class', 'form-control userInput');
+        this.timeTo.$el.attr('placeholder', 'Enter time to');
+        this.timeTo.$el.on('keyup', this.timeFieldAction.bind(this));
+
+        this.search = new Application.InputField(viewConfig);
+        this.search.$el.attr('class', 'form-control userInput');
+        this.search.$el.attr('placeholder', 'Enter the Keyword');
+        this.search.$el.on('keyup', this.searchFieldAction.bind(this));
+
+        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn.$el.text('submit');
+        this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
+
+    },
+    render: function() {
+        Application.ButtonsView.prototype.render.call(this);
+        this.$el.append(this.search.render().$el);
+        this.$el.append(this.timeFrom.render().$el);
+        this.$el.append(this.timeTo.render().$el);
+        this.$el.append(this.submitbtn.render().$el);
+        //  this.$el.append(this.resetbtn.render().$el);
+        return this;
+    },
+    searchFieldAction: function(e) {
+
+        if (e.which == 13) {
+
+            this.submitAction(e);
+        }
+
+    },
+    timeFieldAction: function() {
+
+
+    },
+    submitAction: function(e) {
+
+        var key = this.search.$el.val();
+        var from = this.timeFrom.$el.val();
+        var to = this.timeTo.$el.val();
+        Application.userConfig.input = key;
+        Application.userConfig.timeFrom = from;
+        Application.userConfig.timeTo = to;
+        Application._vent.trigger('controlpanel/parse');
+
+    },
+    requestTimeFrom: function() {
+        var that = this;
+
+        var path = 'http://threedataviz.herokuapp.com/';
+
+        $.get(path + 'twitterDB/apple/timefrom').done(function(data) {
+            //  console.log(new Date(data[0].timestamp_ms));
+
+            var datetime = that.convertStampToDateTime(data[0].timestamp_ms);
+            that.timeFrom.$el.val(datetime);
+        });
+    },
+    requestTimeTo: function() {
+        var that = this;
+         var path = 'http://threedataviz.herokuapp.com/';
+
+        $.get(path + 'twitterDB/apple/timeto').done(function(data) {
+
+            var datetime = that.convertStampToDateTime(data[0].timestamp_ms)
+            that.timeTo.$el.val(datetime);
+        });
+    },
+    convertStampToDateTime: function(timestamp) {
+
+        var d = new Date(Number(timestamp));
+        var datetime = d.getDay() + '/' + d.getMonth() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+        return datetime;
+
+    },
+    convertDateTimeToStamp: function(datetime) {
+
+        return new Date(datetime);
 
     }
 });
@@ -340,7 +439,7 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
     },
     parseKey: function(url) {
 
-        if(url.match(/^http:\/\/|^https:\/\//g)){
+        if (url.match(/^http:\/\/|^https:\/\//g)) {
 
             var startindex = 0;
             var endindex = 0;
@@ -363,7 +462,7 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
 
             var key = url.slice(startindex, endindex);
 
-        }else{
+        } else {
             key = url
         }
 

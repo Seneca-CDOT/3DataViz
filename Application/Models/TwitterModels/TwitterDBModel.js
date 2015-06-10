@@ -13,10 +13,11 @@ Application.Tweet = Application.GeoDataRecord.extend({
     }
 });
 
-Application.Tweets = Application.BaseGlobeCollection.extend({
+Application.TweetsDB = Application.BaseGlobeCollection.extend({
 
     model: Application.Tweet,
-    url: "http://threedataviz.herokuapp.com/tweets/apple",
+    // url: "http://threedataviz.herokuapp.com/twitterDB/apple",
+    //url: "twitterDB/apple",
     initialize: function(config) {
 
         Application.BaseGlobeCollection.prototype.initialize.call(this);
@@ -31,14 +32,15 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
             dataType: "twitter",
             visualizationType: this.templatesList
         };
+        console.log('tweets', response);
         var pData = pModule.processData(response, options);
         this.transform(pData);
     },
-    transform: function(pData){
-        if(Application.userConfig.vizLayer == ""){
+    transform: function(pData) {
+        if (Application.userConfig.vizLayer == "") {
             this.add(pData);
 
-        }else{
+        } else {
             var pModule = Application.DataProcessor.ProcessorModule;
             var options = {
                 visualizationType: Application.userConfig.vizLayer
@@ -49,23 +51,29 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
         }
         Application._vent.trigger('data/parsed', pData);
     },
-    fetch: function () {
+    fetch: function() {
 
-        console.log("WebSocket connected to ws://threedataviz.herokuapp.com");
-        this.ws = new WebSocket("ws://threedataviz.herokuapp.com");
+        console.log('userconf', Application.userConfig);
         var that = this;
-        this.ws.onopen = function(){
+        this.ws = new WebSocket("ws://threedataviz.herokuapp.com/");
+
+        this.ws.onopen = function() {
             var msg = {
-              type: "start",
-              track: that.track
-            }
-            console.log("Get live tweets of the keyword \'"+ that.track +"\'");
+                    type: "start",
+                    dataSource: Application.userConfig.dataSource,
+                    keyword: Application.userConfig.input,
+                    timeFrom: Application.userConfig.timefrom,
+                    timeTo: Application.userConfig.timeto
+                }
+                //console.log("Get live tweets of the keyword \'"+ that.track +"\'");
+                console.log(msg,JSON.stringify(msg));
             that.ws.send(JSON.stringify(msg));
         };
-        this.ws.onmessage = function(results){
+        this.ws.onmessage = function(results) {
+            console.log('twit obj: ', results);
             that.parse([JSON.parse(results.data).data]);
         };
-        this.ws.onclose = function(close){
+        this.ws.onclose = function(close) {
             this.ws = null;
         }
     },

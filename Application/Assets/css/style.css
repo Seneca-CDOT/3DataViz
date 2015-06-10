@@ -54,17 +54,23 @@ body {
 
 #search,
 #url,
-#keyword,
-#userInput {
+#keyword {
     width: 80%;
     margin-top: 20%;
     margin-left: 10%;
 }
+
+.userInput {
+    width: 80%;
+    margin-top: 20%;
+    margin-left: 10%;
 }
+
 #configList {
     width: 100%;
     top: 10%;
 }
+
 #datasourcesList,
 #templatesList,
 #visualizationList {
@@ -72,6 +78,7 @@ body {
     margin-top: 20%;
     margin-left: 10%;
 }
+
 .country {
     position: absolute;
     width: 80%;
@@ -81,9 +88,11 @@ body {
     opacity: 0.7;
     top: 30%;
 }
+
 .menu {
     margin-top: 20px;
 }
+
 .menu li {
     display: inline-block;
     background: #333;
@@ -91,6 +100,7 @@ body {
     margin-bottom: 10px;
     border-radius: 6px;
 }
+
 .menu li a {
     color: #fff;
 }
