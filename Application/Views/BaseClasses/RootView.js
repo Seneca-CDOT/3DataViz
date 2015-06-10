@@ -32,8 +32,9 @@ Application.RootView = Backbone.View.extend({
     },
     submitOn: function() {
 
-        this.initGlobeView();
         console.log('data/ready');
+        this.initGlobeView();
+        
     },
 
     initGlobeView: function() {

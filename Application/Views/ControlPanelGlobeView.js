@@ -4,6 +4,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
     initialize: function() {
 
         this.addDataSourcesView();
+        
         Application._vent.on('data/parsed', this.addVisualizationsView.bind(this));
         Application._vent.on('visualize', this.reset.bind(this));
 
@@ -13,27 +14,35 @@ Application.ControlPanelRootView = Backbone.View.extend({
         // this.$el.append(this.visualizationsView.render().$el);
         return this;
     },
-    reset: function(){
-        Application._vent.on('data/parsed', this.addVisualizationsView.bind(this));
-        if(this.visualizationsView != null){
-            this.visualizationsView.destroy();
-        }
-        if(this.dataSourcesView != null){
-            if (this.dataSourcesView.subview) this.dataSourcesView.subview.destroy();
-        }
-    },
-    destroy: function() {},
     addDataSourcesView: function() {
 
         this.dataSourcesView = new Application.DataSourcesView();
     },
     addVisualizationsView: function() {
+        
+        if(this.dataSourcesView.subview != null){
 
-        this.visualizationsView = new Application.VisualizationsView();
-        this.$el.append(this.visualizationsView.render().$el);
+            this.visualizationsView = new Application.VisualizationsView();
+            this.$el.append(this.visualizationsView.render().$el);
 
-        Application._vent.unbind('data/parsed');
-    }
+            Application._vent.unbind('data/parsed');
+        
+        }
+    },
+    reset: function(){
+        Application._vent.on('data/parsed', this.addVisualizationsView.bind(this));
+        if(this.visualizationsView != null){
+            this.visualizationsView.destroy();
+            this.visualizationsView = null;
+        }
+        
+        this.dataSourcesView.$el.children()[0].selectedIndex = 0;
+        if (this.dataSourcesView.subview != null){
+            this.dataSourcesView.subview.destroy();
+            this.dataSourcesView.subview = null;
+        }
+    },
+    destroy: function() {}
 });
 
 Application.DataSourcesView = Backbone.View.extend({
@@ -67,6 +76,7 @@ Application.DataSourcesView = Backbone.View.extend({
         this.unbind();
         delete this.$el;
         delete this.el;
+
     },
     addSubView: function() {
 
