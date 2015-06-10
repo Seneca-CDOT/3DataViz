@@ -21,5 +21,10 @@ Application.GeoDataRecord = Application.BaseDataRecord.extend({
 });
 
 Application.BaseGlobeCollection = Backbone.Collection.extend({
-    initialize: function() {}
+    initialize: function() {},
+    //TODO Depends on data attributes provided by users, 
+    // this will choose vizualize layer options.
+    getViewConfigs: function(data, defaults){
+        return defaults;
+    }
 });

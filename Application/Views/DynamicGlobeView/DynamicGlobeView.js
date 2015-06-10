@@ -25,6 +25,8 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
+        console.log("DynamicGlobeView Destroy");
+
         // TODO: review
         var iterator = this.particles.getBegin();
         while (iterator !== this.particles.getEnd()) {
@@ -64,6 +66,8 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         }
 
         Application.BaseGlobeView.prototype.destroy.call(this);
+        Application._vent.unbind('globe/ready');
+
     },
 
     // visualization specific functionality
@@ -143,15 +147,9 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
         this.addParticleWithDataRecord(dataRecord);
     },
 
-    // db synchronization and vizualization functionality
-    // this.startDataStreaming();
-    // startDataSynchronization: function() {
-    //     Application.BaseGlobeView.prototype.startDataSynchronization.call(this);
-    //     this.collection[0].reset();
-    //     this.collection[0].fetch();
-    // },
-
     showResults: function(results) {
+
+        console.log("DynamicGlobeView showResults");
 
         var that = this;
         this.collection[0].bind("add", function(data){

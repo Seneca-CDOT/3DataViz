@@ -67,7 +67,6 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.scene = null;
         this.renderer = null;
         this.camera = null;
-        this.scene = null;
         this.controls = null;
         this.tween = null;
 
