@@ -34,7 +34,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
 
         var pData = pModule.processData(response, options);
 
-        Application._vent.trigger('data/parsed', pData);
+        Application._vent.trigger('data/parsed', this.getViewConfigs(pData));
         this.models = pData;
 
     },
@@ -48,5 +48,19 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         for(var i=0; i<this.models.length; i++){
             this.models[i] = null;
         }
+    },
+    getViewConfigs: function(data){
+        var defaults = {
+            vizType: {
+                name: 'vizType',
+                list: ['geometry', 'texture']        
+            },
+            vizLayer: {
+                name: 'vizLayer',
+                list: ['points']
+            }
+        }
+        return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
     }
+
 });

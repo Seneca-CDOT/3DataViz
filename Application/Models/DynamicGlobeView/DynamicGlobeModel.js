@@ -50,6 +50,7 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
 
             this.add(pData);
         }
+        Application._vent.trigger('data/parsed', this.getViewConfigs(pData));
     },
     fetch: function () {
 
@@ -81,6 +82,19 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
             this.ws.send(JSON.stringify({type:"stop"}));
             this.ws.close();
         }
+    },
+    getViewConfigs: function(data){
+        var defaults = {
+            vizType: {
+                name: 'vizType',
+                list: ['geometry', 'texture']        
+            },
+            vizLayer: {
+                name: 'vizLayer',
+                list: ['dynamic']
+            }
+        }
+        return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
     }
 
 });

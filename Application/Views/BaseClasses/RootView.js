@@ -44,6 +44,7 @@ Application.RootView = Backbone.View.extend({
             this.rootView.destroy();
             this.rootView = null;
         }
+
         this.rootView = new Application['RootGlobeView'](this.collections);
         this.$el.prepend(this.rootView.$el);
 
