@@ -52,16 +52,14 @@ Application.RootGlobeView = Backbone.View.extend({
         this.obj = null;
         this.globeView.destroy();
         this.globeView = null;
+
     },
     visualize: function(config){
-        console.log("visualize");
         this.createDecorators(config);
         this.createGlobeView(this.obj);
     },
     createGlobeView: function(layer, decorator, collections) {
 
-        console.log("createGlobeView");
-        // console.log(obj);
         var rootGlobeViewClass = null;
         switch (layer) {
 
@@ -95,7 +93,6 @@ Application.RootGlobeView = Backbone.View.extend({
 
         var that = this;
         require(Application.layers[layer], function() {
-
             that.globeView = new Application[rootGlobeViewClass](decorator, collections);
             that.render();
         });
@@ -164,8 +161,6 @@ Application.RootGlobeView = Backbone.View.extend({
     // },
     createDecorators: function(config) {
 
-        console.log("createDecorators");
-        console.log(config);
         var decorators = [];
         var decorator = Application.GlobeDecoratorFactory.createDecorator(config)
 

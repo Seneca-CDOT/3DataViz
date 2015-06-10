@@ -26,7 +26,10 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
+        console.log("SpreadSheetGlobeView Destroy");
+
         Application.BaseGlobeView.prototype.destroy.call(this);
+        Application._vent.unbind('globe/ready');
         this.sprites = null;
         // Application._vent.unbind('globe/ready');
     },
@@ -45,6 +48,8 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
     // visualization specific functionality
     showResults: function() {
+
+        console.log("SpreadSheetGlobeView showResults");
 
         var results = this.collection[0].models;
         var that = this;

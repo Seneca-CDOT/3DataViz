@@ -23,9 +23,12 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
         // this.templatesList = config.templatesList;
         this.track = Application.userConfig.input;
         this.ws;
+        this.count = 0;
     },
     parse: function(response) {
-
+        if(this.count++ == 0){
+            Application._vent.trigger('data/parsed', pData);
+        }
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
             dataType: "twitter",
@@ -47,7 +50,6 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
 
             this.add(pData);
         }
-        Application._vent.trigger('data/parsed', pData);
     },
     fetch: function () {
 
@@ -69,7 +71,11 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
             this.ws = null;
         }
     },
-    disconnect: function(){
+    destroy: function(){
+        console.log("Destroy Tweets");
+        for(var i=0; i<this.models.length; i++){
+            this.models[i].destroy();
+        }
         if(this.ws){
             console.log("WebSocket disconnected");
             this.ws.send(JSON.stringify({type:"stop"}));

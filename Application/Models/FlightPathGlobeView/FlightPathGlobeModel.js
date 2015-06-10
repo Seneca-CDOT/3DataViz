@@ -43,7 +43,6 @@ Application.AirportsCollection = Application.BaseGlobeCollection.extend({
             download: true,
             complete: function(d) {
                 that.fetchAirports(d);
-                console.log(that);
                 return that.models;
             }
         };
@@ -75,6 +74,13 @@ Application.AirportsCollection = Application.BaseGlobeCollection.extend({
             this.push(tempAir);
         }
     },
+    destroy: function(){
+        console.log("Destroy AirportsCollection");
+        for(var i=0; i<this.models.length; i++){
+            // this.models[i].destroy();
+            this.models[i] = null;
+        }
+    }
 });
 
 Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
@@ -93,7 +99,6 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
             download: true,
             complete: function(d) {
                 that.fetchAirportRoutes(d);
-                console.log(that);
                 //return that.models;
                 Application._vent.trigger('data/parsed');
             }
@@ -124,4 +129,11 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
             }
         }
     },
+    destroy: function(){
+        console.log("Destroy AirportRoutesCollection");
+        for(var i=0; i<this.models.length; i++){
+            // this.models[i].destroy();
+            this.models[i] = null;
+        }
+    }
 });

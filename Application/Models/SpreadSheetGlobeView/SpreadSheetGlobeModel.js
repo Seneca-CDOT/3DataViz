@@ -35,7 +35,6 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         var pData = pModule.processData(response, options);
 
         Application._vent.trigger('data/parsed', pData);
-
         this.models = pData;
 
     },
@@ -43,5 +42,11 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
 
         if (!key) return;
         this.url = 'https://spreadsheets.google.com/feeds/cells/' + key + '/1/public/basic?alt=json';
+    },
+    destroy: function(){
+        console.log("Destroy SpreadSheetCollection");
+        for(var i=0; i<this.models.length; i++){
+            this.models[i] = null;
+        }
     }
 });

@@ -20,14 +20,11 @@ Application.ControlPanelRootView = Backbone.View.extend({
     },
     addVisualizationsView: function() {
         
-        if(this.dataSourcesView.subview != null){
+        this.visualizationsView = new Application.VisualizationsView();
+        this.$el.append(this.visualizationsView.render().$el);
 
-            this.visualizationsView = new Application.VisualizationsView();
-            this.$el.append(this.visualizationsView.render().$el);
+        Application._vent.unbind('data/parsed');
 
-            Application._vent.unbind('data/parsed');
-        
-        }
     },
     reset: function(){
         Application._vent.on('data/parsed', this.addVisualizationsView.bind(this));
@@ -35,12 +32,11 @@ Application.ControlPanelRootView = Backbone.View.extend({
             this.visualizationsView.destroy();
             this.visualizationsView = null;
         }
-        
-        this.dataSourcesView.$el.children()[0].selectedIndex = 0;
         if (this.dataSourcesView.subview != null){
             this.dataSourcesView.subview.destroy();
             this.dataSourcesView.subview = null;
         }
+        this.dataSourcesView.$el.children()[0].selectedIndex = 0;
     },
     destroy: function() {}
 });

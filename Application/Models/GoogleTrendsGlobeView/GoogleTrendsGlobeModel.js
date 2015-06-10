@@ -76,5 +76,11 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
             this.setURL(Application.userConfig.input);
             this.request();
 
+    },
+    destroy: function(){
+        console.log("Destroy GoogleTrendsCollection");
+        for(var i=0; i<this.models.length; i++){
+            this.models[i] = null;
+        }
     }
 });
