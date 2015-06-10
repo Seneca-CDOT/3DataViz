@@ -27,7 +27,7 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
     },
     parse: function(response) {
         if(this.count++ == 0){
-            Application._vent.trigger('data/parsed', pData);
+            Application._vent.trigger('data/parsed', this.getViewConfigs(response));
         }
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
@@ -50,7 +50,6 @@ Application.Tweets = Application.BaseGlobeCollection.extend({
 
             this.add(pData);
         }
-        Application._vent.trigger('data/parsed', this.getViewConfigs(pData));
     },
     fetch: function () {
 
