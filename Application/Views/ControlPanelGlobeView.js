@@ -307,7 +307,7 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
     },
     render: function() {
         Application.ButtonsView.prototype.render.call(this);
-        this.$el.append(this.search.render().$el);
+        // this.$el.append(this.search.render().$el);
         this.$el.append(this.timeFrom.render().$el);
         this.$el.append(this.timeTo.render().$el);
         this.$el.append(this.submitbtn.render().$el);
@@ -340,8 +340,8 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
     requestTimeFrom: function() {
         var that = this;
 
-        // var path = 'http://threedataviz.herokuapp.com/';
-        var path = 'http://localhost:5000/';
+        var path = 'http://threedataviz.herokuapp.com/';
+        // var path = 'http://localhost:5000/';
 
         $.get(path + 'twitterDB/apple/timefrom').done(function(data) {
             console.log(data[0].timestamp_ms);
@@ -353,8 +353,8 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
     },
     requestTimeTo: function() {
         var that = this;
-        // var path = 'http://threedataviz.herokuapp.com/';
-        var path = 'http://localhost:5000/';
+        var path = 'http://threedataviz.herokuapp.com/';
+        // var path = 'http://localhost:5000/';
 
         $.get(path + 'twitterDB/apple/timeto').done(function(data) {
             console.log(data[0].timestamp_ms);
@@ -382,8 +382,7 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
         Application.ButtonsView.prototype.initialize.call(this, viewConfig);
 
         this.urlfield = new Application.InputField(viewConfig);
-        this.urlfield.$el.attr('id', 'userInput');
-        this.urlfield.$el.attr('class', 'form-control');
+        this.urlfield.$el.attr('class', 'form-control userInput');
         this.urlfield.$el.attr('placeholder', 'Submit the URL');
         this.urlfield.$el.on('mousedown', this.urlFieldAction.bind(this));
 
@@ -472,8 +471,7 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
         Application.ButtonsView.prototype.initialize.call(this, viewConfig);
 
         this.keywordfield = new Application.InputField(viewConfig);
-        this.keywordfield.$el.attr('id', 'userInput');
-        this.keywordfield.$el.attr('class', 'form-control');
+        this.keywordfield.$el.attr('class', 'form-control userInput');
         this.keywordfield.$el.attr('placeholder', 'Enter the keyword');
         this.keywordfield.$el.on('keyup', this.KeywordFieldAction.bind(this));
 

@@ -59,6 +59,7 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
         this.ws.onopen = function(){
             var msg = {
               type: "start",
+              dataSource: "twitterLive",
               track: that.track
             }
             console.log("Get live tweets of the keyword \'"+ that.track +"\'");
@@ -79,7 +80,7 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
         }
         if(this.ws){
             console.log("WebSocket disconnected");
-            this.ws.send(JSON.stringify({type:"stop"}));
+            this.ws.send(JSON.stringify({type:"stop", dataSource: "twitterLive"}));
             this.ws.close();
         }
     },

@@ -24,9 +24,12 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
         // this.templatesList = config.templatesList;
         this.track = Application.userConfig.input;
         this.ws;
+        this.count = 0;
     },
     parse: function(response) {
-
+        if(this.count++ == 0){
+            Application._vent.trigger('data/parsed', this.getViewConfigs(response));
+        }
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
             dataType: "twitter",
@@ -49,14 +52,12 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
 
             this.add(pData);
         }
-        Application._vent.trigger('data/parsed', pData);
     },
     fetch: function() {
 
         console.log('userconf', Application.userConfig);
         var that = this;
-        // this.ws = new WebSocket("ws://threedataviz.herokuapp.com/");
-        this.ws = new WebSocket("ws://localhost:5000");
+        this.ws = new WebSocket("ws://threedataviz.herokuapp.com/");
 
         this.ws.onopen = function() {
 
@@ -88,9 +89,22 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
         }
         if(this.ws){
             console.log("WebSocket disconnected");
-            this.ws.send(JSON.stringify({type:"stop"}));
+            this.ws.send(JSON.stringify({type:"stop", dataSource: "twitterDB"}));
             this.ws.close();
         }
     },
+    getViewConfigs: function(data){
+        var defaults = {
+            vizType: {
+                name: 'vizType',
+                list: ['geometry', 'texture']        
+            },
+            vizLayer: {
+                name: 'vizLayer',
+                list: ['dynamic']
+            }
+        }
+        return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
+    }
 
 });
