@@ -97,7 +97,7 @@ wss.on("connection", function(ws) {
 
                 case "stop":
 
-                    $.each(timerArray, function(index, timer) {
+                    timerArray.forEach(function(timer, index) {
                         clearTimeout(timer);
                     });
 
