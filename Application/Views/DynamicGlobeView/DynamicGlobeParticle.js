@@ -55,7 +55,7 @@ Application.DynamicGlobeParticle.prototype._getShaderMaterial = function() {
 
         amplitude: { type: "f", value: 1.0 },
         color:     { type: "c", value: new THREE.Color( 0xffffff ) }, 
-        texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "Assets/Images/sprite_spark.png" ) },
+        texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "Assets/images/sprite_spark.png" ) },
     };
 
     var material = new THREE.ShaderMaterial( {
