@@ -349,10 +349,12 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
     requestTimeFrom: function() {
         var that = this;
 
-        var path = 'http://threedataviz.herokuapp.com/';
+        // var path = 'http://threedataviz.herokuapp.com/';
+        var path = 'http://localhost:5000/';
 
         $.get(path + 'twitterDB/apple/timefrom').done(function(data) {
-            //  console.log(new Date(data[0].timestamp_ms));
+            console.log(data[0].timestamp_ms);
+            // console.log(new Date(data[0].timestamp_ms));
 
             var datetime = that.convertStampToDateTime(data[0].timestamp_ms);
             that.timeFrom.$el.val(datetime);
@@ -360,10 +362,11 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
     },
     requestTimeTo: function() {
         var that = this;
-         var path = 'http://threedataviz.herokuapp.com/';
+        // var path = 'http://threedataviz.herokuapp.com/';
+        var path = 'http://localhost:5000/';
 
         $.get(path + 'twitterDB/apple/timeto').done(function(data) {
-
+            console.log(data[0].timestamp_ms);
             var datetime = that.convertStampToDateTime(data[0].timestamp_ms)
             that.timeTo.$el.val(datetime);
         });
@@ -371,7 +374,7 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
     convertStampToDateTime: function(timestamp) {
 
         var d = new Date(Number(timestamp));
-        var datetime = d.getDay() + '/' + d.getMonth() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+        var datetime = d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
         return datetime;
 
     },

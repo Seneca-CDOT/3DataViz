@@ -55,15 +55,17 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
 
         console.log('userconf', Application.userConfig);
         var that = this;
-        this.ws = new WebSocket("ws://threedataviz.herokuapp.com/");
+        // this.ws = new WebSocket("ws://threedataviz.herokuapp.com/");
+        this.ws = new WebSocket("ws://localhost:5000");
 
         this.ws.onopen = function() {
+
             var msg = {
                     type: "start",
                     dataSource: Application.userConfig.dataSource,
                     keyword: Application.userConfig.input,
-                    timeFrom: Application.userConfig.timefrom,
-                    timeTo: Application.userConfig.timeto
+                    timeFrom: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeFrom),
+                    timeTo: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeTo)
                 }
                 //console.log("Get live tweets of the keyword \'"+ that.track +"\'");
                 console.log(msg,JSON.stringify(msg));
@@ -71,7 +73,9 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
         };
         this.ws.onmessage = function(results) {
             console.log('twit obj: ', results);
-            that.parse([JSON.parse(results.data).data]);
+            var obj = JSON.parse(results.data);
+            obj.timestamp_ms = new Date();
+            that.parse([obj]);
         };
         this.ws.onclose = function(close) {
             this.ws = null;
