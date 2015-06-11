@@ -18,7 +18,9 @@ Application.RootView = Backbone.View.extend({
             dataSource: '',
             vizType: '',
             vizLayer: '',
-            input: ''
+            input: '',
+            timeFrom: '',
+            timeTo: ''
 
         };
         Application._vent.on('controlpanel/parse', this.submitOn.bind(this));
@@ -62,10 +64,18 @@ Application.RootView = Backbone.View.extend({
         var that = this;
         switch (Application.userConfig.dataSource) {
 
-            case 'twitter':
+            case 'twitterLive':
                 {
 
-                    collectionClasses = ['Tweets'];
+                    collectionClasses = ['TweetsLive'];
+                    //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
+                    break;
+
+                }
+            case 'twitterDB':
+                {
+
+                    collectionClasses = ['TweetsDB'];
                     //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
                     break;
 
