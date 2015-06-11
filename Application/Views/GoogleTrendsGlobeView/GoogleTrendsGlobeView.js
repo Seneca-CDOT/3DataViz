@@ -39,6 +39,8 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
+        console.log("GoogleTrendsGlobeView Destroy");
+
         Application.BaseGlobeView.prototype.destroy.call(this);
         Application._vent.unbind('globe/ready');
         this.resetGlobe();
@@ -66,9 +68,8 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     },
     showResults: function() {
 
+        console.log("GoogleTrendsGlobeView showResults");
         Application.BaseGlobeView.prototype.showResults.call(this, results);
-
-      //  this.collection[0];
 
         var results = this.collection[0].models;
 

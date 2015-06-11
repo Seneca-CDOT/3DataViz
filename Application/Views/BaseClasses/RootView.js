@@ -23,9 +23,8 @@ Application.RootView = Backbone.View.extend({
             timeTo: ''
 
         };
-
-        Application._vent.on('visualize', this.submitOn.bind(this));
-        Application._vent.on('controlpanel/parse', this.createCollection.bind(this));
+        Application._vent.on('controlpanel/parse', this.submitOn.bind(this));
+        Application._vent.on('visualize', this.visualizeOn.bind(this));
     },
     render: function() {
 
@@ -33,49 +32,34 @@ Application.RootView = Backbone.View.extend({
         return this;
     },
     submitOn: function() {
-
-        this.initGlobeView();
         console.log('data/ready');
+        this.createCollection();
     },
-
+    visualizeOn: function(){
+        console.log('visualize');
+        this.initGlobeView();
+    },
     initGlobeView: function() {
 
         if (this.rootView) {
-
+            console.log("destroy rootView");
             this.rootView.destroy();
             this.rootView = null;
         }
 
-        // {dataSourcesList: "",
-        // visualizationList: "",
-        // templatesList: "",
-        // userInput: ""}
-
-        // var rootViewClass = null;
-        // switch (config.templatesList) {
-
-        //     case "countries":
-        //     case "points":
-        //     case "dynamic":
-        //     case "graph":
-        //         {
-        //             rootViewClass = 'RootGlobeView';
-        //             break;
-        //         }
-
-        // }
-
         this.rootView = new Application['RootGlobeView'](this.collections);
-
-        //this.rootView.collection = this.collections;
         this.$el.prepend(this.rootView.$el);
+
     },
     createCollection: function() {
 
-        this.collections.length = 0;
+        if(this.collections.length > 0){
+            $.each(this.collections, function(index, collectionName){
+                collectionName.destroy();
+            });
+            this.collections = [];
+        }
 
-        console.log("createCollection");
-        // console.log(config);
         var collectionClasses = [];
         var that = this;
         switch (Application.userConfig.dataSource) {

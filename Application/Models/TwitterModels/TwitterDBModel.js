@@ -81,12 +81,16 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             this.ws = null;
         }
     },
-    disconnect: function(){
+    destroy: function(){
+        console.log("Destroy Tweets");
+        for(var i=0; i<this.models.length; i++){
+            this.models[i].destroy();
+        }
         if(this.ws){
             console.log("WebSocket disconnected");
             this.ws.send(JSON.stringify({type:"stop"}));
             this.ws.close();
         }
-    }
+    },
 
 });

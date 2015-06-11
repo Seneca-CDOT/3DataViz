@@ -122,8 +122,9 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
     className: 'form-control',
     initialize: function(viewConfig) {
         Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
-       // this.config = config; // list of the options
-       // this.name = null; // name of the option in the list
+        this.viewConfig = viewConfig;
+        // this.config = config; // list of the options
+        // this.name = null; // name of the option in the list
     },
     events: {
 

@@ -23,9 +23,12 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
         // this.templatesList = config.templatesList;
         this.track = Application.userConfig.input;
         this.ws;
+        this.count = 0;
     },
     parse: function(response) {
-
+        if(this.count++ == 0){
+            Application._vent.trigger('data/parsed', this.getViewConfigs(response));
+        }
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
             dataType: "twitter",
@@ -47,7 +50,6 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
 
             this.add(pData);
         }
-        Application._vent.trigger('data/parsed', pData);
     },
     fetch: function () {
 
@@ -70,12 +72,29 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
             this.ws = null;
         }
     },
-    disconnect: function(){
+    destroy: function(){
+        console.log("Destroy Tweets");
+        for(var i=0; i<this.models.length; i++){
+            this.models[i].destroy();
+        }
         if(this.ws){
             console.log("WebSocket disconnected");
             this.ws.send(JSON.stringify({type:"stop"}));
             this.ws.close();
         }
+    },
+    getViewConfigs: function(data){
+        var defaults = {
+            vizType: {
+                name: 'vizType',
+                list: ['geometry', 'texture']        
+            },
+            vizLayer: {
+                name: 'vizLayer',
+                list: ['dynamic']
+            }
+        }
+        return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
     }
 
 });

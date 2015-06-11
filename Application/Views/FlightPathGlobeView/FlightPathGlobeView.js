@@ -5,9 +5,9 @@ var Application = Application || {};
 
 Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
 
-    initialize: function(config) {
+    initialize: function(decorator, collections) {
 
-        Application.BaseGlobeView.prototype.initialize.call(this, config);
+        Application.BaseGlobeView.prototype.initialize.call(this, decorator, collections);
 
         //time factor for animations
         this.t = 0;
@@ -43,20 +43,14 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
             color: 0xa4c800
         });
     },
+    destroy: function() {
 
-    startDataSynchronization: function() {
+        console.log("FlightPathGlobeView Destroy");
 
-        // Here I listen for collection entries to know when they are loaded. 
-        // I don't really think I need it anymore, let me check...
-        // I think it is needed, so.... yeah. You do need it.
-        this.collection[0].bind("add", this.dataReady, this);
-        this.collection[1].bind("add", this.dataReady, this);
+        Application.BaseGlobeView.prototype.destroy.call(this);
+        Application._vent.unbind('globe/ready');
 
-        // Simple, fetch the collections
-        this.collection[1].fetch();
-        this.collection[0].fetch();
     },
-
     // visualization specific functionality
     updateGlobe: function() {
 
@@ -88,7 +82,9 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
     },
 
     // data ready checks to see if both csv's have been loaded
-    dataReady: function() {
+    showResults: function() {
+
+        console.log("FlightPathGlobeView showResults");
 
         if (this.collection[0].parsed && this.collection[1].parsed) {
             this.addPaths();
@@ -115,87 +111,89 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
             // time out is going to give it an interval between 
             // instantiating each route
             setTimeout(function() {
-                // get a random route
+                // get a random route)
                 randomIndex = that.getRandomInt(1, 65000);
-                dataRecord = routes[randomIndex].attributes;
+                if(routes[randomIndex] != null){
+                    dataRecord = routes[randomIndex].attributes;
 
-                // get destination and source airports for the chosen route
-                srcAirport = that.getAirport(dataRecord.sourceAirport);
-                destAirport = that.getAirport(dataRecord.destinationAirport);
+                    // get destination and source airports for the chosen route
+                    srcAirport = that.getAirport(dataRecord.sourceAirport);
+                    destAirport = that.getAirport(dataRecord.destinationAirport);
 
-                //sets up the vector points for the airports
-                var vT = srcAirport.position3D;
-                var vF = destAirport.position3D;
+                    //sets up the vector points for the airports
+                    var vT = srcAirport.position3D;
+                    var vF = destAirport.position3D;
 
-                // let's check if the airport object has been instantiated already
-                if (!that.airportCreated(srcAirport.ID)) {
-                    that.addAirport(srcAirport);
+                    // let's check if the airport object has been instantiated already
+                    if (!that.airportCreated(srcAirport.ID)) {
+                        that.addAirport(srcAirport);
+                    }
+                    if (!that.airportCreated(destAirport.ID)) {
+                        that.addAirport(destAirport);
+                    }
+
+                    //gets the distance between the points. Maxium = 2*radius
+                    var dist = vF.distanceTo(vT);
+
+                    // get the control points' vectors
+                    var cvT = vT.clone();
+                    var cvF = vF.clone();
+
+                    // some mathmagic
+                    var xC = (0.5 * (vF.x + vT.x));
+                    var yC = (0.5 * (vF.y + vT.y));
+                    var zC = (0.5 * (vF.z + vT.z));
+
+                    var mid = new THREE.Vector3(xC, yC, zC);
+
+                    var smoothDist = Application.Helper.map(dist, 0, 10, 0, 15 / dist);
+
+                    mid.setLength(that.globeRadius * smoothDist);
+
+                    cvT.add(mid);
+                    cvF.add(mid);
+
+                    cvT.setLength(that.globeRadius * smoothDist);
+                    cvF.setLength(that.globeRadius * smoothDist);
+
+                    //create the bezier curve
+                    var pathGeometry = new THREE.Geometry();
+                    var curve = new THREE.CubicBezierCurve3(vF, cvF, cvT, vT);
+
+                    // this sets the number of vertices on the paths,
+                    // their resolution, how good they look.
+                    // the smaller the number, the squarer it'll look
+                    pathGeometry.vertices = curve.getPoints(15);
+
+                    // Create the final Object3d to add to the this.scene
+
+                    var curveObject = new THREE.Line(pathGeometry, that.pathMaterial);
+                    paths.push(curve);
+                    that.scene.add(curveObject);
+
+                    var speed = Application.Helper.map(dist, 0, that.globeRadius * 2, 0, 2.9);
+
+                    //airplane sprite
+                    // var airplaneInstance = new THREE.Sprite(that.airplaneSpriteMaterial);
+
+                    //airplane 3D object
+                    var airplaneInstance = new THREE.Mesh(that.airplaneGeometry, that.airplaneMaterial);
+
+                    // airplane object for controlling the scene actors
+                    // it's got the 3D object, it's speed and current location
+                    var airplane = [
+                        airplaneInstance, (3 - speed) / 500,
+                        0
+                    ];
+
+                    // finally we add the airplane to the array 
+                    // that'll keep track of everything
+                    that.movingGuys.push(airplane);
+
+                    //gets the path first position
+                    airplaneInstance.position.copy(curve.getPoint(0));
+                    that.scene.add(airplaneInstance);
                 }
-                if (!that.airportCreated(destAirport.ID)) {
-                    that.addAirport(destAirport);
-                }
-
-                //gets the distance between the points. Maxium = 2*radius
-                var dist = vF.distanceTo(vT);
-
-                // get the control points' vectors
-                var cvT = vT.clone();
-                var cvF = vF.clone();
-
-                // some mathmagic
-                var xC = (0.5 * (vF.x + vT.x));
-                var yC = (0.5 * (vF.y + vT.y));
-                var zC = (0.5 * (vF.z + vT.z));
-
-                var mid = new THREE.Vector3(xC, yC, zC);
-
-                var smoothDist = Application.Helper.map(dist, 0, 10, 0, 15 / dist);
-
-                mid.setLength(that.globeRadius * smoothDist);
-
-                cvT.add(mid);
-                cvF.add(mid);
-
-                cvT.setLength(that.globeRadius * smoothDist);
-                cvF.setLength(that.globeRadius * smoothDist);
-
-                //create the bezier curve
-                var pathGeometry = new THREE.Geometry();
-                var curve = new THREE.CubicBezierCurve3(vF, cvF, cvT, vT);
-
-                // this sets the number of vertices on the paths,
-                // their resolution, how good they look.
-                // the smaller the number, the squarer it'll look
-                pathGeometry.vertices = curve.getPoints(15);
-
-                // Create the final Object3d to add to the this.scene
-
-                var curveObject = new THREE.Line(pathGeometry, that.pathMaterial);
-                paths.push(curve);
-                that.scene.add(curveObject);
-
-                var speed = Application.Helper.map(dist, 0, that.globeRadius * 2, 0, 2.9);
-
-                //airplane sprite
-                // var airplaneInstance = new THREE.Sprite(that.airplaneSpriteMaterial);
-
-                //airplane 3D object
-                var airplaneInstance = new THREE.Mesh(that.airplaneGeometry, that.airplaneMaterial);
-
-                // airplane object for controlling the scene actors
-                // it's got the 3D object, it's speed and current location
-                var airplane = [
-                    airplaneInstance, (3 - speed) / 500,
-                    0
-                ];
-
-                // finally we add the airplane to the array 
-                // that'll keep track of everything
-                that.movingGuys.push(airplane);
-
-                //gets the path first position
-                airplaneInstance.position.copy(curve.getPoint(0));
-                that.scene.add(airplaneInstance);
             }, time);
         }
     },

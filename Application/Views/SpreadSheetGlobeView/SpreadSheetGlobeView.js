@@ -22,10 +22,14 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.suscribe.call(this);
         //Application._vent.on('data/ready', this.showResults.bind(this));
-        // Application._vent.on('globe/ready', this.processRequest.bind(this));
+        //Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
     destroy: function() {
+
+        console.log("SpreadSheetGlobeView Destroy");
+
         Application.BaseGlobeView.prototype.destroy.call(this);
+        Application._vent.unbind('globe/ready');
         this.sprites = null;
         // Application._vent.unbind('globe/ready');
     },
@@ -44,6 +48,8 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
 
     // visualization specific functionality
     showResults: function() {
+
+        console.log("SpreadSheetGlobeView showResults");
 
         var results = this.collection[0].models;
         var that = this;
@@ -103,8 +109,9 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
             sprite.scale.multiplyScalar(5);
             var timer = setTimeout(function() {
 
-                that.globe.add(sprite);
+                if(that.globe == null){ return; };
 
+                that.globe.add(sprite);
 
                 if (hasGeo) {
 
@@ -118,9 +125,11 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
                 sprite.position.copy(position);
 
                 that.sprites.push(sprite);
+
             }, time);
 
-            that.timer.push(timer);
+            if(that.timer != null) that.timer.push(timer);
+
         });
     }
 });
