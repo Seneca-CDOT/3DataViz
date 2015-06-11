@@ -96,7 +96,7 @@ wss.on("connection", function(ws) {
                 break;
 
                 case "stop":
-
+                    console.log("remove timer");
                     timerArray.forEach(function(timer, index) {
                         clearTimeout(timer);
                     });
