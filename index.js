@@ -77,9 +77,9 @@ wss.on("connection", function(ws) {
 
                                 var timer = setTimeout(function() {
 
-
-                                    ws.send(JSON.stringify(result));
-
+                                    if(ws){
+                                      ws.send(JSON.stringify(result));
+                                    }
 
 
                                 }, time);
