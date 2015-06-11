@@ -384,6 +384,7 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
         this.urlfield = new Application.InputField(viewConfig);
         this.urlfield.$el.attr('class', 'form-control userInput');
         this.urlfield.$el.attr('placeholder', 'Submit the URL');
+        this.urlfield.$el.val("13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg");
         this.urlfield.$el.on('mousedown', this.urlFieldAction.bind(this));
 
         this.submitbtn = new Application.Button(viewConfig);
