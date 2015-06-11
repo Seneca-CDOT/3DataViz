@@ -208,6 +208,8 @@ app.get('/twitterDB/apple/timefrom', function(req, res) {
             $natural: 1
         }).limit(1).toArray(function(err, result) {
             if (err) throw err;
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Headers", "X-Requested-With");
             res.send(result);
             db.close();
         });
@@ -229,6 +231,8 @@ app.get('/twitterDB/apple/timeto', function(req, res) {
             $natural: -1
         }).limit(1).toArray(function(err, result) {
             if (err) throw err;
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Headers", "X-Requested-With");
             res.send(result);
             db.close();
         });
