@@ -8,8 +8,8 @@ Application.TextureGlobeDecorator = (function() {
 
         // HexMap is the map for clicking on countries.
         // TextureMap is the actual thing that's shown
-        this.hexMap = 'Assets/Images/textures/hexMapMin.png';
-        this.textureMap = 'Assets/Images/textures/worldMatrix.jpg';
+        this.hexMap = 'Assets/images/textures/hexMapMin.png';
+        this.textureMap = 'Assets/images/textures/worldMatrix.jpg';
 
         //this is the canvas size and its attributes.
         this.canvas = null;
