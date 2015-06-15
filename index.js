@@ -48,11 +48,9 @@ wss.on("connection", function(ws) {
                     var count = 0;
                     if (data.keyword) obj.keyword = data.keyword;
 
-                    console.log("start");
-
                     MongoClient.connect('mongodb://' + keys.user + ':' + keys.key + '@ds061611.mongolab.com:61611/heroku_app37445837', function(err, db) {
 
-                        console.log("connected?");
+                        console.log("connected!");
                         var col = db.collection('wwdc2015');
                         var obj = {
                             "geo": {
@@ -66,8 +64,8 @@ wss.on("connection", function(ws) {
                         };
 
                         col.find(obj).toArray(function(err, results) {
-                            console.log(err);
-                            console.log(results);
+                            console.log('Error ', err);
+                            console.log('Results ' , results);
                             if (err) throw err;
 
                             var time = 100;
