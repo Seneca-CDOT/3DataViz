@@ -32,6 +32,7 @@ var wss = new WebSocketServer({
 wss.on("connection", function(ws) {
     isOn = true;
     console.log("connection");
+
     ws.onmessage = function(event) {
 
         var data = JSON.parse(event.data);
@@ -64,7 +65,6 @@ wss.on("connection", function(ws) {
                         };
 
                         col.find(obj).toArray(function(err, results) {
-                            console.log('Error ', err);
                             console.log('Results ' , results.length);
                             if (err) throw err;
 
@@ -73,6 +73,7 @@ wss.on("connection", function(ws) {
                             results.forEach(function(result, index) {
 
                                 time += 1000;
+                                console.log('time ', time);
 
                                 var timer = setTimeout(function() {
 
