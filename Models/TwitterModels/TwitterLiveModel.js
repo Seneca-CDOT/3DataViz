@@ -25,6 +25,19 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
         this.ws;
         this.count = 0;
     },
+     preParse: function() {
+        var that = this;
+
+        var tweet = {
+            geo: {
+                coordinates: ['', '']
+            },
+            text: '',
+            timestamp_ms: ''
+        }
+        
+        that.parse([tweet]);
+    },
     parse: function(response) {
         if(this.count++ == 0){
             Application._vent.trigger('data/parsed', this.getViewConfigs(response));

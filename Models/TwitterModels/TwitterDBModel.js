@@ -23,11 +23,10 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
         Application.BaseGlobeCollection.prototype.initialize.call(this);
         // this.templatesList = config.templatesList;
         this.track = Application.userConfig.input;
-        this.ws;
         this.count = 0;
     },
     parse: function(response) {
-        if(this.count++ == 0){
+        if (this.count++ == 0) {
             Application._vent.trigger('data/parsed', this.getViewConfigs(response));
         }
         var pModule = Application.DataProcessor.ProcessorModule;
@@ -53,6 +52,18 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             this.add(pData);
         }
     },
+    preParse: function() {
+        var that = this;
+
+        var tweet = {
+            geo: {
+                coordinates: ['', '']
+            },
+            text: '',
+            timestamp_ms: ''
+        }
+        that.parse([tweet]);
+    },
     fetch: function() {
 
         console.log('userconf', Application.userConfig);
@@ -69,12 +80,13 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
                     timeTo: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeTo)
                 }
                 //console.log("Get live tweets of the keyword \'"+ that.track +"\'");
-                console.log(msg,JSON.stringify(msg));
+            console.log(msg, JSON.stringify(msg));
             that.ws.send(JSON.stringify(msg));
         };
         this.ws.onmessage = function(results) {
             console.log('twit obj: ', results);
             var obj = JSON.parse(results.data);
+            obj.real_timestamp = obj.timestamp_ms; // timestamp of the tweet emitted
             obj.timestamp_ms = new Date();
             that.parse([obj]);
         };
@@ -82,22 +94,25 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             this.ws = null;
         }
     },
-    destroy: function(){
+    destroy: function() {
         console.log("Destroy Tweets");
-        for(var i=0; i<this.models.length; i++){
+        for (var i = 0; i < this.models.length; i++) {
             this.models[i].destroy();
         }
-        if(this.ws){
+        if (this.ws) {
             console.log("WebSocket disconnected");
-            this.ws.send(JSON.stringify({type:"stop", dataSource: "twitterDB"}));
+            this.ws.send(JSON.stringify({
+                type: "stop",
+                dataSource: "twitterDB"
+            }));
             this.ws.close();
         }
     },
-    getViewConfigs: function(data){
+    getViewConfigs: function(data) {
         var defaults = {
             vizType: {
                 name: 'vizType',
-                list: ['geometry', 'texture']        
+                list: ['geometry', 'texture']
             },
             vizLayer: {
                 name: 'vizLayer',

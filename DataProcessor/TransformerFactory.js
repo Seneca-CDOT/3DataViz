@@ -26,7 +26,7 @@ Application.DataProcessor.TransformerFactory = (function() {
                 TransformerClass = Application.DataProcessor.GraphTransformer;
                 break;
         }
-        console.log(TransformerClass);
+        // console.log(TransformerClass);
         return new TransformerClass(options);
     };
 

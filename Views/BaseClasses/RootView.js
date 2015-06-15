@@ -37,6 +37,10 @@ Application.RootView = Backbone.View.extend({
     },
     visualizeOn: function(){
         console.log('visualize');
+        $.each(this.collections, function(index, collection) {
+
+            collection.fetch();
+        });
         this.initGlobeView();
     },
     initGlobeView: function() {
@@ -110,7 +114,7 @@ Application.RootView = Backbone.View.extend({
             $.each(collectionClasses, function(index, collectionName) {
 
                 that.collections.push(new Application[collectionName]);
-                that.collections[index].fetch();
+                that.collections[index].preParse();
 
             });
 
