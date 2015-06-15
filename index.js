@@ -65,7 +65,7 @@ wss.on("connection", function(ws) {
 
                         col.find(obj).toArray(function(err, results) {
                             console.log('Error ', err);
-                            console.log('Results ' , results);
+                            console.log('Results ' , results.length);
                             if (err) throw err;
 
                             var time = 100;
