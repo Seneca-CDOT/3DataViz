@@ -307,7 +307,7 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
     },
     render: function() {
         Application.ButtonsView.prototype.render.call(this);
-        // this.$el.append(this.search.render().$el);
+        this.$el.append(this.search.render().$el);
         this.$el.append(this.timeFrom.render().$el);
         this.$el.append(this.timeTo.render().$el);
         this.$el.append(this.submitbtn.render().$el);
