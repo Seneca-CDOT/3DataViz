@@ -62,7 +62,7 @@ wss.on("connection", function(ws) {
                                 $gt: String(data.timeFrom),
                                 $lt: String(data.timeTo)
                             },
-                            $text: { $search: data.input }
+                            $text: { $search: String(data.input) }
                         };
 
                         col.find(obj).toArray(function(err, results) {
