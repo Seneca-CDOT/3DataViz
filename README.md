@@ -1,5 +1,3 @@
-@(CDOT)
-
 #3D data visualization project (Draft)
 
 ##Background
