@@ -72,7 +72,6 @@ Application.RootView = Backbone.View.extend({
                 {
 
                     collectionClasses = ['TweetsLive'];
-                    //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
                     break;
 
                 }
@@ -80,7 +79,6 @@ Application.RootView = Backbone.View.extend({
                 {
 
                     collectionClasses = ['TweetsDB'];
-                    //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
                     break;
 
                 }
@@ -88,14 +86,12 @@ Application.RootView = Backbone.View.extend({
                 {
 
                     collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
-                    //files = ['Models/FlightPathGlobeView/FlightPathGlobeModel.js'];
                     break;
                 }
             case 'spreadSheet':
                 {
 
                     collectionClasses = ['SpreadSheetCollection'];
-                    // files = ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'];
                     break;
 
                 }
@@ -103,7 +99,6 @@ Application.RootView = Backbone.View.extend({
                 {
 
                     collectionClasses = ['GoogleTrendsCollection'];
-                    //  files = ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'];
                     break;
                 }
 

@@ -1,29 +1,29 @@
 var Application = Application || {};
 
 Application.AirportRouteModel = Application.BaseDataRecord.extend({
-    defaults: _.extend({}, Application.BaseDataRecord.prototype.defaults, {
-        routeID: 0,
-        sourceAirport: 0,
-        destinationAirport: 0,
-        numStops: 0,
-        equipment: ""
+        defaults: _.extend({}, Application.BaseDataRecord.prototype.defaults, {
+            routeID: 0,
+            sourceAirport: 0,
+            destinationAirport: 0,
+            numStops: 0,
+            equipment: ""
+        }),
+        initialize: function() {
+            Application.GeoDataRecord.prototype.initialize.call(this);
+        }
     }),
-    initialize: function() {
-        Application.GeoDataRecord.prototype.initialize.call(this);
-    }
-}),
 
-Application.AirportModel = Application.GeoDataRecord.extend({
-    defaults: _.extend({}, Application.GeoDataRecord.prototype.defaults, {
-        ID: 0,
-        airport: "",
-        country: "",
-        position3D: ""
-    }),
-    initialize: function() {
-        Application.GeoDataRecord.prototype.initialize.call(this);
-    }
-});
+    Application.AirportModel = Application.GeoDataRecord.extend({
+        defaults: _.extend({}, Application.GeoDataRecord.prototype.defaults, {
+            ID: 0,
+            airport: "",
+            country: "",
+            position3D: ""
+        }),
+        initialize: function() {
+            Application.GeoDataRecord.prototype.initialize.call(this);
+        }
+    });
 
 // For flightPathView we need to parse the csv files.
 // This is the best way I found to keep the backbone structure designed and 
@@ -36,6 +36,7 @@ Application.AirportsCollection = Application.BaseGlobeCollection.extend({
     initialize: function() {
         Application.BaseGlobeCollection.prototype.initialize.call(this);
     },
+    preParse: function() {},
     parse: function(response) {
         var that = this;
         var config = {
@@ -59,24 +60,24 @@ Application.AirportsCollection = Application.BaseGlobeCollection.extend({
         //x.data[i][7] Lon
         var x = data;
         var tempAir = {};
-        for( var i = 0 ; i < x.data.length ; i++ ){
-            tempAir.ID         = x.data[i][0],
-            tempAir.airport    = x.data[i][1],
-            tempAir.city       = x.data[i][2],
-            tempAir.country    = x.data[i][3],
-            tempAir.latitude   = x.data[i][6],
-            tempAir.longitude  = x.data[i][7],
-            tempAir.position3D = Application.Helper.geoToxyz(x.data[i][7], x.data[i][6], 50);
+        for (var i = 0; i < x.data.length; i++) {
+            tempAir.ID = x.data[i][0],
+                tempAir.airport = x.data[i][1],
+                tempAir.city = x.data[i][2],
+                tempAir.country = x.data[i][3],
+                tempAir.latitude = x.data[i][6],
+                tempAir.longitude = x.data[i][7],
+                tempAir.position3D = Application.Helper.geoToxyz(x.data[i][7], x.data[i][6], 50);
             // I need to check if this is the last object to be added to make sure
             // that when the View listens to it, the parsed flag is raised
-            if( i >= x.data.length-1 )
+            if (i >= x.data.length - 1)
                 this.parsed = true;
             this.push(tempAir);
         }
     },
-    destroy: function(){
-        console.log("Destroy AirportsCollection");
-        for(var i=0; i<this.models.length; i++){
+    destroy: function() {
+      //  console.log("Destroy AirportsCollection");
+        for (var i = 0; i < this.models.length; i++) {
             // this.models[i].destroy();
             this.models[i] = null;
         }
@@ -92,6 +93,10 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
 
         Application.BaseGlobeCollection.prototype.initialize.call(this);
     },
+    preParse: function() {
+        var data = {};
+        Application._vent.trigger('data/parsed', this.getViewConfigs(data));
+    },
     parse: function(response) {
         var collection = that = this;
         var config = {
@@ -99,7 +104,7 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
             download: true,
             complete: function(d) {
                 that.fetchAirportRoutes(d);
-                Application._vent.trigger('data/parsed', that.getViewConfigs(d));
+               // Application._vent.trigger('data/parsed', that.getViewConfigs(d));
             }
         };
         Papa.parse("Models/data/routes.csv", config);
@@ -128,18 +133,18 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
             }
         }
     },
-    destroy: function(){
-        console.log("Destroy AirportRoutesCollection");
-        for(var i=0; i<this.models.length; i++){
+    destroy: function() {
+       // console.log("Destroy AirportRoutesCollection");
+        for (var i = 0; i < this.models.length; i++) {
             // this.models[i].destroy();
             this.models[i] = null;
         }
     },
-    getViewConfigs: function(data){
+    getViewConfigs: function(data) {
         var defaults = {
             vizType: {
                 name: 'vizType',
-                list: ['geometry', 'texture']        
+                list: ['geometry', 'texture']
             },
             vizLayer: {
                 name: 'vizLayer',

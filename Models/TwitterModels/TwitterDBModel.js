@@ -26,19 +26,13 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
         this.count = 0;
     },
     preParse: function() {
-        var tweet = {
-            geo: {
-                coordinates: ['', '']
-            },
-            text: '',
-            timestamp_ms: ''
-        }
-        this.parse([tweet]);
+
+        var data = {};
+        Application._vent.trigger('data/parsed', this.getViewConfigs(data));
+       
     },
     parse: function(response) {
-        if (this.count++ == 0) {
-            Application._vent.trigger('data/parsed', this.getViewConfigs(response));
-        }
+
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
             dataType: "twitter",

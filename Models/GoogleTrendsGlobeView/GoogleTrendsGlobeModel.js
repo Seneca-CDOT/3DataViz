@@ -19,22 +19,24 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         this.response = []; // response from google trends
         this.url = ''; // request by this url to google trends
         var that = this;
-        //this.config = config;
-        //this.templatesList = config.templatesList;
 
         window.google = {
-                visualization: {
+            visualization: {
 
-                    Query: {
+                Query: {
 
-                        setResponse: function(data) {
+                    setResponse: function(data) {
 
-                            that.parse(data);
-                        }
+                        that.parse(data);
                     }
                 }
             }
+        }
 
+    },
+    preParse: function() {
+        var data = {};
+        Application._vent.trigger('data/parsed', this.getViewConfigs(data));
     },
     parse: function(response) {
 
@@ -48,12 +50,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         };
         var pData = pModule.processData(response.table.rows, options)
 
-        // Application._vent.trigger('data/ready', pData);
-        Application._vent.trigger('data/parsed', this.getViewConfigs(pData));
-        
         that.models = pData;
-       // return that.models;
-
     },
     setURL: function(key) {
 
@@ -70,20 +67,20 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         document.getElementsByTagName("head")[0].appendChild(fileref);
 
     },
-    fetch: function () {
+    fetch: function() {
 
-            if (Application.userConfig.input == '') return;
-            this.setURL(Application.userConfig.input);
-            this.request();
+        if (Application.userConfig.input == '') return;
+        this.setURL(Application.userConfig.input);
+        this.request();
 
     },
-    destroy: function(){
-        console.log("Destroy GoogleTrendsCollection");
-        for(var i=0; i<this.models.length; i++){
+    destroy: function() {
+        //  console.log("Destroy GoogleTrendsCollection");
+        for (var i = 0; i < this.models.length; i++) {
             this.models[i] = null;
         }
     },
-    getViewConfigs: function(data){
+    getViewConfigs: function(data) {
         var defaults = {
             vizType: {
                 name: 'vizType',
