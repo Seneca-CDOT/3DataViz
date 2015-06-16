@@ -89,7 +89,7 @@ wss.on("connection", function(ws) {
                             results.forEach(function(result, index) {
 
                                 time += interval;
-                                console.log('time ', time);
+                                //console.log('time ', time);
 
                                 var timer = setTimeout(function() {
 
