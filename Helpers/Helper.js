@@ -73,20 +73,6 @@ Application.Helper = {
 
     return new THREE.Vector3(x, y, z);
   },
-  geoToxy: function(lon, lat, r) {
-
-    var r = r || 1;
-
-    var x = 0;
-    x = this.map(lon, -180, 180, 0, 1024);
-
-    var y = 0;
-    y = this.map(-lat,-90,90,0, 1024);
-
-    var z = 0;
-
-    return new THREE.Vector3(x, y, z);
-  }, 
   map: function ( x,  in_min,  in_max,  out_min,  out_max){
       return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
   },    
