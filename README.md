@@ -42,18 +42,18 @@ The transformer will transform the **normalized data** in the format that specif
  
 ###Visualization Templates
 There are currently four different types of visualization templates in our application.
-1. Countries
-2. Points
-3. Dynamic
-4. Flight path
+  1. Countries
+  2. Points
+  3. Dynamic
+  4. Flight path
 
 ###APIs
 There are currently two APIs that we provide from server side.
-1. Twitter data which aggregated in DB
-2. Live tweets from Twitter.
+  1. Twitter data which aggregated in DB
+  2. Live tweets from Twitter.
 
 ##Contacts
 Please contact us if your have any feedbacks to our work.
-[@cathyatseneca](https://github.com/cathyatseneca)
-[@hamabama](https://github.com/Hamabama)
-[@collamo](https://github.com/collamo)
+  - [@cathyatseneca](https://github.com/cathyatseneca)
+  - [@hamabama](https://github.com/Hamabama)
+  - [@collamo](https://github.com/collamo)
