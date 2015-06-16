@@ -75,7 +75,7 @@ wss.on("connection", function(ws) {
                         }
 
                         if (data.interval != '') {
-                            interval = data.interval;
+                            interval = Number(data.interval);
                         }
 
                         col.find(searchConfig).toArray(function(err, results) {
