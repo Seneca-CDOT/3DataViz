@@ -53,7 +53,7 @@ There are currently two APIs that we provide from server side.
   2. Live tweets from Twitter.
 
 ##Contacts
-Please contact us if your have any feedbacks to our work.
+Please contact us if your have any feedbacks for the project.
   - [@cathyatseneca](https://github.com/cathyatseneca)
   - [@hamabama](https://github.com/Hamabama)
   - [@collamo](https://github.com/collamo)
