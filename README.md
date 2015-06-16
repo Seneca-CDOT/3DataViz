@@ -1,42 +1,45 @@
 #3D data visualization project (Draft)
 
-##Background
-
 In this project, we are developing a web application prototype that would allow users to visualize their data in 3D world.
 
 Our main focus on this project is creating a mechanism or a tool that can process various types of data formats and visualize them on a specific visualization template that we built so that users can visualize their data in 3D world without knowing much of technologies around it.
 
----
 ##Demo
 http://seneca-cdot.github.io/3DataViz/
 
-###Instruction:
-1.Choose a data source from options.
+1. Choose a data source from options.
 - **twitterDB** - collected tweets from apple wwdc2015
-- **twitterLive** - live tweets of specified keyword
-- **csv** - flight path ( currently you cannot specify your file )
+- **twitterLive** - live tweets with specific keyword
+- **csv** - flight path ( currently you cannot choose different file for it )
 - **spread sheet** - google spread sheet ( currently only this [data](https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml) works. )
-- **google trends** - google trends of specified keyword.
+- **google trends** - google trends with specific keyword.
 
-2.Fill out required information for the option you chose.
-3.Choose rendering type from Geometry and Texture
-4.Choose template type from options.
-5.Click visualize.
+2. Fill out required information for the option you chose if necessary.
+3. Choose rendering type from Geometry or Texture.
+4. Choose template type from options.
+5. Click visualize.
 
 ---
 ##Architecture
-What we have built so far is an application prototype that consists of  mainly these.
+What we have built so far is an application prototype that consists of mainly these.
 - Architecture
 - Data Processor ( Client )
 - Visualization Templates ( Client )
 - APIs ( Server )
 
-Here is a diagram of our architecture of our application.
-![Alt text](./3dataviz-architect.png) (Put dyagram here)
+Here is the diagram of our application architecture.
+![Alt text](http://seneca-cdot.github.io/3DataViz/images/3dataviz-architect.png)
 
 ###Data Processor - Parser & Transformer
-![Alt text](./3dataviz-dataprocessor.png) (Put dyagram here)
+![Alt text](http://seneca-cdot.github.io/3DataViz/images/3dataviz-dataprocessor.png)
 
+
+Data processor is one of the most important part of our project. There are two main modules within the data processor. One is **parser** and the other one is **transformer**.
+
+When the parser receives data and its data type, the parser will choose suitable functions to parse it. Then, the parser will output **normalized data** and pass it to the transformer.
+
+The transformer will transform the **normalized data** in the format that specific visualization template can understand and visualize the data.
+ 
 ###Visualization Templates
 There are currently four different types of visualization templates in our application.
 1. Countries
