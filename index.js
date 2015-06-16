@@ -9,7 +9,7 @@ var MongoClient = require('mongodb').MongoClient;
 var client;
 var isOn = false;
 var timerArray = [];
-    
+
 kfs.readFile('keys.json', 'utf8', function(err, data) {
     keys = JSON.parse(data);
     client = new Twitter({
@@ -42,43 +42,59 @@ wss.on("connection", function(ws) {
         var streamDB = function() {
 
             console.log("streamDB");
-            var count = 0;
+
             switch (data.type) {
                 case "start":
                     var obj = {};
-                    var count = 0;
-                    if (data.keyword) obj.keyword = data.keyword;
+                    var interval = 1000;
+                    //  var count = 0;
+                    //if (data.keyword) obj.keyword = data.keyword;
 
                     MongoClient.connect('mongodb://' + keys.user + ':' + keys.key + '@ds061611.mongolab.com:61611/heroku_app37445837', function(err, db) {
 
+                        if (err) throw err;
+
                         console.log("connected!");
                         var col = db.collection('wwdc2015');
-                        var obj = {
+
+                        var searchConfig = {
                             "geo": {
                                 $ne: null
                             },
                             "timestamp_ms": {
                                 $gt: String(data.timeFrom),
                                 $lt: String(data.timeTo)
-                            },
-                            $text: { $search: data.keyword }
+                            }
                         };
 
-                        col.find(obj).toArray(function(err, results) {
-                            console.log('Results ' , results.length);
+                        if (data.keyword != '') {
+
+                            searchConfig.$text = {
+                                $search: data.keyword
+                            }
+                        }
+
+                        if (data.interval != '') {
+                            interval = data.interval;
+                        }
+
+                        col.find(searchConfig).toArray(function(err, results) {
+
                             if (err) throw err;
+
+                            console.log('Results ', results.length);
 
                             var time = 100;
 
                             results.forEach(function(result, index) {
 
-                                time += 1000;
+                                time += interval;
                                 console.log('time ', time);
 
                                 var timer = setTimeout(function() {
 
-                                    if(ws){
-                                      ws.send(JSON.stringify(result));
+                                    if (ws) {
+                                        ws.send(JSON.stringify(result));
                                     }
 
 
@@ -93,13 +109,14 @@ wss.on("connection", function(ws) {
                         });
 
                     });
-                break;
+                    break;
 
                 case "stop":
                     console.log("remove timer");
                     timerArray.forEach(function(timer, index) {
                         clearTimeout(timer);
                     });
+                    timerArray.length = 0;
 
                     break;
 
@@ -190,7 +207,7 @@ wss.on("connection", function(ws) {
 //             res.send(result);
 //             db.close();
 //         });
- 
+
 //     });
 
 // });
