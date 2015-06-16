@@ -22,8 +22,18 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
 
         Application.BaseGlobeCollection.prototype.initialize.call(this);
         // this.templatesList = config.templatesList;
-        this.track = Application.userConfig.input;
+        this.ws;
         this.count = 0;
+    },
+    preParse: function() {
+        var tweet = {
+            geo: {
+                coordinates: ['', '']
+            },
+            text: '',
+            timestamp_ms: ''
+        }
+        this.parse([tweet]);
     },
     parse: function(response) {
         if (this.count++ == 0) {
@@ -52,18 +62,6 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             this.add(pData);
         }
     },
-    preParse: function() {
-        var that = this;
-
-        var tweet = {
-            geo: {
-                coordinates: ['', '']
-            },
-            text: '',
-            timestamp_ms: ''
-        }
-        that.parse([tweet]);
-    },
     fetch: function() {
 
         console.log('userconf', Application.userConfig);
@@ -76,10 +74,10 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
                     type: "start",
                     dataSource: Application.userConfig.dataSource,
                     keyword: Application.userConfig.input,
+                    interval: '',
                     timeFrom: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeFrom),
                     timeTo: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeTo)
                 }
-                //console.log("Get live tweets of the keyword \'"+ that.track +"\'");
             console.log(msg, JSON.stringify(msg));
             that.ws.send(JSON.stringify(msg));
         };
@@ -87,7 +85,7 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             console.log('twit obj: ', results);
             var obj = JSON.parse(results.data);
             obj.real_timestamp = obj.timestamp_ms; // timestamp of the tweet emitted
-            obj.timestamp_ms = new Date();
+            obj.timestamp_ms = new Date().getTime();
             that.parse([obj]);
         };
         this.ws.onclose = function(close) {

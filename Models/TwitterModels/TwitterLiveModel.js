@@ -35,7 +35,6 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
             text: '',
             timestamp_ms: ''
         }
-        
         that.parse([tweet]);
     },
     parse: function(response) {
@@ -80,7 +79,10 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
         };
         this.ws.onmessage = function(results){
             console.log('twit obj: ', results);
-            that.parse([JSON.parse(results.data).data]);
+            var obj = JSON.parse(results.data).data;
+            obj.real_timestamp = obj.timestamp_ms; // timestamp of the tweet emitted
+            obj.timestamp_ms = new Date().getTime();
+            that.parse([obj]);
         };
         this.ws.onclose = function(close){
             this.ws = null;
