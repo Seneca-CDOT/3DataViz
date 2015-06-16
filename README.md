@@ -8,11 +8,11 @@ Our main focus on this project is creating a mechanism or a tool that can proces
 http://seneca-cdot.github.io/3DataViz/
 
 1. Choose a data source from options.
-- **twitterDB** - collected tweets from apple wwdc2015
-- **twitterLive** - live tweets with specific keyword
-- **csv** - flight path ( currently you cannot choose different file for it )
-- **spread sheet** - google spread sheet ( currently only this [data](https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml) works. )
-- **google trends** - google trends with specific keyword.
+  - **twitterDB** - collected tweets from apple wwdc2015
+  - **twitterLive** - live tweets with specific keyword
+  - **csv** - flight path ( currently you cannot choose different file for it )
+  - **spread sheet** - google spread sheet ( currently only this [data](https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml) works. )
+  - **google trends** - google trends with specific keyword.
 
 2. Fill out required information for the option you chose if necessary.
 3. Choose rendering type from Geometry or Texture.
