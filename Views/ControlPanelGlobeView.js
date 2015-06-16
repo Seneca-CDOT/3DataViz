@@ -3,10 +3,12 @@ Application.ControlPanelRootView = Backbone.View.extend({
     id: 'panel',
     initialize: function() {
 
+        this.visualizationsView = null;
+        this.dataSourcesView = null;
         this.addDataSourcesView();
-        
+
         Application._vent.on('data/parsed', this.addVisualizationsView.bind(this));
-        Application._vent.on('visualize', this.reset.bind(this));
+        //        Application._vent.on('visualize', this.reset.bind(this));
 
     },
     render: function() {
@@ -15,24 +17,25 @@ Application.ControlPanelRootView = Backbone.View.extend({
         return this;
     },
     addDataSourcesView: function() {
-
+        if (this.dataSourcesView) this.dataSourcesView.destroy();
         this.dataSourcesView = new Application.DataSourcesView();
     },
     addVisualizationsView: function(viewConfig) {
 
+        if (this.visualizationsView) this.visualizationsView.destroy();
         this.visualizationsView = new Application.VisualizationsView(viewConfig);
         this.$el.append(this.visualizationsView.render().$el);
 
-        Application._vent.unbind('data/parsed');
+        // Application._vent.unbind('data/parsed');
 
     },
-    reset: function(){
+    reset: function() {
         Application._vent.on('data/parsed', this.addVisualizationsView.bind(this));
-        if(this.visualizationsView != null){
+        if (this.visualizationsView != null) {
             this.visualizationsView.destroy();
             this.visualizationsView = null;
         }
-        if (this.dataSourcesView.subview != null){
+        if (this.dataSourcesView.subview != null) {
             this.dataSourcesView.subview.destroy();
             this.dataSourcesView.subview = null;
         }
@@ -169,6 +172,9 @@ Application.VisualizationsView = Backbone.View.extend({
     destroy: function() {
 
         this.remove();
+        this.viewConfigs = null;
+        this.visualizationList = null;
+        this.subview = null;
     },
     addSubView: function() {
 
@@ -211,6 +217,7 @@ Application.ButtonsView = Backbone.View.extend({
     },
     destroy: function() {
 
+        this.viewConfig = null;
         this.remove();
         //this.$el.empty();
     }
@@ -234,6 +241,10 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
     submitAction: function() {
 
         Application._vent.trigger('controlpanel/parse');
+    },
+    destroy: function() {
+        this.submitbtn.destroy();
+
     }
 });
 
@@ -273,6 +284,11 @@ Application.DynamicTwitterLiveControlPanel = Application.ButtonsView.extend({
         Application.userConfig.input = key;
         Application._vent.trigger('controlpanel/parse');
 
+    },
+    destroy: function() {
+        this.submitbtn.destroy();
+        this.search.destroy();
+
     }
 });
 
@@ -283,7 +299,6 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
 
         this.requestTimeFrom();
         this.requestTimeTo();
-
 
         this.timeFrom = new Application.InputField(viewConfig);
         this.timeFrom.$el.attr('class', 'form-control userInput');
@@ -346,7 +361,6 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
         $.get(path + 'twitterDB/apple/timefrom').done(function(data) {
             console.log(data[0].timestamp_ms);
             // console.log(new Date(data[0].timestamp_ms));
-
             var datetime = that.convertStampToDateTime(data[0].timestamp_ms);
             that.timeFrom.$el.val(datetime);
         });
@@ -365,13 +379,20 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
     convertStampToDateTime: function(timestamp) {
 
         var d = new Date(Number(timestamp));
-        var datetime = d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+        var datetime = d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
         return datetime;
 
     },
     convertDateTimeToStamp: function(datetime) {
 
         return new Date(datetime);
+
+    },
+    destroy: function() {
+        this.submitbtn.destroy();
+        this.search.destroy();
+        this.timeFrom.destroy();
+        this.timeTo.destroy();
 
     }
 });
@@ -462,6 +483,10 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
 
         return key;
 
+    },
+    destroy: function() {
+        this.submitbtn.destroy();
+        this.urlfield.destroy();
     }
 
 });
@@ -523,6 +548,10 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
         keyword = keyword.trim().replace(/ /g, ',');
         return keyword;
 
+    },
+    destroy: function() {
+        this.keywordfield.destroy();
+        this.urlfield.destroy();
     }
 
 });

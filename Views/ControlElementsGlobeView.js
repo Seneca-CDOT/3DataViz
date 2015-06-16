@@ -12,7 +12,7 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
         'mousedown': 'action'
     },
     destroy: function() {
-
+        this.viewConfig = null;
         this.remove();
         this.unbind();
         delete this.$el;
@@ -86,7 +86,7 @@ Application.Button = Application.ControlElementsGlobeView.extend({
     },
     events: {
 
-        'mousedown':'action'
+        'mousedown': 'action'
     },
     render: function() {
         return this;
@@ -95,7 +95,7 @@ Application.Button = Application.ControlElementsGlobeView.extend({
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
 
-      //  Application._vent.trigger('controlpanel/parse');
+        //  Application._vent.trigger('controlpanel/parse');
     }
 });
 
@@ -113,7 +113,7 @@ Application.VizButton = Application.ControlElementsGlobeView.extend({
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
 
-       // Application._vent.trigger('controlpanel', this.userInput);
+        // Application._vent.trigger('controlpanel', this.userInput);
     }
 });
 

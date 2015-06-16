@@ -19,6 +19,7 @@ Application.RootView = Backbone.View.extend({
             vizType: '',
             vizLayer: '',
             input: '',
+            interval: '',
             timeFrom: '',
             timeTo: ''
 
@@ -46,7 +47,7 @@ Application.RootView = Backbone.View.extend({
     initGlobeView: function() {
 
         if (this.rootView) {
-            console.log("destroy rootView");
+            //console.log("destroy rootView");
             this.rootView.destroy();
             this.rootView = null;
         }
@@ -60,6 +61,7 @@ Application.RootView = Backbone.View.extend({
         if(this.collections.length > 0){
             $.each(this.collections, function(index, collectionName){
                 collectionName.destroy();
+                collectionName = null;
             });
             this.collections = [];
         }

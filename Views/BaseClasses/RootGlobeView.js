@@ -11,19 +11,16 @@ Application.RootGlobeView = Backbone.View.extend({
 
     initialize: function(collections) {
 
-        console.log("initialize RootGlobeView");
+        //  console.log("initialize RootGlobeView");
 
         this.obj = {};
         this.collections = collections;
-        //this.globeView = {};
-       // this.obj.collection = [];
         this.obj.decorators = [];
-       // this.obj.config = config;
-       var decorator =  this.createDecorators(Application.userConfig.vizType);
+        var decorator = this.createDecorators(Application.userConfig.vizType);
         this.createGlobeView(Application.userConfig.vizLayer, decorator, collections);
-       // this.createCollection(config);
+        // this.createCollection(config);
 
-     //   Application._vent.on('controlpanelsubview/visualize', this.visualize.bind(config));
+        //   Application._vent.on('controlpanelsubview/visualize', this.visualize.bind(config));
     },
     render: function() {
 
@@ -46,15 +43,15 @@ Application.RootGlobeView = Backbone.View.extend({
 
         this.remove();
         this.unbind();
-        this.obj.collection = null;
+        this.collections = null;
         this.obj.decorators = null;
-        this.obj.config = null;
+        //this.obj.config = null;
         this.obj = null;
         this.globeView.destroy();
         this.globeView = null;
 
     },
-    visualize: function(config){
+    visualize: function(config) {
         this.createDecorators(config);
         this.createGlobeView(this.obj);
     },
@@ -65,27 +62,21 @@ Application.RootGlobeView = Backbone.View.extend({
 
             case "countries":
                 {
-                    // files = Application.globeViews.googleTrends.files;
                     rootGlobeViewClass = 'GoogleTrendsGlobeView';
-                    // rootGlobeViewClass = 'SpreadSheetRootGlobeView';
                     break;
                 }
             case "points":
                 {
-                    //files = Application.globeViews.spreadSheet.files;
-                    //rootGlobeViewClass = 'GoogleTrendsRootGlobeView';
                     rootGlobeViewClass = 'SpreadSheetGlobeView';
                     break;
                 }
             case "dynamic":
                 {
-                    // files = Application.globeViews.dynamic.files;
                     rootGlobeViewClass = 'DynamicGlobeView';
                     break;
                 }
             case "graph":
                 {
-                    // files = Application.globeViews.flightPath.files;
                     rootGlobeViewClass = 'FlightPathGlobeView';
                     break;
                 }
