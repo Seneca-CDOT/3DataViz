@@ -37,6 +37,10 @@ Application.RootView = Backbone.View.extend({
     },
     visualizeOn: function(){
         console.log('visualize');
+        $.each(this.collections, function(index, collection) {
+
+            collection.fetch();
+        });
         this.initGlobeView();
     },
     initGlobeView: function() {
@@ -68,7 +72,6 @@ Application.RootView = Backbone.View.extend({
                 {
 
                     collectionClasses = ['TweetsLive'];
-                    //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
                     break;
 
                 }
@@ -76,7 +79,6 @@ Application.RootView = Backbone.View.extend({
                 {
 
                     collectionClasses = ['TweetsDB'];
-                    //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
                     break;
 
                 }
@@ -84,14 +86,12 @@ Application.RootView = Backbone.View.extend({
                 {
 
                     collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
-                    //files = ['Models/FlightPathGlobeView/FlightPathGlobeModel.js'];
                     break;
                 }
             case 'spreadSheet':
                 {
 
                     collectionClasses = ['SpreadSheetCollection'];
-                    // files = ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'];
                     break;
 
                 }
@@ -99,7 +99,6 @@ Application.RootView = Backbone.View.extend({
                 {
 
                     collectionClasses = ['GoogleTrendsCollection'];
-                    //  files = ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'];
                     break;
                 }
 
@@ -110,7 +109,7 @@ Application.RootView = Backbone.View.extend({
             $.each(collectionClasses, function(index, collectionName) {
 
                 that.collections.push(new Application[collectionName]);
-                that.collections[index].fetch();
+                that.collections[index].preParse();
 
             });
 

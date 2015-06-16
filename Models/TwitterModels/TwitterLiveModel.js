@@ -16,19 +16,20 @@ Application.Tweet = Application.GeoDataRecord.extend({
 Application.TweetsLive = Application.BaseGlobeCollection.extend({
 
     model: Application.Tweet,
-    //url: "http://threedataviz.herokuapp.com/twitterDB/apple",
     initialize: function(config) {
 
         Application.BaseGlobeCollection.prototype.initialize.call(this);
-        // this.templatesList = config.templatesList;
         this.track = Application.userConfig.input;
         this.ws;
         this.count = 0;
     },
+    preParse: function() {
+
+        var data = {};
+        Application._vent.trigger('data/parsed', this.getViewConfigs(data));
+    },
     parse: function(response) {
-        if(this.count++ == 0){
-            Application._vent.trigger('data/parsed', this.getViewConfigs(response));
-        }
+
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
             dataType: "twitter",
@@ -37,11 +38,11 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
         var pData = pModule.processData(response, options);
         this.transform(pData);
     },
-    transform: function(pData){
-        if(Application.userConfig.vizLayer == ""){
+    transform: function(pData) {
+        if (Application.userConfig.vizLayer == "") {
             this.add(pData);
 
-        }else{
+        } else {
             var pModule = Application.DataProcessor.ProcessorModule;
             var options = {
                 visualizationType: Application.userConfig.vizLayer
@@ -51,44 +52,48 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
             this.add(pData);
         }
     },
-    fetch: function () {
+    fetch: function() {
 
-        console.log("WebSocket connected to ws://threedataviz.herokuapp.com");
         this.ws = new WebSocket("ws://threedataviz.herokuapp.com/");
         var that = this;
-        this.ws.onopen = function(){
+        this.ws.onopen = function() {
             var msg = {
-              type: "start",
-              dataSource: "twitterLive",
-              track: that.track
+                type: "start",
+                dataSource: "twitterLive",
+                track: that.track
             }
-            console.log("Get live tweets of the keyword \'"+ that.track +"\'");
             that.ws.send(JSON.stringify(msg));
         };
-        this.ws.onmessage = function(results){
-            console.log('twit obj: ', results);
-            that.parse([JSON.parse(results.data).data]);
+        this.ws.onmessage = function(results) {
+            // console.log('tweet: ', results);
+            var obj = JSON.parse(results.data).data;
+            obj.real_timestamp = obj.timestamp_ms; // timestamp of the tweet emitted
+            obj.timestamp_ms = new Date().getTime();
+            that.parse([obj]);
         };
-        this.ws.onclose = function(close){
+        this.ws.onclose = function(close) {
             this.ws = null;
         }
     },
-    destroy: function(){
-        console.log("Destroy Tweets");
-        for(var i=0; i<this.models.length; i++){
+    destroy: function() {
+        // console.log("Destroy Tweets");
+        for (var i = 0; i < this.models.length; i++) {
             this.models[i].destroy();
         }
-        if(this.ws){
-            console.log("WebSocket disconnected");
-            this.ws.send(JSON.stringify({type:"stop", dataSource: "twitterLive"}));
+        if (this.ws) {
+            // console.log("WebSocket disconnected");
+            this.ws.send(JSON.stringify({
+                type: "stop",
+                dataSource: "twitterLive"
+            }));
             this.ws.close();
         }
     },
-    getViewConfigs: function(data){
+    getViewConfigs: function(data) {
         var defaults = {
             vizType: {
                 name: 'vizType',
-                list: ['geometry', 'texture']        
+                list: ['geometry', 'texture']
             },
             vizLayer: {
                 name: 'vizLayer',

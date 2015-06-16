@@ -16,9 +16,13 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
     initialize: function(config) {
 
         this.setURL(Application.userConfig.input);
-        // this.url = '';
-        // this.templatesList = config.templatesList;
         Application.BaseGlobeCollection.prototype.initialize.call(this);
+
+    },
+    preParse: function() {
+
+        var data = {};
+        Application._vent.trigger('data/parsed', this.getViewConfigs(data));
 
     },
     parse: function(response) {
@@ -34,7 +38,6 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
 
         var pData = pModule.processData(response, options);
 
-        Application._vent.trigger('data/parsed', this.getViewConfigs(pData));
         this.models = pData;
 
     },
@@ -43,17 +46,17 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         if (!key) return;
         this.url = 'https://spreadsheets.google.com/feeds/cells/' + key + '/1/public/basic?alt=json';
     },
-    destroy: function(){
-        console.log("Destroy SpreadSheetCollection");
-        for(var i=0; i<this.models.length; i++){
+    destroy: function() {
+       // console.log("Destroy SpreadSheetCollection");
+        for (var i = 0; i < this.models.length; i++) {
             this.models[i] = null;
         }
     },
-    getViewConfigs: function(data){
+    getViewConfigs: function(data) {
         var defaults = {
             vizType: {
                 name: 'vizType',
-                list: ['geometry', 'texture']        
+                list: ['geometry', 'texture']
             },
             vizLayer: {
                 name: 'vizLayer',
