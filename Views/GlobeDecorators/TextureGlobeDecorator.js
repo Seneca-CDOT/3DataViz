@@ -69,10 +69,6 @@ Application.TextureGlobeDecorator = (function() {
     privateMethods.loadTexture = function(globeView) {
 
         var texture = THREE.ImageUtils.loadTexture(this.textureMap);
-        // texture.wrapS = THREE.RepeatWrapping;
-        // var radians = - 0.5;
-        // texture.offset.x = radians;
-
         var material = new THREE.MeshBasicMaterial({
             color: 0xFFFFFF,
             map: texture
@@ -167,7 +163,7 @@ Application.TextureGlobeDecorator = (function() {
                 return;
             }
 
-            var point = Application.Helper.geoToxy(coordinates[0][0], coordinates[0][1]);
+            var point = Application.Helper.geoToxyz(coordinates[0][0], coordinates[0][1]);
 
             canvasCtx.beginPath();
             canvasCtx.lineWidth = "2";
@@ -190,7 +186,7 @@ Application.TextureGlobeDecorator = (function() {
                 if (coordinates[k][1] > maxLat) maxLat = coordinates[k][1];
                 if (coordinates[k][1] < minLat) minLat = coordinates[k][1];
 
-                point = Application.Helper.geoToxy(coordinates[k][0], coordinates[k][1]);
+                point = Application.Helper.geoToxyz(coordinates[k][0], coordinates[k][1]);
                 canvasCtx.lineTo(point.x, point.y);
             }
 
