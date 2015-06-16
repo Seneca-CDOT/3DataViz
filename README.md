@@ -42,18 +42,24 @@ The transformer will transform the **normalized data** in the format that specif
  
 ###Visualization Templates
 There are currently four different types of visualization templates in our application.
-  1. Countries
-  2. Points
-  3. Dynamic
-  4. Flight path
-
+  1. **Countries**
+  This template colourizes top 10 countries from the data given.
+  2. **Points**
+  This template plots images onto the globe. Each image represents the location where each data occurs. 
+  3. **Dynamic**
+  This template shows a sparkle object above the globe. Each sparkle represents the location where each data occurs. Data will be given dynamically.
+  4. **Flight path**
+  This template will visualize a flight path from departure to destination. 
+  
 ###APIs
 There are currently two APIs that we provide from server side.
-  1. Twitter data which aggregated in DB
-  2. Live tweets from Twitter.
+  1. **Twitter data which aggregated in DB**
+  We collected tweets for WWDC2015 and save them to our database. We provide an REST API to retrieve those data to visualize.
+  2. **Live tweets from Twitter**
+  This API provides web socket connection that delivers live tweets from Twitter Streaming API.
 
 ##Contacts
-Please contact us if your have any feedbacks for the project.
+If you have any feedbacks for our project or any other use cases that you would like to achieve using our application, Please let us know.
   - [@cathyatseneca](https://github.com/cathyatseneca)
   - [@hamabama](https://github.com/Hamabama)
   - [@collamo](https://github.com/collamo)
