@@ -20,7 +20,6 @@ Application.RootGlobeView = Backbone.View.extend({
         this.createGlobeView(Application.userConfig.vizLayer, decorator, collections);
         // this.createCollection(config);
 
-        //   Application._vent.on('controlpanelsubview/visualize', this.visualize.bind(config));
     },
     render: function() {
 

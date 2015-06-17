@@ -11,6 +11,9 @@ Application.RootView = Backbone.View.extend({
     initialize: function() {
 
         this.controlPanel = new Application.ControlPanelRootView();
+        this.notifBox = $('<div id="notificationsBox"></div>');
+        // this.notifBox.hide();
+        this.$el.append(this.notifBox);
         this.rootView = null;
         this.collections = [];
 
@@ -33,11 +36,11 @@ Application.RootView = Backbone.View.extend({
         return this;
     },
     submitOn: function() {
-        console.log('data/ready');
+        //console.log('data/ready');
         this.createCollection();
     },
-    visualizeOn: function(){
-        console.log('visualize');
+    visualizeOn: function() {
+        this.notifBox.hide();
         $.each(this.collections, function(index, collection) {
 
             collection.fetch();
@@ -58,8 +61,8 @@ Application.RootView = Backbone.View.extend({
     },
     createCollection: function() {
 
-        if(this.collections.length > 0){
-            $.each(this.collections, function(index, collectionName){
+        if (this.collections.length > 0) {
+            $.each(this.collections, function(index, collectionName) {
                 collectionName.destroy();
                 collectionName = null;
             });

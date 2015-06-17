@@ -77,6 +77,13 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
         };
         this.ws.onmessage = function(results) {
             console.log('twit obj: ', results);
+            if (results.data == '0') {
+
+                $('#notificationsBox').append('<div class="notification">NO RESULTS RETURNED</div>');
+                $('#notificationsBox').show();
+                console.log('no results returned')
+                return;
+            }
             var obj = JSON.parse(results.data);
             obj.real_timestamp = obj.timestamp_ms; // timestamp of the tweet emitted
             obj.timestamp_ms = new Date().getTime();

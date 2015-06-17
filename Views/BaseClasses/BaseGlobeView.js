@@ -108,6 +108,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         $(window).unbind('resize');
         //Application._vent.unbind('data/ready');
         Application._vent.unbind('globe/ready');
+        this.collection[0].unbind();
     },
     render: function() {
 
