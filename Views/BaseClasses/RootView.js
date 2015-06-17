@@ -12,7 +12,7 @@ Application.RootView = Backbone.View.extend({
 
         this.controlPanel = new Application.ControlPanelRootView();
         this.notifBox = $('<div id="notificationsBox"></div>');
-        // this.notifBox.hide();
+        this.notifBox.hide();
         this.$el.append(this.notifBox);
         this.rootView = null;
         this.collections = [];
@@ -29,6 +29,8 @@ Application.RootView = Backbone.View.extend({
         };
         Application._vent.on('controlpanel/parse', this.submitOn.bind(this));
         Application._vent.on('visualize', this.visualizeOn.bind(this));
+
+        window.addEventListener('beforeunload', this.resetCollection.bind(this), false);
     },
     render: function() {
 
