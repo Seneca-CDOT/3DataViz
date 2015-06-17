@@ -18,7 +18,10 @@ Application = {
 
     //Files which need to be imported for GlobeVisualization
     files: [
-        'DataProcessor/DataProcessor.js',
+        [
+            'DataProcessor/DataProcessor.js',
+            'Views/GlobeDecorators/BaseGlobeDecorator.js',
+        ],
         [
             'Helpers/Filter.js',
             'Helpers/Debug.js',
@@ -32,12 +35,8 @@ Application = {
             'Libraries/font.js',
             'Libraries/map3d.js',
             'Libraries/papaparse.js',
-            // 'Libraries/popcorn-complete.min.js',
-            // 'Libraries/text.js',
 
             'Routes/RootRouter.js',
-
-            'Views/GlobeDecorators/BaseGlobeDecorator.js',
             'Views/GlobeDecorators/GeometryGlobeDecorator.js',
             'Views/GlobeDecorators/TextureGlobeDecorator.js',
             'Views/GlobeDecorators/GlobeDecoratorFactory.js',
