@@ -1,6 +1,6 @@
 var Application = Application || {};
 
-Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
+Application.PointsLayer = Application.BaseGlobeView.extend({
 
     // framework methods
     initialize: function(decorator, collections) {
@@ -26,7 +26,7 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
-        console.log("SpreadSheetGlobeView Destroy");
+        console.log("PointsLayer Destroy");
 
         Application.BaseGlobeView.prototype.destroy.call(this);
         Application._vent.unbind('globe/ready');
@@ -49,7 +49,7 @@ Application.SpreadSheetGlobeView = Application.BaseGlobeView.extend({
     // visualization specific functionality
     showResults: function() {
 
-        console.log("SpreadSheetGlobeView showResults");
+        console.log("PointsLayer showResults");
 
         var results = this.collection[0].models;
         var that = this;

@@ -61,22 +61,22 @@ Application.RootGlobeView = Backbone.View.extend({
 
             case "countries":
                 {
-                    rootGlobeViewClass = 'GoogleTrendsGlobeView';
+                    rootGlobeViewClass = 'CountriesLayer';
                     break;
                 }
             case "points":
                 {
-                    rootGlobeViewClass = 'SpreadSheetGlobeView';
+                    rootGlobeViewClass = 'PointsLayer';
                     break;
                 }
             case "dynamic":
                 {
-                    rootGlobeViewClass = 'DynamicGlobeView';
+                    rootGlobeViewClass = 'DynamicLayer';
                     break;
                 }
             case "graph":
                 {
-                    rootGlobeViewClass = 'FlightPathGlobeView';
+                    rootGlobeViewClass = 'GraphsLayer';
                     break;
                 }
         }
@@ -102,7 +102,7 @@ Application.RootGlobeView = Backbone.View.extend({
     //             {
 
     //                 collectionClasses = ['Tweets'];
-    //                 //files = ['Models/DynamicGlobeView/DynamicGlobeModel.js'];
+    //                 //files = ['Models/DynamicLayer/DynamicGlobeModel.js'];
     //                 break;
 
     //             }
@@ -110,14 +110,14 @@ Application.RootGlobeView = Backbone.View.extend({
     //             {
 
     //                 collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
-    //                 //files = ['Models/FlightPathGlobeView/FlightPathGlobeModel.js'];
+    //                 //files = ['Models/GraphsLayer/FlightPathGlobeModel.js'];
     //                 break;
     //             }
     //         case 'spreadSheet':
     //             {
 
     //                 collectionClasses = ['SpreadSheetCollection'];
-    //                 // files = ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'];
+    //                 // files = ['Models/PointsLayer/SpreadSheetGlobeModel.js'];
     //                 break;
 
     //             }
@@ -125,7 +125,7 @@ Application.RootGlobeView = Backbone.View.extend({
     //             {
 
     //                 collectionClasses = ['GoogleTrendsCollection'];
-    //                 //  files = ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'];
+    //                 //  files = ['Models/CountriesLayer/GoogleTrendsGlobeModel.js'];
     //                 break;
     //             }
 

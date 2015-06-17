@@ -2,7 +2,7 @@ var Application = Application || {};
 
 // mark - private
 
-Application.DynamicGlobeParticle = function(dataRecord, globeRadius) {
+Application.DynamicLayerParticle = function(dataRecord, globeRadius) {
 
     this._mesh = null;
     this._data = (dataRecord !== undefined) ? dataRecord : null;
@@ -14,7 +14,7 @@ Application.DynamicGlobeParticle = function(dataRecord, globeRadius) {
 
 // mark - shaders
 
-Application.DynamicGlobeParticle.prototype._getVertexShader = function() {
+Application.DynamicLayerParticle.prototype._getVertexShader = function() {
 
     var shader = 
     "uniform float amplitude;" + 
@@ -30,7 +30,7 @@ Application.DynamicGlobeParticle.prototype._getVertexShader = function() {
     return shader;
 };
 
-Application.DynamicGlobeParticle.prototype._getFragmentsShader = function() {
+Application.DynamicLayerParticle.prototype._getFragmentsShader = function() {
 
     var shader = 
     "uniform vec3 color;" +
@@ -43,7 +43,7 @@ Application.DynamicGlobeParticle.prototype._getFragmentsShader = function() {
     return shader;
 };
 
-Application.DynamicGlobeParticle.prototype._getShaderMaterial = function() {
+Application.DynamicLayerParticle.prototype._getShaderMaterial = function() {
 
     var attributes = {
 
@@ -73,7 +73,7 @@ Application.DynamicGlobeParticle.prototype._getShaderMaterial = function() {
     return material;
 };
 
-Application.DynamicGlobeParticle.prototype._createMesh = function() {
+Application.DynamicLayerParticle.prototype._createMesh = function() {
 
     // var material = new THREE.MeshPhongMaterial({ 
     //                             color: 0xFF0000, 
@@ -117,7 +117,7 @@ Application.DynamicGlobeParticle.prototype._createMesh = function() {
     }
 };
 
-Application.DynamicGlobeParticle.prototype._positionMesh = function(globeRadius) {
+Application.DynamicLayerParticle.prototype._positionMesh = function(globeRadius) {
 
     if (globeRadius === undefined || this.getData() == null) {
 
@@ -149,7 +149,7 @@ Application.DynamicGlobeParticle.prototype._positionMesh = function(globeRadius)
 
 // mark - public
 
-Application.DynamicGlobeParticle.prototype.dispose = function() {
+Application.DynamicLayerParticle.prototype.dispose = function() {
 
     this.getMesh().geometry.dispose();
     this.getMesh().material.dispose();
@@ -157,17 +157,17 @@ Application.DynamicGlobeParticle.prototype.dispose = function() {
     this._data = null;
 };
 
-Application.DynamicGlobeParticle.prototype.getMesh = function() {
+Application.DynamicLayerParticle.prototype.getMesh = function() {
 
     return this._mesh;
 };
 
-Application.DynamicGlobeParticle.prototype.getData = function() {
+Application.DynamicLayerParticle.prototype.getData = function() {
 
     return this._data;
 };
 
-Application.DynamicGlobeParticle.prototype.setLifeTime = function(lifeTime) {
+Application.DynamicLayerParticle.prototype.setLifeTime = function(lifeTime) {
 
     if (lifeTime > 0 && this._life_time <= 0) {
 
@@ -175,7 +175,7 @@ Application.DynamicGlobeParticle.prototype.setLifeTime = function(lifeTime) {
     }
 };
 
-Application.DynamicGlobeParticle.prototype.isDead = function(currentTime) {
+Application.DynamicLayerParticle.prototype.isDead = function(currentTime) {
 
     var isDead = true;
     if (this.getData() != null && currentTime !== undefined &&
@@ -186,13 +186,13 @@ Application.DynamicGlobeParticle.prototype.isDead = function(currentTime) {
     return isDead;
 };
 
-Application.DynamicGlobeParticle.prototype.isVisible = function() {
+Application.DynamicLayerParticle.prototype.isVisible = function() {
 
     var scale = this.getMesh().scale.x;
     return scale > 0.01;
 };
 
-Application.DynamicGlobeParticle.prototype.update = function(deltaScale, rotationRatio) {
+Application.DynamicLayerParticle.prototype.update = function(deltaScale, rotationRatio) {
 
     var rotation = 2 * Math.PI * rotationRatio;
     // this.getMesh().rotation.z = rotation;

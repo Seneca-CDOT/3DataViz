@@ -23,7 +23,6 @@ Application = {
             'Views/GlobeDecorators/BaseGlobeDecorator.js',
         ],
         [
-            'Helpers/Filter.js',
             'Helpers/Debug.js',
             'Helpers/DataStructures.js',
             'DataProcessor/ParserFactory.js',
@@ -32,7 +31,6 @@ Application = {
             'Libraries/OrbitControls.js',
             'Libraries/stats.js',
             'Libraries/tween.min.js',
-            'Libraries/font.js',
             'Libraries/map3d.js',
             'Libraries/papaparse.js',
 
@@ -41,8 +39,8 @@ Application = {
             'Views/GlobeDecorators/TextureGlobeDecorator.js',
             'Views/GlobeDecorators/GlobeDecoratorFactory.js',
 
-            'Views/ControlPanelGlobeView.js',
-            'Views/ControlElementsGlobeView.js',
+            'Views/ControlPanel/ControlPanelGlobeView.js',
+            'Views/ControlPanel/ControlElementsGlobeView.js',
 
             'Views/BaseClasses/RootView.js',
             'Views/BaseClasses/RootGlobeView.js',
@@ -53,18 +51,18 @@ Application = {
     ],
 
     models: {
-        spreadSheet: ['Models/SpreadSheetGlobeView/SpreadSheetGlobeModel.js'],
-        googleTrends: ['Models/GoogleTrendsGlobeView/GoogleTrendsGlobeModel.js'],
-        twitterDB: ['Models/TwitterModels/TwitterDBModel.js'],
-        twitterLive: ['Models/TwitterModels/TwitterLiveModel.js'],
-        csv: ['Models/FlightPathGlobeView/FlightPathGlobeModel.js','Models/data/path.js', 'Models/data/countriesList.js']
+        spreadSheet: ['Models/SpreadSheetGlobeModel.js'],
+        googleTrends: ['Models/GoogleTrendsGlobeModel.js'],
+        twitterDB: ['Models/TwitterDBModel.js'],
+        twitterLive: ['Models/TwitterLiveModel.js'],
+        csv: ['Models/FlightPathGlobeModel.js','Models/data/path.js', 'Models/data/countriesList.js']
     },
 
     layers: {
-        points: ['Views/SpreadSheetGlobeView/SpreadSheetGlobeView.js'],
-        countries: ['Views/GoogleTrendsGlobeView/GoogleTrendsGlobeView.js'],
-        dynamic: ['Views/DynamicGlobeView/DynamicGlobeView.js', 'Views/DynamicGlobeView/DynamicGlobeParticle.js'],
-        graph: ['Views/FlightPathGlobeView/FlightPathGlobeView.js']
+        points: ['Views/Layers/PointsLayer.js'],
+        countries: ['Views/Layers/CountriesLayer.js'],
+        dynamic: ['Views/Layers/DynamicLayer.js', 'Views/Layers/DynamicLayerParticle.js'],
+        graph: ['Views/Layers/GraphsLayer.js']
 
     }
 
