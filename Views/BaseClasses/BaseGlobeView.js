@@ -51,8 +51,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.suscribe();
 
         // TODO: review
-        window.addEventListener('resize', this.onWindowResize.bind(this), false);
-        
+        $(window).on('resize', this.onWindowResize.bind(this));
     },
     suscribe: function() {
         Application._vent.on('globe/ready', this.showResults.bind(this));
@@ -78,6 +77,11 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
         this.decorators = null;
 
+        $.each(this.collection, function (index, collection) {
+
+            collection = null;
+        });
+
         // TODO: review
         this.rayCatchers = null;
 
@@ -101,8 +105,10 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
 
         // TODO: review
-        window.removeEventListener('resize', this.onWindowResize);
-        Application._vent.unbind('data/ready');
+        $(window).unbind('resize');
+        //Application._vent.unbind('data/ready');
+        Application._vent.unbind('globe/ready');
+        this.collection[0].unbind();
     },
     render: function() {
 

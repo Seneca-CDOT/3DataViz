@@ -11,6 +11,9 @@ Application.RootView = Backbone.View.extend({
     initialize: function() {
 
         this.controlPanel = new Application.ControlPanelRootView();
+        this.notifBox = $('<div id="notificationsBox"></div>');
+        this.notifBox.hide();
+        this.$el.append(this.notifBox);
         this.rootView = null;
         this.collections = [];
 
@@ -19,6 +22,7 @@ Application.RootView = Backbone.View.extend({
             vizType: '',
             vizLayer: '',
             input: '',
+            interval: '',
             timeFrom: '',
             timeTo: ''
 
@@ -34,11 +38,11 @@ Application.RootView = Backbone.View.extend({
         return this;
     },
     submitOn: function() {
-        console.log('data/ready');
+        //console.log('data/ready');
         this.createCollection();
     },
-    visualizeOn: function(){
-        console.log('visualize');
+    visualizeOn: function() {
+        this.notifBox.hide();
         $.each(this.collections, function(index, collection) {
 
             collection.fetch();
@@ -47,7 +51,11 @@ Application.RootView = Backbone.View.extend({
     },
     initGlobeView: function() {
 
-        this.resetGlobeView();
+        if (this.rootView) {
+            //console.log("destroy rootView");
+            this.rootView.destroy();
+            this.rootView = null;
+        }
 
         this.rootView = new Application['RootGlobeView'](this.collections);
         this.$el.prepend(this.rootView.$el);
@@ -55,7 +63,13 @@ Application.RootView = Backbone.View.extend({
     },
     createCollection: function() {
 
-        this.resetCollection();
+        if (this.collections.length > 0) {
+            $.each(this.collections, function(index, collectionName) {
+                collectionName.destroy();
+                collectionName = null;
+            });
+            this.collections = [];
+        }
 
         var collectionClasses = [];
         var that = this;
@@ -108,20 +122,5 @@ Application.RootView = Backbone.View.extend({
 
         });
 
-    },
-    resetGlobeView: function(){
-        if (this.rootView) {
-            console.log("destroy rootView");
-            this.rootView.destroy();
-            this.rootView = null;
-        }
-    },
-    resetCollection: function(){
-        if(this.collections.length > 0){
-            $.each(this.collections, function(index, collectionName){
-                collectionName.destroy();
-            });
-            this.collections = [];
-        }
     },
 });

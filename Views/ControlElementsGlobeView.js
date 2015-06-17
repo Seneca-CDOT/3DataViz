@@ -12,7 +12,7 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
         'mousedown': 'action'
     },
     destroy: function() {
-
+        this.viewConfig = null;
         this.remove();
         this.unbind();
         delete this.$el;
@@ -34,7 +34,7 @@ Application.InputField = Application.ControlElementsGlobeView.extend({
     tagName: 'input',
     initialize: function(viewConfig) {
         Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
-        this.$el.on('keyup', this.grabInput.bind(this));
+        this.$el.on('keyup', this.grabInput.bind(this), this.disableVisView.bind(this));
     },
     render: function() {
 
@@ -49,8 +49,11 @@ Application.InputField = Application.ControlElementsGlobeView.extend({
 
         this.addToConfig(this.$el.val());
 
-    }
+    },
+    disableVisView: function() {
 
+        Application._vent.trigger('controlpanel/input/changed');
+    }
 
 });
 
@@ -86,7 +89,7 @@ Application.Button = Application.ControlElementsGlobeView.extend({
     },
     events: {
 
-        'mousedown':'action'
+        'mousedown': 'action'
     },
     render: function() {
         return this;
@@ -95,7 +98,7 @@ Application.Button = Application.ControlElementsGlobeView.extend({
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
 
-      //  Application._vent.trigger('controlpanel/parse');
+        //  Application._vent.trigger('controlpanel/parse');
     }
 });
 
@@ -113,7 +116,7 @@ Application.VizButton = Application.ControlElementsGlobeView.extend({
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
 
-       // Application._vent.trigger('controlpanel', this.userInput);
+        // Application._vent.trigger('controlpanel', this.userInput);
     }
 });
 
@@ -135,7 +138,7 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
         var that = this;
         //this.name = this.$el.attr('id');
 
-        this.$el.append("<option value='' selected disabled>Choose a " + this.viewConfig.name + "</option>");
+        this.$el.append("<option value='' selected disabled></option>");
         $.each(this.viewConfig.list, function(index, item) {
 
             that.$el.append("<option value='" + item + "'>" + item + "</option>");
@@ -153,7 +156,7 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
             if (option.selected == true && e.target.value != "") {
 
                 that.addToConfig(e.target.value);
-                Application._vent.trigger('controlpanelsubview/' + that.viewConfig.name);
+                Application._vent.trigger('controlpanel/subview/' + that.viewConfig.name);
             }
         });
     }
