@@ -52,6 +52,7 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         // TODO: review
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
+        
     },
     suscribe: function() {
         Application._vent.on('globe/ready', this.showResults.bind(this));

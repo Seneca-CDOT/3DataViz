@@ -25,6 +25,8 @@ Application.RootView = Backbone.View.extend({
         };
         Application._vent.on('controlpanel/parse', this.submitOn.bind(this));
         Application._vent.on('visualize', this.visualizeOn.bind(this));
+
+        window.addEventListener('beforeunload', this.resetCollection.bind(this), false);
     },
     render: function() {
 
@@ -41,11 +43,7 @@ Application.RootView = Backbone.View.extend({
     },
     initGlobeView: function() {
 
-        if (this.rootView) {
-            console.log("destroy rootView");
-            this.rootView.destroy();
-            this.rootView = null;
-        }
+        this.resetGlobeView();
 
         this.rootView = new Application['RootGlobeView'](this.collections);
         this.$el.prepend(this.rootView.$el);
@@ -53,12 +51,7 @@ Application.RootView = Backbone.View.extend({
     },
     createCollection: function() {
 
-        if(this.collections.length > 0){
-            $.each(this.collections, function(index, collectionName){
-                collectionName.destroy();
-            });
-            this.collections = [];
-        }
+        this.resetCollection();
 
         var collectionClasses = [];
         var that = this;
@@ -116,5 +109,20 @@ Application.RootView = Backbone.View.extend({
 
         });
 
+    },
+    resetGlobeView: function(){
+        if (this.rootView) {
+            console.log("destroy rootView");
+            this.rootView.destroy();
+            this.rootView = null;
+        }
+    },
+    resetCollection: function(){
+        if(this.collections.length > 0){
+            $.each(this.collections, function(index, collectionName){
+                collectionName.destroy();
+            });
+            this.collections = [];
+        }
     },
 });
