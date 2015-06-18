@@ -39,6 +39,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         var pData = pModule.processData(response, options);
 
         this.models = pData;
+        Application._vent.trigger('data/ready');
 
     },
     setURL: function(key) {

@@ -31,7 +31,6 @@ Application.AirportRouteModel = Application.BaseDataRecord.extend({
 // The test.json is an object that contains {x:1}
 Application.AirportsCollection = Application.BaseGlobeCollection.extend({
     model: Application.AirportModel,
-    url: 'Models/data/test.json',
     parsed: false,
     initialize: function() {
         Application.BaseGlobeCollection.prototype.initialize.call(this);
@@ -44,6 +43,7 @@ Application.AirportsCollection = Application.BaseGlobeCollection.extend({
             download: true,
             complete: function(d) {
                 that.fetchAirports(d);
+                Application._vent.trigger('data/ready');
                 return that.models;
             }
         };
@@ -75,8 +75,12 @@ Application.AirportsCollection = Application.BaseGlobeCollection.extend({
             this.push(tempAir);
         }
     },
+    fetch: function() {
+
+        this.parse();
+    },
     destroy: function() {
-      //  console.log("Destroy AirportsCollection");
+        //  console.log("Destroy AirportsCollection");
         for (var i = 0; i < this.models.length; i++) {
             // this.models[i].destroy();
             this.models[i] = null;
@@ -88,7 +92,6 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
 
     model: Application.AirportRouteModel,
     parsed: false,
-    url: 'Models/data/test.json',
     initialize: function() {
 
         Application.BaseGlobeCollection.prototype.initialize.call(this);
@@ -104,7 +107,7 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
             download: true,
             complete: function(d) {
                 that.fetchAirportRoutes(d);
-               // Application._vent.trigger('data/parsed', that.getViewConfigs(d));
+                Application._vent.trigger('data/ready');
             }
         };
         Papa.parse("Models/data/routes.csv", config);
@@ -133,8 +136,12 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
             }
         }
     },
+    fetch: function() {
+
+        this.parse();
+    },
     destroy: function() {
-       // console.log("Destroy AirportRoutesCollection");
+        // console.log("Destroy AirportRoutesCollection");
         for (var i = 0; i < this.models.length; i++) {
             // this.models[i].destroy();
             this.models[i] = null;

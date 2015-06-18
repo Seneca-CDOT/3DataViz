@@ -3,7 +3,7 @@
  **/
 var Application = Application || {};
 
-Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
+Application.GraphsLayer = Application.BaseGlobeView.extend({
 
     initialize: function(decorator, collections) {
 
@@ -45,10 +45,10 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
-        console.log("FlightPathGlobeView Destroy");
+        console.log("GraphsLayer Destroy");
 
         Application.BaseGlobeView.prototype.destroy.call(this);
-        Application._vent.unbind('globe/ready');
+        // Application._vent.unbind('globe/ready');
 
     },
     // visualization specific functionality
@@ -84,7 +84,7 @@ Application.FlightPathGlobeView = Application.BaseGlobeView.extend({
     // data ready checks to see if both csv's have been loaded
     showResults: function() {
 
-        console.log("FlightPathGlobeView showResults");
+        console.log("GraphsLayer showResults");
 
         if (this.collection[0].parsed && this.collection[1].parsed) {
             this.addPaths();

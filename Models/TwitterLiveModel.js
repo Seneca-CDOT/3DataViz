@@ -13,15 +13,13 @@ Application.Tweet = Application.GeoDataRecord.extend({
     }
 });
 
-Application.TweetsDB = Application.BaseGlobeCollection.extend({
+Application.TweetsLive = Application.BaseGlobeCollection.extend({
 
     model: Application.Tweet,
-    // url: "http://threedataviz.herokuapp.com/twitterDB/apple",
-    //url: "twitterDB/apple",
     initialize: function(config) {
 
         Application.BaseGlobeCollection.prototype.initialize.call(this);
-        // this.templatesList = config.templatesList;
+        this.track = Application.userConfig.input;
         this.ws;
         this.count = 0;
     },
@@ -29,7 +27,6 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
 
         var data = {};
         Application._vent.trigger('data/parsed', this.getViewConfigs(data));
-       
     },
     parse: function(response) {
 
@@ -38,7 +35,6 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             dataType: "twitter",
             visualizationType: this.templatesList
         };
-        console.log('tweets', response);
         var pData = pModule.processData(response, options);
         this.transform(pData);
     },
@@ -57,34 +53,21 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
         }
     },
     fetch: function() {
-
-        console.log('userconf', Application.userConfig);
-        var that = this;
+        this.destroy();
         this.ws = new WebSocket("ws://threedataviz.herokuapp.com/");
-
+        var that = this;
         this.ws.onopen = function() {
-
             var msg = {
-                    type: "start",
-                    dataSource: Application.userConfig.dataSource,
-                    keyword: Application.userConfig.input,
-                    interval: '',
-                    timeFrom: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeFrom),
-                    timeTo: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeTo)
-                }
-            console.log(msg, JSON.stringify(msg));
+                type: "start",
+                dataSource: "twitterLive",
+                track: that.track
+            }
             that.ws.send(JSON.stringify(msg));
+            Application._vent.trigger('data/ready');
         };
         this.ws.onmessage = function(results) {
-            console.log('twit obj: ', results);
-            if (results.data == '0') {
-
-                $('#notificationsBox').append('<div class="notification">NO RESULTS RETURNED</div>');
-                $('#notificationsBox').show();
-                console.log('no results returned')
-                return;
-            }
-            var obj = JSON.parse(results.data);
+            // console.log('tweet: ', results);
+            var obj = JSON.parse(results.data).data;
             obj.real_timestamp = obj.timestamp_ms; // timestamp of the tweet emitted
             obj.timestamp_ms = new Date().getTime();
             that.parse([obj]);
@@ -94,15 +77,15 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
         }
     },
     destroy: function() {
-        console.log("Destroy Tweets");
+        // console.log("Destroy Tweets");
         for (var i = 0; i < this.models.length; i++) {
             this.models[i].destroy();
         }
         if (this.ws) {
-            console.log("WebSocket disconnected");
+            // console.log("WebSocket disconnected");
             this.ws.send(JSON.stringify({
                 type: "stop",
-                dataSource: "twitterDB"
+                dataSource: "twitterLive"
             }));
             this.ws.close();
         }

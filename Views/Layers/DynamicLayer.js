@@ -1,6 +1,6 @@
 var Application = Application || {};
 
-Application.DynamicGlobeView = Application.BaseGlobeView.extend({
+Application.DynamicLayer = Application.BaseGlobeView.extend({
 
     // framework methods
     initialize: function(decorator, collections) {
@@ -25,7 +25,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
-       // console.log("DynamicGlobeView Destroy");
+       // console.log("DynamicLayer Destroy");
 
         // TODO: review
         var iterator = this.particles.getBegin();
@@ -147,7 +147,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
 
     showResults: function(results) {
 
-      //  console.log("DynamicGlobeView showResults");
+      //  console.log("DynamicLayer showResults");
 
         var that = this;
         this.collection[0].bind("add", function(data){
@@ -197,7 +197,7 @@ Application.DynamicGlobeView = Application.BaseGlobeView.extend({
     // particles life cycle functionality
     addParticleWithDataRecord: function(dataRecord) {
 
-        var particle = new Application.DynamicGlobeParticle(dataRecord, this.globeRadius);
+        var particle = new Application.DynamicLayerParticle(dataRecord, this.globeRadius);
         particle.setLifeTime(this.particlesLifeTime);
 
         // Application.Debug.addAxes(particle.getMesh());

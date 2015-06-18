@@ -1,6 +1,6 @@
 var Application = Application || {};
 
-Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
+Application.CountriesLayer = Application.BaseGlobeView.extend({
 
     // framework methods
     initialize: function(decorator, collections) {
@@ -39,10 +39,10 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
-        console.log("GoogleTrendsGlobeView Destroy");
+        console.log("CountriesLayer Destroy");
 
         Application.BaseGlobeView.prototype.destroy.call(this);
-        Application._vent.unbind('globe/ready');
+//        Application._vent.unbind('globe/ready');
         this.resetGlobe();
         this.colors = null;
         this.added = [];
@@ -68,7 +68,7 @@ Application.GoogleTrendsGlobeView = Application.BaseGlobeView.extend({
     },
     showResults: function() {
 
-        console.log("GoogleTrendsGlobeView showResults");
+        console.log("CountriesLayer showResults");
         Application.BaseGlobeView.prototype.showResults.call(this, results);
 
         var results = this.collection[0].models;
