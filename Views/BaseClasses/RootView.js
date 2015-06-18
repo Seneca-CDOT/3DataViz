@@ -44,6 +44,10 @@ Application.RootView = Backbone.View.extend({
     visualizeOn: function() {
         Application._vent.trigger('controlpanel/message/off');
         this.initGlobeView();
+        
+        $("#instruction").fadeOut('slow');
+        
+
     },
     fetchCollection: function() {
         $.each(this.collections, function(index, collection) {

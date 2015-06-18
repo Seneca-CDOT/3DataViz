@@ -38,7 +38,14 @@ Application.ControlPanelRootView = Backbone.View.extend({
         Application._vent.on('data/parsed', this.addVisualizationsView.bind(this));
         Application._vent.on('controlpanel/subview/dataSource', this.destroyVisualizationView.bind(this));
         Application._vent.on('controlpanel/input/changed', this.destroyVisualizationView.bind(this));
-        //        Application._vent.on('visualize', this.reset.bind(this));
+        // Application._vent.on('visualize', this.reset.bind(this));
+        this.$el.append('<a id="help" href="javasctip:void(0);">i</a>');
+        $help = '<a id="help" href="javasctip:void(0);"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>';
+
+        $("#help").on('click', function(){
+            console.log("helo?");
+            $("#instruction").fadeToggle();
+        });
 
     },
     render: function() {

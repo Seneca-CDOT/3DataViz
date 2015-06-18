@@ -1,3 +1,18 @@
+/**
+ *  For modern browsers
+ */
+.cf:before,
+.cf:after {
+    content:"";
+    display:table;
+}
+.cf:after {
+    clear:both;
+}
+
+/***************************************
+ * Layout
+ ***************************************/
 body {
     width: 100%;
     height: 100%;
@@ -5,9 +20,71 @@ body {
     background: #000;
 }
 
-#applicationRegion {
-    text-align: center;
+#main {
+    width: 100%;
+    height: 100%;
+    position: absolute;
 }
+
+#panel {
+    background-color: #1F1F2E;
+    top: 0px;
+    position: absolute;
+    width: 15%;
+    right: 0px;
+    height: 100%;
+}
+
+a{
+    color: #9797C2;
+    text-decoration: underline;
+}
+
+#baseGlobe{
+    top: 0;
+    margin-left: -8%;
+}
+
+/***************************************
+ * Elements
+ ***************************************/
+#buttons {
+    width: 100%;
+}
+
+#tweets,
+#submit,
+#reset {
+    width: 80%;
+    margin-top: 20%;
+    /*margin-left: 10%;*/
+}
+
+.button {
+    width: 80%;
+    margin-top: 10%;
+}
+
+.configList {
+    width: 100%;
+    top: 10%;
+    margin-left: 10%;
+}
+.configList label.label{
+    display: block;
+    text-align: left;
+    padding: 0;
+    margin-top: 10%;
+    font-size: 14px;
+    font-weight: normal;
+}
+.configList .form-control{
+    width: 80%;
+}
+
+/***************************************
+ * Notification
+ ***************************************/
 
 #notificationsBox {
     top: 47%;
@@ -26,108 +103,114 @@ body {
     padding-top: 40%;
 }
 
-#main {
-    width: 100%;
+/***************************************
+ * Instruction module
+ ***************************************/
+#instruction{
+
+    position: relative;
+    width: 85%;
     height: 100%;
-    position: absolute;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
 }
-
-.label {
-    float: left;
-    color: white;
-    font-size: 120%;
-    font-weight: normal;
-    margin-top: 20%;
-    margin-left: 10%;
+#instruction header{
+    margin-bottom: 40px;
 }
-
-#panel {
-    background-color: #1F1F2E;
-    top: 0px;
-    position: absolute;
-    width: 15%;
-    right: 0px;
-    height: 100%;
-}
-
-#leftcolumn {
-    position: absolute;
-    width: 15%;
-    height: 100%;
-    left: 10px;
-    font-size: 24px;
-    color: white;
-    opacity: 0.7;
-    top: 20%;
-}
-
-#buttons {
-    width: 100%;
-}
-
-#tweets,
-#submit,
-#reset {
-    width: 80%;
-    margin-top: 20%;
-    /*margin-left: 10%;*/
-}
-
-.button {
-    width: 80%;
-    margin-top: 20%;
-    font-size: 120%;
-}
-
-#search,
-#url,
-#keyword {
-    width: 80%;
-    margin-top: 20%;
-    margin-left: 10%;
-}
-
-.userInput {
-    width: 80%;
-    margin-top: 20%;
-    margin-left: 10%;
-}
-
-#configList {
-    width: 100%;
-    top: 10%;
-}
-
-#datasourcesList,
-#templatesList,
-#visualizationList {
-    width: 80%;
-    margin-top: 20%;
-    margin-left: 10%;
-}
-
-.country {
-    position: absolute;
-    width: 80%;
-    left: 10%;
-    font-size: 24px;
-    color: white;
-    opacity: 0.7;
-    top: 30%;
-}
-
-.menu {
-    margin-top: 20px;
-}
-
-.menu li {
-    display: inline-block;
-    background: #333;
-    padding: 10px 20px;
-    margin-bottom: 10px;
-    border-radius: 6px;
-}
-
-.menu li a {
+#instruction header h1{
+    margin-top: 0;
+    margin-bottom: 30px;
+    text-align: center;
     color: #fff;
+}
+
+#instruction .inner{
+    position: relative;
+    width: 950px;
+    background-color: rgba(31, 31, 46, 0.9);
+    border-radius: 10px;
+    padding: 40px 40px 10px;
+    color: #9797C2;
+}
+
+#instruction .inner h3{
+    border-bottom: 1px solid #56567A;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+#instruction .demo,
+#instruction .feedback{
+    margin-bottom: 30px;
+}
+
+#instruction ul.steps{
+    text-align: center;
+    padding-left: 0;
+    margin-right: -15px;
+}
+#instruction ul.steps li{
+    position: relative;
+    display: table;
+    float: left;
+    text-align: left;
+    margin-right: 20px;
+    margin-bottom: 15px;
+    background: #56567A;
+    padding: 10px;
+    color: #fff;
+    border-radius: 5px;
+}
+#instruction ul.steps li div{
+    display: table-cell;
+    vertical-align: middle;
+    padding-right: 10px;
+}
+#instruction ul.steps li div.ttl{
+    float: left;
+    font-size: 36px;
+}
+
+#instruction ul.steps li:after{
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    margin-top: -15px;
+    left: auto;
+    right: -10px;
+    top: 50%;
+    bottom: auto;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-left: 18px solid #56567A;
+}
+#instruction ul.steps li:last-child:after{
+    display: none;
+}
+#instruction .contacts p{
+    display: inline;
+}
+#instruction .contacts ul{
+    display: inline;
+    padding-left: 0;
+}
+#instruction .contacts ul li{
+    display: inline;
+    margin-right: 8px;
+}
+
+
+#help{
+    position: absolute;
+    right: 10%;
+    bottom: 10%;
 }
