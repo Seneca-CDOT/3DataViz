@@ -1,3 +1,31 @@
+Application.NotificationsCenter = Backbone.View.extend({
+    tagName: 'div',
+    id: 'notificationsBox',
+    initialize: function() {
+        Application._vent.on('controlpanel/message/on', this.showMessage.bind(this));
+        Application._vent.on('controlpanel/message/off', this.removeMessage.bind(this));
+        this.$el.hide();
+    },
+    render: function() {
+
+        return this;
+    },
+    showMessage: function(message) {
+        this.$el.show();
+        this.$el.empty();
+        this.$el.append('<div class="notification">' + message + '</div>');
+    },
+    removeMessage: function() {
+        this.$el.empty();
+        this.$el.hide();
+    },
+    destroy: function() {
+
+        Application._vent.unbind('controlpanel/message/on');
+        Application._vent.unbind('controlpanel/message/off');
+    }
+});
+
 Application.ControlPanelRootView = Backbone.View.extend({
     tagName: 'div',
     id: 'panel',
@@ -195,7 +223,7 @@ Application.VisualizationsView = Backbone.View.extend({
     },
     addSubView: function() {
 
-        if (this.subview) { 
+        if (this.subview) {
             this.labelForTemplates.remove();
             this.subview.destroy();
         }

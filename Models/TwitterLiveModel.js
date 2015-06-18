@@ -62,11 +62,12 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
                 dataSource: "twitterLive",
                 track: that.track
             }
+            Application._vent.trigger('controlpanel/message/on','AWAITING TWEETS');
             that.ws.send(JSON.stringify(msg));
             Application._vent.trigger('data/ready');
         };
         this.ws.onmessage = function(results) {
-            // console.log('tweet: ', results);
+            Application._vent.trigger('controlpanel/message/off');
             var obj = JSON.parse(results.data).data;
             obj.real_timestamp = obj.timestamp_ms; // timestamp of the tweet emitted
             obj.timestamp_ms = new Date().getTime();

@@ -73,6 +73,7 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
                 timeFrom: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeFrom),
                 timeTo: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeTo)
             }
+            Application._vent.trigger('controlpanel/message/on','AWAITING TWEETS');
             console.log(msg, JSON.stringify(msg));
             that.ws.send(JSON.stringify(msg));
             Application._vent.trigger('data/ready');
@@ -82,11 +83,11 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             console.log('twit obj: ', results);
             if (results.data == '0') {
 
-                $('#notificationsBox').append('<div class="notification">NO RESULTS RETURNED</div>');
-                $('#notificationsBox').show();
+                Application._vent.trigger('controlpanel/message/on','NO RESULTS RETURNED');
                 console.log('no results returned')
                 return;
             }
+            Application._vent.trigger('controlpanel/message/off');
             var obj = JSON.parse(results.data);
             obj.real_timestamp = obj.timestamp_ms; // timestamp of the tweet emitted
             obj.timestamp_ms = new Date().getTime();
