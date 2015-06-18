@@ -12,13 +12,13 @@ Application.NotificationsCenter = Backbone.View.extend({
         return this;
     },
     showMessage: function(message) {
-        this.$el.show();
+        this.$el.fadeIn();
         this.$el.empty();
         this.$el.append('<div class="notification">' + message + '</div>');
     },
     removeMessage: function() {
         this.$el.empty();
-        this.$el.hide();
+        this.$el.fadeOut();
     },
     destroy: function() {
 
@@ -39,7 +39,11 @@ Application.ControlPanelRootView = Backbone.View.extend({
         Application._vent.on('data/parsed', this.addVisualizationsView.bind(this));
         Application._vent.on('controlpanel/subview/dataSource', this.destroyVisualizationView.bind(this));
         Application._vent.on('controlpanel/input/changed', this.destroyVisualizationView.bind(this));
-        //        Application._vent.on('visualize', this.reset.bind(this));
+        // Application._vent.on('visualize', this.reset.bind(this));
+
+        this.helpButton = new Application.Help();
+        this.helpButton.$el.attr('id', 'helpButton');
+        this.$el.append(this.helpButton.render().$el);
 
     },
     render: function() {
