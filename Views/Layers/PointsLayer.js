@@ -29,7 +29,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         console.log("PointsLayer Destroy");
 
         Application.BaseGlobeView.prototype.destroy.call(this);
-        Application._vent.unbind('globe/ready');
+        // Application._vent.unbind('globe/ready');
         this.sprites = null;
         // Application._vent.unbind('globe/ready');
     },

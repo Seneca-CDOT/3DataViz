@@ -48,7 +48,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         console.log("GraphsLayer Destroy");
 
         Application.BaseGlobeView.prototype.destroy.call(this);
-        Application._vent.unbind('globe/ready');
+        // Application._vent.unbind('globe/ready');
 
     },
     // visualization specific functionality

@@ -29,7 +29,7 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
 
         var data = {};
         Application._vent.trigger('data/parsed', this.getViewConfigs(data));
-       
+
     },
     parse: function(response) {
 
@@ -58,6 +58,7 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
     },
     fetch: function() {
 
+        this.destroy();
         console.log('userconf', Application.userConfig);
         var that = this;
         this.ws = new WebSocket("ws://threedataviz.herokuapp.com/");
@@ -65,15 +66,17 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
         this.ws.onopen = function() {
 
             var msg = {
-                    type: "start",
-                    dataSource: Application.userConfig.dataSource,
-                    keyword: Application.userConfig.input,
-                    interval: '',
-                    timeFrom: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeFrom),
-                    timeTo: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeTo)
-                }
+                type: "start",
+                dataSource: Application.userConfig.dataSource,
+                keyword: Application.userConfig.input,
+                interval: '',
+                timeFrom: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeFrom),
+                timeTo: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeTo)
+            }
             console.log(msg, JSON.stringify(msg));
             that.ws.send(JSON.stringify(msg));
+            Application._vent.trigger('data/ready');
+
         };
         this.ws.onmessage = function(results) {
             console.log('twit obj: ', results);

@@ -53,7 +53,7 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
         }
     },
     fetch: function() {
-
+        this.destroy();
         this.ws = new WebSocket("ws://threedataviz.herokuapp.com/");
         var that = this;
         this.ws.onopen = function() {
@@ -63,6 +63,7 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
                 track: that.track
             }
             that.ws.send(JSON.stringify(msg));
+            Application._vent.trigger('data/ready');
         };
         this.ws.onmessage = function(results) {
             // console.log('tweet: ', results);
