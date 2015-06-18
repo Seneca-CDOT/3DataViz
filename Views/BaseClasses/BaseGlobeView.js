@@ -107,7 +107,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         // TODO: review
         $(window).unbind('resize');
         Application._vent.unbind('data/ready');
-//        Application._vent.unbind('globe/ready');
+        // Application._vent.unbind('globe/ready');
         this.collection[0].unbind();
     },
     render: function() {

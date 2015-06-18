@@ -12,6 +12,8 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         //time factor for animations
         this.t = 0;
 
+        this.timer = []; // array of timers for setTimeout
+
         //variables used to set the size of the objects and camera/controls orientation
         this.cylinderRadius = this.globeRadius * 0.01;
         this.cylinderHeight = this.globeRadius / 500;
@@ -45,9 +47,12 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
+        var that = this;
+
         console.log("GraphsLayer Destroy");
 
         Application.BaseGlobeView.prototype.destroy.call(this);
+
         // Application._vent.unbind('globe/ready');
 
     },
@@ -101,6 +106,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         var destAirport;
         var time = 100;
         var that = this;
+        var timeoutref = null;
 
         //let's iterate through all the routes
         for (dataRecordIndex in routes) {
@@ -110,10 +116,10 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
             if (i > 1000) break;
             // time out is going to give it an interval between 
             // instantiating each route
-            setTimeout(function() {
+            timeoutref = setTimeout(function() {
                 // get a random route)
                 randomIndex = that.getRandomInt(1, 65000);
-                if(routes[randomIndex] != null){
+                if (routes[randomIndex] != null) {
                     dataRecord = routes[randomIndex].attributes;
 
                     // get destination and source airports for the chosen route
@@ -194,8 +200,12 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
                     airplaneInstance.position.copy(curve.getPoint(0));
                     that.scene.add(airplaneInstance);
                 }
+              // if (i == 1) {   Application._vent.trigger('controlpanel/message/off'); }
             }, time);
+
+            that.timer.push(timeoutref);
         }
+       
     },
     // checks to see if the airport has been created
     airportCreated: function(id) {

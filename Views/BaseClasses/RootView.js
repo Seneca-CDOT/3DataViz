@@ -43,6 +43,7 @@ Application.RootView = Backbone.View.extend({
     },
     visualizeOn: function() {
         Application._vent.trigger('controlpanel/message/off');
+        Application._vent.trigger('controlpanel/message/on','LOADING...');
         this.initGlobeView();
     },
     fetchCollection: function() {

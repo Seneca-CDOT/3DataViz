@@ -66,9 +66,15 @@ Application.TextureGlobeDecorator = (function() {
         return;
     }
 
+    privateMethods.textureLoaded = function() {
+
+        Application._vent.trigger('globe/ready'); // notifies about ready state of texture
+
+    }
+
     privateMethods.loadTexture = function(globeView) {
 
-        var texture = THREE.ImageUtils.loadTexture(this.textureMap);
+        var texture = THREE.ImageUtils.loadTexture(this.textureMap, undefined, privateMethods.textureLoaded);
         var material = new THREE.MeshBasicMaterial({
             color: 0xFFFFFF,
             map: texture
@@ -80,8 +86,6 @@ Application.TextureGlobeDecorator = (function() {
             globeView.globe.material = null;
         }
         globeView.globe.material = material;
-
-        Application._vent.trigger('globe/ready'); // notifies about ready state of geometry
 
     };
 

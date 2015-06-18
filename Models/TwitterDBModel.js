@@ -73,10 +73,10 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
                 timeFrom: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeFrom),
                 timeTo: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeTo)
             }
+            Application._vent.trigger('data/ready');
             Application._vent.trigger('controlpanel/message/on','AWAITING TWEETS');
             console.log(msg, JSON.stringify(msg));
             that.ws.send(JSON.stringify(msg));
-            Application._vent.trigger('data/ready');
 
         };
         this.ws.onmessage = function(results) {
