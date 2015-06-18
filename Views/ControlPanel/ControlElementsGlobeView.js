@@ -81,6 +81,22 @@ Application.DateTime = Application.ControlElementsGlobeView.extend({
 
 });
 
+Application.Help = Application.ControlElementsGlobeView.extend({
+    tagName: 'a',
+    className: 'helpButton',
+    initialize: function() {},
+    events: {
+        'mousedown': 'action'
+    },
+    render: function() {
+        this.$el.append('<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>');
+        return this;
+    },
+    action: function(e) {
+        $("#instruction").fadeToggle();
+    }
+});
+
 Application.Button = Application.ControlElementsGlobeView.extend({
     tagName: 'button',
     className: 'btn btn-primary button',
