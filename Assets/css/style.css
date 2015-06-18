@@ -18,6 +18,7 @@ body {
     height: 100%;
     margin: 0px;
     background: #000;
+    overflow-x: hidden;
 }
 
 #main {
@@ -71,6 +72,7 @@ a{
     width: 100%;
     margin-left: 10%;
     padding-bottom: 20px;
+    background-color: #1F1F2E;
 }
 .configList label.label{
     display: block;
