@@ -44,6 +44,7 @@ Application.AirportsCollection = Application.BaseGlobeCollection.extend({
             complete: function(d) {
                 that.fetchAirports(d);
                 Application._vent.trigger('data/ready');
+                Application._vent.trigger('controlpanel/message/off');
                 return that.models;
             }
         };
@@ -108,6 +109,7 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
             complete: function(d) {
                 that.fetchAirportRoutes(d);
                 Application._vent.trigger('data/ready');
+                Application._vent.trigger('controlpanel/message/off');
             }
         };
         Papa.parse("Models/data/routes.csv", config);

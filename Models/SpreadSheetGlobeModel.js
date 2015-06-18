@@ -40,6 +40,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
 
         this.models = pData;
         Application._vent.trigger('data/ready');
+        Application._vent.trigger('controlpanel/message/off');
 
     },
     setURL: function(key) {

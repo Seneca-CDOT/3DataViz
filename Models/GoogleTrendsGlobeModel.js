@@ -52,6 +52,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
 
         that.models = pData;
         Application._vent.trigger('data/ready');
+        Application._vent.trigger('controlpanel/message/off');
     },
     setURL: function(key) {
 
