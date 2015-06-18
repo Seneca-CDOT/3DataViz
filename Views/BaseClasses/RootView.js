@@ -11,9 +11,7 @@ Application.RootView = Backbone.View.extend({
     initialize: function() {
 
         this.controlPanel = new Application.ControlPanelRootView();
-        this.notifBox = $('<div id="notificationsBox"></div>');
-        this.notifBox.hide();
-        this.$el.append(this.notifBox);
+        this.notifBox = new Application.NotificationsCenter();
         this.rootView = null;
         this.collections = [];
 
@@ -36,6 +34,7 @@ Application.RootView = Backbone.View.extend({
     render: function() {
 
         this.$el.append(this.controlPanel.render().$el);
+        this.$el.append(this.notifBox.render().$el);
         return this;
     },
     submitOn: function() {
@@ -43,8 +42,7 @@ Application.RootView = Backbone.View.extend({
         this.createCollection();
     },
     visualizeOn: function() {
-        this.notifBox.hide();
-
+        Application._vent.trigger('controlpanel/message/off');
         this.initGlobeView();
     },
     fetchCollection: function() {
