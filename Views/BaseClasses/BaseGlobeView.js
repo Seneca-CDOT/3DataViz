@@ -77,7 +77,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
         this.decorators = null;
 
-        $.each(this.collection, function (index, collection) {
+        $.each(this.collection, function(index, collection) {
 
             collection = null;
         });
@@ -96,6 +96,10 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.globe.material.dispose();
         this.globe.geometry.dispose();
         this.globe = null;
+
+        this.stars.material.dispose();
+        this.stars.geometry.dispose();
+        this.stars = null;
 
 
         if (this.requestedAnimationFrameId) {
@@ -159,6 +163,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.addCamera();
         this.addGlobe();
         this.addLight();
+        this.addStars();
         this.addControls();
 
         this.addHelpers();
@@ -213,9 +218,18 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         this.scene.add(this.camera);
     },
+    addStars: function() {
+
+        var geometry = new THREE.SphereGeometry(200, 32, 32);
+        var material = new THREE.MeshBasicMaterial();
+        material.map = THREE.ImageUtils.loadTexture('Assets/images/galaxy_starfield.png');
+        material.side = THREE.BackSide;
+        this.stars = new THREE.Mesh(geometry, material);
+        this.scene.add(this.stars);
+    },
     addGlobe: function() {
 
-        var geometry = new THREE.SphereGeometry(this.globeRadius, 64, 64, 90*(Math.PI/180));
+        var geometry = new THREE.SphereGeometry(this.globeRadius, 64, 64, 90 * (Math.PI / 180));
         var material = new THREE.MeshPhongMaterial({
             color: 0x4396E8,
             ambient: 0x4396E8,
