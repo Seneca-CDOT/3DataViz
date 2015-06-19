@@ -88,6 +88,9 @@ THREE.OrbitControls = function(object, domElement) {
         type: 'change'
     };
 
+    var oldX = 0;
+    var oldY = 0;
+
 
     this.rotateLeft = function(angle) {
 
@@ -275,6 +278,9 @@ THREE.OrbitControls = function(object, domElement) {
 
     function onMouseDown(event) {
 
+        oldX = event.clientX;
+        oldY = event.clientY;
+
         momentumOn = false;
 
         momentumLeft = momentumUp = 0;
@@ -325,6 +331,11 @@ THREE.OrbitControls = function(object, domElement) {
             // momentumUp = event.webkitMovementY;
             momentumLeft = event.webkitMovementX || event.mozMovementX || 0;
             momentumUp = event.webkitMovementY || event.mozMovementY || 0;
+
+            if ( momentumLeft == 0 ) momentumLeft = (event.clientX - oldX) / 10 ; // Manually calculate delta x for safari due to lack of movementx
+            if ( momentumUp == 0 ) momentumUp = (event.clientY - oldY) / 10 ; // Manually calculate delta x for safari due to lack of movementx
+
+
             // momentumLeft += 2 * Math.PI * rotateDelta.x / PIXELS_PER_ROUND * scope.userRotateSpeed;
             // momentumUp   += 2 * Math.PI * rotateDelta.y / PIXELS_PER_ROUND * scope.userRotateSpeed;
 

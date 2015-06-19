@@ -55,7 +55,6 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     suscribe: function() {
         Application._vent.on('data/ready', this.showResults, this);
-        // $(window).on('data/ready', this.showResults.bind(this));
     },
     destroy: function() {
 

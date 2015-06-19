@@ -4,7 +4,7 @@ Application.NotificationsCenter = Backbone.View.extend({
     initialize: function() {
         Application._vent.on('controlpanel/message/on', this.showMessage, this);
         Application._vent.on('controlpanel/message/off', this.removeMessage, this);
-        Application._vent.on('data/ready', this.removeMessage, this);
+       // Application._vent.on('data/ready', this.removeMessage, this);
         this.$el.hide();
     },
     render: function() {
