@@ -25,9 +25,9 @@ Application.RootView = Backbone.View.extend({
             timeTo: ''
 
         };
-        Application._vent.on('controlpanel/parse', this.submitOn.bind(this));
-        Application._vent.on('visualize', this.visualizeOn.bind(this));
-        Application._vent.on('globe/ready', this.fetchCollection.bind(this));
+        Application._vent.on('controlpanel/parse', this.submitOn, this);
+        Application._vent.on('visualize', this.visualizeOn, this);
+        Application._vent.on('globe/ready', this.fetchCollection, this);
 
         window.addEventListener('beforeunload', this.resetCollection.bind(this), false);
     },
