@@ -120,7 +120,7 @@ Application.DataProcessor.CountriesVisualTransformer = (function(){
           var obj = {};
           obj.countrycode = item.countrycode || "";
           obj.countryname = item.countryname || "";
-          obj.percent = item.percent || 0;
+          obj.value = item.percent || 0;
           transData.push(obj);
 
          });
