@@ -2,9 +2,9 @@ Application.NotificationsCenter = Backbone.View.extend({
     tagName: 'div',
     id: 'notificationsBox',
     initialize: function() {
-        Application._vent.on('controlpanel/message/on', this.showMessage.bind(this));
-        Application._vent.on('controlpanel/message/off', this.removeMessage.bind(this));
-        Application._vent.on('data/ready', this.removeMessage.bind(this));
+        Application._vent.on('controlpanel/message/on', this.showMessage, this);
+        Application._vent.on('controlpanel/message/off', this.removeMessage, this);
+       // Application._vent.on('data/ready', this.removeMessage, this);
         this.$el.hide();
     },
     render: function() {
@@ -36,10 +36,9 @@ Application.ControlPanelRootView = Backbone.View.extend({
         this.dataSourcesView = null;
         this.addDataSourcesView();
 
-        Application._vent.on('data/parsed', this.addVisualizationsView.bind(this));
-        Application._vent.on('controlpanel/subview/dataSource', this.destroyVisualizationView.bind(this));
-        Application._vent.on('controlpanel/input/changed', this.destroyVisualizationView.bind(this));
-        // Application._vent.on('visualize', this.reset.bind(this));
+        Application._vent.on('data/parsed', this.addVisualizationsView, this);
+        Application._vent.on('controlpanel/subview/dataSource', this.destroyVisualizationView, this);
+        Application._vent.on('controlpanel/input/changed', this.destroyVisualizationView, this);
 
         this.helpButton = new Application.Help();
         this.helpButton.$el.attr('id', 'helpButton');
@@ -76,7 +75,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
 
     },
     reset: function() {
-        Application._vent.on('data/parsed', this.addVisualizationsView.bind(this));
+        Application._vent.on('data/parsed', this.addVisualizationsView, this);
         if (this.visualizationsView != null) {
             this.visualizationsView.destroy();
             this.visualizationsView = null;
@@ -106,7 +105,7 @@ Application.DataSourcesView = Backbone.View.extend({
         this.dataSourcesList.$el.attr('id', 'dataSourcesList');
         this.$el.append('<label for="dataSourcesList" class="label">CHOOSE A DATA SOURCE</label>');
 
-        Application._vent.on('controlpanel/subview/dataSource', this.addSubView.bind(this));
+        Application._vent.on('controlpanel/subview/dataSource', this.addSubView, this);
         //   Application._vent.on('data/parsed', this.addTemplateListView.bind(this));
 
     },
@@ -118,10 +117,12 @@ Application.DataSourcesView = Backbone.View.extend({
     },
     destroy: function() {
 
+        Application._vent.unbind('controlpanel/subview/dataSource');
         this.remove();
         this.unbind();
         delete this.$el;
         delete this.el;
+
 
     },
     addSubView: function() {
@@ -132,25 +133,6 @@ Application.DataSourcesView = Backbone.View.extend({
         this.$el.append(this.subview.render().$el);
 
     },
-    // addTemplateListView: function(pData) {
-
-    //     console.log("addTemplateListView");
-    //     console.log(pData);
-
-    //     this.subview = this.getTemplateListView(this.config);
-    //     if (typeof this.subview !== 'undefined') {
-    //         this.$el.append(this.subview.render().$el);
-    //     }
-
-    // },
-    // addTemplateOptions: function(value) {
-
-    //     this.subview = this.getSubView(value);
-    //     if (typeof this.subview !== 'undefined') {
-    //         this.$el.append(this.subview.render().$el);
-    //     }
-
-    // },
     getSubView: function() {
 
         this.viewConfig.subView = {
@@ -181,15 +163,6 @@ Application.DataSourcesView = Backbone.View.extend({
         return this.subview;
 
     },
-    // getTemplateListView: function(value) {
-
-    //     if (this.templateview !== undefined) this.templateview.destroy();
-    //     this.templateview = new Application.TemplateListControlPanel(this.config);
-
-    //     return this.templateview;
-
-    // }
-
 
 });
 
@@ -206,7 +179,7 @@ Application.VisualizationsView = Backbone.View.extend({
         this.visualizationList.$el.attr('id', 'visualizationList');
         this.labelForViz = '<label for="visualizationList" class="label">CHOOSE A VISUALIZATION</label>';
 
-        Application._vent.on('controlpanel/subview/vizType', this.addSubView.bind(this));
+        Application._vent.on('controlpanel/subview/vizType', this.addSubView, this);
 
 
 
@@ -224,7 +197,7 @@ Application.VisualizationsView = Backbone.View.extend({
         this.viewConfigs = null;
         this.visualizationList = null;
         this.subview = null;
-        Application._vent.unbind('controlpanel/subview/vizType');
+        Application._vent.unbind('controlpanel/subview/vizType', this.addSubView);
     },
     addSubView: function() {
 
@@ -279,7 +252,7 @@ Application.ButtonsView = Backbone.View.extend({
 
         this.viewConfig = null;
         this.remove();
-        //this.$el.empty();
+        this.$el.empty();
     }
 });
 
@@ -334,7 +307,6 @@ Application.DynamicTwitterLiveControlPanel = Application.ButtonsView.extend({
         this.$el.append(this.labelForSearch);
         this.$el.append(this.search.render().$el);
         this.$el.append(this.submitbtn.render().$el);
-        //  this.$el.append(this.resetbtn.render().$el);
         return this;
     },
     searchFieldAction: function(e) {
@@ -356,6 +328,7 @@ Application.DynamicTwitterLiveControlPanel = Application.ButtonsView.extend({
         this.submitbtn.destroy();
         this.search.destroy();
         this.labelForSearch.remove();
+        this.labelForSearch = null;
 
     }
 });
@@ -371,12 +344,14 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
         this.timeFrom = new Application.InputField(viewConfig);
         this.timeFrom.$el.attr('class', 'form-control userInput');
         this.timeFrom.$el.attr('id', 'timeFrom');
+        this.timeFrom.$el.attr('placeholder', 'Loading...');
         this.timeFrom.$el.on('keyup', this.timeFieldAction.bind(this));
         this.labelForTimeFrom = $('<label for="timeFrom" class="label">ENTER INITIAL TIME</label>');
 
         this.timeTo = new Application.InputField(viewConfig);
         this.timeTo.$el.attr('class', 'form-control userInput');
-        this.timeFrom.$el.attr('id', 'timeTo');
+        this.timeTo.$el.attr('id', 'timeTo');
+        this.timeTo.$el.attr('placeholder', 'Loading...');
         this.timeTo.$el.on('keyup', this.timeFieldAction.bind(this));
         this.labelForTimeTo = $('<label for="timeTo" class="label">ENTER FINAL TIME</label>');
 
@@ -399,7 +374,6 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
         this.$el.append(this.labelForSearch);
         this.$el.append(this.search.render().$el);
         this.$el.append(this.submitbtn.render().$el);
-        //  this.$el.append(this.resetbtn.render().$el);
         return this;
     },
     searchFieldAction: function(e) {
@@ -429,11 +403,9 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
         var that = this;
 
         var path = 'http://threedataviz.herokuapp.com/';
-        // var path = 'http://localhost:5000/';
 
         $.get(path + 'twitterDB/apple/timefrom').done(function(data) {
-            console.log(data[0].timestamp_ms);
-            // console.log(new Date(data[0].timestamp_ms));
+            // console.log(data[0].timestamp_ms);
             var datetime = that.convertStampToDateTime(data[0].timestamp_ms);
             that.timeFrom.$el.val(datetime);
         });
@@ -441,7 +413,6 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
     requestTimeTo: function() {
         var that = this;
         var path = 'http://threedataviz.herokuapp.com/';
-        // var path = 'http://localhost:5000/';
 
         $.get(path + 'twitterDB/apple/timeto').done(function(data) {
             console.log(data[0].timestamp_ms);
@@ -462,13 +433,21 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
 
     },
     destroy: function() {
+
         this.submitbtn.destroy();
+        this.submitbtn = null;
         this.search.destroy();
+        this.search = null;
         this.labelForSearch.remove();
+        this.labelForSearch = null;
         this.timeFrom.destroy();
+        this.timeFrom = null;
         this.labelForTimeFrom.remove();
+        this.labelForTimeFrom = null;
         this.timeTo.destroy();
+        this.timeTo = null;
         this.labelForTimeTo.remove();
+        this.labelForTimeTo = null;
 
     }
 });
@@ -489,18 +468,12 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
         this.submitbtn.$el.text('SUBMIT');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
-        // this.resetbtn = new Application.Button(config);
-        // this.resetbtn.$el.attr('id', 'reset');
-        // this.resetbtn.$el.attr('class', 'btn btn-danger');
-        // this.resetbtn.$el[0].innerHTML = 'reset';
-        // this.resetbtn.$el.on('mousedown', this.resetAction.bind(this));
     },
     render: function() {
         Application.ButtonsView.prototype.render.call(this);
         this.$el.append(this.labelForKey);
         this.$el.append(this.urlfield.render().$el);
         this.$el.append(this.submitbtn.render().$el);
-        // this.$el.append(this.resetbtn.render().$el);
         return this;
     },
     urlFieldAction: function(e) {
@@ -564,8 +537,11 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
     },
     destroy: function() {
         this.submitbtn.destroy();
+        this.submitbtn = null;
         this.urlfield.destroy();
+        this.urlfield = null;
         this.labelForKey.remove();
+        this.labelForKey = null;
     }
 
 });
@@ -591,7 +567,6 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
         this.$el.append(this.labelForKeyword);
         this.$el.append(this.keywordfield.render().$el);
         this.$el.append(this.submitbtn.render().$el);
-        //this.$el.append(this.resetbtn.render().$el);
         return this;
     },
     KeywordFieldAction: function(e) {
@@ -627,8 +602,11 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
     },
     destroy: function() {
         this.keywordfield.destroy();
+        this.keywordfield = null;
         this.submitbtn.destroy();
+        this.submitbtn = null;
         this.labelForKeyword.remove();
+        this.labelForKeyword = null;
     }
 
 });
