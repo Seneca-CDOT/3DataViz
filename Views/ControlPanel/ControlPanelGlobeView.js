@@ -264,6 +264,7 @@ Application.VisualizationsView = Backbone.View.extend({
 
 });
 
+
 Application.ButtonsView = Backbone.View.extend({
     id: 'buttons',
     initialize: function(viewConfig) {
@@ -288,12 +289,17 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
 
         Application.ButtonsView.prototype.initialize.call(this, viewConfig);
 
+        this.fileUpload = new Application.FileUpload();
+
+
         this.submitbtn = new Application.Button(viewConfig);
         this.submitbtn.$el.text('SUBMIT');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
+
     },
     render: function() {
         Application.ButtonsView.prototype.render.call(this);
+        this.$el.append(this.fileUpload.render().$el);
         this.$el.append(this.submitbtn.render().$el);
         return this;
     },

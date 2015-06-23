@@ -57,6 +57,30 @@ Application.InputField = Application.ControlElementsGlobeView.extend({
 
 });
 
+Application.FileUpload = Application.ControlElementsGlobeView.extend({
+    tagName: 'input',
+    initialize: function(viewConfig) {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+
+        this.$el.attr('type', 'file');
+        this.$el.attr('id', 'fileUpload');
+        this.$el.attr('multiple', 'multiple');
+
+        this.$el.on('keyup', this.grabInput.bind(this));
+        this.$el.on('change', this.handleFiles.bind(this));
+    },
+    render: function() {
+        return this;
+    },
+    grabInput: function() {
+        this.addToConfig(this.$el.val());
+    },
+    handleFiles: function(){
+        console.log(this);
+    }
+
+});
+
 Application.DateTime = Application.ControlElementsGlobeView.extend({
     tagName: 'input',
     initialize: function(viewConfig) {
