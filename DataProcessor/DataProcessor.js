@@ -58,7 +58,7 @@ Application.DataProcessor.ProcessorModule = (function() {
 
     // by doing this you have got an access to the public methods from private methods
     var publicMethods = {};
-    publicMethods.processData = function(data, options) {
+    publicMethods.processData = function(data, options, complete) {
 
         console.log("Raw Data =====");
         console.log(data);
@@ -67,12 +67,8 @@ Application.DataProcessor.ProcessorModule = (function() {
 
         var dtProcessor = privateMethods.dataTypedProcessor(options);
         // preprocess data depending on its type
-        pData = dtProcessor.process(data);
-
-        console.log("Processed Data =====");
-        console.log(pData);
-
-        return pData;
+        dtProcessor.process(data, complete);
+        
     };
 
     publicMethods.transformData = function(data, options) {
@@ -112,9 +108,9 @@ Application.DataProcessor.BaseProcessor = (function() {
         _[this.id].strategy = strategy;
     };
 
-    BaseProcessor.prototype.process = function(data) {
+    BaseProcessor.prototype.process = function(data, complete) {
 
-        var pData = _[this.id].strategy.process(data);
+        var pData = _[this.id].strategy.process(data, complete);
         return pData;
     };
 

@@ -87,6 +87,16 @@ a{
 .configList .form-control{
     width: 80%;
 }
+.fileWrapper{
+    height:0;
+    width:0;
+    overflow: hidden;
+}
+#fileUpload{
+
+}
+#file{
+}
 
 /***************************************
  * Notification

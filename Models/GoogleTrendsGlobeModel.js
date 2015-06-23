@@ -48,10 +48,10 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
             dataType: "googleTrends",
             visualizationType: this.templatesList
         };
-        var pData = pModule.processData(response.table.rows, options)
-
-        that.models = pData;
-        Application._vent.trigger('data/ready');
+        pModule.processData(response.table.rows, options, function(data){
+            that.models = data;
+            Application._vent.trigger('data/ready');
+        });
     },
     setURL: function(key) {
 

@@ -64,10 +64,10 @@ Application.FileUpload = Application.ControlElementsGlobeView.extend({
 
         this.$el.attr('type', 'file');
         this.$el.attr('id', 'fileUpload');
-        this.$el.attr('multiple', 'multiple');
+        this.$el.prop('multiple', true);
 
         this.$el.on('keyup', this.grabInput.bind(this));
-        this.$el.on('change', this.handleFiles.bind(this));
+
     },
     render: function() {
         return this;
@@ -75,10 +75,9 @@ Application.FileUpload = Application.ControlElementsGlobeView.extend({
     grabInput: function() {
         this.addToConfig(this.$el.val());
     },
-    handleFiles: function(){
-        console.log(this);
+    getFile: function(){
+        return this.$el[0].files[0];
     }
-
 });
 
 Application.DateTime = Application.ControlElementsGlobeView.extend({

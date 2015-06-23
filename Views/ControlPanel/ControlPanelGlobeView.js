@@ -264,7 +264,6 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
 
         this.fileUpload = new Application.FileUpload();
 
-
         this.submitbtn = new Application.Button(viewConfig);
         this.submitbtn.$el.text('SUBMIT');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
@@ -278,7 +277,12 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
     },
     submitAction: function() {
 
+        var files = this.fileUpload.getFile();
+        Application.userConfig.files = files;
+        console.log(files);
+
         Application._vent.trigger('controlpanel/parse');
+
     },
     destroy: function() {
         this.submitbtn.destroy();

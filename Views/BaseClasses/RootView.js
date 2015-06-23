@@ -89,7 +89,8 @@ Application.RootView = Backbone.View.extend({
             case 'csv':
                 {
 
-                    collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
+                    // collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
+                    collectionClasses = ['CSVCollection',];
                     break;
                 }
             case 'spreadSheet':

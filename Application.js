@@ -55,7 +55,8 @@ Application = {
         googleTrends: ['Models/GoogleTrendsGlobeModel.js'],
         twitterDB: ['Models/TwitterDBModel.js'],
         twitterLive: ['Models/TwitterLiveModel.js'],
-        csv: ['Models/FlightPathGlobeModel.js','Models/data/path.js', 'Models/data/countriesList.js']
+        // csv: ['Models/FlightPathGlobeModel.js','Models/data/path.js', 'Models/data/countriesList.js']
+        csv: ['Models/CSVGlobeModel.js']
     },
 
     layers: {
