@@ -35,8 +35,10 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
             dataType: "twitter",
             visualizationType: this.templatesList
         };
-        var pData = pModule.processData(response, options);
-        this.transform(pData);
+        var that = this;
+        pModule.processData(response, options, function(data){
+            that.transform(data);
+        });
     },
     transform: function(pData) {
         if (Application.userConfig.vizLayer == "") {
