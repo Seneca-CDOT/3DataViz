@@ -23,19 +23,19 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         this.routes = [];
         this.createdAirports = [];
         this.movingGuys = [];
+        this.paths = []
 
         // this is where I set up all the objects. Later on, I just instantiate them
         // with different positions/ rotations. This is the main improvement so far, 
         // performance wise
 
-        this.airportGeometry = new THREE.SphereGeometry(this.cylinderRadius, 8, 8);
+        this.airportGeometry = new THREE.SphereGeometry(this.cylinderRadius);
         this.blueMaterial = new THREE.MeshBasicMaterial({
-            color: 0x0000ff,
-            side: THREE.DoubleSide
+            color: 0xadedff
         });
 
         this.pathMaterial = new THREE.LineBasicMaterial({
-            color: 0xff0000,
+            color: 0xadedff,
             transparent: true,
         });
 
@@ -57,13 +57,12 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
     },
     // visualization specific functionality
     updateGlobe: function() {
-
         //this is going to move the airplanes around the world.
         // First we check to see if there are paths and planes
         // second, we iterate through the airplanes list
         // then we check to see if the path is finished or not
         // then black magic and things move.
-        if (typeof(movingGuys) !== "undefined" && typeof(paths) !== "undefined") {
+        if (typeof(this.movingGuys) !== "undefined" && typeof(this.paths) !== "undefined") {
 
             for (var i = 0; i < this.movingGuys.length; i++) {
 
@@ -77,7 +76,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
                 (this.t >= 1) ? this.t = 0: this.t += 0.005;
 
-                pt = paths[i].getPoint(this.movingGuys[i][2]);
+                pt = this.paths[i].getPoint(this.movingGuys[i][2]);
                 this.movingGuys[i][0].position.set(pt.x, pt.y, pt.z);
             }
         }
@@ -125,16 +124,16 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
                     //sets up the vector points for the airports
                     // var vT = srcAirport.position3D;
                     // var vF = destAirport.position3D;
-                    var vT = Application.Helper.geoToxyz( dataRecord["geofrom-y"] , dataRecord["geofrom-x"] , 51);
-                    var vF = Application.Helper.geoToxyz( dataRecord["geoto-y"] , dataRecord["geoto-x"] , 51);
+                    var vT = Application.Helper.geoToxyz( dataRecord.from.longitude , dataRecord.from.latitude , 51);
+                    var vF = Application.Helper.geoToxyz( dataRecord.to.longitude , dataRecord.to.latitude , 51);
 
                     // let's check if the airport object has been instantiated already
                     // if (!that.airportCreated(srcAirport.ID)) {
-                        that.addAirport(dataRecord["geofrom-y"], dataRecord["geofrom-x"]);
+                        that.addAirport( dataRecord.from.longitude, dataRecord.from.latitude);
                     // }
                     // if (!that.airportCreated(destAirport.ID)) {
                     // 
-                        that.addAirport(dataRecord["geoto-y"], dataRecord["geoto-x"]);
+                        that.addAirport( dataRecord.to.longitude, dataRecord.to.latitude);
                     // }
 
                     //gets the distance between the points. Maxium = 2*radius
@@ -168,12 +167,12 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
                     // this sets the number of vertices on the paths,
                     // their resolution, how good they look.
                     // the smaller the number, the squarer it'll look
-                    pathGeometry.vertices = curve.getPoints(15);
+                    pathGeometry.vertices = curve.getPoints(35);
 
                     // Create the final Object3d to add to the this.scene
 
                     var curveObject = new THREE.Line(pathGeometry, that.pathMaterial);
-                    // paths.push(curve);
+                    that.paths.push(curve);
                     that.scene.add(curveObject);
 
                     var speed = Application.Helper.map(dist, 0, that.globeRadius * 2, 0, 2.9);
@@ -219,20 +218,20 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         return false;
     },
     // returns an airport from with a given ID
-    getAirport: function(id) {
-        for (i in this.collection[0].models) {
+    // getAirport: function(id) {
+    //     for (i in this.collection[0].models) {
 
-            if (id == this.collection[0].models[i].attributes.ID) {
+    //         if (id == this.collection[0].models[i].attributes.ID) {
 
-                return this.collection[0].models[i].attributes;
-            }
-        }
-    },
+    //             return this.collection[0].models[i].attributes;
+    //         }
+    //     }
+    // },
     // gives you a random number within a range
-    getRandomInt: function(min, max) {
+    // getRandomInt: function(min, max) {
 
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    },
+    //     return Math.floor(Math.random() * (max - min + 1)) + min;
+    // },
     //this is going to add the airports to the list and instantiate them to the scene.
     addAirport: function(latitude, longitude) {
         // this is for object airports

@@ -206,25 +206,44 @@ Application.DataProcessor.GraphTransformer = (function(){
 
     GraphTransformer.prototype.transform = function(data, complete) {
 
-        console.log(data);
+        var tData = [];
 
-        var obj = {
-            from: {
-                latitude:"",
-                longitude: ""
-            },
-            to: {
-                latitude:"",
-                longitude: ""
-            },
-            fromLabel:"",
-            toLabel:"",
-            category:"",
-            timestamp:"",
-            value:""
-        }
+        $.each(data, function(index, item){
+            var obj = {
+                from: {
+                    latitude:"",
+                    longitude: ""
+                },
+                to: {
+                    latitude:"",
+                    longitude: ""
+                },
+                fromLabel:"",
+                toLabel:"",
+                category:"",
+                timestamp:"",
+                value:""
+            };
+            obj.from = {
+                latitude: item.fromLatitude || null,
+                longitude: item.fromLongitude || null
+            };
+            obj.to = {
+                latitude: item.toLatitude || null,
+                longitude: item.toLongitude || null
+            };
+            obj.fromLabel = item.fromLabel || null;
+            obj.toLabel = item.toLabel || null;
+            obj.category = item.category || null;
+            obj.timestamp = Number(item.timestamp) || null;
+            obj.value = Number(item.value) || null;
 
-        if( typeof complete === "function" ) complete(data);
+            tData.push(obj);
+        });
+
+        console.log("what the",tData);
+
+        if( typeof complete === "function" ) complete(tData);
     };
 
     return GraphTransformer;

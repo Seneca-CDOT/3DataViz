@@ -55,8 +55,8 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
         }
 
         pModule.transformData(data, options, function(response){
-            that.models = response.data;
             console.log("transform:",response);
+            that.models = response;
             Application._vent.trigger('data/ready'); 
         });
     },
