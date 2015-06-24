@@ -29,7 +29,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
                     console.log(country.value);
                     Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
-                        ' : ' + country.value + '%')
+                        ' : ' + country.value);
                 }
 
             });
@@ -119,24 +119,20 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         var colorsMap = this.createColors(results); // creates a colors map relative to the values
 
         if (results[0].countryname != '') {
-
-            var findCountry = this.decorators[0].findCountryByName.bind(this);
             var search = 'countryname';
         }
 
         if (results[0].countrycode != '') {
-
-            var findCountry = this.decorators[0].findCountryByCode.bind(this);
             var search = 'countrycode';
         }
 
-       results.forEach(function(item, index) {
+        results.forEach(function(item, index) {
 
 
-            var countrymesh = findCountry(item[search]);
+            var countrymesh = that.decorators[0].findCountry(item[search], search);
 
             if (!countrymesh) {
-                console.log('Country ' + item.countrycode || item.countryname + ' is not available ');
+                console.log('Country ' + ( item.countrycode || item.countryname ) + ' is not available ');
                 return;
             }
 

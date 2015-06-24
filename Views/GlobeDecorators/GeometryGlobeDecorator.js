@@ -46,16 +46,17 @@ Application.GeometryGlobeDecorator = (function() {
         privateMethods.highlightCountry.call(this, mesh);
     };
 
-    GeometryGlobeDecorator.prototype.findCountryByCode = function(code) {
+    GeometryGlobeDecorator.prototype.findCountry = function(country, id) {
 
-        var mesh = privateMethods.findCountryMeshByCode.call(this, code);
+        switch (id) {
 
-        return mesh;
-    };
-
-    GeometryGlobeDecorator.prototype.findCountryByName = function(name) {
-
-        var mesh = privateMethods.findCountryMeshByName.call(this, name);
+            case 'countryname':
+                var mesh = privateMethods.findCountryMeshByName.call(this, country);
+                break;
+            case 'countrycode':
+                var mesh = privateMethods.findCountryMeshByCode.call(this, country);
+                break;
+        }
 
         return mesh;
     };
@@ -129,11 +130,10 @@ Application.GeometryGlobeDecorator = (function() {
 
                 return countries[i];
 
-            } else {
-
-                console.log('something wrong with the name: ' + name);
             }
+
         }
+                console.log('something wrong with the name: ' + name);
     };
 
     privateMethods.findCountryMeshByCode = function(code) {
@@ -148,9 +148,10 @@ Application.GeometryGlobeDecorator = (function() {
         }
     };
 
-    privateMethods.checkCountryName = function(name) {
+    privateMethods.checkCountryName = function(UserDataname, InitialDataName) {
 
-        var s = name;
+        var s = UserDataname;
+        var t = InitialDataName;
 
         var d = []; //2d matrix
 

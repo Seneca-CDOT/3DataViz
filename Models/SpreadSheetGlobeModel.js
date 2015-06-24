@@ -38,9 +38,25 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
 
         var pData = pModule.processData(response, options);
 
-        this.models = pData;
-        Application._vent.trigger('data/ready');
+        this.transform(pData);
+        // Application._vent.trigger('data/ready');
 
+    },
+    transform: function(pData) {
+        if (Application.userConfig.vizLayer == "") {
+            this.models = pData;
+
+        } else {
+            var pModule = Application.DataProcessor.ProcessorModule;
+            var options = {
+                visualizationType: Application.userConfig.vizLayer
+            };
+            pData = pModule.transformData(pData, options);
+
+            this.models = pData;
+            Application._vent.trigger('data/ready');
+            Application._vent.trigger('controlpanel/message/off');
+        }
     },
     setURL: function(key) {
 
@@ -61,7 +77,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
             },
             vizLayer: {
                 name: 'vizLayer',
-                list: ['points']
+                list: ['points','countries']
             }
         }
         return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);

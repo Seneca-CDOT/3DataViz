@@ -258,13 +258,23 @@ Application.DataProcessor.SpreadSheetParser = (function() {
 
     SpreadSheetParser.prototype.parse = function(data) {
 
+        // var filter = {
+
+        //     name: "",
+        //     longitude: "",
+        //     latitude: ""
+
+        // };
+
+
         var filter = {
 
-            name: "",
-            longitude: "",
-            latitude: ""
+            country: "",
+            value: ""
 
         };
+
+
 
         // TODO: to Dima Yastretsky
         var pData = privateMethods.extractSpreadSheet.call(this,filter, data);
