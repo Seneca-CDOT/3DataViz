@@ -286,7 +286,7 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
     },
     destroy: function() {
         this.submitbtn.destroy();
-
+        this.fileUpload.destroy();
     }
 });
 

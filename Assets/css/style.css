@@ -105,13 +105,11 @@ a{
     width: 80%;
 }
 
-
-
-
-
 .btn-file {
     position: relative;
     overflow: hidden;
+    width: 80%;
+    margin-top: 10%;
     box-sizing: border-box;
 }
 .btn-file input[type=file] {
@@ -129,11 +127,15 @@ a{
     cursor: inherit;
     display: block;
 }
-
-#fileUpload{
-
+#fileName{
+    display: none;
+    margin: 5px 0 0 0;
+    padding-left: 4px;
+    color: #fff;
 }
-#file{
+#fileName:before{
+    font-family: 'Glyphicons Halflings';
+    content: "\e022";
 }
 
 /***************************************

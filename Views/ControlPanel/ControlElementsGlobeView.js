@@ -62,19 +62,26 @@ Application.FileUpload = Application.ControlElementsGlobeView.extend({
     initialize: function(viewConfig) {
         Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
 
-        this.$el.attr('class', 'btn btn-default btn-file');
-        this.$el.prop('multiple', true);
-        this.$el.prepend('Choose file');
+        this.$btnfile = $('<div class="btn btn-default btn-file">Choose File</div>');
 
         this.$file = $('<input id="fileUpload" type="file">');
-        this.$el.append(this.$file);
-        
+        this.$file.on('change', this.handleFile.bind(this));
+        this.$btnfile.append(this.$file);
+
+        this.$el.append(this.$btnfile);
+
+        this.$list = $('<p id="fileName"></p>');
+        this.$el.append(this.$list);
+
     },
     render: function() {
         return this;
     },
     getFile: function(){
         return this.$file[0].files[0];
+    },
+    handleFile: function(){
+        $("#fileName").text(this.getFile().name).show();
     }
 });
 
