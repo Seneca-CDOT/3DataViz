@@ -45,13 +45,14 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
             this.add(pData);
 
         } else {
+            var that = this;
             var pModule = Application.DataProcessor.ProcessorModule;
             var options = {
                 visualizationType: Application.userConfig.vizLayer
             };
-            pData = pModule.transformData(pData, options);
-
-            this.add(pData);
+            pModule.transformData(pData, options, function(response){
+                that.add(response);
+            });
         }
     },
     fetch: function() {

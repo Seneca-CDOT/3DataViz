@@ -60,31 +60,18 @@ Application.DataProcessor.ProcessorModule = (function() {
     var publicMethods = {};
     publicMethods.processData = function(data, options, complete) {
 
-        console.log("Raw Data =====");
-        console.log(data);
-
-        var pData = null;
-
         var dtProcessor = privateMethods.dataTypedProcessor(options);
         // preprocess data depending on its type
         dtProcessor.process(data, complete);
         
     };
 
-    publicMethods.transformData = function(data, options) {
-
-        var pData = null;
+    publicMethods.transformData = function(data, options, complete) {
 
         var vtProcessor = privateMethods.visualizationTypedProcessor(options);
-
         // transform preprocessed data depending on visualization type
-        pData = vtProcessor.transform(data);
+        vtProcessor.transform(data, complete);
 
-        console.log("transformed Data =====");
-        console.log(pData);
-
-        // return tData;
-        return pData;
     };
 
     return {
@@ -114,9 +101,9 @@ Application.DataProcessor.BaseProcessor = (function() {
         return pData;
     };
 
-    BaseProcessor.prototype.transform = function(data) {
+    BaseProcessor.prototype.transform = function(data, complete) {
 
-        var tData = _[this.id].strategy.transform(data);
+        var tData = _[this.id].strategy.transform(data, complete);
         return tData;
     };
 

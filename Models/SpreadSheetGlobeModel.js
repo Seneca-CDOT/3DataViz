@@ -37,11 +37,26 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         };
 
         var that = this;
-        pModule.processData(response, options, function(data){
-            that.models = data;
-            Application._vent.trigger('data/ready');
+        pModule.processData(response, options, function(response){
+            console.log("parse:",response);
+            that.transform(response); 
+            // that.models = data;
+            // Application._vent.trigger('data/ready');
         });
 
+    },
+    transform: function(data){
+        var pModule = Application.DataProcessor.ProcessorModule;
+        var that = this;
+        var options = {
+            visualizationType: Application.userConfig.vizLayer
+        }
+
+        pModule.transformData(data, options, function(response){
+            console.log("transform:",response);
+            that.models = response;
+            Application._vent.trigger('data/ready');
+        });
     },
     setURL: function(key) {
 

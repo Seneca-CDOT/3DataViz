@@ -38,17 +38,27 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
         var pModule = Application.DataProcessor.ProcessorModule;
         var that = this;
         var options = {
-
-            dataType: "csv",
-            visualizationType: this.templatesList
+            dataType: "csv"
         };
 
         pModule.processData(this.file, options, function(response){
-            console.log("callback works!!!!", response.data);
-            that.models = response.data;
-            Application._vent.trigger('data/ready');
+            console.log("parse:",response);
+            that.transform(response.data); 
         });
 
+    },
+    transform: function(data){
+        var pModule = Application.DataProcessor.ProcessorModule;
+        var that = this;
+        var options = {
+            visualizationType: Application.userConfig.vizLayer
+        }
+
+        pModule.transformData(data, options, function(response){
+            that.models = response.data;
+            console.log("transform:",response);
+            Application._vent.trigger('data/ready'); 
+        });
     },
     fetch: function() {
         this.parse();
