@@ -58,27 +58,48 @@ Application.InputField = Application.ControlElementsGlobeView.extend({
 });
 
 Application.FileUpload = Application.ControlElementsGlobeView.extend({
-    tagName: 'input',
+    tagName: 'div',
     initialize: function(viewConfig) {
         Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
 
-        this.$el.attr('type', 'file');
-        this.$el.attr('id', 'fileUpload');
+        this.$el.attr('class', 'btn btn-default btn-file');
         this.$el.prop('multiple', true);
+        this.$el.prepend('Choose file');
 
-        this.$el.on('keyup', this.grabInput.bind(this));
-
+        this.$file = $('<input id="fileUpload" type="file">');
+        this.$el.append(this.$file);
+        
     },
     render: function() {
         return this;
     },
-    grabInput: function() {
-        this.addToConfig(this.$el.val());
-    },
     getFile: function(){
-        return this.$el[0].files[0];
+        return this.$file[0].files[0];
     }
 });
+
+// Application.FileUpload = Application.ControlElementsGlobeView.extend({
+//     tagName: 'input',
+//     initialize: function(viewConfig) {
+//         Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+
+//         this.$el.attr('type', 'file');
+//         this.$el.attr('id', 'fileUpload');
+//         this.$el.prop('multiple', true);
+
+//         this.$el.on('keyup', this.grabInput.bind(this));
+
+//     },
+//     render: function() {
+//         return this;
+//     },
+//     grabInput: function() {
+//         this.addToConfig(this.$el.val());
+//     },
+//     getFile: function(){
+//         return this.$el[0].files[0];
+//     }
+// });
 
 Application.DateTime = Application.ControlElementsGlobeView.extend({
     tagName: 'input',
