@@ -27,6 +27,35 @@ Application.NotificationsCenter = Backbone.View.extend({
     }
 });
 
+Application.VizInfoCenter = Backbone.View.extend({
+    tagName: 'div',
+    id: 'vizInfoCenter',
+    initialize: function() {
+        Application._vent.on('vizinfocenter/message/on', this.showMessage, this);
+        Application._vent.on('vizinfocenter/message/off', this.removeMessage, this);
+       // Application._vent.on('data/ready', this.removeMessage, this);
+        this.$el.hide();
+    },
+    render: function() {
+
+        return this;
+    },
+    showMessage: function(message) {
+        this.$el.fadeIn();
+        this.$el.empty();
+        this.$el.append(message);
+    },
+    removeMessage: function() {
+        this.$el.empty();
+        this.$el.hide();
+    },
+    destroy: function() {
+
+        Application._vent.unbind('vizinfocenter/message/on');
+        Application._vent.unbind('vizinfocenter/message/off');
+    }
+});
+
 Application.ControlPanelRootView = Backbone.View.extend({
     tagName: 'div',
     id: 'panel',
@@ -590,7 +619,8 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
     },
     parseKey: function(keyword) {
 
-        keyword = keyword.trim().replace(/ /g, ',');
+        // keyword = keyword.trim().replace(/ /g, ',');
+        keyword = keyword.trim();
         return keyword;
 
     },

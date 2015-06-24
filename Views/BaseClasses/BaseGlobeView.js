@@ -313,6 +313,8 @@ Application.BaseGlobeView = Backbone.View.extend({
             var closestIntersect = intersects[0];
             this.clickOnIntersect(closestIntersect);
         }
+
+        return intersects[0];
     },
     clickOnIntersect: function(intersect) {
 

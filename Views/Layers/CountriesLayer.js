@@ -8,25 +8,33 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.initialize.call(this, decorator, collections);
 
         this.added = []; // list of countries participating and their old colors
-        this.colors = [
-
-            '0xFF0000',
-            '0xFF1919',
-            '0xFF3333',
-            '0xFF4D4D',
-            '0xFF6666',
-            '0xFF8080',
-            '0xFF9999',
-            '0xFFB2B2',
-            '0xFFCCCC',
-            '0xFFE6E6'
-        ];
 
     },
     render: function() {
 
         Application.BaseGlobeView.prototype.render.call(this);
         return this;
+    },
+    clickOn: function(event) {
+
+        var intersectedMesh = Application.BaseGlobeView.prototype.clickOn.call(this, event);
+
+        Application._vent.trigger('vizinfocenter/message/off');
+
+        if (intersectedMesh) {
+
+            $.each(this.added, function(index, country) {
+
+                if (intersectedMesh.object == country.mesh) {
+
+                    console.log(country.value);
+                    Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
+                        ' : ' + country.value + '%')
+                }
+
+            });
+        }
+
     },
     destroy: function() {
 
@@ -93,10 +101,10 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
     showResults: function() {
 
-        var that = this;
         // console.log("CountriesLayer showResults");
         Application.BaseGlobeView.prototype.showResults.call(this, results);
 
+        var that = this;
         var results = this.collection[0].models;
 
         if (results.length == 0) {
@@ -104,34 +112,46 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             return;
         };
 
-        results.sort(function(a, b) {
+        results.sort(function(a, b) { // sorts array in ascending order by value
             return a.value - b.value
         });
 
-        var colorsMap = this.createColors(results);
+        var colorsMap = this.createColors(results); // creates a colors map relative to the values
 
-        // var length = results.length;
+        if (results[0].countryname != '') {
 
-        results.forEach(function(item, index) {
+            var findCountry = this.decorators[0].findCountryByName.bind(this);
+            var search = 'countryname';
+        }
 
-            var countrymesh = that.decorators[0].findCountryByCode(item.countrycode);
+        if (results[0].countrycode != '') {
+
+            var findCountry = this.decorators[0].findCountryByCode.bind(this);
+            var search = 'countrycode';
+        }
+
+       results.forEach(function(item, index) {
+
+
+            var countrymesh = findCountry(item[search]);
 
             if (!countrymesh) {
-                console.log('Country ' + item.countrycode + ' is not available ');
+                console.log('Country ' + item.countrycode || item.countryname + ' is not available ');
                 return;
             }
 
-            console.log(countrymesh.userData.name);
+            // console.log(countrymesh.userData.name, ' ' + item.value + '%');
 
             var obj = {};
             obj.mesh = countrymesh;
             obj.color = countrymesh.material.color.getHex();
+            obj.value = item.value;
 
             that.added.push(obj);
 
-            countrymesh.material.color.r = colorsMap[item.value];
-            countrymesh.material.color.g = 0;
-            countrymesh.material.color.b = 0;
+            countrymesh.material.color.r = 1;
+            countrymesh.material.color.g = 1 - colorsMap[item.value];
+            countrymesh.material.color.b = 1 - colorsMap[item.value];
 
 
         });
