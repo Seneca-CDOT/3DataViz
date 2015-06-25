@@ -1,0 +1,276 @@
+fromLabel,fromLatitude,fromLongitude,toLabel,toLatitude,toLongitude,category
+Sochi,43.449928,39.956589,Kazan,55.606186,49.278728,N
+Astrakhan,46.283333,48.006278,Kazan,55.606186,49.278728,N
+Astrakhan,46.283333,48.006278,Mineralnyye Vody,44.225072,43.081889,N
+Balandino,55.305836,61.503333,Kazan,55.606186,49.278728,N
+Balandino,55.305836,61.503333,Tolmachevo,55.012622,82.650656,N
+Domododevo,55.408611,37.906111,Kazan,55.606186,49.278728,N
+Domododevo,55.408611,37.906111,Begishevo,55.34,52.06,N
+Domododevo,55.408611,37.906111,,,,
+Domododevo,55.408611,37.906111,Bugulma Airport,54.64,52.8017,N
+Belgorod International Airport,50.6438,36.5901,Khrabrovo,54.89005,20.592633,N
+Belgorod International Airport,50.6438,36.5901,Kazan,55.606186,49.278728,N
+Heydar Aliyev,40.4675,50.046667,Begishevo,55.34,52.06,N
+Khrabrovo,54.89005,20.592633,Belgorod International Airport,50.6438,36.5901,N
+Kazan,55.606186,49.278728,Sochi,43.449928,39.956589,N
+Kazan,55.606186,49.278728,Astrakhan,46.283333,48.006278,N
+Kazan,55.606186,49.278728,Balandino,55.305836,61.503333,N
+Kazan,55.606186,49.278728,Domododevo,55.408611,37.906111,N
+Kazan,55.606186,49.278728,Belgorod International Airport,50.6438,36.5901,N
+Kazan,55.606186,49.278728,Pulkovo,59.800292,30.262503,N
+Kazan,55.606186,49.278728,Koltsovo,56.743108,60.802728,N
+Pulkovo,59.800292,30.262503,Kazan,55.606186,49.278728,N
+Pulkovo,59.800292,30.262503,Begishevo,55.34,52.06,N
+Pulkovo,59.800292,30.262503,Bugulma Airport,54.64,52.8017,N
+Mineralnyye Vody,44.225072,43.081889,Astrakhan,46.283333,48.006278,N
+Begishevo,55.34,52.06,Domododevo,55.408611,37.906111,N
+Begishevo,55.34,52.06,Heydar Aliyev,40.4675,50.046667,E
+Begishevo,55.34,52.06,Pulkovo,59.800292,30.262503,N
+Begishevo,55.34,52.06,Koltsovo,56.743108,60.802728,N
+Nizhnevartovsk,60.949272,76.483617,Koltsovo,56.743108,60.802728,N
+Nizhnevartovsk,60.949272,76.483617,Bugulma Airport,54.64,52.8017,N
+Novyi Urengoy,66.041811,76.313938,Koltsovo,56.743108,60.802728,N
+Tolmachevo,55.012622,82.650656,Balandino,55.305836,61.503333,N
+Tolmachevo,55.012622,82.650656,Koltsovo,56.743108,60.802728,N
+Koltsovo,56.743108,60.802728,Kazan,55.606186,49.278728,N
+Koltsovo,56.743108,60.802728,Begishevo,55.34,52.06,N
+Koltsovo,56.743108,60.802728,Nizhnevartovsk,60.949272,76.483617,N
+Koltsovo,56.743108,60.802728,Novyi Urengoy,66.041811,76.313938,N
+Koltsovo,56.743108,60.802728,Tolmachevo,55.012622,82.650656,N
+,,,Domododevo,55.408611,37.906111,N
+Bugulma Airport,54.64,52.8017,Domododevo,55.408611,37.906111,N
+Bugulma Airport,54.64,52.8017,Pulkovo,59.800292,30.262503,N
+Bugulma Airport,54.64,52.8017,Nizhnevartovsk,60.949272,76.483617,N
+Bratsk,56.370556,101.698331,Irkutsk,52.268028,104.388975,N
+Bratsk,56.370556,101.698331,Tolmachevo,55.012622,82.650656,N
+Balandino,55.305836,61.503333,Tolmachevo,55.012622,82.650656,N
+Kadala,52.026317,113.305556,Irkutsk,52.268028,104.388975,N
+Irkutsk,52.268028,104.388975,Bratsk,56.370556,101.698331,N
+Irkutsk,52.268028,104.388975,Kadala,52.026317,113.305556,N
+Irkutsk,52.268028,104.388975,,,,
+Irkutsk,52.268028,104.388975,Bodaibo,57.5137,114.1348,N
+Irkutsk,52.268028,104.388975,Tolmachevo,55.012622,82.650656,N
+Irkutsk,52.268028,104.388975,Ust-Kut,56.85,105.7167,N
+Irkutsk,52.268028,104.388975,Lensk,60.723,114.825,U
+Irkutsk,52.268028,104.388975,Yakutsk,62.09325,129.770672,N
+,,,Irkutsk,52.268028,104.388975,N
+Mirny,62.534689,114.038928,Tolmachevo,55.012622,82.650656,N
+Bodaibo,57.5137,114.1348,Irkutsk,52.268028,104.388975,N
+Tolmachevo,55.012622,82.650656,Bratsk,56.370556,101.698331,N
+Tolmachevo,55.012622,82.650656,Balandino,55.305836,61.503333,N
+Tolmachevo,55.012622,82.650656,Irkutsk,52.268028,104.388975,N
+Ust-Kut,56.85,105.7167,Irkutsk,52.268028,104.388975,N
+Lensk,60.723,114.825,Irkutsk,52.268028,104.388975,N
+Yakutsk,62.09325,129.770672,Irkutsk,52.268028,104.388975,N
+Coronel Fap Alfredo Mendivil Duarte,-13.154819,-74.204417,Jorge Chavez Intl,-12.021889,-77.114319,U
+Teniente Alejandro Velasco Astete Intl,-13.535722,-71.938781,Jorge Chavez Intl,-12.021889,-77.114319,U
+Teniente Alejandro Velasco Astete Intl,-13.535722,-71.938781,Padre Aldamiz,-12.613611,-69.228611,U
+Alferez Fap David Figueroa Fernandini Airport,-9.878811,-76.204797,Jorge Chavez Intl,-12.021889,-77.114319,U
+Coronel Francisco Secada Vignetta Intl,-3.784739,-73.308806,Cap Fap David Abenzur Rengifo Intl,-8.377939,-74.574297,U
+Coronel Francisco Secada Vignetta Intl,-3.784739,-73.308806,Cadete Guillermo Del Castillo Paredes,-6.508742,-76.373247,U
+Jorge Chavez Intl,-12.021889,-77.114319,Coronel Fap Alfredo Mendivil Duarte,-13.154819,-74.204417,U
+Jorge Chavez Intl,-12.021889,-77.114319,Teniente Alejandro Velasco Astete Intl,-13.535722,-71.938781,U
+Jorge Chavez Intl,-12.021889,-77.114319,Alferez Fap David Figueroa Fernandini Airport,-9.878811,-76.204797,U
+Jorge Chavez Intl,-12.021889,-77.114319,Cap Fap David Abenzur Rengifo Intl,-8.377939,-74.574297,U
+Jorge Chavez Intl,-12.021889,-77.114319,Cadete Guillermo Del Castillo Paredes,-6.508742,-76.373247,U
+Cap Fap David Abenzur Rengifo Intl,-8.377939,-74.574297,Coronel Francisco Secada Vignetta Intl,-3.784739,-73.308806,U
+Cap Fap David Abenzur Rengifo Intl,-8.377939,-74.574297,Jorge Chavez Intl,-12.021889,-77.114319,U
+Cap Fap David Abenzur Rengifo Intl,-8.377939,-74.574297,Cadete Guillermo Del Castillo Paredes,-6.508742,-76.373247,U
+Padre Aldamiz,-12.613611,-69.228611,Teniente Alejandro Velasco Astete Intl,-13.535722,-71.938781,U
+Cadete Guillermo Del Castillo Paredes,-6.508742,-76.373247,Coronel Francisco Secada Vignetta Intl,-3.784739,-73.308806,U
+Cadete Guillermo Del Castillo Paredes,-6.508742,-76.373247,Jorge Chavez Intl,-12.021889,-77.114319,U
+Cadete Guillermo Del Castillo Paredes,-6.508742,-76.373247,Cap Fap David Abenzur Rengifo Intl,-8.377939,-74.574297,U
+Abidjan Felix Houphouet Boigny Intl,5.261386,-3.926294,Bobo Dioulasso,11.160056,-4.330969,N
+Abidjan Felix Houphouet Boigny Intl,5.261386,-3.926294,Ouagadougou,12.353194,-1.512417,N
+Kotoka Intl,5.605186,-0.166786,Ouagadougou,12.353194,-1.512417,N
+Senou,12.533544,-7.949944,Abidjan Felix Houphouet Boigny Intl,5.261386,-3.926294,N
+Senou,12.533544,-7.949944,Leopold Sedar Senghor Intl,14.739708,-17.490225,N
+Senou,12.533544,-7.949944,Ouagadougou,12.353194,-1.512417,N
+Bobo Dioulasso,11.160056,-4.330969,Abidjan Felix Houphouet Boigny Intl,5.261386,-3.926294,N
+Bobo Dioulasso,11.160056,-4.330969,Ouagadougou,12.353194,-1.512417,N
+Cadjehoun,6.357228,2.384353,Gnassingbe Eyadema Intl,6.165611,1.254511,N
+Cadjehoun,6.357228,2.384353,Ouagadougou,12.353194,-1.512417,N
+Leopold Sedar Senghor Intl,14.739708,-17.490225,Senou,12.533544,-7.949944,N
+Leopold Sedar Senghor Intl,14.739708,-17.490225,Ouagadougou,12.353194,-1.512417,N
+Gnassingbe Eyadema Intl,6.165611,1.254511,Ouagadougou,12.353194,-1.512417,N
+Diori Hamani,13.481547,2.183614,Ouagadougou,12.353194,-1.512417,N
+Ouagadougou,12.353194,-1.512417,Abidjan Felix Houphouet Boigny Intl,5.261386,-3.926294,N
+Ouagadougou,12.353194,-1.512417,Kotoka Intl,5.605186,-0.166786,N
+Ouagadougou,12.353194,-1.512417,Senou,12.533544,-7.949944,N
+Ouagadougou,12.353194,-1.512417,Bobo Dioulasso,11.160056,-4.330969,N
+Ouagadougou,12.353194,-1.512417,Cadjehoun,6.357228,2.384353,N
+Ouagadougou,12.353194,-1.512417,Leopold Sedar Senghor Intl,14.739708,-17.490225,N
+Ouagadougou,12.353194,-1.512417,Gnassingbe Eyadema Intl,6.165611,1.254511,N
+Ouagadougou,12.353194,-1.512417,Diori Hamani,13.481547,2.183614,N
+Eldorado Intl,4.701594,-74.146947,Jose Joaquin De Olmedo Intl,-2.157419,-79.883558,U
+Eldorado Intl,4.701594,-74.146947,Mariscal Sucre Intl,-0.141144,-78.488214,U
+Alfonso Bonilla Aragon Intl,3.543222,-76.381583,Jose Joaquin De Olmedo Intl,-2.157419,-79.883558,U
+Jose Joaquin De Olmedo Intl,-2.157419,-79.883558,Eldorado Intl,4.701594,-74.146947,U
+Jose Joaquin De Olmedo Intl,-2.157419,-79.883558,Alfonso Bonilla Aragon Intl,3.543222,-76.381583,U
+Jose Joaquin De Olmedo Intl,-2.157419,-79.883558,San Cristóbal Airport,-0.910206,-89.61745,U
+Jose Joaquin De Olmedo Intl,-2.157419,-79.883558,Mariscal Sucre Intl,-0.141144,-78.488214,U
+Francisco De Orellana,-0.462886,-76.986842,Mariscal Sucre Intl,-0.141144,-78.488214,U
+San Cristóbal Airport,-0.910206,-89.61745,Jose Joaquin De Olmedo Intl,-2.157419,-79.883558,U
+Mariscal Sucre Intl,-0.141144,-78.488214,Eldorado Intl,4.701594,-74.146947,U
+Mariscal Sucre Intl,-0.141144,-78.488214,Jose Joaquin De Olmedo Intl,-2.157419,-79.883558,U
+Mariscal Sucre Intl,-0.141144,-78.488214,Francisco De Orellana,-0.462886,-76.986842,U
+Casale,40.657633,17.947033,Zurich,47.464722,8.549167,E
+Merignac,44.828335,-0.715556,Zurich,47.464722,8.549167,E
+Bristol,51.382669,-2.719089,Zurich,47.464722,8.549167,E
+Geneve Cointrin,46.238064,6.10895,Gran Canaria,27.931886,-15.386586,E
+Larnaca,34.875117,33.62485,Zurich,47.464722,8.549167,E
+Gran Canaria,27.931886,-15.386586,Zurich,47.464722,8.549167,E
+Marsa Alam Intl,25.557111,34.583711,Zurich,47.464722,8.549167,E
+Tenerife Sur,28.044475,-16.572489,Geneve Cointrin,46.238064,6.10895,E
+Zurich,47.464722,8.549167,Casale,40.657633,17.947033,E
+Zurich,47.464722,8.549167,Merignac,44.828335,-0.715556,E
+Zurich,47.464722,8.549167,Bristol,51.382669,-2.719089,E
+Zurich,47.464722,8.549167,Larnaca,34.875117,33.62485,E
+Zurich,47.464722,8.549167,Gran Canaria,27.931886,-15.386586,E
+Zurich,47.464722,8.549167,Marsa Alam Intl,25.557111,34.583711,U
+Arvidsjaur,65.590278,19.281944,Lycksele,64.548322,18.716219,E
+Arlanda,59.651944,17.918611,Gallivare,67.132408,20.814636,E
+Arlanda,59.651944,17.918611,Halmstad,56.691128,12.820211,E
+Arlanda,59.651944,17.918611,Jonkoping,57.757594,14.068731,E
+Arlanda,59.651944,17.918611,Kramfors Solleftea,63.048597,17.768856,E
+Arlanda,59.651944,17.918611,Karlstad Airport,59.4447,13.3374,E
+Arlanda,59.651944,17.918611,Lycksele,64.548322,18.716219,E
+Arlanda,59.651944,17.918611,Mariehamn,60.122203,19.898156,E
+Arlanda,59.651944,17.918611,Ornskoldsvik,63.408339,18.990039,E
+Arlanda,59.651944,17.918611,Pori,61.461686,21.799983,E
+Arlanda,59.651944,17.918611,Torp,59.186703,10.258628,E
+Arlanda,59.651944,17.918611,Visby,57.662797,18.346211,E
+Arlanda,59.651944,17.918611,Vilhelmina,64.579083,16.833575,E
+Arlanda,59.651944,17.918611,Kronoberg,56.929144,14.727994,E
+Gallivare,67.132408,20.814636,Arlanda,59.651944,17.918611,E
+Gallivare,67.132408,20.814636,Kramfors Solleftea,63.048597,17.768856,E
+Halmstad,56.691128,12.820211,Arlanda,59.651944,17.918611,E
+Halmstad,56.691128,12.820211,Jonkoping,57.757594,14.068731,E
+Halmstad,56.691128,12.820211,Kronoberg,56.929144,14.727994,E
+Hemavan Airport,65.806111,15.082778,Vilhelmina,64.579083,16.833575,E
+Jonkoping,57.757594,14.068731,Arlanda,59.651944,17.918611,E
+Jonkoping,57.757594,14.068731,Halmstad,56.691128,12.820211,E
+Kruunupyy,63.721172,23.143131,Pori,61.461686,21.799983,E
+Kramfors Solleftea,63.048597,17.768856,Arlanda,59.651944,17.918611,E
+Kramfors Solleftea,63.048597,17.768856,Gallivare,67.132408,20.814636,E
+Karlstad Airport,59.4447,13.3374,Arlanda,59.651944,17.918611,E
+Lycksele,64.548322,18.716219,Arvidsjaur,65.590278,19.281944,E
+Lycksele,64.548322,18.716219,Arlanda,59.651944,17.918611,E
+Mariehamn,60.122203,19.898156,Arlanda,59.651944,17.918611,E
+Mariehamn,60.122203,19.898156,Turku,60.514142,22.262808,E
+Ornskoldsvik,63.408339,18.990039,Arlanda,59.651944,17.918611,E
+Gardermoen,60.193917,11.100361,Kronoberg,56.929144,14.727994,E
+Pori,61.461686,21.799983,Arlanda,59.651944,17.918611,E
+Pori,61.461686,21.799983,Kruunupyy,63.721172,23.143131,E
+Turku,60.514142,22.262808,Mariehamn,60.122203,19.898156,E
+Torp,59.186703,10.258628,Arlanda,59.651944,17.918611,E
+Visby,57.662797,18.346211,Arlanda,59.651944,17.918611,E
+Vilhelmina,64.579083,16.833575,Arlanda,59.651944,17.918611,E
+Vilhelmina,64.579083,16.833575,Hemavan Airport,65.806111,15.082778,E
+Kronoberg,56.929144,14.727994,Arlanda,59.651944,17.918611,E
+Kronoberg,56.929144,14.727994,Gardermoen,60.193917,11.100361,E
+Kodiak,57.749967,-152.493856,Amook Bay Seaplane Base,57.471389,-153.815278,A
+Kodiak,57.749967,-152.493856,Kitoi Bay Seaplane Base,58.190833,-152.370556,A
+Kodiak,57.749967,-152.493856,Larsen Bay Airport,57.535,-153.976667,A
+Kodiak,57.749967,-152.493856,Ouzinkie Airport,57.922876,-152.500511,A
+Kodiak,57.749967,-152.493856,Old Harbor Airport,57.218056,-153.269722,A
+Amook Bay Seaplane Base,57.471389,-153.815278,Zachar Bay Seaplane Base,57.55,-153.75,A
+Kitoi Bay Seaplane Base,58.190833,-152.370556,Seal Bay Seaplane Base,58.166667,-152.5,A
+Larsen Bay Airport,57.535,-153.976667,Karuluk Airport,57.566944,-154.450278,A
+Ouzinkie Airport,57.922876,-152.500511,Port Lions Airport,57.885278,-152.846111,A
+Seal Bay Seaplane Base,58.166667,-152.5,Port Williams Seaplane Base,58.49,-152.582222,A
+Basco Airport,20.451322,121.979883,Ninoy Aquino Intl,14.508647,121.019581,N
+Butuan,8.951322,125.477972,Ninoy Aquino Intl,14.508647,121.019581,N
+Cotabato,7.165242,124.209619,Ninoy Aquino Intl,14.508647,121.019581,N
+Cagayan De Oro,8.415619,124.611219,Ninoy Aquino Intl,14.508647,121.019581,N
+Catarman National Airport,12.502417,124.635778,Ninoy Aquino Intl,14.508647,121.019581,N
+Dumaguete,9.333714,123.300472,Ninoy Aquino Intl,14.508647,121.019581,N
+Dubai Al Maktoum,24.55056,55.103174,Ninoy Aquino Intl,14.508647,121.019581,N
+General Santos International Airport,6.106439,125.2353,Ninoy Aquino Intl,14.508647,121.019581,N
+Kalibo,11.679431,122.376294,Ninoy Aquino Intl,14.508647,121.019581,N
+Legazpi,13.157064,123.746247,Ninoy Aquino Intl,14.508647,121.019581,N
+Ninoy Aquino Intl,14.508647,121.019581,Basco Airport,20.451322,121.979883,N
+Ninoy Aquino Intl,14.508647,121.019581,Butuan,8.951322,125.477972,N
+Ninoy Aquino Intl,14.508647,121.019581,Cotabato,7.165242,124.209619,N
+Ninoy Aquino Intl,14.508647,121.019581,Cagayan De Oro,8.415619,124.611219,N
+Ninoy Aquino Intl,14.508647,121.019581,Catarman National Airport,12.502417,124.635778,N
+Ninoy Aquino Intl,14.508647,121.019581,Dumaguete,9.333714,123.300472,N
+Ninoy Aquino Intl,14.508647,121.019581,Dubai Al Maktoum,24.55056,55.103174,U
+Ninoy Aquino Intl,14.508647,121.019581,General Santos International Airport,6.106439,125.2353,N
+Ninoy Aquino Intl,14.508647,121.019581,Kalibo,11.679431,122.376294,N
+Ninoy Aquino Intl,14.508647,121.019581,Legazpi,13.157064,123.746247,N
+Ninoy Aquino Intl,14.508647,121.019581,Godofredo P,11.9214999,121.953,N
+Ninoy Aquino Intl,14.508647,121.019581,Ozamis,8.178508,123.841731,N
+Ninoy Aquino Intl,14.508647,121.019581,Puerto Princesa,9.742119,118.758731,N
+Ninoy Aquino Intl,14.508647,121.019581,Roxas Airport,11.597669,122.751669,N
+Ninoy Aquino Intl,14.508647,121.019581,Surigao Airport,9.757567,125.479328,N
+Ninoy Aquino Intl,14.508647,121.019581,Tuguegarao Airport,17.638311,121.730614,N
+Ninoy Aquino Intl,14.508647,121.019581,Zamboanga Intl,6.922419,122.059633,N
+Godofredo P,11.9214999,121.953,Ninoy Aquino Intl,14.508647,121.019581,N
+Ozamis,8.178508,123.841731,Ninoy Aquino Intl,14.508647,121.019581,N
+Puerto Princesa,9.742119,118.758731,Ninoy Aquino Intl,14.508647,121.019581,N
+Roxas Airport,11.597669,122.751669,Ninoy Aquino Intl,14.508647,121.019581,N
+Surigao Airport,9.757567,125.479328,Ninoy Aquino Intl,14.508647,121.019581,N
+Tuguegarao Airport,17.638311,121.730614,Ninoy Aquino Intl,14.508647,121.019581,N
+Zamboanga Intl,6.922419,122.059633,Ninoy Aquino Intl,14.508647,121.019581,N
+Araguaina Airport,-7.228333,-48.240833,Palmas,-10.241667,-48.35278,S
+Barreiras Airport,-12.083333,-45,Presidente Juscelino Kubitschek,-15.8711,-47.918625,S
+Barreiras Airport,-12.083333,-45,Deputado Luis Eduardo Magalhaes,-12.910994,-38.331044,S
+Presidente Juscelino Kubitschek,-15.8711,-47.918625,Barreiras Airport,-12.083333,-45,S
+Presidente Juscelino Kubitschek,-15.8711,-47.918625,Sinop Airport,42.0158,35.0664,E
+Presidente Juscelino Kubitschek,-15.8711,-47.918625,Leite Lopes,-21.134167,-47.774189,S
+Cascavel,-25.000339,-53.500764,Guarulhos Gov Andre Franco Montouro,-23.432075,-46.469511,S
+Marechal Rondon,-15.652931,-56.116719,Santa Genoveva,-16.632033,-49.220686,S
+Marechal Rondon,-15.652931,-56.116719,Sinop Airport,42.0158,35.0664,E
+Campo Grande,-20.468667,-54.6725,Dourados Airport,-22.220833,-54.805833,S
+Dourados Airport,-22.220833,-54.805833,Campo Grande,-20.468667,-54.6725,S
+Dourados Airport,-22.220833,-54.805833,Guarulhos Gov Andre Franco Montouro,-23.432075,-46.469511,S
+Galeao Antonio Carlos Jobim,-22.808903,-43.243647,Leite Lopes,-21.134167,-47.774189,S
+Guarulhos Gov Andre Franco Montouro,-23.432075,-46.469511,Cascavel,-25.000339,-53.500764,S
+Guarulhos Gov Andre Franco Montouro,-23.432075,-46.469511,Dourados Airport,-22.220833,-54.805833,S
+Guarulhos Gov Andre Franco Montouro,-23.432075,-46.469511,Leite Lopes,-21.134167,-47.774189,S
+Guarulhos Gov Andre Franco Montouro,-23.432075,-46.469511,Uberaba,-19.765,-47.964778,S
+Guarulhos Gov Andre Franco Montouro,-23.432075,-46.469511,Ten Cel Av Cesar Bombonato,-18.882844,-48.225594,S
+Guarulhos Gov Andre Franco Montouro,-23.432075,-46.469511,Vitória da Conquista Airport,-14.862761,-40.863106,S
+Santa Genoveva,-16.632033,-49.220686,Marechal Rondon,-15.652931,-56.116719,S
+Santa Genoveva,-16.632033,-49.220686,Palmas,-10.241667,-48.35278,S
+Santa Genoveva,-16.632033,-49.220686,Leite Lopes,-21.134167,-47.774189,S
+Santa Genoveva,-16.632033,-49.220686,Ten Cel Av Cesar Bombonato,-18.882844,-48.225594,S
+Sinop Airport,42.0158,35.0664,Presidente Juscelino Kubitschek,-15.8711,-47.918625,S
+Sinop Airport,42.0158,35.0664,Marechal Rondon,-15.652931,-56.116719,S
+Pampulha Carlos Drummond De Andrade,-19.851181,-43.950628,Leite Lopes,-21.134167,-47.774189,S
+Palmas,-10.241667,-48.35278,Araguaina Airport,-7.228333,-48.240833,S
+Palmas,-10.241667,-48.35278,Santa Genoveva,-16.632033,-49.220686,S
+Leite Lopes,-21.134167,-47.774189,Presidente Juscelino Kubitschek,-15.8711,-47.918625,S
+Leite Lopes,-21.134167,-47.774189,Galeao Antonio Carlos Jobim,-22.808903,-43.243647,S
+Leite Lopes,-21.134167,-47.774189,Guarulhos Gov Andre Franco Montouro,-23.432075,-46.469511,S
+Leite Lopes,-21.134167,-47.774189,Santa Genoveva,-16.632033,-49.220686,S
+Leite Lopes,-21.134167,-47.774189,Pampulha Carlos Drummond De Andrade,-19.851181,-43.950628,S
+Leite Lopes,-21.134167,-47.774189,Sao Jose Do Rio Preto,-20.816567,-49.406511,S
+Leite Lopes,-21.134167,-47.774189,Ten Cel Av Cesar Bombonato,-18.882844,-48.225594,S
+Sao Jose Do Rio Preto,-20.816567,-49.406511,Leite Lopes,-21.134167,-47.774189,S
+Deputado Luis Eduardo Magalhaes,-12.910994,-38.331044,Barreiras Airport,-12.083333,-45,S
+Deputado Luis Eduardo Magalhaes,-12.910994,-38.331044,Vitória da Conquista Airport,-14.862761,-40.863106,S
+Uberaba,-19.765,-47.964778,Guarulhos Gov Andre Franco Montouro,-23.432075,-46.469511,S
+Uberaba,-19.765,-47.964778,Ten Cel Av Cesar Bombonato,-18.882844,-48.225594,S
+Ten Cel Av Cesar Bombonato,-18.882844,-48.225594,Guarulhos Gov Andre Franco Montouro,-23.432075,-46.469511,S
+Ten Cel Av Cesar Bombonato,-18.882844,-48.225594,Santa Genoveva,-16.632033,-49.220686,S
+Ten Cel Av Cesar Bombonato,-18.882844,-48.225594,Leite Lopes,-21.134167,-47.774189,S
+Ten Cel Av Cesar Bombonato,-18.882844,-48.225594,Uberaba,-19.765,-47.964778,S
+Vitória da Conquista Airport,-14.862761,-40.863106,Guarulhos Gov Andre Franco Montouro,-23.432075,-46.469511,S
+Vitória da Conquista Airport,-14.862761,-40.863106,Deputado Luis Eduardo Magalhaes,-12.910994,-38.331044,S
+Southeast Iowa Regional Airport,40.7832,-91.1255,Chicago Ohare Intl,41.978603,-87.904842,A
+Southeast Iowa Regional Airport,40.7832,-91.1255,Lambert St Louis Intl,38.748697,-90.370028,A
+Decatur,39.834564,-88.865689,Chicago Ohare Intl,41.978603,-87.904842,A
+Decatur,39.834564,-88.865689,Lambert St Louis Intl,38.748697,-90.370028,A
+Jonesboro Muni,35.831708,-90.646417,Lambert St Louis Intl,38.748697,-90.370028,A
+Chicago Ohare Intl,41.978603,-87.904842,Southeast Iowa Regional Airport,40.7832,-91.1255,A
+Chicago Ohare Intl,41.978603,-87.904842,Decatur,39.834564,-88.865689,A
+Lambert St Louis Intl,38.748697,-90.370028,Southeast Iowa Regional Airport,40.7832,-91.1255,A
+Lambert St Louis Intl,38.748697,-90.370028,Decatur,39.834564,-88.865689,A
+Lambert St Louis Intl,38.748697,-90.370028,Jonesboro Muni,35.831708,-90.646417,A
+Craig Seaplane Base,55.478889,-133.147778,Hollis Seaplane Base,55.481667,-132.646111,A
+Craig Seaplane Base,55.478889,-133.147778,Ketchikan Intl,55.355556,-131.71375,A
+Hollis Seaplane Base,55.481667,-132.646111,Craig Seaplane Base,55.478889,-133.147778,A
+Hollis Seaplane Base,55.481667,-132.646111,Thorne Bay Seaplane Base,55.688056,-132.536667,A
+Hollis Seaplane Base,55.481667,-132.646111,Ketchikan Intl,55.355556,-131.71375,A
