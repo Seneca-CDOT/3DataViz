@@ -110,13 +110,13 @@ Application.DataProcessor.BaseParser = (function() {
     };
     Application.Helper.inherit(BaseParser, Application.DataProcessor.BaseStrategy);
 
-    BaseParser.prototype.process = function(data) {
+    BaseParser.prototype.process = function(data, complete) {
 
-        var pData = this.parse(data);
+        var pData = this.parse(data, complete);
         return pData;
     };
 
-    BaseParser.prototype.parse = function(data) {
+    BaseParser.prototype.parse = function(data, complete) {
 
         throw 'Please, define an abstract interface.';
     };
@@ -153,7 +153,7 @@ Application.DataProcessor.TweetParser = (function() {
     };
     Application.Helper.inherit(TweetParser, Application.DataProcessor.BaseParser);
 
-    TweetParser.prototype.parse = function(data) {
+    TweetParser.prototype.parse = function(data, complete) {
 
         var filter = {
             longitude: "geo.coordinates[1]",
@@ -162,7 +162,8 @@ Application.DataProcessor.TweetParser = (function() {
             timestamp: "timestamp_ms",
         };
         var pData = privateMethods.extract.call(this, filter, data);
-        return pData;
+        // return pData;
+        if( typeof complete === "function" ) complete(pData);
     };
 
     var privateMethods = Object.create(TweetParser.prototype);
@@ -200,7 +201,7 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
     };
     Application.Helper.inherit(GoogleTrendsParser, Application.DataProcessor.BaseParser);
 
-    GoogleTrendsParser.prototype.parse = function(data) {
+    GoogleTrendsParser.prototype.parse = function(data, complete) {
 
         var filter = {
             countryname: "",
@@ -213,7 +214,7 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
 
         };
         var pData = privateMethods.extract.call(this, filter, data);
-        return pData;
+        if( typeof complete === "function" ) complete(pData);
 
     };
 
@@ -256,7 +257,7 @@ Application.DataProcessor.SpreadSheetParser = (function() {
     };
     Application.Helper.inherit(SpreadSheetParser, Application.DataProcessor.BaseParser);
 
-    SpreadSheetParser.prototype.parse = function(data) {
+    SpreadSheetParser.prototype.parse = function(data, complete) {
 
         var filter = {
 
@@ -268,8 +269,8 @@ Application.DataProcessor.SpreadSheetParser = (function() {
 
         // TODO: to Dima Yastretsky
         var pData = privateMethods.extractSpreadSheet.call(this,filter, data);
-
-        return pData;
+        // return pData;
+        if( typeof complete === "function" ) complete(pData);
     };
 
     var privateMethods = Object.create(SpreadSheetParser.prototype);
@@ -324,12 +325,16 @@ Application.DataProcessor.CSVParser = (function() {
     };
     Application.Helper.inherit(CSVParser, Application.DataProcessor.BaseParser);
 
-    CSVParser.prototype.parse = function(data) {
+    CSVParser.prototype.parse = function(file, complete) {
 
-        // var pData = null;
-        // return pData;
-        return data;
+        Papa.parse(file, {
+            // worker: true,
+            header: true,
+            complete: function(response){
+                if( typeof complete === "function" ) complete(response);
+            }
+        });
+
     };
-
     return CSVParser;
 })();

@@ -39,21 +39,24 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             visualizationType: this.templatesList
         };
         console.log('tweets', response);
-        var pData = pModule.processData(response, options);
-        this.transform(pData);
+        var that = this;
+        pModule.processData(response, options, function(data){
+            that.transform(data);
+        });
     },
     transform: function(pData) {
         if (Application.userConfig.vizLayer == "") {
             this.add(pData);
 
         } else {
+            var that = this;
             var pModule = Application.DataProcessor.ProcessorModule;
             var options = {
                 visualizationType: Application.userConfig.vizLayer
             };
-            pData = pModule.transformData(pData, options);
-
-            this.add(pData);
+            pModule.transformData(pData, options, function(response){
+                that.add(response);
+            });
         }
     },
     fetch: function() {

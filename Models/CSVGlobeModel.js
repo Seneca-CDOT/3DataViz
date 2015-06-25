@@ -1,6 +1,6 @@
 var Application = Application || {};
 
-Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
+Application.CSVRecord = Application.GeoDataRecord.extend({
 
     defaults: _.extend({}, Application.GeoDataRecord.prototype.defaults, {
 
@@ -11,37 +11,39 @@ Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
 
 });
 
-Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
-    model: Application.SpreadSheetRecord,
+Application.CSVCollection = Application.BaseGlobeCollection.extend({
+    model: Application.CSVRecord,
     initialize: function(config) {
 
-        this.setURL(Application.userConfig.input);
+        this.file = Application.userConfig.files;
         Application.BaseGlobeCollection.prototype.initialize.call(this);
 
     },
     preParse: function() {
 
-        var data = {};
-        Application._vent.trigger('data/parsed', this.getViewConfigs(data));
+        var that = this;
+        Papa.parse(this.file, {
+            preview: 1,
+            header: true,
+            complete: function(response){
+                console.log("Preparse:", response.data);
+                Application._vent.trigger('data/parsed', that.getViewConfigs(response.data));
+            }
+        });
 
     },
-    parse: function(response) {
+    parse: function(file) {
 
         // console.log(response);
         var pModule = Application.DataProcessor.ProcessorModule;
-
+        var that = this;
         var options = {
-
-            dataType: "spreadSheet",
-            visualizationType: this.templatesList
+            dataType: "csv"
         };
 
-        var that = this;
-        pModule.processData(response, options, function(response){
+        pModule.processData(this.file, options, function(response){
             console.log("parse:",response);
-            that.transform(response); 
-            // that.models = data;
-            // Application._vent.trigger('data/ready');
+            that.transform(response.data); 
         });
 
     },
@@ -55,13 +57,11 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         pModule.transformData(data, options, function(response){
             console.log("transform:",response);
             that.models = response;
-            Application._vent.trigger('data/ready');
+            Application._vent.trigger('data/ready'); 
         });
     },
-    setURL: function(key) {
-
-        if (!key) return;
-        this.url = 'https://spreadsheets.google.com/feeds/cells/' + key + '/1/public/basic?alt=json';
+    fetch: function() {
+        this.parse();
     },
     destroy: function() {
        // console.log("Destroy SpreadSheetCollection");
@@ -70,6 +70,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         }
     },
     getViewConfigs: function(data) {
+
         var defaults = {
             vizType: {
                 name: 'vizType',
@@ -77,10 +78,11 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
             },
             vizLayer: {
                 name: 'vizLayer',
-                list: ['points']
+                list: ['graph']
             }
         }
         return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
+
     }
 
 });
