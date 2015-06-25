@@ -126,7 +126,7 @@ Application.GeometryGlobeDecorator = (function() {
 
             var score = privateMethods.checkCountryName(name, countries[i].userData.name);
 
-            if (score < 3) {
+            if (score < 2) {
 
                 return countries[i];
 

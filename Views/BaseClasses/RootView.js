@@ -44,6 +44,7 @@ Application.RootView = Backbone.View.extend({
         this.createCollection();
     },
     visualizeOn: function() {
+        Application._vent.trigger('vizinfocenter/message/off');
         Application._vent.trigger('controlpanel/message/off');
         Application._vent.trigger('controlpanel/message/on','LOADING...');
         this.initGlobeView();
@@ -91,7 +92,8 @@ Application.RootView = Backbone.View.extend({
             case 'csv':
                 {
 
-                    collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
+                    // collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
+                    collectionClasses = ['CSVCollection',];
                     break;
                 }
             case 'spreadSheet':

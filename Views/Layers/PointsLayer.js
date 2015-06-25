@@ -50,6 +50,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     showResults: function() {
 
         console.log("PointsLayer showResults");
+        Application._vent.trigger('controlpanel/message/off');
 
         var results = this.collection[0].models;
         var that = this;

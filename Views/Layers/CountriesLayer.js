@@ -103,8 +103,10 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         // console.log("CountriesLayer showResults");
         Application.BaseGlobeView.prototype.showResults.call(this, results);
-
         var that = this;
+
+        Application._vent.trigger('controlpanel/message/off');
+        
         var results = this.collection[0].models;
 
         if (results.length == 0) {

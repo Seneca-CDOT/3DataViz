@@ -14,7 +14,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     initialize: function(decorators, collections) {
 
         this.container = this.$el[0];
-
+        this.offset = 250;
         this.scene = null;
         this.renderer = null;
         this.camera = null;
@@ -191,18 +191,18 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setClearColor(0x000000);
 
-        var width = this.options.size.width;
+        var width = this.options.size.width - this.offset;
         var height = this.options.size.height;
         this.renderer.setSize(width, height);
 
         this.container.appendChild(this.renderer.domElement);
         this.container.style.position = "absolute";
-        this.container.style.width = this.options.size.width;
+        this.container.style.width = this.options.size.width - this.offset;
         this.container.style.left = this.options.origin.x;
     },
     addCamera: function() {
 
-        var width = this.options.size.width;
+        var width = this.options.size.width - this.offset;
         var height = this.options.size.height;
         this.camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000);
 
@@ -288,9 +288,9 @@ Application.BaseGlobeView = Backbone.View.extend({
     // TODO: move out of this view
     onWindowResize: function() {
 
-        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.aspect = (window.innerWidth - this.offset) / window.innerHeight;
         this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setSize(window.innerWidth - this.offset, window.innerHeight);
     },
 
     // interaction

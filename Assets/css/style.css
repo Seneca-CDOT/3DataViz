@@ -32,6 +32,10 @@ body {
     left: 5%;
 }
 
+#applicationRegion{
+    margin-right: 250px;
+}
+
 #main {
     width: 100%;
     height: 100%;
@@ -42,7 +46,7 @@ body {
     background-color: #1F1F2E;
     top: 0px;
     position: absolute;
-    width: 15%;
+    width: 250px;
     right: 0px;
     height: 100%;
     opacity: 0.9;
@@ -53,14 +57,27 @@ a{
     text-decoration: underline;
 }
 
+#rootGlobe{
+    margin-right: 250px;
+}
 #baseGlobe{
     top: 0;
-    margin-left: -8%;
+    /*margin-left: -250px;*/
 }
 
 /***************************************
  * Elements
  ***************************************/
+
+.btn-primary{
+    background: #56567A;
+    border: 1px solid #56567A;
+}
+.btn-primary:hover{
+    background: #40405C;
+    border: 1px solid #40405C;
+}
+
 #buttons {
     width: 100%;
 }
@@ -99,24 +116,58 @@ a{
     width: 80%;
 }
 
+.btn-file {
+    position: relative;
+    overflow: hidden;
+    width: 80%;
+    margin-top: 10%;
+    box-sizing: border-box;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+#fileName{
+    display: none;
+    margin: 5px 0 0 0;
+    padding-left: 4px;
+    color: #fff;
+}
+#fileName:before{
+    font-family: 'Glyphicons Halflings';
+    content: "\e022";
+}
+
 /***************************************
  * Notification
  ***************************************/
 
 #notificationsBox {
     position: absolute;
-    left: 45%;
+    left: 50%;
     top: 50%;
+    width: 460px;
     margin-left: -230px;
     margin-top: -15px;
     text-align: center;
 }
 .notification {
-    height: 30px;
+    line-height: 30px;
     border-radius: 4px;
     color: #fff;
     width: 460px;
-    margin-left: -100px;
+    margin-left: -125px;
     background-color: rgba(75, 75, 115, 0.7);
     border: 1px solid #4B4B73;
 
@@ -124,6 +175,7 @@ a{
     display: -webkit-flex;
     display: flex;
     -ms-flex-align: center;
+    -webkit-justify-content: center;
     -webkit-align-items: center;
     -webkit-box-align: center;
     justify-content: center;
@@ -136,8 +188,8 @@ a{
 #instruction{
 
     position: relative;
-    width: 85%;
     height: 100%;
+    margin-right: 250px;
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
@@ -161,6 +213,7 @@ a{
 #instruction .inner{
     position: relative;
     width: 950px;
+    margin: 0 auto;
     background-color: rgba(31, 31, 46, 0.9);
     border-radius: 10px;
     padding: 40px 40px 10px;
