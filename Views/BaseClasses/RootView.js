@@ -12,6 +12,7 @@ Application.RootView = Backbone.View.extend({
 
         this.controlPanel = new Application.ControlPanelRootView();
         this.notifBox = new Application.NotificationsCenter();
+        this.infocenter = new Application.VizInfoCenter();
         this.rootView = null;
         this.collections = [];
 
@@ -35,6 +36,7 @@ Application.RootView = Backbone.View.extend({
 
         this.$el.append(this.controlPanel.render().$el);
         this.$el.append(this.notifBox.render().$el);
+        this.$el.append(this.infocenter.render().$el);
         return this;
     },
     submitOn: function() {
@@ -42,6 +44,7 @@ Application.RootView = Backbone.View.extend({
         this.createCollection();
     },
     visualizeOn: function() {
+        Application._vent.trigger('vizinfocenter/message/off');
         Application._vent.trigger('controlpanel/message/off');
         Application._vent.trigger('controlpanel/message/on','LOADING...');
         this.initGlobeView();

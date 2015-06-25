@@ -206,7 +206,7 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
         var filter = {
             countryname: "",
             countrycode: "c[0].v",
-            percent: "c[1].v",
+            value: "c[1].v",
             longitude: "",
             latitude: "",
             timestamp: "",
@@ -259,13 +259,23 @@ Application.DataProcessor.SpreadSheetParser = (function() {
 
     SpreadSheetParser.prototype.parse = function(data, complete) {
 
+        // var filter = {
+
+        //     name: "",
+        //     longitude: "",
+        //     latitude: ""
+
+        // };
+
+
         var filter = {
 
-            name: "",
-            longitude: "",
-            latitude: ""
+            country: "",
+            value: ""
 
         };
+
+
 
         // TODO: to Dima Yastretsky
         var pData = privateMethods.extractSpreadSheet.call(this,filter, data);

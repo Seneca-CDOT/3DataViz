@@ -27,6 +27,35 @@ Application.NotificationsCenter = Backbone.View.extend({
     }
 });
 
+Application.VizInfoCenter = Backbone.View.extend({
+    tagName: 'div',
+    id: 'vizInfoCenter',
+    initialize: function() {
+        Application._vent.on('vizinfocenter/message/on', this.showMessage, this);
+        Application._vent.on('vizinfocenter/message/off', this.removeMessage, this);
+       // Application._vent.on('data/ready', this.removeMessage, this);
+        this.$el.hide();
+    },
+    render: function() {
+
+        return this;
+    },
+    showMessage: function(message) {
+        this.$el.fadeIn();
+        this.$el.empty();
+        this.$el.append(message);
+    },
+    removeMessage: function() {
+        this.$el.empty();
+        this.$el.hide();
+    },
+    destroy: function() {
+
+        Application._vent.unbind('vizinfocenter/message/on');
+        Application._vent.unbind('vizinfocenter/message/off');
+    }
+});
+
 Application.ControlPanelRootView = Backbone.View.extend({
     tagName: 'div',
     id: 'panel',
@@ -464,7 +493,8 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
         this.urlfield = new Application.InputField(viewConfig);
         this.urlfield.$el.attr('class', 'form-control userInput');
         this.urlfield.$el.attr('id', 'key');
-        this.urlfield.$el.val("13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg");
+        // this.urlfield.$el.val("13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg");
+        this.urlfield.$el.val("1HFYTBC2iKabiidtP2U148PKvMW5tRUvxTAzoJ7w3vNo");
         this.urlfield.$el.on('mousedown', this.urlFieldAction.bind(this));
         this.labelForKey = $('<label for="key" class="label">ENTER A KEY</label>');
 
@@ -600,7 +630,8 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
     },
     parseKey: function(keyword) {
 
-        keyword = keyword.trim().replace(/ /g, ',');
+        // keyword = keyword.trim().replace(/ /g, ',');
+        keyword = keyword.trim();
         return keyword;
 
     },

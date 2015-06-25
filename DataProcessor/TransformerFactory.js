@@ -124,8 +124,8 @@ Application.DataProcessor.CountriesVisualTransformer = (function(){
 
           var obj = {};
           obj.countrycode = item.countrycode || "";
-          obj.countryname = item.countryname || "";
-          obj.percent = item.percent || 0;
+          obj.countryname = item.country || "";
+          obj.value = parseFloat( item.value.replace(/\,/g,'') || 0);
           transData.push(obj);
 
          });

@@ -48,6 +48,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
             dataType: "googleTrends",
             visualizationType: this.templatesList
         };
+
         pModule.processData(response.table.rows, options, function(response){
             console.log("parse:",response);
             that.transform(response);
