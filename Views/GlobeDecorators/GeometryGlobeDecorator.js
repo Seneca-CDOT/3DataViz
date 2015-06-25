@@ -118,22 +118,49 @@ Application.GeometryGlobeDecorator = (function() {
     };
 
     // country selection functionality
-    privateMethods.findCountryMeshByName = function(name) {
+    privateMethods.findCountryMeshByName = function(nameFromUser) {
 
         var countries = this.countries;
 
+        var nameFromUser = Application.Helper.breakStringToArray(nameFromUser);
+
         for (var i = 0; i < countries.length; i++) {
 
-            var score = privateMethods.checkCountryName(name, countries[i].userData.name);
+            var n = countries[i].userData.name;
+            var k = 0;
+            var weight = 0;
+            var match = 0;
 
-            if (score < 2) {
+            var nameFromSystem = Application.Helper.breakStringToArray(countries[i].userData.name);
+
+            for (k; k < nameFromUser.length; k++) {
+
+                for (var j = 0; j < nameFromSystem.length; j++) {
+
+                    var score = privateMethods.checkCountryName(nameFromUser[k], nameFromSystem[j]);
+
+                    weight += (nameFromUser[k].length - score) / nameFromUser[k].length;
+
+                    if (weight > 0.7) {
+                        match++;
+                    }
+                }
+
+                if (match > 2) {
+                    console.log(nameFromSystem, match);
+                    return countries[i];
+                }
+            }
+
+            if (weight / k > 0.7) {
 
                 return countries[i];
 
             }
 
         }
-                console.log('something wrong with the name: ' + name);
+
+        console.log('something wrong with the name: ' + nameFromUser);
     };
 
     privateMethods.findCountryMeshByCode = function(code) {
@@ -149,6 +176,7 @@ Application.GeometryGlobeDecorator = (function() {
     };
 
     privateMethods.checkCountryName = function(UserDataname, InitialDataName) {
+
 
         var s = UserDataname;
         var t = InitialDataName;

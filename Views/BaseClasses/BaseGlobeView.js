@@ -244,7 +244,7 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         // var ambLight = new THREE.AmbientLight(0xFFFFFF);
         var dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.5);
-        dirLight.position.set(-100, 100, 100);
+        dirLight.position.set(-1000, 1000, 1000);
         dirLight.target = this.globe;
 
         // this.scene.add(ambLight);

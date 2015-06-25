@@ -125,7 +125,7 @@ Application.DataProcessor.CountriesVisualTransformer = (function(){
           var obj = {};
           obj.countrycode = item.countrycode || "";
           obj.countryname = item.country || "";
-          obj.value = parseFloat( item.value.replace(/\,/g,'') || 0);
+          obj.value = Application.Helper.getNumber(item.value || 0);
           transData.push(obj);
 
          });
