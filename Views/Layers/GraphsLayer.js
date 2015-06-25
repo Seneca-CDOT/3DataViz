@@ -20,9 +20,10 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         // Arrays for controlling the scene actors
         this.airports = [];
+        this.airportMeshes = [];
         this.routes = [];
         this.createdAirports = [];
-        this.movingGuys = [];
+        this.createdAirplaness = [];
         this.paths = []
 
         // this is where I set up all the objects. Later on, I just instantiate them
@@ -30,7 +31,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         // performance wise
 
         this.airportGeometry = new THREE.SphereGeometry(this.cylinderRadius);
-        this.blueMaterial = new THREE.MeshBasicMaterial({
+        this.airportMaterial = new THREE.MeshPhongMaterial({
             color: 0xadedff
         });
 
@@ -62,22 +63,22 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         // second, we iterate through the airplanes list
         // then we check to see if the path is finished or not
         // then black magic and things move.
-        if (typeof(this.movingGuys) !== "undefined" && typeof(this.paths) !== "undefined") {
+        if (typeof(this.createdAirplaness) !== "undefined" && typeof(this.paths) !== "undefined") {
 
-            for (var i = 0; i < this.movingGuys.length; i++) {
+            for (var i = 0; i < this.createdAirplaness.length; i++) {
 
-                if (this.movingGuys[i][2] >= 1) {
+                if (this.createdAirplaness[i][2] >= 1) {
 
-                    this.movingGuys[i][2] = 0;
+                    this.createdAirplaness[i][2] = 0;
                 } else {
 
-                    this.movingGuys[i][2] += this.movingGuys[i][1]
+                    this.createdAirplaness[i][2] += this.createdAirplaness[i][1]
                 }
 
                 (this.t >= 1) ? this.t = 0: this.t += 0.005;
 
-                pt = this.paths[i].getPoint(this.movingGuys[i][2]);
-                this.movingGuys[i][0].position.set(pt.x, pt.y, pt.z);
+                pt = this.paths[i].getPoint(this.createdAirplaness[i][2]);
+                this.createdAirplaness[i][0].position.set(pt.x, pt.y, pt.z);
             }
         }
 
@@ -90,6 +91,41 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         console.log("GraphsLayer showResults");
         Application._vent.trigger('controlpanel/message/off');
         this.addPaths();
+
+    },
+    clickOn: function(event) {
+
+        var x = event.clientX;
+        var y = event.clientY;
+
+        x -= this.container.offsetLeft;
+        y -= this.container.offsetTop;
+
+        var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
+        vector.unproject(this.camera);
+
+        var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
+        var intersects = ray.intersectObjects(this.airportMeshes);
+
+        Application._vent.trigger('vizinfocenter/message/off');
+
+        if (intersects[0]) {
+            
+            $.each(this.createdAirports, function(index, airport) {
+                if (intersects[0].object == airport.mesh) {
+                    Application._vent.trigger('vizinfocenter/message/on', airport.label);
+                }
+            });
+
+            var destination = intersects[0].point;
+            destination.setLength(this.controls.getRadius());
+            this.cameraGoTo(destination);
+
+        }else{
+            
+            Application.BaseGlobeView.prototype.clickOn.call(this, event);
+
+        }
 
     },
     // core function of the application. THIS IS WHERE THE MAGIC HAPPENS
@@ -105,107 +141,49 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         var that = this;
         var timeoutref = null;
 
+        // if(dataRecord == null || dataRecord.length == 0){
+        //     Application._vent.trigger('vizinfocenter/message/on', "There is no data can visualize.");
+        // }
+
         $.each(results, function(index, dataRecord) {
 
             time = time + 10;
-
             console.log(dataRecord);
 
             var timeoutref = setTimeout(function() {
-                // get a random route)
-                // randomIndex = that.getRandomInt(1, 65000);
-                // randomIndex = that.getRandomInt(1, 65000);
-                // if (routes[randomIndex] != null) {
 
-                    // get destination and source airports for the chosen route
-                    // srcAirport = that.getAirport(dataRecord.sourceAirport);
-                    // destAirport = that.getAirport(dataRecord.destinationAirport);
+                var airportFrom = {
+                    longitude: dataRecord.from.longitude || null,
+                    latitude: dataRecord.from.latitude || null,
+                    label: dataRecord.fromLabel || null,
+                }
 
-                    //sets up the vector points for the airports
-                    // var vT = srcAirport.position3D;
-                    // var vF = destAirport.position3D;
-                    var vT = Application.Helper.geoToxyz( dataRecord.from.longitude , dataRecord.from.latitude , 51);
-                    var vF = Application.Helper.geoToxyz( dataRecord.to.longitude , dataRecord.to.latitude , 51);
+                var airportTo = {
+                    longitude: dataRecord.to.longitude || null,
+                    latitude: dataRecord.to.latitude || null,
+                    label: dataRecord.toLabel || null,
+                }
 
-                    // let's check if the airport object has been instantiated already
-                    // if (!that.airportCreated(srcAirport.ID)) {
-                        that.addAirport( dataRecord.from.longitude, dataRecord.from.latitude);
-                    // }
-                    // if (!that.airportCreated(destAirport.ID)) {
-                    // 
-                        that.addAirport( dataRecord.to.longitude, dataRecord.to.latitude);
-                    // }
+                that.createAirportMesh(airportFrom);
+                that.createAirportMesh(airportTo);
+                
+                var vF = Application.Helper.geoToxyz( airportFrom.longitude , airportFrom.latitude , 51);
+                var vT = Application.Helper.geoToxyz( airportTo.longitude , airportTo.latitude , 51);
+                var dist = vF.distanceTo(vT);
+                that.createPath(vF, vT, dist);
 
-                    //gets the distance between the points. Maxium = 2*radius
-                    var dist = vF.distanceTo(vT);
+                //gets the distance between the points. Maxium = 2*radius
+                var speed = Application.Helper.map(dist, 0, that.globeRadius * 2, 0, 2.9);
+                that.createAirplaneMesh(speed, that.paths[that.paths.length-1].getPoint(0));
+                
 
-                    // get the control points' vectors
-                    var cvT = vT.clone();
-                    var cvF = vF.clone();
-
-                    // some mathmagic
-                    var xC = (0.5 * (vF.x + vT.x));
-                    var yC = (0.5 * (vF.y + vT.y));
-                    var zC = (0.5 * (vF.z + vT.z));
-
-                    var mid = new THREE.Vector3(xC, yC, zC);
-
-                    var smoothDist = Application.Helper.map(dist, 0, 10, 0, 15 / dist);
-
-                    mid.setLength(that.globeRadius * smoothDist);
-
-                    cvT.add(mid);
-                    cvF.add(mid);
-
-                    cvT.setLength(that.globeRadius * smoothDist);
-                    cvF.setLength(that.globeRadius * smoothDist);
-
-                    //create the bezier curve
-                    var pathGeometry = new THREE.Geometry();
-                    var curve = new THREE.CubicBezierCurve3(vF, cvF, cvT, vT);
-
-                    // this sets the number of vertices on the paths,
-                    // their resolution, how good they look.
-                    // the smaller the number, the squarer it'll look
-                    pathGeometry.vertices = curve.getPoints(35);
-
-                    // Create the final Object3d to add to the this.scene
-
-                    var curveObject = new THREE.Line(pathGeometry, that.pathMaterial);
-                    that.paths.push(curve);
-                    that.scene.add(curveObject);
-
-                    var speed = Application.Helper.map(dist, 0, that.globeRadius * 2, 0, 2.9);
-
-                    //airplane sprite
-                    // var airplaneInstance = new THREE.Sprite(that.airplaneSpriteMaterial);
-
-                    //airplane 3D object
-                    var airplaneInstance = new THREE.Mesh(that.airplaneGeometry, that.airplaneMaterial);
-
-                    // airplane object for controlling the scene actors
-                    // it's got the 3D object, it's speed and current location
-                    var airplane = [
-                        airplaneInstance, (3 - speed) / 500,
-                        0
-                    ];
-
-                    // finally we add the airplane to the array 
-                    // that'll keep track of everything
-                    that.movingGuys.push(airplane);
-
-                    //gets the path first position
-                    airplaneInstance.position.copy(curve.getPoint(0));
-                    that.scene.add(airplaneInstance);
-
-                // }
-              // if (i == 1) {   Application._vent.trigger('controlpanel/message/off'); }
             }, time);
 
             that.timer.push(timeoutref);
         });
        
     },
+
     // checks to see if the airport has been created
     airportCreated: function(id) {
 
@@ -217,35 +195,75 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         }
         return false;
     },
-    // returns an airport from with a given ID
-    // getAirport: function(id) {
-    //     for (i in this.collection[0].models) {
+    
+    createPath: function(vT, vF, dist){
 
-    //         if (id == this.collection[0].models[i].attributes.ID) {
+        // get the control points' vectors
+        var cvT = vT.clone();
+        var cvF = vF.clone();
 
-    //             return this.collection[0].models[i].attributes;
-    //         }
-    //     }
-    // },
-    // gives you a random number within a range
-    // getRandomInt: function(min, max) {
+        var xC = (0.5 * (vF.x + vT.x));
+        var yC = (0.5 * (vF.y + vT.y));
+        var zC = (0.5 * (vF.z + vT.z));
 
-    //     return Math.floor(Math.random() * (max - min + 1)) + min;
-    // },
-    //this is going to add the airports to the list and instantiate them to the scene.
-    addAirport: function(latitude, longitude) {
+        var mid = new THREE.Vector3(xC, yC, zC);
+
+        var smoothDist = Application.Helper.map(dist, 0, 10, 0, 15 / dist);
+
+        mid.setLength(this.globeRadius * smoothDist);
+
+        cvT.add(mid);
+        cvF.add(mid);
+
+        cvT.setLength(this.globeRadius * smoothDist);
+        cvF.setLength(this.globeRadius * smoothDist);
+
+        //create the bezier curve
+        var pathGeometry = new THREE.Geometry();
+        var curve = new THREE.CubicBezierCurve3(vF, cvF, cvT, vT);
+
+        pathGeometry.vertices = curve.getPoints(35);
+        var curveObject = new THREE.Line(pathGeometry, this.pathMaterial);
+        
+        this.paths.push(curve);
+        this.scene.add(curveObject);
+
+    },
+
+    createAirplaneMesh: function(speed, point){
+
+        //airplane 3D object
+        var airplaneInstance = new THREE.Mesh(this.airplaneGeometry, this.airplaneMaterial);
+
+        // airplane object for controlling the scene actors
+        // it's got the 3D object, it's speed and current location
+        var airplane = [ airplaneInstance, (3 - speed) / 500, 0 ];
+
+        //gets the path first position
+        airplaneInstance.position.copy(point);        
+
+        this.createdAirplaness.push(airplane);
+        this.scene.add(airplaneInstance);
+
+    },
+
+    createAirportMesh: function(airport) {
+
         // this is for object airports
-        var airportInstance = new THREE.Mesh(this.airportGeometry, this.blueMaterial);
-        airportInstance.rotation.y = latitude * Math.PI / 180;
+        var airportInstance = new THREE.Mesh(this.airportGeometry, this.airportMaterial);
+        airportInstance.rotation.y = airport.longitude * Math.PI / 180;
 
-        var xRotationSign = latitude + 90 > 90 ? -1 : 1;
-        airportInstance.rotation.x = xRotationSign * (90 - longitude) * Math.PI / 180;
+        var xRotationSign = airport.longitude + 90 > 90 ? -1 : 1;
+        airportInstance.rotation.x = xRotationSign * (90 - airport.latitude) * Math.PI / 180;
+        airportInstance.position.copy(Application.Helper.geoToxyz(airport.longitude, airport.latitude, 51));
 
-        // this is for spirtes.
-        // var airportInstance = new THREE.Sprite(this.airportSpriteMaterial);
+        this.airportMeshes.push(airportInstance);
 
-        airportInstance.position.copy(Application.Helper.geoToxyz(latitude, longitude, 51));
-        // this.createdAirports.push(airport.ID);
+        airport.mesh = airportInstance;
+        
+        this.createdAirports.push(airport);
         this.scene.add(airportInstance);
+
     }
+
 });
