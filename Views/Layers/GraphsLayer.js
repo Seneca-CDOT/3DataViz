@@ -19,12 +19,14 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         this.cylinderHeight = this.globeRadius / 500;
 
         // Arrays for controlling the scene actors
+        this.airportPoints = [];
         this.airports = [];
         this.airportMeshes = [];
         this.routes = [];
         this.createdAirports = [];
         this.createdAirplaness = [];
-        this.paths = []
+        this.paths = [];
+        this.categories = [];
 
         // this is where I set up all the objects. Later on, I just instantiate them
         // with different positions/ rotations. This is the main improvement so far, 
@@ -113,7 +115,9 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
             
             $.each(this.createdAirports, function(index, airport) {
                 if (intersects[0].object == airport.mesh) {
-                    Application._vent.trigger('vizinfocenter/message/on', airport.label);
+                    if(airport.label != null){
+                        Application._vent.trigger('vizinfocenter/message/on', airport.label);
+                    }
                 }
             });
 
@@ -148,9 +152,14 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         $.each(results, function(index, dataRecord) {
 
             time = time + 10;
-            console.log(dataRecord);
+            if(dataRecord.from == null || dataRecord.to == null || dataRecord.from.latitude == null || dataRecord.from.longitude == null || dataRecord.to.latitude == null || dataRecord.to.longitude == null){
+                return;
+            }
 
             var timeoutref = setTimeout(function() {
+
+                console.log(dataRecord);
+                var category = that.getCategory(dataRecord.category);
 
                 var airportFrom = {
                     longitude: dataRecord.from.longitude || null,
@@ -164,17 +173,21 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
                     label: dataRecord.toLabel || null,
                 }
 
-                that.createAirportMesh(airportFrom);
-                that.createAirportMesh(airportTo);
+                if(!that.airportCreated(airportFrom)){
+                    that.createAirportMesh(airportFrom, category);
+                }
+                if(!that.airportCreated(airportTo)){
+                    that.createAirportMesh(airportTo, category);
+                }
                 
                 var vF = Application.Helper.geoToxyz( airportFrom.longitude , airportFrom.latitude , 51);
                 var vT = Application.Helper.geoToxyz( airportTo.longitude , airportTo.latitude , 51);
                 var dist = vF.distanceTo(vT);
-                that.createPath(vF, vT, dist);
+                that.createPath(vF, vT, dist, category);
 
                 //gets the distance between the points. Maxium = 2*radius
-                var speed = Application.Helper.map(dist, 0, that.globeRadius * 2, 0, 2.9);
-                that.createAirplaneMesh(speed, that.paths[that.paths.length-1].getPoint(0));
+                // var speed = Application.Helper.map(dist, 0, that.globeRadius * 2, 0, 2.9);
+                // that.createAirplaneMesh(speed, that.paths[that.paths.length-1].getPoint(0), category);
                 
 
             }, time);
@@ -184,19 +197,66 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
        
     },
 
-    // checks to see if the airport has been created
-    airportCreated: function(id) {
+    airportCreated: function(airport) {
 
-        for (var i = 0; i < this.createdAirports.length; i++) {
-            if (this.createdAirports[i] == id) {
-                return true;
-                break;
-            }
+        if(airport.latitude == null || airport.longitude == null){
+            return;
         }
-        return false;
+
+        var arr = $.grep(this.airportPoints, function(points){
+            return (airport.latitude == points.latitude && airport.longitude == points.longitude);
+        });
+        if(arr.length > 0){
+            console.log("exists");
+            return true;
+        }else{
+            console.log("create new airport");
+            var newAirport = {
+                latitude: airport.latitude,
+                longitude: airport.longitude
+            }
+            this.airportPoints.push(newAirport);
+            return false;
+        }
+
     },
-    
-    createPath: function(vT, vF, dist){
+
+    getCategory: function(categoryName){
+        
+        if(categoryName == null){
+            return;
+        }
+        console.log("categories", this.categories);
+        var arr = $.grep(this.categories, function(category){
+            return categoryName === category.name;
+        });
+        console.log(arr);
+
+        if(arr.length > 0){
+
+            return arr[0];
+        }else{
+            var newCategory = {
+                name: categoryName,
+                color: new THREE.Color(this.getRandomColor())
+            }
+
+            this.categories.push(newCategory);
+            return newCategory;
+        }
+
+    },
+
+    getRandomColor: function() {
+        var letters = '789ABC'.split('');
+        var color = '0x';
+        for (var i = 0; i < 6; i++ ) {
+            color += letters[Math.floor(Math.random() * 5)];
+        }
+        return parseInt(color, 16);
+    },
+
+    createPath: function(vT, vF, dist, category){
 
         // get the control points' vectors
         var cvT = vT.clone();
@@ -223,17 +283,34 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         var curve = new THREE.CubicBezierCurve3(vF, cvF, cvT, vT);
 
         pathGeometry.vertices = curve.getPoints(35);
-        var curveObject = new THREE.Line(pathGeometry, this.pathMaterial);
+
+        var material;
+        if(category != null){
+            material = new THREE.LineBasicMaterial({ color: category.color, transparent: true, });
+        }else{
+            material = this.pathMaterial;
+        }
+
+        var curveObject = new THREE.Line(pathGeometry, material);
         
         this.paths.push(curve);
         this.scene.add(curveObject);
 
     },
 
-    createAirplaneMesh: function(speed, point){
+    createAirplaneMesh: function(speed, point, category){
 
+        //TODO avoid creating same airport that already exists.
+        
         //airplane 3D object
-        var airplaneInstance = new THREE.Mesh(this.airplaneGeometry, this.airplaneMaterial);
+        var material;
+        if(category != null){
+            material = new THREE.MeshBasicMaterial({ color: category.color });
+        }else{
+            material = this.airplaneMaterial;
+        }
+
+        airplaneInstance = new THREE.Mesh(this.airplaneGeometry, material);
 
         // airplane object for controlling the scene actors
         // it's got the 3D object, it's speed and current location
@@ -247,10 +324,17 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
     },
 
-    createAirportMesh: function(airport) {
+    createAirportMesh: function(airport, category) {
+
+        var material;
+        if(category != null){
+            material = new THREE.MeshPhongMaterial({ color: category.color });
+        }else{
+            material = this.airportMaterial;
+        }
 
         // this is for object airports
-        var airportInstance = new THREE.Mesh(this.airportGeometry, this.airportMaterial);
+        var airportInstance = new THREE.Mesh(this.airportGeometry, material);
         airportInstance.rotation.y = airport.longitude * Math.PI / 180;
 
         var xRotationSign = airport.longitude + 90 > 90 ? -1 : 1;

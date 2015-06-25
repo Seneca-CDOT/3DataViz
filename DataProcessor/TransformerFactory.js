@@ -209,6 +209,7 @@ Application.DataProcessor.GraphTransformer = (function(){
         var tData = [];
 
         $.each(data, function(index, item){
+            console.log(item);
             var obj = {
                 from: {
                     latitude:"",
@@ -240,8 +241,6 @@ Application.DataProcessor.GraphTransformer = (function(){
 
             tData.push(obj);
         });
-
-        console.log("what the",tData);
 
         if( typeof complete === "function" ) complete(tData);
     };
