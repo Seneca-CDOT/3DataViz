@@ -259,33 +259,15 @@ Application.DataProcessor.SpreadSheetParser = (function() {
 
     SpreadSheetParser.prototype.parse = function(data, complete) {
 
-        // var filter = {
-
-        //     name: "",
-        //     longitude: "",
-        //     latitude: ""
-
-        // };
-
-
-        var filter = {
-
-            country: "",
-            value: ""
-
-        };
-
-
-
         // TODO: to Dima Yastretsky
-        var pData = privateMethods.extractSpreadSheet.call(this,filter, data);
+        var pData = privateMethods.extractSpreadSheet.call(this, data);
         // return pData;
         if( typeof complete === "function" ) complete(pData);
     };
 
     var privateMethods = Object.create(SpreadSheetParser.prototype);
 
-     privateMethods.extractSpreadSheet = function(filter, objects) {
+     privateMethods.extractSpreadSheet = function(objects) {
 
         var collection = new Array();
         var entries = objects.feed.entry;
@@ -313,9 +295,7 @@ Application.DataProcessor.SpreadSheetParser = (function() {
                 numRow = cellNum;
             }
             if (cellNum == numRow) {
-                if (filter[headers[cellPrefix]] !== undefined) {
-                    obj[headers[cellPrefix]] = entries[i].content.$t;
-                }
+                obj[headers[cellPrefix]] = entries[i].content.$t;
             }
         }
         collection.push(obj);
