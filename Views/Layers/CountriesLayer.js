@@ -19,6 +19,8 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         var intersectedMesh = Application.BaseGlobeView.prototype.clickOn.call(this, event);
 
+        var found = false;
+
         Application._vent.trigger('vizinfocenter/message/off');
 
         if (intersectedMesh) {
@@ -29,10 +31,13 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
                     console.log(country.value);
                     Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
-                        ' : ' + country.value);
+                        ' : ' + Application.Helper.formatNumber(country.value));
+                    found = true;
                 }
 
             });
+            
+         if (!found) Application._vent.trigger('vizinfocenter/message/on', intersectedMesh.object.userData.name);
         }
 
     },
