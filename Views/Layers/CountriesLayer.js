@@ -107,17 +107,21 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
     showResults: function() {
 
         // console.log("CountriesLayer showResults");
+
         Application.BaseGlobeView.prototype.showResults.call(this, results);
         var that = this;
 
-        Application._vent.trigger('controlpanel/message/off');
-        
         var results = this.collection[0].models;
 
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;
-        };
+        }else if( !(results[0].countryname || results[0].countrycode ) || !results[0].value ){
+            Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
+            return;
+        }
+
+        Application._vent.trigger('controlpanel/message/off');
 
         results.sort(function(a, b) { // sorts array in ascending order by value
             return a.value - b.value

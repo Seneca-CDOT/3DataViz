@@ -12,6 +12,7 @@ Application.NotificationsCenter = Backbone.View.extend({
         return this;
     },
     showMessage: function(message) {
+        console.log("showMessage", message);
         this.$el.fadeIn();
         this.$el.empty();
         this.$el.append('<div class="notification">' + message + '</div>');
@@ -21,7 +22,6 @@ Application.NotificationsCenter = Backbone.View.extend({
         this.$el.fadeOut();
     },
     destroy: function() {
-
         Application._vent.unbind('controlpanel/message/on');
         Application._vent.unbind('controlpanel/message/off');
     }

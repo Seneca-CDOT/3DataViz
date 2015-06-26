@@ -56,7 +56,6 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
             console.log("transform:",response);
             that.models = response;
             Application._vent.trigger('data/ready');
-            Application._vent.trigger('controlpanel/message/off');
         });
     },
     setURL: function(key) {
@@ -78,7 +77,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
             },
             vizLayer: {
                 name: 'vizLayer',
-                list: ['points','countries']
+                list: ['points','countries', 'graph']
             }
         }
         return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);

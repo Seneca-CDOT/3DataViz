@@ -56,6 +56,16 @@ a{
     color: #9797C2;
     text-decoration: underline;
 }
+dl{
+    float: left;
+    margin-right: 20px;
+}
+dt{
+    font-size: 16px;
+}
+b{
+    color: #fff;
+}
 
 #rootGlobe{
     margin-right: 250px;
@@ -201,7 +211,7 @@ a{
     z-index: 9999;
 }
 #instruction header{
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 #instruction header h1{
     margin-top: 0;
@@ -212,7 +222,7 @@ a{
 
 #instruction .inner{
     position: relative;
-    width: 950px;
+    width: 1000px;
     margin: 0 auto;
     background-color: rgba(31, 31, 46, 0.9);
     border-radius: 10px;
@@ -223,19 +233,22 @@ a{
 #instruction .inner h3{
     border-bottom: 1px solid #56567A;
     padding-bottom: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     color: #fff;
 }
 
-#instruction .demo,
 #instruction .feedback{
     margin-bottom: 30px;
+}
+#instruction .demo{
+
 }
 
 #instruction ul.steps{
     text-align: center;
     padding-left: 0;
     margin-right: -15px;
+    margin-bottom: 0;
 }
 #instruction ul.steps li{
     position: relative;
@@ -245,7 +258,7 @@ a{
     margin-right: 20px;
     margin-bottom: 15px;
     background: #56567A;
-    padding: 10px;
+    padding: 2px 0px 2px 10px;
     color: #fff;
     border-radius: 5px;
 }
