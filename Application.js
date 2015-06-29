@@ -47,6 +47,8 @@ Application = {
             'Views/BaseClasses/BaseGlobeView.js',
 
             'Models/BaseClasses/BaseGlobeModel.js',
+
+            'Views/Widgets.js',
         ]
     ],
 

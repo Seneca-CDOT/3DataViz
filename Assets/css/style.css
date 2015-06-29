@@ -1,18 +1,20 @@
 /**
  *  For modern browsers
  */
+
 .cf:before,
 .cf:after {
-    content:"";
-    display:table;
-}
-.cf:after {
-    clear:both;
+    content: "";
+    display: table;
 }
 
+.cf:after {
+    clear: both;
+}
 /***************************************
  * Layout
  ***************************************/
+
 body {
     width: 100%;
     height: 100%;
@@ -22,7 +24,6 @@ body {
 }
 
 #vizInfoCenter {
-
     color: white;
     opacity: 0.9;
     text-align: center;
@@ -32,7 +33,7 @@ body {
     left: 5%;
 }
 
-#applicationRegion{
+#applicationRegion {
     margin-right: 250px;
 }
 
@@ -52,28 +53,29 @@ body {
     opacity: 0.9;
 }
 
-a{
+a {
     color: #9797C2;
     text-decoration: underline;
 }
 
-#rootGlobe{
+#rootGlobe {
     margin-right: 250px;
 }
-#baseGlobe{
+
+#baseGlobe {
     top: 0;
     /*margin-left: -250px;*/
 }
-
 /***************************************
  * Elements
  ***************************************/
 
-.btn-primary{
+.btn-primary {
     background: #56567A;
     border: 1px solid #56567A;
 }
-.btn-primary:hover{
+
+.btn-primary:hover {
     background: #40405C;
     border: 1px solid #40405C;
 }
@@ -104,7 +106,8 @@ a{
     padding-bottom: 20px;
     background-color: #1F1F2E;
 }
-.configList label.label{
+
+.configList label.label {
     display: block;
     text-align: left;
     padding: 0;
@@ -112,7 +115,8 @@ a{
     font-size: 14px;
     font-weight: normal;
 }
-.configList .form-control{
+
+.configList .form-control {
     width: 80%;
 }
 
@@ -123,6 +127,7 @@ a{
     margin-top: 10%;
     box-sizing: border-box;
 }
+
 .btn-file input[type=file] {
     position: absolute;
     top: 0;
@@ -138,17 +143,18 @@ a{
     cursor: inherit;
     display: block;
 }
-#fileName{
+
+#fileName {
     display: none;
     margin: 5px 0 0 0;
     padding-left: 4px;
     color: #fff;
 }
-#fileName:before{
+
+#fileName:before {
     font-family: 'Glyphicons Halflings';
     content: "\e022";
 }
-
 /***************************************
  * Notification
  ***************************************/
@@ -162,6 +168,7 @@ a{
     margin-top: -15px;
     text-align: center;
 }
+
 .notification {
     line-height: 30px;
     border-radius: 4px;
@@ -170,7 +177,6 @@ a{
     margin-left: -125px;
     background-color: rgba(75, 75, 115, 0.7);
     border: 1px solid #4B4B73;
-
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
@@ -181,12 +187,11 @@ a{
     justify-content: center;
     align-items: center;
 }
-
 /***************************************
  * Instruction module
  ***************************************/
-#instruction{
 
+#instruction {
     position: relative;
     height: 100%;
     margin-right: 250px;
@@ -200,17 +205,19 @@ a{
     align-items: center;
     z-index: 9999;
 }
-#instruction header{
+
+#instruction header {
     margin-bottom: 40px;
 }
-#instruction header h1{
+
+#instruction header h1 {
     margin-top: 0;
     margin-bottom: 30px;
     text-align: center;
     color: #fff;
 }
 
-#instruction .inner{
+#instruction .inner {
     position: relative;
     width: 950px;
     margin: 0 auto;
@@ -220,7 +227,7 @@ a{
     color: #9797C2;
 }
 
-#instruction .inner h3{
+#instruction .inner h3 {
     border-bottom: 1px solid #56567A;
     padding-bottom: 10px;
     margin-bottom: 20px;
@@ -228,16 +235,17 @@ a{
 }
 
 #instruction .demo,
-#instruction .feedback{
+#instruction .feedback {
     margin-bottom: 30px;
 }
 
-#instruction ul.steps{
+#instruction ul.steps {
     text-align: center;
     padding-left: 0;
     margin-right: -15px;
 }
-#instruction ul.steps li{
+
+#instruction ul.steps li {
     position: relative;
     display: table;
     float: left;
@@ -249,17 +257,19 @@ a{
     color: #fff;
     border-radius: 5px;
 }
-#instruction ul.steps li div{
+
+#instruction ul.steps li div {
     display: table-cell;
     vertical-align: middle;
     padding-right: 10px;
 }
-#instruction ul.steps li div.ttl{
+
+#instruction ul.steps li div.ttl {
     float: left;
     font-size: 36px;
 }
 
-#instruction ul.steps li:after{
+#instruction ul.steps li:after {
     content: "";
     position: absolute;
     width: 0;
@@ -273,25 +283,73 @@ a{
     border-bottom: 15px solid transparent;
     border-left: 18px solid #56567A;
 }
-#instruction ul.steps li:last-child:after{
+
+#instruction ul.steps li:last-child:after {
     display: none;
 }
-#instruction .contacts p{
+
+#instruction .contacts p {
     display: inline;
 }
-#instruction .contacts ul{
+
+#instruction .contacts ul {
     display: inline;
     padding-left: 0;
 }
-#instruction .contacts ul li{
+
+#instruction .contacts ul li {
     display: inline;
     margin-right: 8px;
 }
 
-#helpButton{
+#helpButton {
     position: absolute;
     right: 10%;
     bottom: 25px;
     font-size: 40px;
     z-index: 90;
+}
+/***************************************
+ * Instruction module
+ ***************************************/
+
+#matcherBox {
+    background-color: rgba(75, 75, 115, 0.7);
+    position: absolute;
+    left: 30%;
+    top: 30%;
+    width: 30%;
+    height: 40%;
+    text-align: left;
+    color: white;
+    font-size: 150%;
+}
+
+#UserSetColumn {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    width: 50%;
+    padding-left: 20px;
+    padding-right: 10px;
+    /*padding-top: 20px;*/
+}
+
+#ParserSetColumn {
+    position: absolute;
+    height: 100%;
+    left: 50%;
+    width: 50%;
+    padding-right: 20px;
+    padding-left: 10px;
+    /*padding-top: 20px;*/
+}
+
+.checkbox:hover {
+    background-color: grey;
+    cursor: pointer;
+}
+
+.checkbox {
+    text-align: center;
 }

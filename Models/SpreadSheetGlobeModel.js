@@ -19,13 +19,27 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         Application.BaseGlobeCollection.prototype.initialize.call(this);
 
     },
-    preParse: function() {
+    parse: function(response) {
 
-        var data = {};
-        Application._vent.trigger('data/parsed', this.getViewConfigs(data));
+        var that = this;
+
+        var pModule = Application.DataProcessor.ProcessorModule;
+
+        var options = {
+
+            dataType: "spreadSheet",
+            visualizationType: this.templatesList
+        };
+
+        pModule.preProcessData(response, options, function(headers) {
+
+            Application._vent.trigger('matcher/user', headers);
+        });
+
+        Application._vent.trigger('data/parsed', this.getViewConfigs(response));
 
     },
-    parse: function(response) {
+    parseAll: function(response) {
 
         // console.log(response);
         var pModule = Application.DataProcessor.ProcessorModule;
@@ -37,23 +51,23 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         };
 
         var that = this;
-        pModule.processData(response, options, function(response){
-            console.log("parse:",response);
-            that.transform(response); 
+        pModule.processData(response, options, function(response) {
+            console.log("parse:", response);
+            that.transform(response);
             // that.models = data;
             // Application._vent.trigger('data/ready');
         });
 
     },
-    transform: function(data){
+    transform: function(data) {
         var pModule = Application.DataProcessor.ProcessorModule;
         var that = this;
         var options = {
             visualizationType: Application.userConfig.vizLayer
         }
 
-        pModule.transformData(data, options, function(response){
-            console.log("transform:",response);
+        pModule.transformData(data, options, function(response) {
+            console.log("transform:", response);
             that.models = response;
             Application._vent.trigger('data/ready');
             Application._vent.trigger('controlpanel/message/off');
@@ -65,7 +79,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         this.url = 'https://spreadsheets.google.com/feeds/cells/' + key + '/1/public/basic?alt=json';
     },
     destroy: function() {
-       // console.log("Destroy SpreadSheetCollection");
+        // console.log("Destroy SpreadSheetCollection");
         for (var i = 0; i < this.models.length; i++) {
             this.models[i] = null;
         }
@@ -78,7 +92,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
             },
             vizLayer: {
                 name: 'vizLayer',
-                list: ['points','countries']
+                list: ['points', 'countries']
             }
         }
         return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);

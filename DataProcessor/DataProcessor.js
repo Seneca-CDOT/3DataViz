@@ -66,6 +66,14 @@ Application.DataProcessor.ProcessorModule = (function() {
         
     };
 
+    publicMethods.preProcessData = function(data, options, complete) {
+
+        var dtProcessor = privateMethods.dataTypedProcessor(options);
+        // preprocess data depending on its type
+        dtProcessor.preProcess(data, complete);
+        
+    };
+
     publicMethods.transformData = function(data, options, complete) {
 
         var vtProcessor = privateMethods.visualizationTypedProcessor(options);
@@ -77,6 +85,7 @@ Application.DataProcessor.ProcessorModule = (function() {
     return {
 
         processData: publicMethods.processData,
+        preProcessData: publicMethods.preProcessData,
         transformData: publicMethods.transformData
     };
 })();
@@ -98,6 +107,12 @@ Application.DataProcessor.BaseProcessor = (function() {
     BaseProcessor.prototype.process = function(data, complete) {
 
         var pData = _[this.id].strategy.process(data, complete);
+        return pData;
+    };
+
+       BaseProcessor.prototype.preProcess = function(data, complete) {
+
+        var pData = _[this.id].strategy.preProcess(data, complete);
         return pData;
     };
 

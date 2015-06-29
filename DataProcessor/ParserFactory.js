@@ -107,12 +107,74 @@ Application.DataProcessor.BaseParser = (function() {
     function BaseParser() {
 
         Application.DataProcessor.BaseStrategy.call(this);
+        
     };
     Application.Helper.inherit(BaseParser, Application.DataProcessor.BaseStrategy);
+
+    BaseParser.prototype.baseObject = {
+
+            label: "",
+            time: {
+
+                timestamp: "",
+                year: "",
+                month: "",
+                week: "",
+                day: "",
+
+            },
+            timeFrom: {
+
+                timestamp: "",
+                year: "",
+                month: "",
+                week: "",
+                day: ""
+
+            },
+            timeTo: {
+
+                timestamp: "",
+                year: "",
+                month: "",
+                week: "",
+                day: ""
+            },
+            coordinates: {
+                lat: "",
+                lon: "",
+                x: "",
+                y: "",
+                z: ""
+            },
+            coordinatesFrom: {
+                lat: "",
+                lon: "",
+                x: "",
+                y: "",
+                z: ""
+            },
+            coordinatesTo: {
+                lat: "",
+                lon: "",
+                x: "",
+                y: "",
+                z: ""
+            },
+            value: "",
+            category: ""
+
+        }
 
     BaseParser.prototype.process = function(data, complete) {
 
         var pData = this.parse(data, complete);
+        return pData;
+    };
+
+      BaseParser.prototype.preProcess = function(data, complete) {
+
+        var pData = this.preParse(data, complete);
         return pData;
     };
 
@@ -257,35 +319,29 @@ Application.DataProcessor.SpreadSheetParser = (function() {
     };
     Application.Helper.inherit(SpreadSheetParser, Application.DataProcessor.BaseParser);
 
+     SpreadSheetParser.prototype.preParse = function(data, complete) {
+
+        var that = this;
+ 
+        var pData = privateMethods.extractHeaders.call(this, data);
+        // return pData;
+        Application._vent.trigger('matcher/parser', that.baseObject);
+
+        if( typeof complete === "function" ) complete(pData);
+    };
+
     SpreadSheetParser.prototype.parse = function(data, complete) {
-
-        // var filter = {
-
-        //     name: "",
-        //     longitude: "",
-        //     latitude: ""
-
-        // };
-
-
-        var filter = {
-
-            country: "",
-            value: ""
-
-        };
-
 
 
         // TODO: to Dima Yastretsky
-        var pData = privateMethods.extractSpreadSheet.call(this,filter, data);
+        var pData = privateMethods.extractSpreadSheet.call(this, data);
         // return pData;
         if( typeof complete === "function" ) complete(pData);
     };
 
     var privateMethods = Object.create(SpreadSheetParser.prototype);
 
-     privateMethods.extractSpreadSheet = function(filter, objects) {
+     privateMethods.extractSpreadSheet = function(objects) {
 
         var collection = new Array();
         var entries = objects.feed.entry;
@@ -313,14 +369,31 @@ Application.DataProcessor.SpreadSheetParser = (function() {
                 numRow = cellNum;
             }
             if (cellNum == numRow) {
-                if (filter[headers[cellPrefix]] !== undefined) {
+               // if (filter[headers[cellPrefix]] !== undefined) {
                     obj[headers[cellPrefix]] = entries[i].content.$t;
-                }
+               // }
             }
         }
         collection.push(obj);
 
         return collection;
+    }
+
+     privateMethods.extractHeaders = function(objects) {
+
+        var collection = new Array();
+        var entries = objects.feed.entry;
+        var headers = {};
+
+        //get headers
+        var count = 0;
+        for (var i = 0; entries[i].title.$t.match(/^.1$/g); i++) {
+            var cellId = entries[i].title.$t;
+            headers[cellId.substring(0, 1)] = entries[i].content.$t;
+            count++;
+        }
+
+        return headers;
     }
 
     return SpreadSheetParser;

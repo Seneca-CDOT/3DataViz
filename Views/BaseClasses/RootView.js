@@ -13,6 +13,7 @@ Application.RootView = Backbone.View.extend({
         this.controlPanel = new Application.ControlPanelRootView();
         this.notifBox = new Application.NotificationsCenter();
         this.infocenter = new Application.VizInfoCenter();
+        this.matcher = new Application.Matcher();
         this.rootView = null;
         this.collections = [];
 
@@ -37,26 +38,26 @@ Application.RootView = Backbone.View.extend({
         this.$el.append(this.controlPanel.render().$el);
         this.$el.append(this.notifBox.render().$el);
         this.$el.append(this.infocenter.render().$el);
+        this.$el.append(this.matcher.render().$el);
         return this;
     },
     submitOn: function() {
-        //console.log('data/ready');
+        $("#instruction").fadeOut('slow');
         this.createCollection();
     },
     visualizeOn: function() {
         Application._vent.trigger('vizinfocenter/message/off');
         Application._vent.trigger('controlpanel/message/off');
-        Application._vent.trigger('controlpanel/message/on','LOADING...');
+        Application._vent.trigger('controlpanel/message/on', 'LOADING...');
         this.initGlobeView();
-        
-        $("#instruction").fadeOut('slow');
-        
+        // $("#instruction").fadeOut('slow');
+
 
     },
     fetchCollection: function() {
         $.each(this.collections, function(index, collection) {
 
-            collection.fetch();
+            collection.parseAll();
         });
     },
     initGlobeView: function() {
@@ -93,7 +94,7 @@ Application.RootView = Backbone.View.extend({
                 {
 
                     // collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
-                    collectionClasses = ['CSVCollection',];
+                    collectionClasses = ['CSVCollection', ];
                     break;
                 }
             case 'spreadSheet':
@@ -117,7 +118,7 @@ Application.RootView = Backbone.View.extend({
             $.each(collectionClasses, function(index, collectionName) {
 
                 that.collections.push(new Application[collectionName]);
-                that.collections[index].preParse();
+                that.collections[index].fetch();
 
             });
 
