@@ -393,6 +393,8 @@ Application.DataProcessor.SpreadSheetParser = (function() {
             count++;
         }
 
+        console.log(objects);
+
         return headers;
     }
 
@@ -407,6 +409,22 @@ Application.DataProcessor.CSVParser = (function() {
 
     };
     Application.Helper.inherit(CSVParser, Application.DataProcessor.BaseParser);
+
+    CSVParser.prototype.preParse = function(file, complete) {
+
+        Papa.parse(file, {
+            preview: 1,
+            header: true,
+            complete: function(response){
+                var list = [];
+                $.each(response.data[0], function(index, value){
+                    list.push(index);
+                });
+                if( typeof complete === "function" ) complete(list);
+            }
+        });
+
+    }
 
     CSVParser.prototype.parse = function(file, complete) {
 

@@ -19,19 +19,6 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
         Application.BaseGlobeCollection.prototype.initialize.call(this);
 
     },
-    preParse: function() {
-
-        var that = this;
-        Papa.parse(this.file, {
-            preview: 1,
-            header: true,
-            complete: function(response){
-                console.log("Preparse:", response.data);
-                Application._vent.trigger('data/parsed', that.getViewConfigs(response.data));
-            }
-        });
-
-    },
     parse: function(file) {
 
         // console.log(response);
@@ -41,9 +28,15 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
             dataType: "csv"
         };
 
+        pModule.preProcessData(this.file, options, function(headers){
+            console.log("preparsed", headers);
+            Application._vent.trigger('matcher/user', headers);
+        });
+
         pModule.processData(this.file, options, function(response){
-            console.log("parse:",response);
-            that.transform(response.data); 
+            console.log("complete", response);
+            // Call data parsed.
+            // that.transform(response.data); 
         });
 
     },
