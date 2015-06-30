@@ -5,8 +5,10 @@ Application.Matcher = Backbone.View.extend({
         this.attrsMap = {}; // a map of attributes
         this.lastUserPropName = ''; // the name of the last property created
         this.lastParserPropName = '';
-        this.left = new Application.UserAttributesSet();
-        this.right = new Application.ParserAttributesSet();
+        this.left = new Application.UserAttributesSet(this.attrsMap);
+        this.right = new Application.ParserAttributesSet(this.attrsMap);
+        this.submit = new Application.SubmitAttrs();
+        this.submit.$el.on('click', this.postAttrsMap.bind(this));
         Application._vent.on('matcher/on', this.showMatcher, this);
         Application._vent.on('matcher/off', this.hideMatcher, this);
         Application._vent.on('matcher/user/add', this.setUserAttribute, this);
@@ -17,6 +19,7 @@ Application.Matcher = Backbone.View.extend({
     render: function() {
         this.$el.append(this.left.$el);
         this.$el.append(this.right.$el);
+        this.$el.append(this.submit.$el);
         return this;
     },
     showMatcher: function() {
@@ -31,27 +34,32 @@ Application.Matcher = Backbone.View.extend({
 
         this.lastUserPropName = attr;
         //this.attrsMap[this.lastPropName] = attr;
-        console.log('SetUser', this.attrsMap);
+        // console.log('SetUser', this.attrsMap);
 
     },
     removeUserAttribute: function(attr) {
 
         this.attrsMap[this.lastParserPropName] = '';
-        console.log('RemoveUser', this.attrsMap);
+        // console.log('RemoveUser', this.attrsMap);
 
     },
     setParserAttribute: function(attr) {
 
         this.attrsMap[attr] = this.lastUserPropName;
         this.lastParserPropertyName = attr;
-        console.log('SetParser', this.attrsMap);
+        // console.log('SetParser', this.attrsMap);
 
     },
     removeParserAttribute: function(attr) {
 
         delete this.attrsMap[attr];
         //this.lastPropName = attr;
-        console.log('RemoveParser', this.attrsMap);
+        // console.log('RemoveParser', this.attrsMap);
+    },
+    postAttrsMap: function() {
+      
+     console.log(this.attrsMap);
+
     },
     destroy: function() {
 
@@ -67,9 +75,15 @@ Application.Matcher = Backbone.View.extend({
 
 Application.AttributesSet = Backbone.View.extend({
     tagName: 'div',
-    initialize: function() {
+    initialize: function(attrsMap) {
         // Application._vent.on('matcher', this.listAttributes, this);
         this.checkboxes = []; // array of checkboxes
+        this.attrsMap = attrsMap;
+        this.inactiveColor = '#79839F';
+        this.activeColor = '#FFFFFF';
+        this.checkedColor = '#79839F';
+        this.uncheckedColor = '';
+        this.chosenColor = '#40405C';
     },
     render: function() {
 
@@ -97,10 +111,9 @@ Application.AttributesSet = Backbone.View.extend({
 
             Application._vent.trigger(this.eventName + '/add', e.target.innerText);
 
-            $(e.target).css('background-color', '#79839F'); // changes color to grey when checked
+            $(e.target).css('background-color', this.checkedColor); // changes color to grey when checked
 
-            Application._vent.trigger(this.eventName + '/click', e.target);
-
+             Application._vent.trigger(this.eventName + '/click', e.target.innerText);
 
             this.makeInactiveTheRest();
 
@@ -108,11 +121,12 @@ Application.AttributesSet = Backbone.View.extend({
 
             $(e.target).data('checked', 'false');
 
+            Application._vent.trigger(this.eventName + '/unclick', e.target.innerText);
+            
+            $(e.target).css('background-color', this.uncheckedColor);
+
             Application._vent.trigger(this.eventName + '/remove', e.target.innerText);
-            Application._vent.trigger(this.eventName + '/unclick', e.target);
-
-            $(e.target).css('background-color', '');
-
+            
             this.makeActiveTheRest();
 
         } else {
@@ -121,16 +135,7 @@ Application.AttributesSet = Backbone.View.extend({
         }
 
     },
-    setAttributeChosen: function(target) {
-
-        $(target).css('background-color', 'red');
-
-    },
-    unsetAttributeChosen: function(target) {
-
-        $(target).css('background-color', '');
-
-    },
+    
     makeActiveTheRest: function() {
 
         var that = this;
@@ -139,7 +144,7 @@ Application.AttributesSet = Backbone.View.extend({
 
             if ($(box).data('checked') == 'false') {
 
-                $(box).css('color', 'white');
+                $(box).css('color', that.activeColor);
 
                 $(box).click(that.action.bind(that));
             }
@@ -149,11 +154,13 @@ Application.AttributesSet = Backbone.View.extend({
     },
     makeInactiveTheRest: function() {
 
+        var that = this;
+
         $.each(this.checkboxes, function(index, box) {
 
             if ($(box).data('checked') == 'false') {
 
-                $(box).css('color', '#79839F');
+                $(box).css('color', that.inactiveColor);
 
                 $(box).unbind();
             }
@@ -172,12 +179,31 @@ Application.AttributesSet = Backbone.View.extend({
 
         box.data('checked', 'false');
 
+        box.name = name;
+
         this.checkboxes.push(box);
 
         $(box).click(this.action.bind(this));
 
         return box;
 
+    },
+    findPairByKey: function(attr) {
+     
+     return this.attrsMap[attr];
+
+    },
+    findPairByValue: function(attr) {
+     
+     return _.invert(this.attrsMap)[attr];
+
+    },
+    getCheckbox: function(name) {
+
+        for(var i = 0; i < this.checkboxes.length; i++) {
+
+            if (name == this.checkboxes[i].name) return this.checkboxes[i];
+        }
     },
     destroy: function() {
 
@@ -198,9 +224,9 @@ Application.AttributesSet = Backbone.View.extend({
 
 Application.UserAttributesSet = Application.AttributesSet.extend({
     id: 'UserSetColumn',
-    initialize: function() {
+    initialize: function(attrsMap) {
         this.eventName = 'matcher/user';
-        Application.AttributesSet.prototype.initialize.call(this);
+        Application.AttributesSet.prototype.initialize.call(this, attrsMap);
         Application._vent.on(this.eventName, this.listAttributes, this);
         Application._vent.on('matcher/parser/click', this.makeActiveTheRest, this);
         Application._vent.on('matcher/parser/click', this.setAttributeChosen, this);
@@ -218,14 +244,23 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
         }
 
     },
-    setAttributeChosen: function() {
+    setAttributeChosen: function(ParserAttr) {
 
-        $(this.lastChoice).css('background-color','red');
+        var attr = this.findPairByKey(ParserAttr);
+        var box = this.getCheckbox(attr);
+
+        $(box).css('background-color',this.chosenColor);
+        $(box).unbind();
     },
-    unsetAttributeChosen: function() {
+    unsetAttributeChosen: function(ParserAttr) {
 
-        $(this.lastChoice).css('background-color','');
+        var attr = this.findPairByKey(ParserAttr);
+        var box = this.getCheckbox(attr);
+
+        $(box).css('background-color',this.checkedColor);
+        $(box).click(this.action.bind(this));
         this.makeInactiveTheRest();
+        Application._vent.trigger('matcher/user/add', attr);
     },
     render: function() {
 
@@ -240,9 +275,9 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
 
 Application.ParserAttributesSet = Application.AttributesSet.extend({
     id: 'ParserSetColumn',
-    initialize: function() {
+    initialize: function(attrsMap) {
         this.eventName = 'matcher/parser';
-        Application.AttributesSet.prototype.initialize.call(this);
+        Application.AttributesSet.prototype.initialize.call(this, attrsMap);
         Application._vent.on(this.eventName, this.listAttributes, this);
         Application._vent.on('matcher/user/click', this.makeActiveTheRest, this);
         Application._vent.on('matcher/parser/click', this.setAttributeChosen, this);
@@ -252,6 +287,20 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
 
         return this;
     },
+    setAttributeChosen: function(attr) {
+
+        var box = this.getCheckbox(attr);
+
+        $(box).css('background-color', this.chosenColor);
+
+    },
+    unsetAttributeChosen: function(attr) {
+
+         var box = this.getCheckbox(attr);
+
+        $(box).css('background-color', this.uncheckedColor);
+
+    },
     listAttributes: function(obj) {
 
         var list = $.map(obj, function(value, index) {
@@ -260,5 +309,18 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
 
         Application.AttributesSet.prototype.listAttributes.call(this, list);
         this.makeInactiveTheRest();
+    }
+});
+
+Application.SubmitAttrs = Backbone.View.extend({
+    tagName: 'button',
+    className: 'btn btn-primary',
+    id: 'AttrsSubmitButton',
+    initialize: function(viewConfig) {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+        this.$el.text('SUBMIT');
+    },
+    render: function() {
+        return this;
     }
 });
