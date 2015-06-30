@@ -65,11 +65,10 @@ Application.Matcher = Backbone.View.extend({
 });
 
 
-Application.UserAttributesSet = Backbone.View.extend({
+Application.AttributesSet = Backbone.View.extend({
     tagName: 'div',
-    id: 'UserSetColumn',
     initialize: function() {
-        Application._vent.on('matcher/user', this.listAttributes, this);
+        // Application._vent.on('matcher', this.listAttributes, this);
         this.checkboxes = []; // array of checkboxes
     },
     render: function() {
@@ -94,62 +93,95 @@ Application.UserAttributesSet = Backbone.View.extend({
 
         if (checked == 'false') {
 
-            $(e.target).data('checked', 'true');
+            $(e.target).data('checked', 'true'); // makes button checked
 
-            Application._vent.trigger('matcher/user/add', e.target.innerText);
+            Application._vent.trigger(this.eventName + '/add', e.target.innerText);
 
-            $(e.target).css('background-color', '#79839F');
+            $(e.target).css('background-color', '#79839F'); // changes color to grey when checked
 
-            $.each(this.checkboxes, function() {
+            Application._vent.trigger(this.eventName + '/click', e.target);
 
-                if ($(this).data('checked') == 'false') {
 
-                    //$(this).attr('disabled','true');
-                    $(this).css('color', '#79839F');
-                }
-
-            });
+            this.makeInactiveTheRest();
 
         } else if (checked == 'true') {
 
             $(e.target).data('checked', 'false');
 
-            Application._vent.trigger('matcher/user/remove', e.target.innerText);
+            Application._vent.trigger(this.eventName + '/remove', e.target.innerText);
+            Application._vent.trigger(this.eventName + '/unclick', e.target);
 
             $(e.target).css('background-color', '');
 
-            $.each(this.checkboxes, function() {
-
-                $(this).css('color', 'white');
-            });
+            this.makeActiveTheRest();
 
         } else {
 
             console.log("Couldn't check if the target was checked", e);
         }
 
+    },
+    setAttributeChosen: function(target) {
+
+        $(target).css('background-color', 'red');
+
+    },
+    unsetAttributeChosen: function(target) {
+
+        $(target).css('background-color', '');
+
+    },
+    makeActiveTheRest: function() {
+
+        var that = this;
+
+        $.each(this.checkboxes, function(index, box) {
+
+            if ($(box).data('checked') == 'false') {
+
+                $(box).css('color', 'white');
+
+                $(box).click(that.action.bind(that));
+            }
+
+        });
+
+    },
+    makeInactiveTheRest: function() {
+
+        $.each(this.checkboxes, function(index, box) {
+
+            if ($(box).data('checked') == 'false') {
+
+                $(box).css('color', '#79839F');
+
+                $(box).unbind();
+            }
+
+
+        });
 
     },
     createCheckBox: function(name) {
 
-        var $box = $('<div class="checkbox"></div>');
+        var box = $('<div class="checkbox"></div>');
 
-        $box.attr('id', '_' + name);
+        box.attr('id', '_' + name);
 
-        $box.html(name);
+        box.html(name);
 
-        $box.data('checked', 'false');
+        box.data('checked', 'false');
 
-        this.checkboxes.push($box);
+        this.checkboxes.push(box);
 
-        $box.click(this.action.bind(this));
+        $(box).click(this.action.bind(this));
 
-        return $box;
+        return box;
 
     },
     destroy: function() {
 
-        Application._vent.unbind('matcher/user');
+        Application._vent.unbind('matcher');
         this.remove();
         $.each(this.checkboxes, function(checkbox) {
 
@@ -159,14 +191,62 @@ Application.UserAttributesSet = Backbone.View.extend({
         });
         this.checkboxes = null;
     }
+
+
 });
 
-Application.ParserAttributesSet = Backbone.View.extend({
-    tagName: 'div',
+
+Application.UserAttributesSet = Application.AttributesSet.extend({
+    id: 'UserSetColumn',
+    initialize: function() {
+        this.eventName = 'matcher/user';
+        Application.AttributesSet.prototype.initialize.call(this);
+        Application._vent.on(this.eventName, this.listAttributes, this);
+        Application._vent.on('matcher/parser/click', this.makeActiveTheRest, this);
+        Application._vent.on('matcher/parser/click', this.setAttributeChosen, this);
+        Application._vent.on('matcher/parser/unclick', this.unsetAttributeChosen, this);
+        this.lastChoice; // last choice of userSet
+    },
+    action: function(e) {
+        Application.AttributesSet.prototype.action.call(this, e);
+
+        var checked = $(e.target).data('checked');
+
+        if (checked == 'true') {
+
+            this.lastChoice = $(e.target);
+        }
+
+    },
+    setAttributeChosen: function() {
+
+        $(this.lastChoice).css('background-color','red');
+    },
+    unsetAttributeChosen: function() {
+
+        $(this.lastChoice).css('background-color','');
+        this.makeInactiveTheRest();
+    },
+    render: function() {
+
+        Application.AttributesSet.prototype.render.call(this);
+
+        return this;
+    },
+    listAttributes: function(list) {
+        Application.AttributesSet.prototype.listAttributes.call(this, list);
+    }
+});
+
+Application.ParserAttributesSet = Application.AttributesSet.extend({
     id: 'ParserSetColumn',
     initialize: function() {
-        Application._vent.on('matcher/parser', this.listAttributes, this);
-        this.checkboxes = []; // array of checkboxes
+        this.eventName = 'matcher/parser';
+        Application.AttributesSet.prototype.initialize.call(this);
+        Application._vent.on(this.eventName, this.listAttributes, this);
+        Application._vent.on('matcher/user/click', this.makeActiveTheRest, this);
+        Application._vent.on('matcher/parser/click', this.setAttributeChosen, this);
+        Application._vent.on('matcher/parser/unclick', this.unsetAttributeChosen, this);
     },
     render: function() {
 
@@ -174,89 +254,11 @@ Application.ParserAttributesSet = Backbone.View.extend({
     },
     listAttributes: function(obj) {
 
-        var that = this;
-
         var list = $.map(obj, function(value, index) {
             return [index];
         });
-        $.each(list, function(index, name) {
 
-            var checkbox = that.createCheckBox(name);
-
-            that.$el.append(checkbox);
-
-        });
-
-    },
-    action: function(e) {
-
-        var checked = $(e.target).data('checked');
-
-        if (checked == 'false') {
-
-            $(e.target).data('checked', 'true');
-
-            Application._vent.trigger('matcher/parser/add', e.target.innerText);
-
-            $(e.target).css('background-color', '#79839F');
-
-            $.each(this.checkboxes, function() {
-
-                if ($(this).data('checked') == 'false') {
-
-                    //$(this).attr('disabled','true');
-                    $(this).css('color', '#79839F');
-                }
-
-            });
-
-        } else if (checked == 'true') {
-
-            $(e.target).data('checked', 'false');
-
-            Application._vent.trigger('matcher/parser/remove', e.target.innerText);
-
-            $(e.target).css('background-color', '');
-
-            $.each(this.checkboxes, function() {
-
-                $(this).css('color', 'white');
-            });
-
-        } else {
-
-            console.log("Couldn't check if the target was checked", e);
-        }
-
-
-    },
-    createCheckBox: function(name) {
-
-        var $box = $('<div class="checkbox"></div>');
-
-        $box.attr('id', '_' + name);
-
-        $box.html(name);
-
-        $box.data('checked', 'false');
-
-        this.checkboxes.push($box);
-
-        $box.click(this.action.bind(this));
-
-        return $box;
-
-    },
-    destroy: function() {
-
-        Application._vent.unbind('matcher/parser');
-        this.remove();
-         $.each(this.checkboxes, function(checkbox) {
-
-            checkbox.unbind();
-            checkbox = null;
-
-        });
-        this.checkboxes = null;
+        Application.AttributesSet.prototype.listAttributes.call(this, list);
+        this.makeInactiveTheRest();
     }
 });
