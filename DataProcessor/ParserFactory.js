@@ -393,8 +393,6 @@ Application.DataProcessor.SpreadSheetParser = (function() {
             count++;
         }
 
-        console.log(objects);
-
         return headers;
     }
 
