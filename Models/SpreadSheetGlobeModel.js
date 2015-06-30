@@ -32,7 +32,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         };
 
         pModule.preProcessData(response, options, function(headers) {
-            
+
             Application._vent.trigger('matcher/user', headers);
         });
 
