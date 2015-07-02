@@ -111,60 +111,60 @@ Application.DataProcessor.BaseParser = (function() {
     };
     Application.Helper.inherit(BaseParser, Application.DataProcessor.BaseStrategy);
 
-    BaseParser.prototype.baseObject = {
+    // BaseParser.prototype.baseObject = {
 
-            label: "",
-            time: {
+    //         label: "",
+    //         time: {
 
-                timestamp: "",
-                year: "",
-                month: "",
-                week: "",
-                day: "",
+    //             timestamp: "",
+    //             year: "",
+    //             month: "",
+    //             week: "",
+    //             day: "",
 
-            },
-            timeFrom: {
+    //         },
+    //         timeFrom: {
 
-                timestamp: "",
-                year: "",
-                month: "",
-                week: "",
-                day: ""
+    //             timestamp: "",
+    //             year: "",
+    //             month: "",
+    //             week: "",
+    //             day: ""
 
-            },
-            timeTo: {
+    //         },
+    //         timeTo: {
 
-                timestamp: "",
-                year: "",
-                month: "",
-                week: "",
-                day: ""
-            },
-            coordinates: {
-                lat: "",
-                lon: "",
-                x: "",
-                y: "",
-                z: ""
-            },
-            coordinatesFrom: {
-                lat: "",
-                lon: "",
-                x: "",
-                y: "",
-                z: ""
-            },
-            coordinatesTo: {
-                lat: "",
-                lon: "",
-                x: "",
-                y: "",
-                z: ""
-            },
-            value: "",
-            category: ""
+    //             timestamp: "",
+    //             year: "",
+    //             month: "",
+    //             week: "",
+    //             day: ""
+    //         },
+    //         coordinates: {
+    //             lat: "",
+    //             lon: "",
+    //             x: "",
+    //             y: "",
+    //             z: ""
+    //         },
+    //         coordinatesFrom: {
+    //             lat: "",
+    //             lon: "",
+    //             x: "",
+    //             y: "",
+    //             z: ""
+    //         },
+    //         coordinatesTo: {
+    //             lat: "",
+    //             lon: "",
+    //             x: "",
+    //             y: "",
+    //             z: ""
+    //         },
+    //         value: "",
+    //         category: ""
 
-        }
+    //     }
 
     BaseParser.prototype.process = function(data, complete) {
 
@@ -325,7 +325,7 @@ Application.DataProcessor.SpreadSheetParser = (function() {
  
         var pData = privateMethods.extractHeaders.call(this, data);
         // return pData;
-        Application._vent.trigger('matcher/parser', that.baseObject);
+        // Application._vent.trigger('matcher/parser', that.baseObject);
 
         if( typeof complete === "function" ) complete(pData);
     };

@@ -223,7 +223,7 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
             if (option.selected == true && e.target.value != "") {
 
                 that.addToConfig(e.target.value);
-                Application._vent.trigger('controlpanel/subview/' + that.viewConfig.name);
+                Application._vent.trigger('controlpanel/subview/' + that.viewConfig.name, option.innerText);
             }
         });
     }

@@ -129,7 +129,7 @@ Application.DataSourcesView = Backbone.View.extend({
         this.viewConfig = {
             name: 'dataSource',
             list: ['twitterDB', 'twitterLive', 'csv', 'spreadSheet', 'googleTrends']
-        };
+        }
         this.dataSourcesList = new Application.DropDownList(this.viewConfig);
         this.dataSourcesList.$el.attr('id', 'dataSourcesList');
         this.$el.append('<label for="dataSourcesList" class="label">CHOOSE A DATA SOURCE</label>');

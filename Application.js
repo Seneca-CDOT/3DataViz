@@ -67,11 +67,32 @@ Application = {
         dynamic: ['Views/Layers/DynamicLayer.js', 'Views/Layers/DynamicLayerParticle.js'],
         graph: ['Views/Layers/GraphsLayer.js']
 
+    },
+
+    templates: {
+        name: 'vizLayer',
+        list: ['countries', 'points', 'dynamic', 'graph'],
+        countries: {
+            default: ['countrycode', 'value'],
+            optional: ['category', 'label']
+        },
+        points: {
+            default: ['latitude', 'longitude'],
+            optional: ['label', 'value', 'category']
+        },
+        dynamic: {
+            default: ['latitude', 'longitude', 'timestamp'],
+            optional: ['value', 'category']
+        },
+        graph: {
+            default: ['latitudeFrom', 'longitudeFrom', 'latitudeTo', 'longitudeTo'],
+            optional: ['timestamp', 'value', 'fromLabel', 'toLabel', 'category']
+        },
     }
 
 }
-require(['Helpers/Helper.js'], function(){
-    Application.Helper.requireOrderly(Application.files, function(){
+require(['Helpers/Helper.js'], function() {
+    Application.Helper.requireOrderly(Application.files, function() {
         Application.init();
     });
 });
