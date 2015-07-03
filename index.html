@@ -3,13 +3,14 @@
 <link rel="stylesheet" type="text/css" href="Assets/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="Assets/css/style.css">
 
+<script type="text/javascript" src="https://app.box.com/js/static/select.js"></script>
+
 <body>
 
     <!-- TODO: move it to View later.-->
     <section id="instruction">
 
       <div class="inner">
-
         <a href="https://github.com/Seneca-CDOT/3DataViz"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
 
         <header>
@@ -75,6 +76,27 @@
             </ul>
           </div>
         </div>
+
+        <form method="GET" action="https://app.box.com/api/oauth2/authorize">
+          <input type="hidden" id="response_type" name="response_type" value="code">
+          <input type="hidden" id="state" name="state" value="security_token%3DKnhMJatFipTAnM0nHlZA">
+          <input type="hidden" id="client_id" name="client_id" value="2cef1xake819jgxn76fpd9303j0ngmrs">
+
+          <input type="submit" vale="submit">
+        </form>
+
+        <form method="POST" action="https://app.box.com/api/oauth2/token">
+
+          <input type="hidden" id="grant_type" name="grant_type" value="authorization_code">
+          <input type="hidden" id="code" name="code" value="">
+          <input type="hidden" id="client_id" name="client_id" value="2cef1xake819jgxn76fpd9303j0ngmrs">
+          <input type="hidden" id="client_secret" name="client_secret" value="yKG6XPli6jwIc2yLJNg6kbOpr6EXRAS1">
+
+          <input type="submit" vale="submit">
+        </form>
+        
+        <div id="box"></div>
+
       </div></section>
 
     <div id="applicationRegion"></div>
@@ -89,6 +111,210 @@
 <!-- <script src="http://localhost:8080/socket.io/socket.io.js"></script> -->
 <!-- structure -->
 <script src="Libraries/jquery.js"></script>
+
+<script>
+
+  $(function(){
+
+    // var form = new FormData();     
+    // // The content of the file
+    // var fileBody = '<p>hey!<p>';
+    // // JS file-like object
+    // var testfile = new Blob([fileBody], { type: 'text/xml'});
+    // // Add the file to the form
+    // form.append('file', testfile);
+    // // Add the destination folder for the upload to the form
+    // form.append('parent_id', '0');
+    // var uploadUrl = 'https://upload.box.com/api/2.0/files/content';
+    // // The Box OAuth 2 Header. Add your access token.
+    // var headers = {
+    //     Authorization: 'Bearer XqB5tngtQPIroYqNp4I76aDH7M8D8wVS'
+    // };
+    
+    // openBoxLogin();
+
+    // $.ajax({
+    //     url: uploadUrl,
+    //     headers: headers,
+    //     type: 'POST',
+    //     // This prevents JQuery from trying to append the form as a querystring
+    //     processData: false,
+    //     contentType: false,
+    //     data: form
+    // }).complete(function ( data ) {
+    //     // Log the JSON response to prove this worked
+    //     console.log(data.responseText);
+    // });
+
+    // console.log(str);
+    // var form = new FormData();
+    // form.append('grant_type', "authorization_code");
+    // form.append('code', str);
+    // form.append('client_id', "2cef1xake819jgxn76fpd9303j0ngmrs");
+    // form.append('client_secret', "yKG6XPli6jwIc2yLJNg6kbOpr6EXRAS1");
+
+    // $.ajax({
+    //   url: "https://app.box.com/api/oauth2/token",
+    //   type: 'POST',
+    //   contentType: false,
+    //   processData: false,
+    //   data: form
+    // }).complete(function (data){
+    //   console.log(data.responseText);
+    // });
+    // 
+    // $.ajax({
+    //   url: "https://app.box.com/s/6ng10slujzllptsn4gcsmzihbtlzx823",
+    //   type: 'GET',
+    //   contentType: false,
+    //   processData: false,
+    //   headers: headers
+    // }).complete(function(data){
+    //   console.log(data);
+    // });
+
+
+    // function(){
+
+    // }
+    // 
+
+    var $box = '<div id="box-select" data-link-type="direct" data-multiselect="false" data-client-id="2cef1xake819jgxn76fpd9303j0ngmrs"></div>';
+    $("#box").append($box);
+
+    var boxSelect = new BoxSelect();
+    // Register a success callback handler
+    boxSelect.success(function(response) {
+      getFile(response[0].url);
+    });
+    // Register a cancel callback handler
+    boxSelect.cancel(function() {
+        console.log("The user clicked cancel or closed the popup");
+    });
+
+
+  });
+
+function openBoxLogin(){
+  var myWindow = window.open("https://app.box.com/api/oauth2/authorize?response_type=code&state=state&client_id=2cef1xake819jgxn76fpd9303j0ngmrs", "MsgWindow", "width=400, height=600");
+
+  var timer = window.setInterval(function(){
+    var code = "";
+    try{
+      code = myWindow.location.search;
+    }catch(e){}
+
+    if(code != ""){
+      var reg = /code=(.*).$/g;
+      requestOAuth(reg.exec(code)[1]);
+      clearInterval(timer);
+      myWindow.close();
+    }
+  }, 100)
+}
+
+function requestOAuth(code){
+
+  var form = new FormData();
+  form.append('grant_type', "authorization_code");
+  form.append('code', code);
+  form.append('client_id', "2cef1xake819jgxn76fpd9303j0ngmrs");
+  form.append('client_secret', "yKG6XPli6jwIc2yLJNg6kbOpr6EXRAS1");
+
+  $.ajax({
+    url: "https://app.box.com/api/oauth2/token",
+    type: 'POST',
+    contentType: false,
+    processData: false,
+    data: form
+  }).complete(function (data){
+    var json = JSON.parse(data.responseText);
+    
+    // console.log(json);
+
+    // console.log(json.access_token);
+
+    // var $box = '<div id="box-select" data-link-type="direct" data-multiselect="false" data-client-id="'+json.access_token+'"></div>';
+    // $("#box").append($box);
+
+    // var boxSelect = new BoxSelect();
+    // // Register a success callback handler
+    // boxSelect.success(function(response) {
+    //   getFile(response[0].url);
+    // });
+    // // Register a cancel callback handler
+    // boxSelect.cancel(function() {
+    //     console.log("The user clicked cancel or closed the popup");
+    // });
+
+    getFileFromURL("https://app.box.com/s/barmaxwnvy44gs4ks6xwfoeagens9gwv", json.access_token);
+  });
+    
+}
+
+function getFileFromURL(sharedURL, token){
+  
+  var headers = {
+      Authorization: 'Bearer ' + token,
+      BoxApi: 'shared_link=' + sharedURL
+  };
+  $.ajax({
+    url: "https://api.box.com/2.0/shared_items",
+    type: 'GET',
+    headers, headers,
+    contentType: false,
+    processData: false
+  }).complete(function (data){
+    console.log(data.responseText);
+    var data = JSON.parse(data.responseText);
+    getFile(data.id, token);
+    // preFlight( data.name, data.size, data.parent.id, token);
+  });
+
+}
+
+// function preFlight(filename, filesize, parentId,  token){
+//   var headers = {
+//     Authorization: 'Bearer ' + token
+//   };
+//   console.log(parentId);
+//   var form = new FormData();
+//   form.append('name', filename);
+//   var parent = '{"parent": {"id": ' + parentId + '}, "size": '+filesize+' }';
+//   form.append('parent', parent);
+
+//   console.log(token);
+//   console.log(form);
+
+//   $.ajax({
+//     url: "https://api.box.com/2.0/files/content",
+//     type: 'Option',
+//     headers, headers,
+//     contentType: false,
+//     processData: false,
+//     data: form
+//   }).complete(function (data){
+//     console.log(data.responseText);
+//   });
+//   // curl https://upload.box.com/api/2.0/files/content \
+//   // -H "Authorization: Bearer ACCESS_TOKEN" -X POST \
+//   // -F attributes='{"name":"tigers.jpeg", "parent":{"id":"11446498"}}' \
+//   // -F file=@myfile.jpg
+// }
+
+function getFile(url){
+  $.ajax({
+    url: url,
+    type: 'GET',
+    contentType: false,
+    processData: false
+  }).complete(function (response){
+    console.log(response.responseText);
+  });
+}
+
+</script>
+
 <script src="Libraries/underscore.js"></script>
 <script src="Libraries/backbone.js"></script>
 <!-- 3D view -->
