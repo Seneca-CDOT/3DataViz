@@ -56,7 +56,8 @@ Application = {
         twitterDB: ['Models/TwitterDBModel.js'],
         twitterLive: ['Models/TwitterLiveModel.js'],
         // csv: ['Models/FlightPathGlobeModel.js','Models/data/path.js', 'Models/data/countriesList.js']
-        csv: ['Models/CSVGlobeModel.js']
+        csv: ['Models/CSVGlobeModel.js'],
+        box: ['Models/BoxGlobeModel.js']
     },
 
     layers: {
