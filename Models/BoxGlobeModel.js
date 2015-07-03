@@ -33,7 +33,6 @@ Application.BoxCollection = Application.BaseGlobeCollection.extend({
     },
     parse: function(dataText) {
 
-        console.log(dataText);
 
         // console.log(response);
         var pModule = Application.DataProcessor.ProcessorModule;
