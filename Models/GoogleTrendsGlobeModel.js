@@ -34,11 +34,12 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         }
 
     },
-    preParse: function() {
+    parse: function(response) {
+        this.response = response;
         var data = {};
         Application._vent.trigger('data/parsed', this.getViewConfigs(data));
     },
-    parse: function(response) {
+    parseAll: function() {
 
         var that = this;
 
@@ -49,19 +50,19 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
             visualizationType: this.templatesList
         };
 
-        pModule.processData(response.table.rows, options, function(response){
-            console.log("parse:",response);
+        pModule.processData(this.response.table.rows, options, function(response) {
+            console.log("parse:", response);
             that.transform(response);
         });
     },
-    transform: function(data){
+    transform: function(data) {
         var pModule = Application.DataProcessor.ProcessorModule;
         var that = this;
         var options = {
             visualizationType: Application.userConfig.vizLayer
         }
-        pModule.transformData(data, options, function(response){
-            console.log("transform:",response);
+        pModule.transformData(data, options, function(response) {
+            console.log("transform:", response);
             that.models = response;
             Application._vent.trigger('data/ready');
         });
@@ -86,6 +87,10 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         if (Application.userConfig.input == '') return;
         this.setURL(Application.userConfig.input);
         this.request();
+
+    },
+    fetchAll: function() {
+        this.parseAll(this.response);
 
     },
     destroy: function() {

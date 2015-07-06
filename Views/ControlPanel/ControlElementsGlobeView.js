@@ -1,7 +1,5 @@
 Application.ControlElementsGlobeView = Backbone.View.extend({
     initialize: function(viewConfig) {
-        //this._vent = config.event;
-        //this.name = '';
         this.viewConfig = viewConfig;
 
     },
@@ -32,9 +30,9 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
 
 Application.InputField = Application.ControlElementsGlobeView.extend({
     tagName: 'input',
-    initialize: function(viewConfig) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
-        this.$el.on('keyup', this.grabInput.bind(this), this.disableVisView.bind(this));
+    initialize: function() {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this);
+        this.$el.on('keyup', this.disableVisView.bind(this));
     },
     render: function() {
 
@@ -59,8 +57,8 @@ Application.InputField = Application.ControlElementsGlobeView.extend({
 
 Application.FileUpload = Application.ControlElementsGlobeView.extend({
     tagName: 'div',
-    initialize: function(viewConfig) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+    initialize: function() {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this);
 
         this.$btnfile = $('<div class="btn btn-default btn-file">Choose File</div>');
 
@@ -151,8 +149,8 @@ Application.Help = Application.ControlElementsGlobeView.extend({
 Application.Button = Application.ControlElementsGlobeView.extend({
     tagName: 'button',
     className: 'btn btn-primary button',
-    initialize: function(viewConfig) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+    initialize: function() {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this);
     },
     events: {
 
@@ -173,8 +171,8 @@ Application.Button = Application.ControlElementsGlobeView.extend({
 
 Application.VizButton = Application.ControlElementsGlobeView.extend({
     tagName: 'button',
-    initialize: function(viewConfig) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+    initialize: function() {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this);
     },
     render: function() {
         return this;

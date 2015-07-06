@@ -165,7 +165,7 @@ Application.DataProcessor.TweetParser = (function() {
             timestamp: "timestamp_ms",
         };
         var pData = privateMethods.extract.call(this, filter, data);
-        // return pData;
+        Application._vent.trigger('controlpanel/subview/vizType');
         if (typeof complete === "function") complete(pData);
     };
 
@@ -217,6 +217,7 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
 
         };
         var pData = privateMethods.extract.call(this, filter, data);
+         Application._vent.trigger('controlpanel/subview/vizType');
         if (typeof complete === "function") complete(pData);
 
     };
@@ -280,7 +281,7 @@ Application.DataProcessor.SpreadSheetParser = (function() {
 
     var privateMethods = Object.create(SpreadSheetParser.prototype);
 
-     privateMethods.extractSpreadSheet = function(objects) {
+    privateMethods.extractSpreadSheet = function(objects) {
 
         var collection = new Array();
         var entries = objects.feed.entry;

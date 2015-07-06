@@ -79,7 +79,7 @@ Application.Matcher = Backbone.View.extend({
     destroy: function() {
 
         this.userAttributesView.destroy();
-        this.parserAttributeView.destroy();
+        this.parserAttributesView.destroy();
         this.templatesView.destroy();
         this.templatesView = null;
         this.userAttributesView = null;
@@ -407,4 +407,9 @@ Application.TemplatesView = Backbone.View.extend({
         this.picDiv.append(this.pic);
         this.$el.append(this.picDiv);
     },
+    destroy: function() {
+        
+        this.$el.unbind();
+        this.remove();
+    }
 });

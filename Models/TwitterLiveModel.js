@@ -23,12 +23,12 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
         this.ws;
         this.count = 0;
     },
-    preParse: function() {
+    parse: function() {
 
         var data = {};
         Application._vent.trigger('data/parsed', this.getViewConfigs(data));
     },
-    parse: function(response) {
+    parseAll: function(response) {
 
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
@@ -36,7 +36,7 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
             visualizationType: this.templatesList
         };
         var that = this;
-        pModule.processData(response, options, function(data){
+        pModule.processData(response, options, function(data) {
             that.transform(data);
         });
     },
@@ -50,12 +50,15 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
             var options = {
                 visualizationType: Application.userConfig.vizLayer
             };
-            pModule.transformData(pData, options, function(response){
+            pModule.transformData(pData, options, function(response) {
                 that.add(response);
             });
         }
     },
     fetch: function() {
+        this.parse();
+    },
+    fetchAll: function() {
         this.destroy();
         this.ws = new WebSocket("ws://threedataviz.herokuapp.com/");
         var that = this;
@@ -65,7 +68,7 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
                 dataSource: "twitterLive",
                 track: that.track
             }
-            Application._vent.trigger('controlpanel/message/on','AWAITING TWEETS');
+            Application._vent.trigger('controlpanel/message/on', 'AWAITING TWEETS');
             that.ws.send(JSON.stringify(msg));
             Application._vent.trigger('data/ready');
         };
@@ -74,7 +77,7 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
             var obj = JSON.parse(results.data).data;
             obj.real_timestamp = obj.timestamp_ms; // timestamp of the tweet emitted
             obj.timestamp_ms = new Date().getTime();
-            that.parse([obj]);
+            that.parseAll([obj]);
         };
         this.ws.onclose = function(close) {
             this.ws = null;

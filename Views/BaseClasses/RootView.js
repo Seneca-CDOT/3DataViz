@@ -8,6 +8,7 @@ var Application = Application || {};
 Application.RootView = Backbone.View.extend({
 
     tagName: "div",
+    id: 'rootView',
     initialize: function() {
 
         this.controlPanel = new Application.ControlPanelRootView();
@@ -19,7 +20,7 @@ Application.RootView = Backbone.View.extend({
 
         Application.userConfig = {
             dataSource: '',
-            vizType: '',
+            vizType: 'geometry',
             vizLayer: '',
             input: '',
             interval: '',
@@ -57,7 +58,7 @@ Application.RootView = Backbone.View.extend({
     fetchCollection: function() {
         $.each(this.collections, function(index, collection) {
 
-            collection.parseAll();
+            collection.fetchAll();
         });
     },
     initGlobeView: function() {
@@ -113,7 +114,7 @@ Application.RootView = Backbone.View.extend({
 
         }
 
-        require(Application.models[Application.userConfig.dataSource], function() {
+        require(Application.models[Application.userConfig.dataSource].url, function() {
 
             $.each(collectionClasses, function(index, collectionName) {
 

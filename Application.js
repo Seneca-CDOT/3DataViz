@@ -53,38 +53,51 @@ Application = {
     ],
 
     models: {
-        spreadSheet: ['Models/SpreadSheetGlobeModel.js'],
-        googleTrends: ['Models/GoogleTrendsGlobeModel.js'],
-        twitterDB: ['Models/TwitterDBModel.js'],
-        twitterLive: ['Models/TwitterLiveModel.js'],
+        name: 'dataSource',
+        list: ['twitterDB', 'twitterLive', 'csv', 'spreadSheet', 'googleTrends'],
+        spreadSheet: {
+            url: ['Models/SpreadSheetGlobeModel.js'],
+            attributes: true
+        },
+        googleTrends: {
+            url: ['Models/GoogleTrendsGlobeModel.js'],
+            attributes: false
+        },
+        twitterDB: {
+            url: ['Models/TwitterDBModel.js'],
+            attributes: false
+        },
+        twitterLive: {
+            url: ['Models/TwitterLiveModel.js'],
+            attributes: false
+        },
         // csv: ['Models/FlightPathGlobeModel.js','Models/data/path.js', 'Models/data/countriesList.js']
-        csv: ['Models/CSVGlobeModel.js']
-    },
-
-    layers: {
-        points: ['Views/Layers/PointsLayer.js'],
-        countries: ['Views/Layers/CountriesLayer.js'],
-        dynamic: ['Views/Layers/DynamicLayer.js', 'Views/Layers/DynamicLayerParticle.js'],
-        graph: ['Views/Layers/GraphsLayer.js']
-
+        csv: {
+            url: ['Models/CSVGlobeModel.js'],
+            attributes: true
+        }
     },
 
     templates: {
         name: 'vizLayer',
         list: ['countries', 'points', 'dynamic', 'graph'],
         countries: {
+            url: ['Views/Layers/CountriesLayer.js'],
             default: ['countrycode', 'value'],
             optional: ['category', 'label']
         },
         points: {
+            url: ['Views/Layers/PointsLayer.js'],
             default: ['latitude', 'longitude'],
             optional: ['label', 'value', 'category']
         },
         dynamic: {
+            url: ['Views/Layers/DynamicLayer.js', 'Views/Layers/DynamicLayerParticle.js'],
             default: ['latitude', 'longitude', 'timestamp'],
             optional: ['value', 'category']
         },
         graph: {
+            url: ['Views/Layers/GraphsLayer.js'],
             default: ['latitudeFrom', 'longitudeFrom', 'latitudeTo', 'longitudeTo'],
             optional: ['timestamp', 'value', 'fromLabel', 'toLabel', 'category']
         },
