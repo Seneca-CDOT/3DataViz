@@ -19,6 +19,7 @@ Application.Matcher = Backbone.View.extend({
         Application._vent.on('matcher/user/remove', this.removeUserAttribute, this);
         Application._vent.on('matcher/parser/remove', this.removeParserAttribute, this);
         Application._vent.on('controlpanel/subview/vizLayer', this.resetAttributes, this);
+        this.hideMatcher();
     },
     render: function() {
         this.$el.append(this.userAttributesView.render().$el);

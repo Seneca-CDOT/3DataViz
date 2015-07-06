@@ -107,7 +107,7 @@ Application.DataProcessor.BaseParser = (function() {
     function BaseParser() {
 
         Application.DataProcessor.BaseStrategy.call(this);
-        
+
     };
     Application.Helper.inherit(BaseParser, Application.DataProcessor.BaseStrategy);
 
@@ -172,7 +172,7 @@ Application.DataProcessor.BaseParser = (function() {
         return pData;
     };
 
-      BaseParser.prototype.preProcess = function(data, complete) {
+    BaseParser.prototype.preProcess = function(data, complete) {
 
         var pData = this.preParse(data, complete);
         return pData;
@@ -225,7 +225,7 @@ Application.DataProcessor.TweetParser = (function() {
         };
         var pData = privateMethods.extract.call(this, filter, data);
         // return pData;
-        if( typeof complete === "function" ) complete(pData);
+        if (typeof complete === "function") complete(pData);
     };
 
     var privateMethods = Object.create(TweetParser.prototype);
@@ -276,7 +276,7 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
 
         };
         var pData = privateMethods.extract.call(this, filter, data);
-        if( typeof complete === "function" ) complete(pData);
+        if (typeof complete === "function") complete(pData);
 
     };
 
@@ -319,15 +319,14 @@ Application.DataProcessor.SpreadSheetParser = (function() {
     };
     Application.Helper.inherit(SpreadSheetParser, Application.DataProcessor.BaseParser);
 
-     SpreadSheetParser.prototype.preParse = function(data, complete) {
+    SpreadSheetParser.prototype.preParse = function(data, complete) {
 
         var that = this;
- 
+
         var pData = privateMethods.extractHeaders.call(this, data);
         // return pData;
-        // Application._vent.trigger('matcher/parser', that.baseObject);
-
-        if( typeof complete === "function" ) complete(pData);
+        Application._vent.trigger('matcher/on');
+        if (typeof complete === "function") complete(pData);
     };
 
     SpreadSheetParser.prototype.parse = function(data, complete) {
@@ -336,12 +335,12 @@ Application.DataProcessor.SpreadSheetParser = (function() {
         // TODO: to Dima Yastretsky
         var pData = privateMethods.extractSpreadSheet.call(this, data);
         // return pData;
-        if( typeof complete === "function" ) complete(pData);
+        if (typeof complete === "function") complete(pData);
     };
 
     var privateMethods = Object.create(SpreadSheetParser.prototype);
 
-     privateMethods.extractSpreadSheet = function(objects) {
+    privateMethods.extractSpreadSheet = function(objects) {
 
         var collection = new Array();
         var entries = objects.feed.entry;
@@ -369,9 +368,9 @@ Application.DataProcessor.SpreadSheetParser = (function() {
                 numRow = cellNum;
             }
             if (cellNum == numRow) {
-               // if (filter[headers[cellPrefix]] !== undefined) {
-                    obj[headers[cellPrefix]] = entries[i].content.$t;
-               // }
+                // if (filter[headers[cellPrefix]] !== undefined) {
+                obj[headers[cellPrefix]] = entries[i].content.$t;
+                // }
             }
         }
         collection.push(obj);
@@ -379,7 +378,7 @@ Application.DataProcessor.SpreadSheetParser = (function() {
         return collection;
     }
 
-     privateMethods.extractHeaders = function(objects) {
+    privateMethods.extractHeaders = function(objects) {
 
         var collection = new Array();
         var entries = objects.feed.entry;
@@ -413,8 +412,9 @@ Application.DataProcessor.CSVParser = (function() {
         Papa.parse(file, {
             // worker: true,
             header: true,
-            complete: function(response){
-                if( typeof complete === "function" ) complete(response);
+            complete: function(response) {
+                if (typeof complete === "function") complete(response);
+                Application._vent.trigger('matcher/on');
             }
         });
 
