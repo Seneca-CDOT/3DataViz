@@ -96,10 +96,6 @@ Application.DataProcessor.BaseStrategy = (function() {
     return BaseStrategy;
 })();
 
-// Play with this.
-// var p1 = new Application.DataProcessor.BaseParser();
-// p1.testPublicFunction1();
-
 // parser
 
 Application.DataProcessor.BaseParser = (function() {
@@ -110,61 +106,6 @@ Application.DataProcessor.BaseParser = (function() {
 
     };
     Application.Helper.inherit(BaseParser, Application.DataProcessor.BaseStrategy);
-
-    // BaseParser.prototype.baseObject = {
-
-    //         label: "",
-    //         time: {
-
-    //             timestamp: "",
-    //             year: "",
-    //             month: "",
-    //             week: "",
-    //             day: "",
-
-    //         },
-    //         timeFrom: {
-
-    //             timestamp: "",
-    //             year: "",
-    //             month: "",
-    //             week: "",
-    //             day: ""
-
-    //         },
-    //         timeTo: {
-
-    //             timestamp: "",
-    //             year: "",
-    //             month: "",
-    //             week: "",
-    //             day: ""
-    //         },
-    //         coordinates: {
-    //             lat: "",
-    //             lon: "",
-    //             x: "",
-    //             y: "",
-    //             z: ""
-    //         },
-    //         coordinatesFrom: {
-    //             lat: "",
-    //             lon: "",
-    //             x: "",
-    //             y: "",
-    //             z: ""
-    //         },
-    //         coordinatesTo: {
-    //             lat: "",
-    //             lon: "",
-    //             x: "",
-    //             y: "",
-    //             z: ""
-    //         },
-    //         value: "",
-    //         category: ""
-
-    //     }
 
     BaseParser.prototype.process = function(data, complete) {
 
@@ -331,7 +272,6 @@ Application.DataProcessor.SpreadSheetParser = (function() {
 
     SpreadSheetParser.prototype.parse = function(data, complete) {
 
-
         // TODO: to Dima Yastretsky
         var pData = privateMethods.extractSpreadSheet.call(this, data);
         // return pData;
@@ -340,7 +280,7 @@ Application.DataProcessor.SpreadSheetParser = (function() {
 
     var privateMethods = Object.create(SpreadSheetParser.prototype);
 
-    privateMethods.extractSpreadSheet = function(objects) {
+     privateMethods.extractSpreadSheet = function(objects) {
 
         var collection = new Array();
         var entries = objects.feed.entry;
@@ -368,9 +308,7 @@ Application.DataProcessor.SpreadSheetParser = (function() {
                 numRow = cellNum;
             }
             if (cellNum == numRow) {
-                // if (filter[headers[cellPrefix]] !== undefined) {
                 obj[headers[cellPrefix]] = entries[i].content.$t;
-                // }
             }
         }
         collection.push(obj);

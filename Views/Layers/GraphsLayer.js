@@ -91,7 +91,25 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
     showResults: function() {
 
         console.log("GraphsLayer showResults");
+
+        var results = this.collection[0].models;
+        if (results.length == 0) {
+            Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
+            return;
+        }
+        else if(
+            !results[0].from.longitude 
+            || !results[0].from.latitude
+            || !results[0].to.longitude
+            || !results[0].to.latitude
+        )
+        {
+            Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
+            return;
+        }
+        console.log("h????");
         Application._vent.trigger('controlpanel/message/off');
+
         this.addPaths();
 
     },
