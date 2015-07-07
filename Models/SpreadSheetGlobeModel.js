@@ -17,30 +17,12 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
 
         this.setURL(Application.userConfig.input);
         Application.BaseGlobeCollection.prototype.initialize.call(this);
+        this.data = null; // holds data from parsing stage
 
     },
     parse: function(response) {
 
         var that = this;
-
-        var pModule = Application.DataProcessor.ProcessorModule;
-
-        var options = {
-
-            dataType: "spreadSheet",
-            visualizationType: this.templatesList
-        };
-
-        pModule.preProcessData(response, options, function(headers) {
-
-            Application._vent.trigger('matcher/user', headers);
-        });
-
-        Application._vent.trigger('data/parsed', this.getViewConfigs(response));
-
-    },
-    parseAll: function(response) {
-
         // console.log(response);
         var pModule = Application.DataProcessor.ProcessorModule;
 
@@ -50,23 +32,33 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
             visualizationType: this.templatesList
         };
 
-        var that = this;
-        pModule.processData(response, options, function(response) {
-            console.log("parse:", response);
-            that.transform(response);
-            // that.models = data;
-            // Application._vent.trigger('data/ready');
+        pModule.processData(response, options, {
+
+            preparsed: function(headers) {
+                console.log("preparsed:", headers);
+                Application._vent.trigger('matcher/user', headers);
+                Application._vent.trigger('matcher/on');
+            },
+            complete: function(response) {
+                console.log("parse:", response);
+               // Application._vent.trigger('data/parsed', that.getViewConfigs(response));
+                //that.transform(response); 
+                that.data = response; // to hold data until visualization starts
+            }
+
         });
 
     },
-    transform: function(data) {
+    transform: function() {
+
         var pModule = Application.DataProcessor.ProcessorModule;
         var that = this;
+
         var options = {
             visualizationType: Application.userConfig.vizLayer
         }
 
-        pModule.transformData(data, options, function(response) {
+        pModule.transformData(this.data, options, function(response) {
             console.log("transform:", response);
             that.models = response;
             Application._vent.trigger('data/ready');
@@ -79,22 +71,20 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
     },
     destroy: function() {
         // console.log("Destroy SpreadSheetCollection");
-        for (var i = 0; i < this.models.length; i++) {
-            this.models[i] = null;
-        }
+        Application.BaseGlobeCollection.prototype.destroy.call(this);
     },
-    getViewConfigs: function(data) {
-        var defaults = {
-            vizType: {
-                name: 'vizType',
-                list: ['geometry', 'texture']
-            },
-            vizLayer: {
-                name: 'vizLayer',
-                list: ['points','countries', 'graph']
-            }
-        }
-        return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
-    }
+    // getViewConfigs: function(data) {
+    //     var defaults = {
+    //         vizType: {
+    //             name: 'vizType',
+    //             list: ['geometry', 'texture']
+    //         },
+    //         vizLayer: {
+    //             name: 'vizLayer',
+    //             list: ['points', 'countries', 'graph']
+    //         }
+    //     }
+    //     return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
+    // }
 
 });

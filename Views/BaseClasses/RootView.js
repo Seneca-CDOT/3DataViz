@@ -14,7 +14,6 @@ Application.RootView = Backbone.View.extend({
         this.controlPanel = new Application.ControlPanelRootView();
         this.notifBox = new Application.NotificationsCenter();
         this.infocenter = new Application.VizInfoCenter();
-        this.matcher = new Application.Matcher();
         this.rootView = null;
         this.collections = [];
 
@@ -30,7 +29,8 @@ Application.RootView = Backbone.View.extend({
         };
         Application._vent.on('controlpanel/parse', this.submitOn, this);
         Application._vent.on('visualize', this.visualizeOn, this);
-        Application._vent.on('globe/ready', this.fetchCollection, this);
+        Application._vent.on('matcher/submit', this.visualizeOn, this);
+        //Application._vent.on('globe/ready', this.fetchCollection, this);
 
         window.addEventListener('beforeunload', this.resetCollection.bind(this), false);
     },
@@ -39,7 +39,6 @@ Application.RootView = Backbone.View.extend({
         this.$el.append(this.controlPanel.render().$el);
         this.$el.append(this.notifBox.render().$el);
         this.$el.append(this.infocenter.render().$el);
-        this.$el.append(this.matcher.render().$el);
         return this;
     },
     submitOn: function() {
@@ -55,12 +54,12 @@ Application.RootView = Backbone.View.extend({
 
 
     },
-    fetchCollection: function() {
-        $.each(this.collections, function(index, collection) {
+    // fetchCollection: function() {
+    //     $.each(this.collections, function(index, collection) {
 
-            collection.fetchAll();
-        });
-    },
+    //         collection.fetch();
+    //     });
+    // },
     initGlobeView: function() {
 
         this.resetGlobeView();

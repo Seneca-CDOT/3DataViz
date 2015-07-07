@@ -83,8 +83,8 @@ Application = {
         list: ['countries', 'points', 'dynamic', 'graph'],
         countries: {
             url: ['Views/Layers/CountriesLayer.js'],
-            default: ['countrycode', 'value'],
-            optional: ['category', 'label']
+            default: ['countryname', 'value'],
+            optional: ['category', 'countrycode', 'label']
         },
         points: {
             url: ['Views/Layers/PointsLayer.js'],

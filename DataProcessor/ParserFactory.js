@@ -113,11 +113,11 @@ Application.DataProcessor.BaseParser = (function() {
         return pData;
     };
 
-    BaseParser.prototype.preProcess = function(data, complete) {
+    // BaseParser.prototype.preProcess = function(data, complete) {
 
-        var pData = this.preParse(data, complete);
-        return pData;
-    };
+    //     var pData = this.preParse(data, complete);
+    //     return pData;
+    // };
 
     BaseParser.prototype.parse = function(data, complete) {
 
@@ -217,7 +217,7 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
 
         };
         var pData = privateMethods.extract.call(this, filter, data);
-         Application._vent.trigger('controlpanel/subview/vizType');
+        Application._vent.trigger('controlpanel/subview/vizType');
         if (typeof complete === "function") complete(pData);
 
     };
@@ -261,28 +261,27 @@ Application.DataProcessor.SpreadSheetParser = (function() {
     };
     Application.Helper.inherit(SpreadSheetParser, Application.DataProcessor.BaseParser);
 
-    SpreadSheetParser.prototype.preParse = function(data, complete) {
+    // SpreadSheetParser.prototype.preParse = function(data, complete) {
 
-        var that = this;
+    //     var that = this;
 
-        var pData = privateMethods.extractHeaders.call(this, data);
-        // return pData;
-        Application._vent.trigger('matcher/on');
-        if (typeof complete === "function") complete(pData);
-    };
+    //     var pData = privateMethods.extractHeaders.call(this, data);
+    //     // return pData;
+    //     Application._vent.trigger('matcher/on');
+    //     if (typeof complete === "function") complete(pData);
+    // };
 
-    SpreadSheetParser.prototype.parse = function(data, complete) {
+    SpreadSheetParser.prototype.parse = function(data, callbacks) {
 
         // TODO: to Dima Yastretsky
-        var pData = privateMethods.extractSpreadSheet.call(this, data);
+        var pData = privateMethods.extractSpreadSheet.call(this, data, callbacks);
         // return pData;
-        if (typeof complete === "function") complete(pData);
+        //if (typeof complete === "function") complete(pData);
     };
 
     var privateMethods = Object.create(SpreadSheetParser.prototype);
 
-    privateMethods.extractSpreadSheet = function(objects) {
-
+    privateMethods.extractSpreadSheet = function(objects, callbacks) {
         var collection = new Array();
         var entries = objects.feed.entry;
         var headers = {};
@@ -294,13 +293,15 @@ Application.DataProcessor.SpreadSheetParser = (function() {
             headers[cellId.substring(0, 1)] = entries[i].content.$t;
             count++;
         }
-        headers.length = count;
+        headers._length = count;
+
+        if (typeof callbacks.preparsed === "function") callbacks.preparsed(headers);
 
         //get objects
         var obj = {};
         var numRow = 2;
         var objCount = 0;
-        for (var i = headers.length; i < entries.length; i++) {
+        for (var i = headers._length; i < entries.length; i++) {
             var cellPrefix = entries[i].title.$t.substring(0, 1);
             var cellNum = entries[i].title.$t.substring(1);
             if (cellNum != numRow) {
@@ -314,24 +315,9 @@ Application.DataProcessor.SpreadSheetParser = (function() {
         }
         collection.push(obj);
 
+        if (typeof callbacks.complete === "function") callbacks.complete(collection);
+
         return collection;
-    }
-
-    privateMethods.extractHeaders = function(objects) {
-
-        var collection = new Array();
-        var entries = objects.feed.entry;
-        var headers = {};
-
-        //get headers
-        var count = 0;
-        for (var i = 0; entries[i].title.$t.match(/^.1$/g); i++) {
-            var cellId = entries[i].title.$t;
-            headers[cellId.substring(0, 1)] = entries[i].content.$t;
-            count++;
-        }
-
-        return headers;
     }
 
     return SpreadSheetParser;
@@ -346,13 +332,25 @@ Application.DataProcessor.CSVParser = (function() {
     };
     Application.Helper.inherit(CSVParser, Application.DataProcessor.BaseParser);
 
-    CSVParser.prototype.parse = function(file, complete) {
+    CSVParser.prototype.parse = function(file, callbacks) {
 
+        Papa.parse(file, {
+            preview: 1,
+            header: true,
+            complete: function(response){
+                console.log("Preparse:", response.data[0]);
+        if (typeof callbacks.preparsed === "function") callbacks.preparsed(response.data[0]);
+                // Application._vent.trigger('data/parsed', that.getViewConfigs(response.data));
+            }
+        });
+
+       
         Papa.parse(file, {
             // worker: true,
             header: true,
             complete: function(response) {
-                if (typeof complete === "function") complete(response);
+                // if (typeof complete === "function") complete(response);
+            if (typeof callbacks.complete === "function") callbacks.complete(response.data);
                 Application._vent.trigger('matcher/on');
             }
         });

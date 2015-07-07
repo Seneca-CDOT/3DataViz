@@ -2,16 +2,16 @@ Application.Matcher = Backbone.View.extend({
     tagName: 'div',
     id: 'matcherBox',
     initialize: function() {
-        this.attrsMap = {}; // a map of attributes
+        Application.attrsMap = {}; // a map of attributes
         this.lastUserPropName = ''; // the name of the last property created
         this.lastParserPropName = '';
         this.appendHeader();
-        this.userAttributesView = new Application.UserAttributesSet(this.attrsMap);
-        this.parserAttributesView = new Application.ParserAttributesSet(this.attrsMap);
+        this.userAttributesView = new Application.UserAttributesSet(Application.attrsMap);
+        this.parserAttributesView = new Application.ParserAttributesSet(Application.attrsMap);
         this.templatesView = new Application.TemplatesView();
 
         this.submit = new Application.SubmitAttrs();
-        this.submit.$el.on('click', this.postAttrsMap.bind(this));
+        this.submit.$el.on('click', this.action.bind(this));
         Application._vent.on('matcher/on', this.showMatcher, this);
         Application._vent.on('matcher/off', this.hideMatcher, this);
         Application._vent.on('matcher/user/add', this.setUserAttribute, this);
@@ -41,7 +41,7 @@ Application.Matcher = Backbone.View.extend({
     },
     resetAttributes: function() {
 
-        for (var member in this.attrsMap) delete this.attrsMap[member];
+        for (var member in Application.attrsMap) delete Application.attrsMap[member];
     },
     showMatcher: function() {
 
@@ -58,22 +58,23 @@ Application.Matcher = Backbone.View.extend({
     },
     removeUserAttribute: function(attr) {
 
-        this.attrsMap[this.lastParserPropName] = '';
+        Application.attrsMap[this.lastParserPropName] = '';
 
     },
     setParserAttribute: function(attr) {
 
-        this.attrsMap[attr] = this.lastUserPropName;
+        Application.attrsMap[attr] = this.lastUserPropName;
         this.lastParserPropertyName = attr;
 
     },
     removeParserAttribute: function(attr) {
 
-        delete this.attrsMap[attr];
+        delete Application.attrsMap[attr];
     },
-    postAttrsMap: function() {
+    action: function() {
 
-        console.log(this.attrsMap);
+       Application._vent.trigger('matcher/submit');
+       Application._vent.trigger('matcher/off');
 
     },
     destroy: function() {
@@ -100,7 +101,7 @@ Application.AttributesSet = Backbone.View.extend({
     tagName: 'div',
     initialize: function(attrsMap) {
         this.checkboxes = []; // array of checkboxes
-        this.attrsMap = attrsMap;
+        Application.attrsMap = attrsMap;
         this.inactiveColor = '#79839F';
         this.activeColor = '#FFFFFF';
         this.checkedColor = '#79839F';
@@ -120,9 +121,12 @@ Application.AttributesSet = Backbone.View.extend({
 
         $.each(list, function(index, name) {
 
+            if (index != '_length') {
+
             var checkbox = that.createCheckBox(name);
 
             that.$el.append(checkbox);
+        }
 
         });
 
@@ -216,12 +220,12 @@ Application.AttributesSet = Backbone.View.extend({
     },
     findPairByKey: function(attr) {
 
-        return this.attrsMap[attr];
+        return Application.attrsMap[attr];
 
     },
     findPairByValue: function(attr) {
 
-        return _.invert(this.attrsMap)[attr];
+        return _.invert(Application.attrsMap)[attr];
 
     },
     getCheckbox: function(name) {
@@ -248,7 +252,7 @@ Application.AttributesSet = Backbone.View.extend({
 
         this.removeCheckboxes();
         this.checkboxes = null;
-        this.attrsMap = null;
+        //Application.attrsMap = null;
         this.inactiveColor = null;
         this.activeColor = null;
         this.checkedColor = null;
@@ -274,6 +278,7 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
         this.list; // last list of user attributes
     },
     action: function(e) {
+
         Application.AttributesSet.prototype.action.call(this, e);
 
         var checked = $(e.target).data('checked');
@@ -315,6 +320,8 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
 
     },
     listAttributes: function(list) {
+
+       if ({}.toString.call(list) == '[object Object]') list = _.keys(list);
 
         Application.AttributesSet.prototype.listAttributes.call(this, list);
         this.makeInactiveTheRest();
@@ -408,7 +415,7 @@ Application.TemplatesView = Backbone.View.extend({
         this.$el.append(this.picDiv);
     },
     destroy: function() {
-        
+
         this.$el.unbind();
         this.remove();
     }

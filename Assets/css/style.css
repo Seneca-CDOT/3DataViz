@@ -330,11 +330,13 @@ b {
 
 #matcherBox {
     background-color: rgba(75, 75, 115, 0.7);
-    position: absolute;
-    left: 30%;
-    top: 30%;
-    width: 30%;
-    height: 40%;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 800px;
+    height: 500px;
+    margin-top: -250px;
+    margin-left: -400px;
     text-align: left;
     color: white;
     font-size: 150%;
