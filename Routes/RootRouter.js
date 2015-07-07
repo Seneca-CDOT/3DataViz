@@ -17,9 +17,4 @@ Application.RootRouter = Backbone.Router.extend({
 
     }
 
-    // request: function (id) { 
-
-    //     Application.router.rootGlobeView.globeView.collection.trigger("grab", id );
-    // }
-
 });

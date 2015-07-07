@@ -49,6 +49,9 @@ Application.DataProcessor.ProcessorModule = (function() {
             case "graph":
                 options.transformerType = "graphVisualTransformer";
                 break;
+            case "pointcloud":
+                options.transformerType = "pointcloudVisualTransformer";
+                break;
         }
 
         var transformer = Application.DataProcessor.TransformerFactory.createTransformer(options);

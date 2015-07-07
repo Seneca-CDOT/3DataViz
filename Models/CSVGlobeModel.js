@@ -78,7 +78,7 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
             },
             vizLayer: {
                 name: 'vizLayer',
-                list: ['points', 'countries', 'graph']
+                list: ['points', 'countries', 'graph', 'pointcloud']
             }
         }
         return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);

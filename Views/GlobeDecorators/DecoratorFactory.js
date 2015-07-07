@@ -2,7 +2,7 @@ var Application = Application || {};
 
 // decorator factory
 
-Application.GlobeDecoratorFactory = (function() {
+Application.DecoratorFactory = (function() {
 
     var decoratorClass = Application.TextureGlobeDecorator;
 

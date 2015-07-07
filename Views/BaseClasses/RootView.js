@@ -47,7 +47,8 @@ Application.RootView = Backbone.View.extend({
         Application._vent.trigger('vizinfocenter/message/off');
         Application._vent.trigger('controlpanel/message/off');
         Application._vent.trigger('controlpanel/message/on','LOADING...');
-        this.initGlobeView();
+        
+        this.initView();
         
         $("#instruction").fadeOut('slow');
         
@@ -59,11 +60,15 @@ Application.RootView = Backbone.View.extend({
             collection.fetch();
         });
     },
-    initGlobeView: function() {
+    initView: function() {
 
-        this.resetGlobeView();
+        this.resetView();
 
-        this.rootView = new Application['RootGlobeView'](this.collections);
+        this.rootView = new Application['RootVisualizationView'](this.collections);
+
+        // this.rootView = new Application['RootGlobeView'](this.collections);
+        // this.rootView = new Application['RootPointCloudView'](this.collections);
+
         this.$el.prepend(this.rootView.$el);
 
     },
@@ -124,7 +129,7 @@ Application.RootView = Backbone.View.extend({
         });
 
     },
-    resetGlobeView: function() {
+    resetView: function() {
         if (this.rootView) {
             console.log("destroy rootView");
             this.rootView.destroy();

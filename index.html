@@ -80,10 +80,25 @@
     <div id="applicationRegion"></div>
 
 </body>
+
+<script type="x-shader/x-vertex" id="vertexshader">
+
+  attribute float size;
+  void main() {
+    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+    gl_PointSize = size * ( 300.0 / length( mvPosition.xyz ) );
+    gl_Position = projectionMatrix * mvPosition;
+  }
+
+</script>
+
+
 <!--  TODO: move templates to separate file -->
-<script id="rootGlobeViewTemplate" type="text/html">
+<script id="rootVisualizationViewTemplate" type="text/html">
 </script>
 <script id="globeViewTemplate" type="text/html">
+</script>
+<script id="viewTemplate" type="text/html">
 </script>
 <!-- TODO: -->
 <!-- <script src="http://localhost:8080/socket.io/socket.io.js"></script> -->

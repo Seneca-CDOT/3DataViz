@@ -21,6 +21,7 @@ Application = {
         [
             'DataProcessor/DataProcessor.js',
             'Views/GlobeDecorators/BaseGlobeDecorator.js',
+            'Views/BaseClasses/BaseView.js',
         ],
         [
             'Helpers/Debug.js',
@@ -37,14 +38,16 @@ Application = {
             'Routes/RootRouter.js',
             'Views/GlobeDecorators/GeometryGlobeDecorator.js',
             'Views/GlobeDecorators/TextureGlobeDecorator.js',
-            'Views/GlobeDecorators/GlobeDecoratorFactory.js',
+            'Views/GlobeDecorators/DecoratorFactory.js',
 
             'Views/ControlPanel/ControlPanelGlobeView.js',
             'Views/ControlPanel/ControlElementsGlobeView.js',
 
             'Views/BaseClasses/RootView.js',
-            'Views/BaseClasses/RootGlobeView.js',
+            'Views/BaseClasses/RootVisualizationView.js',
+        
             'Views/BaseClasses/BaseGlobeView.js',
+            'Views/BaseClasses/BasePointCloudView.js',
 
             'Models/BaseClasses/BaseGlobeModel.js',
         ]
@@ -63,8 +66,8 @@ Application = {
         points: ['Views/Layers/PointsLayer.js'],
         countries: ['Views/Layers/CountriesLayer.js'],
         dynamic: ['Views/Layers/DynamicLayer.js', 'Views/Layers/DynamicLayerParticle.js'],
-        graph: ['Views/Layers/GraphsLayer.js']
-
+        graph: ['Views/Layers/GraphsLayer.js'],
+        pointcloud: ['Views/Layers/PointCloudLayer.js']
     }
 
 }
