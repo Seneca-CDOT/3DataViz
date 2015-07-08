@@ -128,7 +128,7 @@ Application.DataSourcesView = Backbone.View.extend({
 
         this.viewConfig = {
             name: 'dataSource',
-            list: ['twitterDB', 'twitterLive', 'csv', 'spreadSheet', 'googleTrends']
+            list: ['twitterDB', 'twitterLive', 'csv', 'box', 'spreadSheet', 'googleTrends']
         };
         this.dataSourcesList = new Application.DropDownList(this.viewConfig);
         this.dataSourcesList.$el.attr('id', 'dataSourcesList');
@@ -180,6 +180,9 @@ Application.DataSourcesView = Backbone.View.extend({
                 break;
             case 'csv':
                 this.subview = new Application.CSVControlPanel(subViewConfig);
+                break;
+            case 'box':
+                this.subview = new Application.BoxControlPanel(subViewConfig);
                 break;
             case 'spreadSheet':
                 this.subview = new Application.SpreadSheetControlPanel(subViewConfig);
@@ -318,6 +321,40 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
         this.fileUpload.destroy();
     }
 });
+
+
+Application.BoxControlPanel = Application.ButtonsView.extend({
+
+    initialize: function(viewConfig) {
+
+        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
+
+        this.boxExplorer = new Application.BoxExplorer();
+
+        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn.$el.text('SUBMIT');
+        this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
+
+    },
+    render: function() {
+        Application.ButtonsView.prototype.render.call(this);
+        this.$el.append(this.boxExplorer.render().$el);
+        this.$el.append(this.submitbtn.render().$el);
+
+        return this;
+    },
+    submitAction: function() {
+
+        Application.userConfig.fileInfo = this.boxExplorer.getFileInfo();
+        Application._vent.trigger('controlpanel/parse');
+
+    },
+    destroy: function() {
+        this.submitbtn.destroy();
+        this.boxExplorer.destroy();
+    }
+});
+
 
 Application.DynamicTwitterLiveControlPanel = Application.ButtonsView.extend({
 

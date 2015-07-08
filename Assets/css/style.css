@@ -109,8 +109,7 @@ b{
 .configList {
     position: relative;
     z-index: 100;
-    width: 100%;
-    margin-left: 10%;
+    margin: 0 10%;
     padding-bottom: 20px;
     background-color: #1F1F2E;
 }
@@ -123,13 +122,15 @@ b{
     font-weight: normal;
 }
 .configList .form-control{
-    width: 80%;
+    width: 100%;
+}
+.btn{
+    width: 100%;
 }
 
 .btn-file {
     position: relative;
     overflow: hidden;
-    width: 80%;
     margin-top: 10%;
     box-sizing: border-box;
 }
@@ -157,6 +158,10 @@ b{
 #fileName:before{
     font-family: 'Glyphicons Halflings';
     content: "\e022";
+}
+
+#box-select{
+    margin: 10% auto 0;
 }
 
 /***************************************

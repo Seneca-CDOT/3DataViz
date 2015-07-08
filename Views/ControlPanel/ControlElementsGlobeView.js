@@ -85,28 +85,42 @@ Application.FileUpload = Application.ControlElementsGlobeView.extend({
     }
 });
 
-// Application.FileUpload = Application.ControlElementsGlobeView.extend({
-//     tagName: 'input',
-//     initialize: function(viewConfig) {
-//         Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+Application.BoxExplorer = Application.ControlElementsGlobeView.extend({
+    tagName: 'div',
+    initialize: function(viewConfig) {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+        var that = this;
+        this.fileInfo;
 
-//         this.$el.attr('type', 'file');
-//         this.$el.attr('id', 'fileUpload');
-//         this.$el.prop('multiple', true);
 
-//         this.$el.on('keyup', this.grabInput.bind(this));
+        this.$btnfile = $('<div id="box-select"></div>');
+        this.boxSelect = new BoxSelect({
+            clientId: "2cef1xake819jgxn76fpd9303j0ngmrs",
+            linkType: "direct",
+            multiselect: false
+        });
+        this.boxSelect.success(function(response){
+            that.boxSelect.closePopup();
+            $("#fileName").text(response[0].name).show();
+            that.fileInfo = response[0];
+        });
 
-//     },
-//     render: function() {
-//         return this;
-//     },
-//     grabInput: function() {
-//         this.addToConfig(this.$el.val());
-//     },
-//     getFile: function(){
-//         return this.$el[0].files[0];
-//     }
-// });
+        this.$btnfile.on('click', this.handleFile.bind(this));
+        this.$list = $('<p id="fileName"></p>');
+        this.$el.append(this.$btnfile);
+        this.$el.append(this.$list);
+        
+    },
+    render: function() {
+        return this;
+    },
+    getFileInfo: function(){
+        return this.fileInfo;
+    },
+    handleFile: function(){
+        this.boxSelect.launchPopup();
+    }
+});
 
 Application.DateTime = Application.ControlElementsGlobeView.extend({
     tagName: 'input',

@@ -93,7 +93,7 @@ Application.RootView = Backbone.View.extend({
                 {
 
                     // collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
-                    collectionClasses = ['CSVCollection',];
+                    collectionClasses = ['CSVCollection'];
                     break;
                 }
             case 'spreadSheet':
@@ -107,6 +107,12 @@ Application.RootView = Backbone.View.extend({
                 {
 
                     collectionClasses = ['GoogleTrendsCollection'];
+                    break;
+                }
+            case 'box':
+                {
+
+                    collectionClasses = ['BoxCollection'];
                     break;
                 }
 
