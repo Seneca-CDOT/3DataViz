@@ -76,6 +76,10 @@ Application = {
             url: ['Models/CSVGlobeModel.js'],
             attributes: true
         }
+        box: {
+            url: ['Models/BoxGlobeModel.js'],
+            attributes: true
+        }
     },
 
     templates: {
