@@ -17,22 +17,23 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
 
         this.file = Application.userConfig.files;
         Application.BaseGlobeCollection.prototype.initialize.call(this);
+        this.data = null;
 
     },
-    preParse: function() {
+    // preParse: function() {
 
-        var that = this;
-        Papa.parse(this.file, {
-            preview: 1,
-            header: true,
-            complete: function(response){
-                console.log("Preparse:", response.data);
-                Application._vent.trigger('data/parsed', that.getViewConfigs(response.data));
-            }
-        });
+    //     var that = this;
+    //     Papa.parse(this.file, {
+    //         preview: 1,
+    //         header: true,
+    //         complete: function(response){
+    //             console.log("Preparse:", response.data);
+    //             Application._vent.trigger('data/parsed', that.getViewConfigs(response.data));
+    //         }
+    //     });
 
-    },
-    parse: function(file) {
+    // },
+    parse: function() {
 
         // console.log(response);
         var pModule = Application.DataProcessor.ProcessorModule;
@@ -41,20 +42,31 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
             dataType: "csv"
         };
 
-        pModule.processData(this.file, options, function(response){
-            console.log("parse:",response);
-            that.transform(response.data); 
+        pModule.processData(this.file, options, {
+
+            preparsed: function(headers) {
+                console.log("preparsed:", headers);
+                Application._vent.trigger('matcher/user', headers);
+                Application._vent.trigger('matcher/on');
+            },
+            complete: function(response) {
+                console.log("parse:", response);
+               // Application._vent.trigger('data/parsed', that.getViewConfigs(response));
+                //that.transform(response); 
+                that.data = response; // to hold data until visualization starts
+            }
+
         });
 
     },
-    transform: function(data){
+    transform: function(){
         var pModule = Application.DataProcessor.ProcessorModule;
         var that = this;
         var options = {
             visualizationType: Application.userConfig.vizLayer
         }
 
-        pModule.transformData(data, options, function(response){
+        pModule.transformData(this.data, options, function(response){
             console.log("transform:",response);
             that.models = response;
             Application._vent.trigger('data/ready'); 
@@ -65,24 +77,22 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
     },
     destroy: function() {
        // console.log("Destroy SpreadSheetCollection");
-        for (var i = 0; i < this.models.length; i++) {
-            this.models[i] = null;
-        }
+       Application.BaseGlobeCollection.prototype.destroy.call(this);
     },
-    getViewConfigs: function(data) {
+    // getViewConfigs: function(data) {
 
-        var defaults = {
-            vizType: {
-                name: 'vizType',
-                list: ['geometry', 'texture']
-            },
-            vizLayer: {
-                name: 'vizLayer',
-                list: ['points', 'countries', 'graph']
-            }
-        }
-        return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
+    //     var defaults = {
+    //         vizType: {
+    //             name: 'vizType',
+    //             list: ['geometry', 'texture']
+    //         },
+    //         vizLayer: {
+    //             name: 'vizLayer',
+    //             list: ['points', 'countries', 'graph']
+    //         }
+    //     }
+    //     return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
 
-    }
+    // }
 
 });

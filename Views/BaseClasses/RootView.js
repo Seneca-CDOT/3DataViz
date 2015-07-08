@@ -8,6 +8,7 @@ var Application = Application || {};
 Application.RootView = Backbone.View.extend({
 
     tagName: "div",
+    id: 'rootView',
     initialize: function() {
 
         this.controlPanel = new Application.ControlPanelRootView();
@@ -18,7 +19,8 @@ Application.RootView = Backbone.View.extend({
 
         Application.userConfig = {
             dataSource: '',
-            vizType: '',
+            vizType: 'geometry',
+            files: '',
             vizLayer: '',
             input: '',
             interval: '',
@@ -28,7 +30,8 @@ Application.RootView = Backbone.View.extend({
         };
         Application._vent.on('controlpanel/parse', this.submitOn, this);
         Application._vent.on('visualize', this.visualizeOn, this);
-        Application._vent.on('globe/ready', this.fetchCollection, this);
+        Application._vent.on('matcher/submit', this.visualizeOn, this);
+        //Application._vent.on('globe/ready', this.fetchCollection, this);
 
         window.addEventListener('beforeunload', this.resetCollection.bind(this), false);
     },
@@ -40,25 +43,24 @@ Application.RootView = Backbone.View.extend({
         return this;
     },
     submitOn: function() {
-        //console.log('data/ready');
+        $("#instruction").fadeOut('slow');
         this.createCollection();
     },
     visualizeOn: function() {
         Application._vent.trigger('vizinfocenter/message/off');
         Application._vent.trigger('controlpanel/message/off');
-        Application._vent.trigger('controlpanel/message/on','LOADING...');
+        Application._vent.trigger('controlpanel/message/on', 'LOADING...');
         this.initGlobeView();
-        
-        $("#instruction").fadeOut('slow');
-        
+        // $("#instruction").fadeOut('slow');
+
 
     },
-    fetchCollection: function() {
-        $.each(this.collections, function(index, collection) {
+    // fetchCollection: function() {
+    //     $.each(this.collections, function(index, collection) {
 
-            collection.fetch();
-        });
-    },
+    //         collection.fetch();
+    //     });
+    // },
     initGlobeView: function() {
 
         this.resetGlobeView();
@@ -118,12 +120,12 @@ Application.RootView = Backbone.View.extend({
 
         }
 
-        require(Application.models[Application.userConfig.dataSource], function() {
+        require(Application.models[Application.userConfig.dataSource].url, function() {
 
             $.each(collectionClasses, function(index, collectionName) {
 
                 that.collections.push(new Application[collectionName]);
-                that.collections[index].preParse();
+                that.collections[index].fetch();
 
             });
 

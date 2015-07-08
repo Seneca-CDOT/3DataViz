@@ -1,7 +1,5 @@
 Application.ControlElementsGlobeView = Backbone.View.extend({
     initialize: function(viewConfig) {
-        //this._vent = config.event;
-        //this.name = '';
         this.viewConfig = viewConfig;
 
     },
@@ -22,6 +20,7 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
 
         if (e) e.stopPropagation();
 
+
     },
     addToConfig: function(value) {
 
@@ -32,9 +31,9 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
 
 Application.InputField = Application.ControlElementsGlobeView.extend({
     tagName: 'input',
-    initialize: function(viewConfig) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
-        this.$el.on('keyup', this.grabInput.bind(this), this.disableVisView.bind(this));
+    initialize: function() {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this);
+        this.$el.on('keyup', this.disableVisView.bind(this));
     },
     render: function() {
 
@@ -53,19 +52,21 @@ Application.InputField = Application.ControlElementsGlobeView.extend({
     disableVisView: function() {
 
         Application._vent.trigger('controlpanel/input/changed');
+        Application._vent.trigger('matcher/off');
     }
 
 });
 
 Application.FileUpload = Application.ControlElementsGlobeView.extend({
     tagName: 'div',
-    initialize: function(viewConfig) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+    initialize: function() {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this);
 
         this.$btnfile = $('<div class="btn btn-default btn-file">Choose File</div>');
 
         this.$file = $('<input id="fileUpload" type="file">');
         this.$file.on('change', this.handleFile.bind(this));
+        this.$btnfile.on('click', this.action.bind(this));
         this.$btnfile.append(this.$file);
 
         this.$el.append(this.$btnfile);
@@ -77,12 +78,17 @@ Application.FileUpload = Application.ControlElementsGlobeView.extend({
     render: function() {
         return this;
     },
-    getFile: function(){
+    getFile: function() {
         return this.$file[0].files[0];
     },
-    handleFile: function(){
+    handleFile: function() {
         $("#fileName").text(this.getFile().name).show();
-    }
+    },
+    action: function() {
+
+        Application._vent.trigger('controlpanel/input/changed');
+        Application._vent.trigger('matcher/off');
+    },
 });
 
 Application.BoxExplorer = Application.ControlElementsGlobeView.extend({
@@ -135,6 +141,7 @@ Application.DateTime = Application.ControlElementsGlobeView.extend({
     action: function(e) {
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
+        Application._vent.trigger('matcher/off');
 
     },
     grabInput: function() {
@@ -159,14 +166,15 @@ Application.Help = Application.ControlElementsGlobeView.extend({
     },
     action: function(e) {
         $("#instruction").fadeToggle();
+        Application._vent.trigger('matcher/off');
     }
 });
 
 Application.Button = Application.ControlElementsGlobeView.extend({
     tagName: 'button',
     className: 'btn btn-primary button',
-    initialize: function(viewConfig) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+    initialize: function() {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this);
     },
     events: {
 
@@ -178,8 +186,7 @@ Application.Button = Application.ControlElementsGlobeView.extend({
     action: function(e) {
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
-
-        //  Application._vent.trigger('controlpanel/parse');
+        Application._vent.trigger('matcher/off');
     }
 });
 
@@ -187,8 +194,8 @@ Application.Button = Application.ControlElementsGlobeView.extend({
 
 Application.VizButton = Application.ControlElementsGlobeView.extend({
     tagName: 'button',
-    initialize: function(viewConfig) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+    initialize: function() {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this);
     },
     render: function() {
         return this;
@@ -237,7 +244,7 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
             if (option.selected == true && e.target.value != "") {
 
                 that.addToConfig(e.target.value);
-                Application._vent.trigger('controlpanel/subview/' + that.viewConfig.name);
+                Application._vent.trigger('controlpanel/subview/' + that.viewConfig.name, option.innerText);
             }
         });
     }

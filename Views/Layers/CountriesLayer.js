@@ -129,11 +129,11 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         var colorsMap = this.createColors(results); // creates a colors map relative to the values
 
-        if (results[0].countryname != '') {
+        if (results[0].countryname) {
             var search = 'countryname';
         }
 
-        if (results[0].countrycode != '') {
+        if (results[0].countrycode) {
             var search = 'countrycode';
         }
 

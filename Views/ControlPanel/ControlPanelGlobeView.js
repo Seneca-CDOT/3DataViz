@@ -4,7 +4,7 @@ Application.NotificationsCenter = Backbone.View.extend({
     initialize: function() {
         Application._vent.on('controlpanel/message/on', this.showMessage, this);
         Application._vent.on('controlpanel/message/off', this.removeMessage, this);
-       // Application._vent.on('data/ready', this.removeMessage, this);
+        // Application._vent.on('data/ready', this.removeMessage, this);
         this.$el.hide();
     },
     render: function() {
@@ -33,7 +33,7 @@ Application.VizInfoCenter = Backbone.View.extend({
     initialize: function() {
         Application._vent.on('vizinfocenter/message/on', this.showMessage, this);
         Application._vent.on('vizinfocenter/message/off', this.removeMessage, this);
-       // Application._vent.on('data/ready', this.removeMessage, this);
+        // Application._vent.on('data/ready', this.removeMessage, this);
         this.$el.hide();
     },
     render: function() {
@@ -62,23 +62,28 @@ Application.ControlPanelRootView = Backbone.View.extend({
     initialize: function() {
 
         this.visualizationsView = null;
-        this.dataSourcesView = null;
-        this.addDataSourcesView();
+
+        this.dataSourcesView = new Application.DataSourcesView();
+        this.matcher = new Application.Matcher();
 
         Application._vent.on('data/parsed', this.addVisualizationsView, this);
-        Application._vent.on('controlpanel/subview/dataSource', this.destroyVisualizationView, this);
+        //Application._vent.on('controlpanel/subview/dataSource', this.addVisualizationsView, this);
         Application._vent.on('controlpanel/input/changed', this.destroyVisualizationView, this);
-
+        Application._vent.on('matcher/on', this.destroyVisualizationView, this);
         this.helpButton = new Application.Help();
         this.helpButton.$el.attr('id', 'helpButton');
         this.$el.append(this.helpButton.render().$el);
 
+        //this.initMatcher();
+
     },
     render: function() {
         this.$el.append(this.dataSourcesView.render().$el);
+        this.$el.append(this.matcher.render().$el);
         // this.$el.append(this.visualizationsView.render().$el);
         return this;
     },
+
     addDataSourcesView: function() {
         if (this.dataSourcesView) this.dataSourcesView.destroy();
         this.dataSourcesView = new Application.DataSourcesView();
@@ -126,16 +131,11 @@ Application.DataSourcesView = Backbone.View.extend({
         this.subview = null;
         //this.templateView = null;
 
-        this.viewConfig = {
-            name: 'dataSource',
-            list: ['twitterDB', 'twitterLive', 'csv', 'box', 'spreadSheet', 'googleTrends']
-        };
-        this.dataSourcesList = new Application.DropDownList(this.viewConfig);
+        this.dataSourcesList = new Application.DropDownList(Application.models);
         this.dataSourcesList.$el.attr('id', 'dataSourcesList');
         this.$el.append('<label for="dataSourcesList" class="label">CHOOSE A DATA SOURCE</label>');
 
         Application._vent.on('controlpanel/subview/dataSource', this.addSubView, this);
-        //   Application._vent.on('data/parsed', this.addTemplateListView.bind(this));
 
     },
     render: function() {
@@ -164,31 +164,25 @@ Application.DataSourcesView = Backbone.View.extend({
     },
     getSubView: function() {
 
-        this.viewConfig.subView = {
-            name: 'input'
-        };
-
-        var subViewConfig = this.viewConfig.subView;
-
         switch (Application.userConfig.dataSource) {
 
             case 'twitterDB':
-                this.subview = new Application.DynamicTwitterDBControlPanel(subViewConfig);
+                this.subview = new Application.DynamicTwitterDBControlPanel();
                 break;
             case 'twitterLive':
-                this.subview = new Application.DynamicTwitterLiveControlPanel(subViewConfig);
+                this.subview = new Application.DynamicTwitterLiveControlPanel();
                 break;
             case 'csv':
-                this.subview = new Application.CSVControlPanel(subViewConfig);
+                this.subview = new Application.CSVControlPanel();
                 break;
             case 'box':
-                this.subview = new Application.BoxControlPanel(subViewConfig);
+                this.subview = new Application.BoxControlPanel();
                 break;
             case 'spreadSheet':
-                this.subview = new Application.SpreadSheetControlPanel(subViewConfig);
+                this.subview = new Application.SpreadSheetControlPanel();
                 break;
             case 'googleTrends':
-                this.subview = new Application.GoogleTrendsControlPanel(subViewConfig);
+                this.subview = new Application.GoogleTrendsControlPanel();
                 break;
         }
 
@@ -207,19 +201,22 @@ Application.VisualizationsView = Backbone.View.extend({
         this.visualizebtn = null;
         this.viewConfigs = viewConfigs;
 
-        this.visualizationList = new Application.DropDownList(this.viewConfigs.vizType);
-        this.visualizationList.$el.attr('id', 'visualizationList');
-        this.labelForViz = '<label for="visualizationList" class="label">CHOOSE A VISUALIZATION</label>';
+        // this.visualizationList = new Application.DropDownList(this.viewConfigs.vizType);
+        // this.visualizationList.$el.attr('id', 'visualizationList');
+        // this.labelForViz = '<label for="visualizationList" class="label">CHOOSE A VISUALIZATION</label>';
 
-        Application._vent.on('controlpanel/subview/vizType', this.addSubView, this);
+        // Application._vent.on('data/parsed', this.addSubView, this);
+        //Application._vent.on('matcher/on', this.addMatcher, this);
+
+        this.getSubView();
 
 
 
     },
     render: function() {
 
-        this.$el.append(this.labelForViz);
-        this.$el.append(this.visualizationList.render().$el);
+        // this.$el.append(this.labelForViz);
+        // this.$el.append(this.visualizationList.render().$el);
 
         return this;
     },
@@ -229,12 +226,13 @@ Application.VisualizationsView = Backbone.View.extend({
         this.viewConfigs = null;
         this.visualizationList = null;
         this.subview = null;
-        Application._vent.unbind('controlpanel/subview/vizType', this.addSubView);
+        //Application._vent.unbind('controlpanel/subview/vizType', this.addSubView);
+        // Application._vent.unbind('matcher/on', this.addMatcher);
     },
     addSubView: function() {
 
         if (this.subview) {
-            this.labelForTemplates.remove();
+            if (this.labelForTemplates) this.labelForTemplates.remove();
             this.subview.destroy();
         }
 
@@ -244,21 +242,24 @@ Application.VisualizationsView = Backbone.View.extend({
 
 
     },
+
     getSubView: function() {
         var that = this;
 
-        this.subview = new Application.DropDownList(this.viewConfigs.vizLayer);
-        this.subview.$el.attr('id', 'templatesList');
-        this.labelForTemplates = $('<label for="templatesList" class="label">CHOOSE A TEMPLATE</label>');
-        this.$el.append(this.labelForTemplates);
+        if (Application.models[Application.userConfig.dataSource].attributes == false) {
+            this.subview = new Application.DropDownList(this.viewConfigs.vizLayer);
+            this.subview.$el.attr('id', 'templatesList');
+            this.labelForTemplates = $('<label for="templatesList" class="label">CHOOSE A TEMPLATE</label>');
+            this.$el.append(this.labelForTemplates);
 
-        this.$el.append(this.subview.render().$el);
+            this.$el.append(this.subview.render().$el);
 
-        this.visualizebtn = new Application.Button(this.viewConfigs.vizLayer); // to do submit button in elements
+            this.visualizebtn = new Application.Button(this.viewConfigs.vizLayer); // to do submit button in elements
 
-        this.visualizebtn.$el.text('VISUALIZE');
-        this.visualizebtn.$el.on('mousedown', this.submitAction.bind(this));
-        this.$el.append(this.visualizebtn.render().$el);
+            this.visualizebtn.$el.text('VISUALIZE');
+            this.visualizebtn.$el.on('mousedown', this.submitAction.bind(this));
+            this.$el.append(this.visualizebtn.render().$el);
+        }
 
         return this.subview;
 
@@ -272,8 +273,7 @@ Application.VisualizationsView = Backbone.View.extend({
 
 Application.ButtonsView = Backbone.View.extend({
     id: 'buttons',
-    initialize: function(viewConfig) {
-        this.viewConfig = viewConfig;
+    initialize: function() {
 
     },
     render: function() {
@@ -282,7 +282,6 @@ Application.ButtonsView = Backbone.View.extend({
     },
     destroy: function() {
 
-        this.viewConfig = null;
         this.remove();
         this.$el.empty();
     }
@@ -290,13 +289,13 @@ Application.ButtonsView = Backbone.View.extend({
 
 Application.CSVControlPanel = Application.ButtonsView.extend({
 
-    initialize: function(viewConfig) {
+    initialize: function() {
 
-        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
+        Application.ButtonsView.prototype.initialize.call(this);
 
         this.fileUpload = new Application.FileUpload();
 
-        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
@@ -325,13 +324,13 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
 
 Application.BoxControlPanel = Application.ButtonsView.extend({
 
-    initialize: function(viewConfig) {
+    initialize: function() {
 
-        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
+        Application.ButtonsView.prototype.initialize.call(this);
 
         this.boxExplorer = new Application.BoxExplorer();
 
-        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
@@ -358,16 +357,16 @@ Application.BoxControlPanel = Application.ButtonsView.extend({
 
 Application.DynamicTwitterLiveControlPanel = Application.ButtonsView.extend({
 
-    initialize: function(viewConfig) {
-        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
+    initialize: function() {
+        Application.ButtonsView.prototype.initialize.call(this);
 
-        this.search = new Application.InputField(viewConfig);
+        this.search = new Application.InputField();
         this.search.$el.attr('class', 'form-control userInput');
         this.search.$el.attr('id', 'search');
         this.search.$el.on('keyup', this.searchFieldAction.bind(this));
         this.labelForSearch = $('<label for="search" class="label">ENTER A SEARCH KEYWORD</label>');
 
-        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
@@ -405,32 +404,32 @@ Application.DynamicTwitterLiveControlPanel = Application.ButtonsView.extend({
 
 Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
 
-    initialize: function(viewConfig) {
-        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
+    initialize: function() {
+        Application.ButtonsView.prototype.initialize.call(this);
 
         this.requestTimeFrom();
         this.requestTimeTo();
 
-        this.timeFrom = new Application.InputField(viewConfig);
+        this.timeFrom = new Application.InputField();
         this.timeFrom.$el.attr('class', 'form-control userInput');
         this.timeFrom.$el.attr('id', 'timeFrom');
         this.timeFrom.$el.attr('placeholder', 'Loading...');
         this.timeFrom.$el.on('keyup', this.timeFieldAction.bind(this));
         this.labelForTimeFrom = $('<label for="timeFrom" class="label">ENTER INITIAL TIME</label>');
 
-        this.timeTo = new Application.InputField(viewConfig);
+        this.timeTo = new Application.InputField();
         this.timeTo.$el.attr('class', 'form-control userInput');
         this.timeTo.$el.attr('id', 'timeTo');
         this.timeTo.$el.attr('placeholder', 'Loading...');
         this.timeTo.$el.on('keyup', this.timeFieldAction.bind(this));
         this.labelForTimeTo = $('<label for="timeTo" class="label">ENTER FINAL TIME</label>');
 
-        this.search = new Application.InputField(viewConfig);
+        this.search = new Application.InputField();
         this.search.$el.attr('class', 'form-control userInput');
         this.search.$el.on('keyup', this.searchFieldAction.bind(this));
         this.labelForSearch = $('<label for="search" class="label">ENTER A SEARCH KEYWORD</label>');
 
-        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
@@ -524,10 +523,10 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
 
 Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
 
-    initialize: function(viewConfig) {
-        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
+    initialize: function() {
+        Application.ButtonsView.prototype.initialize.call(this);
 
-        this.urlfield = new Application.InputField(viewConfig);
+        this.urlfield = new Application.InputField();
         this.urlfield.$el.attr('class', 'form-control userInput');
         this.urlfield.$el.attr('id', 'key');
         // this.urlfield.$el.val("13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg");
@@ -535,7 +534,7 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
         this.urlfield.$el.on('mousedown', this.urlFieldAction.bind(this));
         this.labelForKey = $('<label for="key" class="label">ENTER A KEY</label>');
 
-        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
@@ -619,16 +618,16 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
 
 Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
 
-    initialize: function(viewConfig) {
-        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
+    initialize: function() {
+        Application.ButtonsView.prototype.initialize.call(this);
 
-        this.keywordfield = new Application.InputField(viewConfig);
+        this.keywordfield = new Application.InputField();
         this.keywordfield.$el.attr('class', 'form-control userInput');
         this.keywordfield.$el.attr('id', 'search');
         this.keywordfield.$el.on('keyup', this.KeywordFieldAction.bind(this));
         this.labelForKeyword = $('<label for="search" class="label">ENTER A SEARCH KEYWORD</label>');
 
-        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 

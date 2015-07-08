@@ -16,7 +16,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
     initialize: function() {
         Application.BaseGlobeCollection.prototype.initialize.call(this);
 
-        this.response = []; // response from google trends
+        this.data = null; // holds data from google trends
         this.url = ''; // request by this url to google trends
         var that = this;
 
@@ -34,10 +34,6 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         }
 
     },
-    preParse: function() {
-        var data = {};
-        Application._vent.trigger('data/parsed', this.getViewConfigs(data));
-    },
     parse: function(response) {
 
         var that = this;
@@ -49,22 +45,24 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
             visualizationType: this.templatesList
         };
 
-        pModule.processData(response.table.rows, options, function(response){
-            console.log("parse:",response);
-            that.transform(response);
-        });
+        pModule.processData(response.table.rows, options, function(response) {
+                console.log("parse:", response);
+                Application._vent.trigger('data/parsed', that.getViewConfigs(response));
+                //that.transform(response); 
+                that.data = response; // to hold data until visualization starts
+            });
     },
-    transform: function(data){
+    transform: function() {
         var pModule = Application.DataProcessor.ProcessorModule;
         var that = this;
         var options = {
             visualizationType: Application.userConfig.vizLayer
         }
-        pModule.transformData(data, options, function(response){
-            console.log("transform:",response);
-            that.models = response;
+        //pModule.transformData(this.data, options, function(response) {
+            console.log("transform:", this.data);
+            that.models = this.data;
             Application._vent.trigger('data/ready');
-        });
+       // });
     },
     setURL: function(key) {
 
@@ -90,9 +88,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
     },
     destroy: function() {
         //  console.log("Destroy GoogleTrendsCollection");
-        for (var i = 0; i < this.models.length; i++) {
-            this.models[i] = null;
-        }
+       Application.BaseGlobeCollection.prototype.destroy.call(this);
     },
     getViewConfigs: function(data) {
         var defaults = {

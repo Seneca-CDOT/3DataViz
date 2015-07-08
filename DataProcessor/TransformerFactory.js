@@ -89,7 +89,7 @@ Application.DataProcessor.BaseTransformerStrategy = (function() {
     return BaseTransformerStrategy;
 })();
 
-Application.DataProcessor.BaseTransformer = (function(){
+Application.DataProcessor.BaseTransformer = (function() {
 
     function BaseTransformer() {
 
@@ -108,7 +108,7 @@ Application.DataProcessor.BaseTransformer = (function(){
 })();
 
 // country visual
-Application.DataProcessor.CountriesVisualTransformer = (function(){
+Application.DataProcessor.CountriesVisualTransformer = (function() {
 
     function CountriesVisualTransformer() {
 
@@ -118,19 +118,34 @@ Application.DataProcessor.CountriesVisualTransformer = (function(){
 
     CountriesVisualTransformer.prototype.transform = function(data, complete) {
 
-      var transData = [];
+        var transData = [];
 
-        $.each( data, function (index, item ) {
+        $.each(data, function(index, item) {
 
-          var obj = {};
-          obj.countrycode = item.countrycode || "";
-          obj.countryname = item.country || "";
-          obj.value = Application.Helper.getNumber(item.value || 0);
-          transData.push(obj);
+            var obj = {};
 
-         });
+            $.each(item, function(attr, value) {
 
-        if( typeof complete === "function" ) complete(transData);
+                var parserAttr = _.invert(Application.attrsMap)[attr];
+
+                if (parserAttr) {
+
+                    if (parserAttr == 'value') value = Application.Helper.getNumber(value);
+                    
+                    obj[parserAttr] = value;
+
+                } else {
+
+                    console.log("Attribute " + attr + " wasn't included");
+                }
+
+            });
+
+            transData.push(obj);
+
+        });
+
+        if (typeof complete === "function") complete(transData);
     };
 
     return CountriesVisualTransformer;
@@ -138,7 +153,7 @@ Application.DataProcessor.CountriesVisualTransformer = (function(){
 })();
 
 // point visual
-Application.DataProcessor.PointsVisualTransformer = (function(){
+Application.DataProcessor.PointsVisualTransformer = (function() {
 
     function PointsVisualTransformer() {
 
@@ -147,23 +162,48 @@ Application.DataProcessor.PointsVisualTransformer = (function(){
     Application.Helper.inherit(PointsVisualTransformer, Application.DataProcessor.BaseTransformer);
 
     PointsVisualTransformer.prototype.transform = function(data, complete) {
-         
-        if(data[0].latitude == "" && data[0].longitude == ""){
-             var transData = [];  
-      
-            $.each( data, function (index, item ) {
-              
-              var obj = {};
-              obj.countrycode = item.countrycode || "";
-              obj.countryname = item.countryname || "";
-              obj.percent = item.percent || 0;
-              transData.push(obj);
 
-             });
+        // if(data[0].latitude == "" && data[0].longitude == ""){
+        //      var transData = [];  
 
-        }
-    
-        if( typeof complete === "function" ) complete(data);
+        //     $.each( data, function (index, item ) {
+
+        //       var obj = {};
+        //       obj.countrycode = item.countrycode || "";
+        //       obj.countryname = item.countryname || "";
+        //       obj.percent = item.percent || 0;
+        //       transData.push(obj);
+
+        //      });
+
+        // }
+
+        var transData = [];
+
+        $.each(data, function(index, item) {
+
+            var obj = {};
+
+            $.each(item, function(attr, value) {
+
+                var parserAttr = _.invert(Application.attrsMap)[attr];
+
+                if (parserAttr) {
+
+                    obj[parserAttr] = value;
+
+                } else {
+
+                    console.log("Attribute " + attr + " wasn't included");
+                }
+
+            });
+
+            transData.push(obj);
+
+        });
+
+        if (typeof complete === "function") complete(transData);
     };
 
     return PointsVisualTransformer;
@@ -171,7 +211,7 @@ Application.DataProcessor.PointsVisualTransformer = (function(){
 })();
 
 // point visual
-Application.DataProcessor.DynamicVisualTransformer = (function(){
+Application.DataProcessor.DynamicVisualTransformer = (function() {
 
     function DynamicVisualTransformer() {
 
@@ -188,7 +228,7 @@ Application.DataProcessor.DynamicVisualTransformer = (function(){
                 data[i].timestamp = 0;
             }
         }
-        if( typeof complete === "function" ) complete(data);
+        if (typeof complete === "function") complete(data);
     };
 
     return DynamicVisualTransformer;
@@ -196,7 +236,7 @@ Application.DataProcessor.DynamicVisualTransformer = (function(){
 })();
 
 // flightPath visual
-Application.DataProcessor.GraphTransformer = (function(){
+Application.DataProcessor.GraphTransformer = (function() {
 
     function GraphTransformer() {
 
@@ -208,22 +248,22 @@ Application.DataProcessor.GraphTransformer = (function(){
 
         var tData = [];
 
-        $.each(data, function(index, item){
+        $.each(data, function(index, item) {
             console.log(item);
             var obj = {
                 from: {
-                    latitude:"",
+                    latitude: "",
                     longitude: ""
                 },
                 to: {
-                    latitude:"",
+                    latitude: "",
                     longitude: ""
                 },
-                fromLabel:"",
-                toLabel:"",
-                category:"",
-                timestamp:"",
-                value:""
+                fromLabel: "",
+                toLabel: "",
+                category: "",
+                timestamp: "",
+                value: ""
             };
             obj.from = {
                 latitude: item.fromLatitude || null,
@@ -242,7 +282,7 @@ Application.DataProcessor.GraphTransformer = (function(){
             tData.push(obj);
         });
 
-        if( typeof complete === "function" ) complete(tData);
+        if (typeof complete === "function") complete(tData);
     };
 
     return GraphTransformer;
