@@ -176,7 +176,7 @@ Application.DataSourcesView = Backbone.View.extend({
                 this.subview = new Application.CSVControlPanel();
                 break;
             case 'box':
-                this.subview = new Application.BoxControlPanel(subViewConfig);
+                this.subview = new Application.BoxControlPanel();
                 break;
             case 'spreadSheet':
                 this.subview = new Application.SpreadSheetControlPanel();
@@ -324,13 +324,13 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
 
 Application.BoxControlPanel = Application.ButtonsView.extend({
 
-    initialize: function(viewConfig) {
+    initialize: function() {
 
-        Application.ButtonsView.prototype.initialize.call(this, viewConfig);
+        Application.ButtonsView.prototype.initialize.call(this);
 
         this.boxExplorer = new Application.BoxExplorer();
 
-        this.submitbtn = new Application.Button(viewConfig);
+        this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 

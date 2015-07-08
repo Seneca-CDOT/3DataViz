@@ -24,15 +24,14 @@ Application.BoxCollection = Application.BaseGlobeCollection.extend({
         Application.BaseGlobeCollection.prototype.initialize.call(this);
 
     },
-    preParse: function() {
+    // preParse: function() {
 
-        // console.log("preParse");
-        var data = {};
-        Application._vent.trigger('data/parsed', this.getViewConfigs(data));
+    //     // console.log("preParse");
+    //     var data = {};
+    //     Application._vent.trigger('data/parsed', this.getViewConfigs(data));
 
-    },
+    // },
     parse: function(dataText) {
-
 
         // console.log(response);
         var pModule = Application.DataProcessor.ProcessorModule;
@@ -41,20 +40,32 @@ Application.BoxCollection = Application.BaseGlobeCollection.extend({
             dataType: this.fileEx
         };
 
-        pModule.processData(dataText, options, function(response){
-            console.log("parse:",response);
-            that.transform(response.data); 
+        pModule.processData(dataText, options, {
+
+            preparsed: function(headers) {
+                console.log("preparsed:", headers);
+                headers = _.values(headers);
+                Application._vent.trigger('matcher/user', headers);
+                Application._vent.trigger('matcher/on');
+            },
+            complete: function(response) {
+                console.log("parse:", response);
+               // Application._vent.trigger('data/parsed', that.getViewConfigs(response));
+                //that.transform(response); 
+                that.data = response; // to hold data until visualization starts
+            }
+
         });
 
     },
-    transform: function(data){
+    transform: function(){
         var pModule = Application.DataProcessor.ProcessorModule;
         var that = this;
         var options = {
             visualizationType: Application.userConfig.vizLayer
         }
 
-        pModule.transformData(data, options, function(response){
+        pModule.transformData(that.data, options, function(response){
             console.log("transform:",response);
             that.models = response;
             Application._vent.trigger('data/ready'); 

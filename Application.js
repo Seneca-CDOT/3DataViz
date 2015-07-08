@@ -54,7 +54,7 @@ Application = {
 
     models: {
         name: 'dataSource',
-        list: ['twitterDB', 'twitterLive', 'csv', 'spreadSheet', 'googleTrends'],
+        list: ['twitterDB', 'twitterLive', 'csv', 'box', 'spreadSheet', 'googleTrends'],
         spreadSheet: {
             url: ['Models/SpreadSheetGlobeModel.js'],
             attributes: true
@@ -75,7 +75,7 @@ Application = {
         csv: {
             url: ['Models/CSVGlobeModel.js'],
             attributes: true
-        }
+        },
         box: {
             url: ['Models/BoxGlobeModel.js'],
             attributes: true
