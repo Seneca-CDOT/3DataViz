@@ -332,6 +332,8 @@ THREE.OrbitControls = function(object, domElement) {
             momentumLeft = event.webkitMovementX || event.mozMovementX || 0;
             momentumUp = event.webkitMovementY || event.mozMovementY || 0;
 
+            // console.log( event.webkitMovementX, event.webkitMovementY );
+
             // if ( momentumLeft == 0 ) momentumLeft = (event.clientX - oldX) / 10 ; // Manually calculate delta x for safari due to lack of movementx
             // if ( momentumUp == 0 ) momentumUp = (event.clientY - oldY) / 10 ; // Manually calculate delta x for safari due to lack of movementx
 

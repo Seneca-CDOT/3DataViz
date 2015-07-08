@@ -69,7 +69,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
         Application._vent.on('data/parsed', this.addVisualizationsView, this);
         //Application._vent.on('controlpanel/subview/dataSource', this.addVisualizationsView, this);
         Application._vent.on('controlpanel/input/changed', this.destroyVisualizationView, this);
-
+        Application._vent.on('matcher/on', this.destroyVisualizationView, this);
         this.helpButton = new Application.Help();
         this.helpButton.$el.attr('id', 'helpButton');
         this.$el.append(this.helpButton.render().$el);

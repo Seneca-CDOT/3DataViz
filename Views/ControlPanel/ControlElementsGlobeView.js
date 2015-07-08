@@ -20,6 +20,7 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
 
         if (e) e.stopPropagation();
 
+
     },
     addToConfig: function(value) {
 
@@ -51,6 +52,7 @@ Application.InputField = Application.ControlElementsGlobeView.extend({
     disableVisView: function() {
 
         Application._vent.trigger('controlpanel/input/changed');
+        Application._vent.trigger('matcher/off');
     }
 
 });
@@ -64,6 +66,7 @@ Application.FileUpload = Application.ControlElementsGlobeView.extend({
 
         this.$file = $('<input id="fileUpload" type="file">');
         this.$file.on('change', this.handleFile.bind(this));
+        this.$btnfile.on('click', this.action.bind(this));
         this.$btnfile.append(this.$file);
 
         this.$el.append(this.$btnfile);
@@ -75,12 +78,17 @@ Application.FileUpload = Application.ControlElementsGlobeView.extend({
     render: function() {
         return this;
     },
-    getFile: function(){
+    getFile: function() {
         return this.$file[0].files[0];
     },
-    handleFile: function(){
+    handleFile: function() {
         $("#fileName").text(this.getFile().name).show();
-    }
+    },
+    action: function() {
+
+        Application._vent.trigger('controlpanel/input/changed');
+        Application._vent.trigger('matcher/off');
+    },
 });
 
 // Application.FileUpload = Application.ControlElementsGlobeView.extend({
@@ -119,6 +127,7 @@ Application.DateTime = Application.ControlElementsGlobeView.extend({
     action: function(e) {
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
+        Application._vent.trigger('matcher/off');
 
     },
     grabInput: function() {
@@ -143,6 +152,7 @@ Application.Help = Application.ControlElementsGlobeView.extend({
     },
     action: function(e) {
         $("#instruction").fadeToggle();
+        Application._vent.trigger('matcher/off');
     }
 });
 
@@ -162,8 +172,7 @@ Application.Button = Application.ControlElementsGlobeView.extend({
     action: function(e) {
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
-
-        //  Application._vent.trigger('controlpanel/parse');
+        Application._vent.trigger('matcher/off');
     }
 });
 

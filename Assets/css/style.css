@@ -336,7 +336,7 @@ b {
     width: 800px;
     height: 500px;
     margin-top: -250px;
-    margin-left: -400px;
+    margin-left: -525px;
     text-align: left;
     color: white;
     font-size: 150%;
@@ -366,7 +366,7 @@ b {
 
 #AttrsSubmitButton {
     position: absolute;
-    width: 10%;
+    width: 100px;
     bottom: 5px;
     right: 5px;
     /*background-color: #56567A;*/

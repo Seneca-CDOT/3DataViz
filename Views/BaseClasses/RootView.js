@@ -20,6 +20,7 @@ Application.RootView = Backbone.View.extend({
         Application.userConfig = {
             dataSource: '',
             vizType: 'geometry',
+            files: '',
             vizLayer: '',
             input: '',
             interval: '',

@@ -36,6 +36,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
 
             preparsed: function(headers) {
                 console.log("preparsed:", headers);
+                headers = _.values(headers);
                 Application._vent.trigger('matcher/user', headers);
                 Application._vent.trigger('matcher/on');
             },

@@ -22,6 +22,8 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
         this.track = Application.userConfig.input;
         this.ws;
         this.count = 0;
+        Application._vent.unbind('globe/ready', this.transform);
+        Application._vent.on('globe/ready', this.fetchAll, this);
     },
     parse: function() {
 
@@ -96,6 +98,7 @@ Application.TweetsLive = Application.BaseGlobeCollection.extend({
             }));
             this.ws.close();
         }
+        Application._vent.unbind('globe/ready', this.fetchAll);
     },
     getViewConfigs: function(data) {
         var defaults = {

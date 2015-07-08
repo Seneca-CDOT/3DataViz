@@ -293,15 +293,17 @@ Application.DataProcessor.SpreadSheetParser = (function() {
             headers[cellId.substring(0, 1)] = entries[i].content.$t;
             count++;
         }
-        headers._length = count;
-
+        
         if (typeof callbacks.preparsed === "function") callbacks.preparsed(headers);
+        
+        headers.length = count;
+
 
         //get objects
         var obj = {};
         var numRow = 2;
         var objCount = 0;
-        for (var i = headers._length; i < entries.length; i++) {
+        for (var i = headers.length; i < entries.length; i++) {
             var cellPrefix = entries[i].title.$t.substring(0, 1);
             var cellNum = entries[i].title.$t.substring(1);
             if (cellNum != numRow) {
@@ -338,8 +340,8 @@ Application.DataProcessor.CSVParser = (function() {
             preview: 1,
             header: true,
             complete: function(response){
-                console.log("Preparse:", response.data[0]);
-        if (typeof callbacks.preparsed === "function") callbacks.preparsed(response.data[0]);
+                console.log("Preparse:", response.meta.fields);
+        if (typeof callbacks.preparsed === "function") callbacks.preparsed(response.meta.fields);
                 // Application._vent.trigger('data/parsed', that.getViewConfigs(response.data));
             }
         });
@@ -351,7 +353,7 @@ Application.DataProcessor.CSVParser = (function() {
             complete: function(response) {
                 // if (typeof complete === "function") complete(response);
             if (typeof callbacks.complete === "function") callbacks.complete(response.data);
-                Application._vent.trigger('matcher/on');
+                //Application._vent.trigger('matcher/on');
             }
         });
 

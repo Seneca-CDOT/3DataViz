@@ -73,8 +73,8 @@ Application.Matcher = Backbone.View.extend({
     },
     action: function() {
 
-       Application._vent.trigger('matcher/submit');
-       Application._vent.trigger('matcher/off');
+        Application._vent.trigger('matcher/submit');
+        Application._vent.trigger('matcher/off');
 
     },
     destroy: function() {
@@ -121,12 +121,12 @@ Application.AttributesSet = Backbone.View.extend({
 
         $.each(list, function(index, name) {
 
-            if (index != '_length') {
+          //  if (index != '_length') {
 
-            var checkbox = that.createCheckBox(name);
+                var checkbox = that.createCheckBox(name);
 
-            that.$el.append(checkbox);
-        }
+                that.$el.append(checkbox);
+            //}
 
         });
 
@@ -273,9 +273,12 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
         Application._vent.on('controlpanel/subview/vizLayer', this.resetAttributes, this);
         Application._vent.on('matcher/parser/click', this.makeActiveTheRest, this);
         Application._vent.on('matcher/parser/click', this.setAttributeChosen, this);
+        Application._vent.on('matcher/on', this.resetAttributes, this);
         Application._vent.on('matcher/parser/unclick', this.unsetAttributeChosen, this);
         this.lastChoice; // last choice of userSet
         this.list; // last list of user attributes
+        this.templateIsChosen = false;
+
     },
     action: function(e) {
 
@@ -315,13 +318,16 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
     },
     resetAttributes: function() {
 
-        this.listAttributes(this.list);
-        this.makeActiveTheRest();
+        if (this.templateIsChosen) {
+            this.listAttributes(this.list);
+            this.makeActiveTheRest();
+        }
+        this.templateIsChosen = true;
 
     },
     listAttributes: function(list) {
 
-       if ({}.toString.call(list) == '[object Object]') list = _.keys(list);
+        if ({}.toString.call(list) == '[object Object]') list = _.keys(list);
 
         Application.AttributesSet.prototype.listAttributes.call(this, list);
         this.makeInactiveTheRest();
@@ -340,10 +346,11 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
         this.eventName = 'matcher/parser';
         Application.AttributesSet.prototype.initialize.call(this, attrsMap);
         Application._vent.on('controlpanel/subview/vizLayer', this.listAttributes, this);
-        //Application._vent.on('controlpanel/subview/vizLayer', this.makeActiveTheRest, this);
+        Application._vent.on('matcher/on', this.resetAttributes, this);
         Application._vent.on('matcher/user/click', this.makeActiveTheRest, this);
         Application._vent.on('matcher/parser/click', this.setAttributeChosen, this);
         Application._vent.on('matcher/parser/unclick', this.unsetAttributeChosen, this);
+        this.templateChosen = false;
 
     },
     render: function() {
@@ -364,13 +371,26 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
 
         $(box).css('background-color', this.uncheckedColor);
 
+        $(box).data('checked', 'false');
+
+    },
+    resetAttributes: function() {
+
+        var that = this;
+
+        $.each(this.checkboxes, function(index, box) {
+
+            that.unsetAttributeChosen(box.name);
+        });
+
     },
     listAttributes: function(template) {
 
-        var list = Application.templates[template].default;
+        this.list = Application.templates[template].default;
 
-        Application.AttributesSet.prototype.listAttributes.call(this, list);
+        Application.AttributesSet.prototype.listAttributes.call(this, this.list);
         this.makeInactiveTheRest();
+        this.templateIsChosen = true;
     },
     destroy: function() {
         Application.AttributesSet.prototype.destroy.call(this);
@@ -383,7 +403,7 @@ Application.SubmitAttrs = Backbone.View.extend({
     id: 'AttrsSubmitButton',
     initialize: function(viewConfig) {
         Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
-        this.$el.text('SUBMIT');
+        this.$el.text('VISUALIZE');
     },
     render: function() {
         return this;
