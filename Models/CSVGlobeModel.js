@@ -74,7 +74,7 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
         var defaults = {
             vizType: {
                 name: 'vizType',
-                list: ['geometry', 'texture']
+                list: ['geometry', 'texture', 'none']
             },
             vizLayer: {
                 name: 'vizLayer',

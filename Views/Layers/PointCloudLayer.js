@@ -45,132 +45,98 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         });
     },
 
+    getMax: function(objarray){
+        var max = 0;
+        $.each(objarray, function(index, item){
+            if(Math.abs(item.x) > max){
+                max = Math.abs(item.x);
+            }
+            if(Math.abs(item.y) > max){
+                max = Math.abs(item.y);
+            }
+            if(Math.abs(item.z) > max){
+                max = Math.abs(item.z);
+            }
+        });
+
+        return max;
+    },
+
     // visualization specific functionality
     showResults: function() {
 
         console.log("PointCloudLayer showResults");
-        var results = this.collection[0].models;
 
         var that = this;
+        var results = this.collection[0].models;
 
-        // if (results.length == 0) {
-        //     Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
-        //     return;
-        // }else if( results[0].x == null || !results[0].y == null || !results[0].z == null ){
-        //     Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
-        //     return;
-        // }
+        if (results.length == 0) {
+            Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
+            return;
+        }else if( results[0].x == null && !results[0].y == null && !results[0].z == null ){
+            Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
+            return;
+        }
 
         Application._vent.trigger('controlpanel/message/off');
         var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
-        var material = new THREE.SpriteMaterial({
-            map: map,
-            color: 0xffffff,
-            fog: true
-        });
 
         var geometry = new THREE.Geometry();
-        
         this.attributes = {
             size: {type: 'f', value:[]},
+            customColor: {type: 'c', value:[]},
             x: {type: 'f', value:[]},
             y: {type: 'f', value:[]},
             z: {type: 'f', value:[]}
         }
+        this.uniforms = {
+            texture: {type: "t", value: THREE.ImageUtils.loadTexture("/Assets/images/sprite_disc.png")}
+        }
         var shaderMaterial = new THREE.ShaderMaterial( {
             attributes: this.attributes,
-            vertexShader: document.getElementById( 'vertexshader' ).textContent
+            uniforms: this.uniforms,
+            vertexShader: document.getElementById( 'vertexshader' ).textContent,
+            fragmentShader: document.getElementById( 'fragmentshader' ).textContent
         } );
+
+        //Creating points random
+        // var results = [];
+        // for(var i=0; i < 10000; i++){
+        //     var result = {
+        //       x: Math.floor((Math.random()*20000) - 10000),
+        //       y: Math.floor((Math.random()*20000) - 10000),
+        //       z: Math.floor((Math.random()*20000) - 10000)
+        //     }
+        //     results.push(result);
+        // }
+
+        var max = this.getMax(results);
+        console.log(max);
+
+
+        var ratio = 60 / max;
 
         var that = this;
         $.each(results, function(index, item) {
-            var v = new THREE.Vector3(item.x, item.y, item.z);
+            var v = new THREE.Vector3(Math.ceil(item.x * ratio), Math.ceil(item.y * ratio), Math.ceil(item.z * ratio));
             geometry.vertices.push(v);
             that.attributes.size.value[index] = 1;
 
             that.attributes.x.value[index] = item.x;
             that.attributes.y.value[index] = item.y;
             that.attributes.z.value[index] = item.z;
-
+            
+            // Coloring
+            // var g = Math.ceil((item.x + 250)/500.0*255);
+            // var b = Math.ceil((item.y + 250)/500.0*255);
+            // var r = Math.ceil((item.z + 250)/500.0*255);
+            // that.attributes.customColor.value[index] = new THREE.Color("rgb("+r+","+g+","+b+")");
+            that.attributes.customColor.value[index] = new THREE.Color(0xffffff);
             that.attributes.size.needsUpdate = true;
         });
-        // geometry.colors = colors;
-
-        // var material = new THREE.PointCloudMaterial({size: 0.5, vertexColors: THREE.VertexColors});
-
+ 
         this.pointcloud = new THREE.PointCloud(geometry, shaderMaterial);
-
-        // pointcloud.rotation.z = 90*(Math.PI/180);
         this.scene.add(this.pointcloud);
 
-       // var destination;
-        // var hasGeo = false;
-
-        // if (typeof results[0].x === "undefined" && typeof results[0].y === "undefined" && typeof results[0].z === "undefined") {
-
-        //     $.each(results, function(index, item) {
-
-        //         if (item.countrycode != "") {
-        //             var mesh = that.decorators[0].findCountryByCode(item.countrycode);
-        //            var destination = mesh.geometry.boundingSphere.center.clone();
-        //             destination.setLength(that.globeRadius + 1);
-        //             results[index].destination = destination;
-
-        //         } else if (item.countryname != "") {
-        //             var mesh = that.decorators[0].findCountryByName(item.countryname);
-        //             var destination = mesh.geometry.boundingSphere.center.clone();
-        //             destination.setLength(that.globeRadius + 1);
-        //             results[index].destination = destination;
-        //         } else {
-
-        //             console.log('Data has no country identified');
-        //         }
-
-
-
-        //     });
-        // } else {
-
-        //     hasGeo = true;
-
-        //     results.sort(function(a, b) {
-
-        //         return b.longitude - a.longitude;
-        //     });
-
-        // }
-
-        // var time = 100;
-
-        // $.each(results, function(index, item) {
-
-        //     time += 20;
-
-        //     var sprite = new THREE.Sprite(material);
-        //     sprite.scale.multiplyScalar(5);
-        //     var timer = setTimeout(function() {
-
-        //         if(that.globe == null){ return; };
-
-        //         that.globe.add(sprite);
-
-        //         if (hasGeo) {
-
-        //             var position = Application.Helper.geoToxyz(item.longitude, item.latitude, 51);
-
-        //         } else {
-
-        //             var position = results[index].destination;
-
-        //         }
-        //         sprite.position.copy(position);
-
-        //         that.sprites.push(sprite);
-
-        //     }, time);
-
-        //     if(that.timer != null) that.timer.push(timer);
-
-        // });
     }
 });

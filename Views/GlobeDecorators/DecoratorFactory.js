@@ -17,6 +17,10 @@ Application.DecoratorFactory = (function() {
             case "geometry":
                 decoratorClass = Application.GeometryGlobeDecorator;
                 break;
+            default:
+                return null;
+                break;
+
         }
         return new decoratorClass();
     };

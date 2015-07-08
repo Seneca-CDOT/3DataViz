@@ -54,6 +54,7 @@ Application.BaseView = Backbone.View.extend({
         $(window).on('resize', this.onWindowResize.bind(this));
     },
     suscribe: function() {
+        Application._vent.on('data/ready', this.showResults, this);
     },
     destroy: function() {
 
@@ -71,13 +72,6 @@ Application.BaseView = Backbone.View.extend({
         this.controls = null;
         this.tween = null;
 
-        // TODO: review
-        for (var i = 0; i < this.decorators.length; ++i) {
-
-            this.decorators[i].destroy(this);
-        }
-        this.decorators = null;
-
         $.each(this.collection, function(index, collection) {
 
             collection = null;
@@ -94,15 +88,6 @@ Application.BaseView = Backbone.View.extend({
             this.timer = null;
         }
 
-        this.mesh.material.dispose();
-        this.mesh.geometry.dispose();
-        this.mesh = null;
-
-        this.stars.material.dispose();
-        this.stars.geometry.dispose();
-        this.stars = null;
-
-
         if (this.requestedAnimationFrameId) {
 
             cancelAnimationFrame(this.requestedAnimationFrameId);
@@ -116,7 +101,7 @@ Application.BaseView = Backbone.View.extend({
     },
     render: function() {
 
-        this.showGlobe();
+        this.show();
         return this;
     },
 
@@ -151,31 +136,29 @@ Application.BaseView = Backbone.View.extend({
         // };
         // setTimer.call(this);
     },
-    showGlobe: function() {
+    show: function() {
 
-        this.initGlobe();
+        this.init();
         this.decorateProperties();
         this.startDataSynchronization();
     },
 
-    initGlobe: function() {
+    init: function() {
 
         this.addSceneAndRenderer();
         this.addCamera();
         this.addScene();
         this.addLight();
-        // this.addStars();
         this.addControls();
-
         this.addHelpers();
-
         this.renderScene();
     },
     decorateProperties: function() {
 
-        for (var i = 0; i < this.decorators.length; ++i) {
-
-            this.decorators[i].decorateGlobe(this);
+        if(this.decorators.length > 0){
+            for (var i = 0; i < this.decorators.length; ++i) {
+                this.decorators[i].decorateGlobe(this);
+            }
         }
     },
     startDataSynchronization: function() {
@@ -219,44 +202,7 @@ Application.BaseView = Backbone.View.extend({
 
         this.scene.add(this.camera);
     },
-    addStars: function() {
-
-        var geometry = new THREE.SphereGeometry(200, 32, 32);
-        var material = new THREE.MeshBasicMaterial();
-        material.map = THREE.ImageUtils.loadTexture('Assets/images/galaxy_starfield.png');
-        material.side = THREE.BackSide;
-        this.stars = new THREE.Mesh(geometry, material);
-        this.scene.add(this.stars);
-    },
     addScene: function() {
-
-        var size = 100;
-        var step = 10;
-        this.gridHelper1 = new THREE.GridHelper( size, step );
-        this.gridHelper2 = new THREE.GridHelper( size, step );
-        this.gridHelper3 = new THREE.GridHelper( size, step );
-
-        // this.gridHelper1.rotation.z = 90*(Math.PI/180);
-        this.gridHelper2.rotation.y = 90*(Math.PI/180);
-        // this.gridHelper3.rotation.z = 90*(Math.PI/180);
-        this.scene.add( this.gridHelper1 );
-        // this.scene.add( this.gridHelper2 );
-        // this.scene.add( this.gridHelper3 );
-
-        // var geometry = new THREE.SphereGeometry(this.meshRadius, 64, 64, 90 * (Math.PI / 180));
-        // var material = new THREE.MeshPhongMaterial({
-        //     color: 0x4396E8,
-        //     ambient: 0x4396E8,
-        //     shininess: 20
-        // });
-        // this.mesh = new THREE.Mesh(geometry, material);
-
-        // this.scene.add(this.mesh);
-        // this.rayCatchers.push(this.mesh);
-         
-        
-        //TODO templorary solution
-        Application._vent.trigger('globe/ready');
     },
     addLight: function() {
 
@@ -273,11 +219,11 @@ Application.BaseView = Backbone.View.extend({
         this.requestedAnimationFrameId = requestAnimationFrame(this.renderScene.bind(this));
 
         Application.Debug.stats.begin();
-        this.updateGlobe();
+        this.updateScene();
         this.renderer.render(this.scene, this.camera);
         Application.Debug.stats.end();
     },
-    updateGlobe: function() {
+    updateScene: function() {
 
         this.controls.update();
 

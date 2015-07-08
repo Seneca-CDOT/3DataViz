@@ -97,9 +97,10 @@ Application.RootVisualizationView = Backbone.View.extend({
     createDecorators: function(config) {
 
         var decorators = [];
-        // var decorator = Application.DecoratorFactory.createDecorator(config)
-        // Application._vent.trigger('globe/ready');
-        // return [decorator];
-        return null;
+        var decorator = Application.DecoratorFactory.createDecorator(config)
+        if(decorator){
+            decorators.push(decorator);
+        }
+        return decorators;
     }
 });
