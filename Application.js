@@ -92,7 +92,7 @@ Application = {
         },
         points: {
             url: ['Views/Layers/PointsLayer.js'],
-            default: ['latitude', 'longitude'],
+            default: ['latitude', 'longitude', 'label'],
             optional: ['label', 'value', 'category']
         },
         dynamic: {

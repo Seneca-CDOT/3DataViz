@@ -63,12 +63,13 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
 
         Application._vent.trigger('controlpanel/message/off');
-        var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
+        // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
+        var map = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
         var material = new THREE.SpriteMaterial({
-
             map: map,
-            color: 0xffffff,
-            fog: true
+            color: 0xff0000,
+            blending: THREE.AdditiveBlending,
+            //fog: true
         });
 
        // var destination;
@@ -132,6 +133,8 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
                 }
                 sprite.position.copy(position);
+
+                sprite.userData.label = item.label;
 
                 that.sprites.push(sprite);
 
