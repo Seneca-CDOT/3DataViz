@@ -200,6 +200,7 @@ Application.VisualizationsView = Backbone.View.extend({
         this.subview = null;
         this.visualizebtn = null;
         this.viewConfigs = viewConfigs;
+        Application._vent.on('controlpanel/subview/vizLayer', this.addThumbnail, this);
 
         // this.visualizationList = new Application.DropDownList(this.viewConfigs.vizType);
         // this.visualizationList.$el.attr('id', 'visualizationList');
@@ -240,6 +241,8 @@ Application.VisualizationsView = Backbone.View.extend({
 
         this.subview = this.getSubView();
 
+        Application._vent.unbind('controlpanel/subview/vizLayer', this.addThumbnail);
+
 
     },
 
@@ -255,7 +258,7 @@ Application.VisualizationsView = Backbone.View.extend({
             this.$el.append(this.subview.render().$el);
 
             this.visualizebtn = new Application.Button(this.viewConfigs.vizLayer); // to do submit button in elements
-
+             
             this.visualizebtn.$el.text('VISUALIZE');
             this.visualizebtn.$el.on('mousedown', this.submitAction.bind(this));
             this.$el.append(this.visualizebtn.render().$el);
@@ -266,7 +269,14 @@ Application.VisualizationsView = Backbone.View.extend({
     },
     submitAction: function(e) {
         Application._vent.trigger('visualize');
-    }
+    },
+    addThumbnail: function(name) {
+        if (this.picDiv) this.picDiv.remove();
+        this.picDiv = $('<div id="pic"></div>');
+        this.pic = $('<img src="Assets/images/templates/' + name + '.png">');
+        this.picDiv.append(this.pic);
+        this.$el.append(this.picDiv);
+    },
 
 });
 
