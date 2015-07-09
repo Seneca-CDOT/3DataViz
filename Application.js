@@ -41,6 +41,7 @@ Application = {
 
             'Views/ControlPanel/ControlPanelGlobeView.js',
             'Views/ControlPanel/ControlElementsGlobeView.js',
+            'Views/ControlPanel/Matcher.js',
 
             'Views/BaseClasses/RootView.js',
             'Views/BaseClasses/RootGlobeView.js',
@@ -48,7 +49,6 @@ Application = {
 
             'Models/BaseClasses/BaseGlobeModel.js',
 
-            'Views/Widgets.js',
         ]
     ],
 
