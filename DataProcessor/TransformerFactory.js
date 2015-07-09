@@ -54,7 +54,7 @@ Application.DataProcessor.BaseTransformerStrategy = (function() {
     // inherite the base interface if needed
     // Application.Helper.inherit(...)
 
-    BaseTransformerStrategy.prototype.transform = function(data) {
+    BaseTransformerStrategy.prototype.transform = function(data, complete) {
 
         throw 'Please, define an abstract interface.';
     };
@@ -89,7 +89,7 @@ Application.DataProcessor.BaseTransformerStrategy = (function() {
     return BaseTransformerStrategy;
 })();
 
-Application.DataProcessor.BaseTransformer = (function(){
+Application.DataProcessor.BaseTransformer = (function() {
 
     function BaseTransformer() {
 
@@ -99,11 +99,16 @@ Application.DataProcessor.BaseTransformer = (function(){
 
     var privateMethods = Object.create(BaseTransformer.prototype);
 
+    BaseTransformer.prototype.transform = function(data, complete) {
+
+        throw 'Please, define an abstract interface.';
+    };
+
     return BaseTransformer;
 })();
 
 // country visual
-Application.DataProcessor.CountriesVisualTransformer = (function(){
+Application.DataProcessor.CountriesVisualTransformer = (function() {
 
     function CountriesVisualTransformer() {
 
@@ -111,22 +116,36 @@ Application.DataProcessor.CountriesVisualTransformer = (function(){
     };
     Application.Helper.inherit(CountriesVisualTransformer, Application.DataProcessor.BaseTransformer);
 
-    CountriesVisualTransformer.prototype.transform = function(data) {
+    CountriesVisualTransformer.prototype.transform = function(data, complete) {
 
-      var transData = [];
+        var transData = [];
 
-        $.each( data, function (index, item ) {
+        $.each(data, function(index, item) {
 
-          var obj = {};
-          obj.countrycode = item.countrycode || "";
-          obj.countryname = item.countryname || "";
-          obj.percent = item.percent || 0;
-          transData.push(obj);
+            var obj = {};
 
-         });
+            $.each(item, function(attr, value) {
 
+                var parserAttr = _.invert(Application.attrsMap)[attr];
 
-        return transData;
+                if (parserAttr) {
+
+                    if (parserAttr == 'value') value = Application.Helper.getNumber(value);
+                    
+                    obj[parserAttr] = value;
+
+                } else {
+
+                    console.log("Attribute " + attr + " wasn't included");
+                }
+
+            });
+
+            transData.push(obj);
+
+        });
+
+        if (typeof complete === "function") complete(transData);
     };
 
     return CountriesVisualTransformer;
@@ -134,7 +153,7 @@ Application.DataProcessor.CountriesVisualTransformer = (function(){
 })();
 
 // point visual
-Application.DataProcessor.PointsVisualTransformer = (function(){
+Application.DataProcessor.PointsVisualTransformer = (function() {
 
     function PointsVisualTransformer() {
 
@@ -142,26 +161,49 @@ Application.DataProcessor.PointsVisualTransformer = (function(){
     };
     Application.Helper.inherit(PointsVisualTransformer, Application.DataProcessor.BaseTransformer);
 
-    PointsVisualTransformer.prototype.transform = function(data) {
-         
-        if(data[0].latitude == "" && data[0].longitude == ""){
-             var transData = [];  
-      
-            $.each( data, function (index, item ) {
-              
-              var obj = {};
-              obj.countrycode = item.countrycode || "";
-              obj.countryname = item.countryname || "";
-              obj.percent = item.percent || 0;
-              transData.push(obj);
+    PointsVisualTransformer.prototype.transform = function(data, complete) {
 
-             });
+        // if(data[0].latitude == "" && data[0].longitude == ""){
+        //      var transData = [];  
 
+        //     $.each( data, function (index, item ) {
 
-            return transData;
-        }
-        
-        return data
+        //       var obj = {};
+        //       obj.countrycode = item.countrycode || "";
+        //       obj.countryname = item.countryname || "";
+        //       obj.percent = item.percent || 0;
+        //       transData.push(obj);
+
+        //      });
+
+        // }
+
+        var transData = [];
+
+        $.each(data, function(index, item) {
+
+            var obj = {};
+
+            $.each(item, function(attr, value) {
+
+                var parserAttr = _.invert(Application.attrsMap)[attr];
+
+                if (parserAttr) {
+
+                    obj[parserAttr] = value;
+
+                } else {
+
+                    console.log("Attribute " + attr + " wasn't included");
+                }
+
+            });
+
+            transData.push(obj);
+
+        });
+
+        if (typeof complete === "function") complete(transData);
     };
 
     return PointsVisualTransformer;
@@ -169,7 +211,7 @@ Application.DataProcessor.PointsVisualTransformer = (function(){
 })();
 
 // point visual
-Application.DataProcessor.DynamicVisualTransformer = (function(){
+Application.DataProcessor.DynamicVisualTransformer = (function() {
 
     function DynamicVisualTransformer() {
 
@@ -177,7 +219,7 @@ Application.DataProcessor.DynamicVisualTransformer = (function(){
     };
     Application.Helper.inherit(DynamicVisualTransformer, Application.DataProcessor.BaseTransformer);
 
-    DynamicVisualTransformer.prototype.transform = function(data) {
+    DynamicVisualTransformer.prototype.transform = function(data, complete) {
 
         for (var i = 0; i < data.length; ++i) {
             if (data[i].timestamp !== "") {
@@ -186,7 +228,7 @@ Application.DataProcessor.DynamicVisualTransformer = (function(){
                 data[i].timestamp = 0;
             }
         }
-        return data;
+        if (typeof complete === "function") complete(data);
     };
 
     return DynamicVisualTransformer;
@@ -194,7 +236,7 @@ Application.DataProcessor.DynamicVisualTransformer = (function(){
 })();
 
 // flightPath visual
-Application.DataProcessor.GraphTransformer = (function(){
+Application.DataProcessor.GraphTransformer = (function() {
 
     function GraphTransformer() {
 
@@ -202,8 +244,45 @@ Application.DataProcessor.GraphTransformer = (function(){
     };
     Application.Helper.inherit(GraphTransformer, Application.DataProcessor.BaseTransformer);
 
-    GraphTransformer.prototype.transform = function(data) {
-        return data;
+    GraphTransformer.prototype.transform = function(data, complete) {
+
+        var tData = [];
+
+        $.each(data, function(index, item) {
+            console.log(item);
+            var obj = {
+                from: {
+                    latitude: "",
+                    longitude: ""
+                },
+                to: {
+                    latitude: "",
+                    longitude: ""
+                },
+                fromLabel: "",
+                toLabel: "",
+                category: "",
+                timestamp: "",
+                value: ""
+            };
+            obj.from = {
+                latitude: item.fromLatitude || null,
+                longitude: item.fromLongitude || null
+            };
+            obj.to = {
+                latitude: item.toLatitude || null,
+                longitude: item.toLongitude || null
+            };
+            obj.fromLabel = item.fromLabel || null;
+            obj.toLabel = item.toLabel || null;
+            obj.category = item.category || null;
+            obj.timestamp = Number(item.timestamp) || null;
+            obj.value = Number(item.value) || null;
+
+            tData.push(obj);
+        });
+
+        if (typeof complete === "function") complete(tData);
     };
 
     return GraphTransformer;

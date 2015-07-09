@@ -1,6 +1,6 @@
 var Application = Application || {};
 
-Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
+Application.CSVRecord = Application.GeoDataRecord.extend({
 
     defaults: _.extend({}, Application.GeoDataRecord.prototype.defaults, {
 
@@ -11,32 +11,41 @@ Application.SpreadSheetRecord = Application.GeoDataRecord.extend({
 
 });
 
-Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
-    model: Application.SpreadSheetRecord,
+Application.CSVCollection = Application.BaseGlobeCollection.extend({
+    model: Application.CSVRecord,
     initialize: function(config) {
 
-        this.setURL(Application.userConfig.input);
+        this.file = Application.userConfig.files;
         Application.BaseGlobeCollection.prototype.initialize.call(this);
-        this.data = null; // holds data from parsing stage
+        this.data = null;
 
     },
-    parse: function(response) {
+    // preParse: function() {
 
-        var that = this;
+    //     var that = this;
+    //     Papa.parse(this.file, {
+    //         preview: 1,
+    //         header: true,
+    //         complete: function(response){
+    //             console.log("Preparse:", response.data);
+    //             Application._vent.trigger('data/parsed', that.getViewConfigs(response.data));
+    //         }
+    //     });
+
+    // },
+    parse: function() {
+
         // console.log(response);
         var pModule = Application.DataProcessor.ProcessorModule;
-
+        var that = this;
         var options = {
-
-            dataType: "spreadSheet",
-            visualizationType: this.templatesList
+            dataType: "csv"
         };
 
-        pModule.processData(response, options, {
+        pModule.processData(this.file, options, {
 
             preparsed: function(headers) {
                 console.log("preparsed:", headers);
-                headers = _.values(headers);
                 Application._vent.trigger('matcher/user', headers);
                 Application._vent.trigger('matcher/on');
             },
@@ -50,31 +59,28 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         });
 
     },
-    transform: function() {
-
+    transform: function(){
         var pModule = Application.DataProcessor.ProcessorModule;
         var that = this;
-
         var options = {
             visualizationType: Application.userConfig.vizLayer
         }
 
-        pModule.transformData(this.data, options, function(response) {
-            console.log("transform:", response);
+        pModule.transformData(this.data, options, function(response){
+            console.log("transform:",response);
             that.models = response;
-            Application._vent.trigger('data/ready');
+            Application._vent.trigger('data/ready'); 
         });
     },
-    setURL: function(key) {
-
-        if (!key) return;
-        this.url = 'https://spreadsheets.google.com/feeds/cells/' + key + '/1/public/basic?alt=json';
+    fetch: function() {
+        this.parse();
     },
     destroy: function() {
-        // console.log("Destroy SpreadSheetCollection");
-        Application.BaseGlobeCollection.prototype.destroy.call(this);
+       // console.log("Destroy SpreadSheetCollection");
+       Application.BaseGlobeCollection.prototype.destroy.call(this);
     },
     // getViewConfigs: function(data) {
+
     //     var defaults = {
     //         vizType: {
     //             name: 'vizType',
@@ -86,6 +92,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
     //         }
     //     }
     //     return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
+
     // }
 
 });

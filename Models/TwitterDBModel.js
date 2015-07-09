@@ -24,14 +24,17 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
         // this.templatesList = config.templatesList;
         this.ws;
         this.count = 0;
+
+         Application._vent.unbind('globe/ready', this.transform);
+         Application._vent.on('globe/ready', this.fetchAll, this);
     },
-    preParse: function() {
+    parse: function() {
 
         var data = {};
         Application._vent.trigger('data/parsed', this.getViewConfigs(data));
 
     },
-    parse: function(response) {
+    parseAll: function(response) {
 
         var pModule = Application.DataProcessor.ProcessorModule;
         var options = {
@@ -39,24 +42,30 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             visualizationType: this.templatesList
         };
         console.log('tweets', response);
-        var pData = pModule.processData(response, options);
-        this.transform(pData);
+        var that = this;
+        pModule.processData(response, options, function(data){
+            that.transform(data);
+        });
     },
     transform: function(pData) {
         if (Application.userConfig.vizLayer == "") {
             this.add(pData);
 
         } else {
+            var that = this;
             var pModule = Application.DataProcessor.ProcessorModule;
             var options = {
                 visualizationType: Application.userConfig.vizLayer
             };
-            pData = pModule.transformData(pData, options);
-
-            this.add(pData);
+            pModule.transformData(pData, options, function(response){
+                that.add(response);
+            });
         }
     },
     fetch: function() {
+        this.parse();
+    },
+    fetchAll: function() {
 
         this.destroy();
         console.log('userconf', Application.userConfig);
@@ -91,7 +100,7 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             var obj = JSON.parse(results.data);
             obj.real_timestamp = obj.timestamp_ms; // timestamp of the tweet emitted
             obj.timestamp_ms = new Date().getTime();
-            that.parse([obj]);
+            that.parseAll([obj]);
         };
         this.ws.onclose = function(close) {
             this.ws = null;
@@ -110,6 +119,7 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             }));
             this.ws.close();
         }
+        Application._vent.unbind('globe/ready', this.fetchAll);
     },
     getViewConfigs: function(data) {
         var defaults = {

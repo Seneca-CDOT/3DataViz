@@ -96,10 +96,6 @@ Application.DataProcessor.BaseStrategy = (function() {
     return BaseStrategy;
 })();
 
-// Play with this.
-// var p1 = new Application.DataProcessor.BaseParser();
-// p1.testPublicFunction1();
-
 // parser
 
 Application.DataProcessor.BaseParser = (function() {
@@ -107,16 +103,23 @@ Application.DataProcessor.BaseParser = (function() {
     function BaseParser() {
 
         Application.DataProcessor.BaseStrategy.call(this);
+
     };
     Application.Helper.inherit(BaseParser, Application.DataProcessor.BaseStrategy);
 
-    BaseParser.prototype.process = function(data) {
+    BaseParser.prototype.process = function(data, complete) {
 
-        var pData = this.parse(data);
+        var pData = this.parse(data, complete);
         return pData;
     };
 
-    BaseParser.prototype.parse = function(data) {
+    // BaseParser.prototype.preProcess = function(data, complete) {
+
+    //     var pData = this.preParse(data, complete);
+    //     return pData;
+    // };
+
+    BaseParser.prototype.parse = function(data, complete) {
 
         throw 'Please, define an abstract interface.';
     };
@@ -153,7 +156,7 @@ Application.DataProcessor.TweetParser = (function() {
     };
     Application.Helper.inherit(TweetParser, Application.DataProcessor.BaseParser);
 
-    TweetParser.prototype.parse = function(data) {
+    TweetParser.prototype.parse = function(data, complete) {
 
         var filter = {
             longitude: "geo.coordinates[1]",
@@ -162,7 +165,8 @@ Application.DataProcessor.TweetParser = (function() {
             timestamp: "timestamp_ms",
         };
         var pData = privateMethods.extract.call(this, filter, data);
-        return pData;
+        Application._vent.trigger('controlpanel/subview/vizType');
+        if (typeof complete === "function") complete(pData);
     };
 
     var privateMethods = Object.create(TweetParser.prototype);
@@ -200,12 +204,12 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
     };
     Application.Helper.inherit(GoogleTrendsParser, Application.DataProcessor.BaseParser);
 
-    GoogleTrendsParser.prototype.parse = function(data) {
+    GoogleTrendsParser.prototype.parse = function(data, complete) {
 
         var filter = {
             countryname: "",
             countrycode: "c[0].v",
-            percent: "c[1].v",
+            value: "c[1].v",
             longitude: "",
             latitude: "",
             timestamp: "",
@@ -213,7 +217,8 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
 
         };
         var pData = privateMethods.extract.call(this, filter, data);
-        return pData;
+        Application._vent.trigger('controlpanel/subview/vizType');
+        if (typeof complete === "function") complete(pData);
 
     };
 
@@ -256,26 +261,27 @@ Application.DataProcessor.SpreadSheetParser = (function() {
     };
     Application.Helper.inherit(SpreadSheetParser, Application.DataProcessor.BaseParser);
 
-    SpreadSheetParser.prototype.parse = function(data) {
+    // SpreadSheetParser.prototype.preParse = function(data, complete) {
 
-        var filter = {
+    //     var that = this;
 
-            name: "",
-            longitude: "",
-            latitude: ""
+    //     var pData = privateMethods.extractHeaders.call(this, data);
+    //     // return pData;
+    //     Application._vent.trigger('matcher/on');
+    //     if (typeof complete === "function") complete(pData);
+    // };
 
-        };
+    SpreadSheetParser.prototype.parse = function(data, callbacks) {
 
         // TODO: to Dima Yastretsky
-        var pData = privateMethods.extractSpreadSheet.call(this,filter, data);
-
-        return pData;
+        var pData = privateMethods.extractSpreadSheet.call(this, data, callbacks);
+        // return pData;
+        //if (typeof complete === "function") complete(pData);
     };
 
     var privateMethods = Object.create(SpreadSheetParser.prototype);
 
-     privateMethods.extractSpreadSheet = function(filter, objects) {
-
+    privateMethods.extractSpreadSheet = function(objects, callbacks) {
         var collection = new Array();
         var entries = objects.feed.entry;
         var headers = {};
@@ -287,7 +293,11 @@ Application.DataProcessor.SpreadSheetParser = (function() {
             headers[cellId.substring(0, 1)] = entries[i].content.$t;
             count++;
         }
+        
+        if (typeof callbacks.preparsed === "function") callbacks.preparsed(headers);
+        
         headers.length = count;
+
 
         //get objects
         var obj = {};
@@ -302,12 +312,12 @@ Application.DataProcessor.SpreadSheetParser = (function() {
                 numRow = cellNum;
             }
             if (cellNum == numRow) {
-                if (filter[headers[cellPrefix]] !== undefined) {
-                    obj[headers[cellPrefix]] = entries[i].content.$t;
-                }
+                obj[headers[cellPrefix]] = entries[i].content.$t;
             }
         }
         collection.push(obj);
+
+        if (typeof callbacks.complete === "function") callbacks.complete(collection);
 
         return collection;
     }
@@ -324,12 +334,29 @@ Application.DataProcessor.CSVParser = (function() {
     };
     Application.Helper.inherit(CSVParser, Application.DataProcessor.BaseParser);
 
-    CSVParser.prototype.parse = function(data) {
+    CSVParser.prototype.parse = function(file, callbacks) {
 
-        // var pData = null;
-        // return pData;
-        return data;
+        Papa.parse(file, {
+            preview: 1,
+            header: true,
+            complete: function(response){
+                console.log("Preparse:", response.meta.fields);
+        if (typeof callbacks.preparsed === "function") callbacks.preparsed(response.meta.fields);
+                // Application._vent.trigger('data/parsed', that.getViewConfigs(response.data));
+            }
+        });
+
+       
+        Papa.parse(file, {
+            // worker: true,
+            header: true,
+            complete: function(response) {
+                // if (typeof complete === "function") complete(response);
+            if (typeof callbacks.complete === "function") callbacks.complete(response.data);
+                //Application._vent.trigger('matcher/on');
+            }
+        });
+
     };
-
     return CSVParser;
 })();

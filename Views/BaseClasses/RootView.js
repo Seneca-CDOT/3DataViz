@@ -8,16 +8,19 @@ var Application = Application || {};
 Application.RootView = Backbone.View.extend({
 
     tagName: "div",
+    id: 'rootView',
     initialize: function() {
 
         this.controlPanel = new Application.ControlPanelRootView();
         this.notifBox = new Application.NotificationsCenter();
+        this.infocenter = new Application.VizInfoCenter();
         this.rootView = null;
         this.collections = [];
 
         Application.userConfig = {
             dataSource: '',
-            vizType: '',
+            vizType: 'geometry',
+            files: '',
             vizLayer: '',
             input: '',
             interval: '',
@@ -25,9 +28,10 @@ Application.RootView = Backbone.View.extend({
             timeTo: ''
 
         };
-        Application._vent.on('controlpanel/parse', this.submitOn.bind(this));
-        Application._vent.on('visualize', this.visualizeOn.bind(this));
-        Application._vent.on('globe/ready', this.fetchCollection.bind(this));
+        Application._vent.on('controlpanel/parse', this.submitOn, this);
+        Application._vent.on('visualize', this.visualizeOn, this);
+        Application._vent.on('matcher/submit', this.visualizeOn, this);
+        //Application._vent.on('globe/ready', this.fetchCollection, this);
 
         window.addEventListener('beforeunload', this.resetCollection.bind(this), false);
     },
@@ -35,27 +39,28 @@ Application.RootView = Backbone.View.extend({
 
         this.$el.append(this.controlPanel.render().$el);
         this.$el.append(this.notifBox.render().$el);
+        this.$el.append(this.infocenter.render().$el);
         return this;
     },
     submitOn: function() {
-        //console.log('data/ready');
+        $("#instruction").fadeOut('slow');
         this.createCollection();
     },
     visualizeOn: function() {
+        Application._vent.trigger('vizinfocenter/message/off');
         Application._vent.trigger('controlpanel/message/off');
-        Application._vent.trigger('controlpanel/message/on','LOADING...');
+        Application._vent.trigger('controlpanel/message/on', 'LOADING...');
         this.initGlobeView();
-        
-        $("#instruction").fadeOut('slow');
-        
+        // $("#instruction").fadeOut('slow');
+
 
     },
-    fetchCollection: function() {
-        $.each(this.collections, function(index, collection) {
+    // fetchCollection: function() {
+    //     $.each(this.collections, function(index, collection) {
 
-            collection.fetch();
-        });
-    },
+    //         collection.fetch();
+    //     });
+    // },
     initGlobeView: function() {
 
         this.resetGlobeView();
@@ -89,7 +94,8 @@ Application.RootView = Backbone.View.extend({
             case 'csv':
                 {
 
-                    collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
+                    // collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
+                    collectionClasses = ['CSVCollection'];
                     break;
                 }
             case 'spreadSheet':
@@ -105,15 +111,21 @@ Application.RootView = Backbone.View.extend({
                     collectionClasses = ['GoogleTrendsCollection'];
                     break;
                 }
+            case 'box':
+                {
+
+                    collectionClasses = ['BoxCollection'];
+                    break;
+                }
 
         }
 
-        require(Application.models[Application.userConfig.dataSource], function() {
+        require(Application.models[Application.userConfig.dataSource].url, function() {
 
             $.each(collectionClasses, function(index, collectionName) {
 
                 that.collections.push(new Application[collectionName]);
-                that.collections[index].preParse();
+                that.collections[index].fetch();
 
             });
 

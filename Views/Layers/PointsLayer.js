@@ -50,16 +50,26 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     showResults: function() {
 
         console.log("PointsLayer showResults");
-
         var results = this.collection[0].models;
         var that = this;
 
-        var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
-        var material = new THREE.SpriteMaterial({
+        if (results.length == 0) {
+            Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
+            return;
+        }else if( !results[0].latitude || !results[0].longitude ){
+            Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
+            return;
+        }
 
+
+        Application._vent.trigger('controlpanel/message/off');
+        // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
+        var map = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
+        var material = new THREE.SpriteMaterial({
             map: map,
-            color: 0xffffff,
-            fog: true
+            color: 0xff0000,
+            blending: THREE.AdditiveBlending,
+            //fog: true
         });
 
        // var destination;
@@ -123,6 +133,8 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
                 }
                 sprite.position.copy(position);
+
+                sprite.userData.label = item.label;
 
                 that.sprites.push(sprite);
 

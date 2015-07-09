@@ -41,34 +41,75 @@ Application = {
 
             'Views/ControlPanel/ControlPanelGlobeView.js',
             'Views/ControlPanel/ControlElementsGlobeView.js',
+            'Views/ControlPanel/Matcher.js',
 
             'Views/BaseClasses/RootView.js',
             'Views/BaseClasses/RootGlobeView.js',
             'Views/BaseClasses/BaseGlobeView.js',
 
             'Models/BaseClasses/BaseGlobeModel.js',
+
         ]
     ],
 
     models: {
-        spreadSheet: ['Models/SpreadSheetGlobeModel.js'],
-        googleTrends: ['Models/GoogleTrendsGlobeModel.js'],
-        twitterDB: ['Models/TwitterDBModel.js'],
-        twitterLive: ['Models/TwitterLiveModel.js'],
-        csv: ['Models/FlightPathGlobeModel.js','Models/data/path.js', 'Models/data/countriesList.js']
+        name: 'dataSource',
+        list: ['twitterDB', 'twitterLive', 'csv', 'box', 'spreadSheet', 'googleTrends'],
+        spreadSheet: {
+            url: ['Models/SpreadSheetGlobeModel.js'],
+            attributes: true
+        },
+        googleTrends: {
+            url: ['Models/GoogleTrendsGlobeModel.js'],
+            attributes: false
+        },
+        twitterDB: {
+            url: ['Models/TwitterDBModel.js'],
+            attributes: false
+        },
+        twitterLive: {
+            url: ['Models/TwitterLiveModel.js'],
+            attributes: false
+        },
+        // csv: ['Models/FlightPathGlobeModel.js','Models/data/path.js', 'Models/data/countriesList.js']
+        csv: {
+            url: ['Models/CSVGlobeModel.js'],
+            attributes: true
+        },
+        box: {
+            url: ['Models/BoxGlobeModel.js'],
+            attributes: true
+        }
     },
 
-    layers: {
-        points: ['Views/Layers/PointsLayer.js'],
-        countries: ['Views/Layers/CountriesLayer.js'],
-        dynamic: ['Views/Layers/DynamicLayer.js', 'Views/Layers/DynamicLayerParticle.js'],
-        graph: ['Views/Layers/GraphsLayer.js']
-
+    templates: {
+        name: 'vizLayer',
+        list: ['countries', 'points', 'dynamic', 'graph'],
+        countries: {
+            url: ['Views/Layers/CountriesLayer.js'],
+            default: ['countryname', 'value'],
+            optional: ['category', 'countrycode', 'label']
+        },
+        points: {
+            url: ['Views/Layers/PointsLayer.js'],
+            default: ['latitude', 'longitude', 'label'],
+            optional: ['label', 'value', 'category']
+        },
+        dynamic: {
+            url: ['Views/Layers/DynamicLayer.js', 'Views/Layers/DynamicLayerParticle.js'],
+            default: ['latitude', 'longitude', 'timestamp'],
+            optional: ['value', 'category']
+        },
+        graph: {
+            url: ['Views/Layers/GraphsLayer.js'],
+            default: ['latitudeFrom', 'longitudeFrom', 'latitudeTo', 'longitudeTo'],
+            optional: ['timestamp', 'value', 'fromLabel', 'toLabel', 'category']
+        },
     }
 
 }
-require(['Helpers/Helper.js'], function(){
-    Application.Helper.requireOrderly(Application.files, function(){
+require(['Helpers/Helper.js'], function() {
+    Application.Helper.requireOrderly(Application.files, function() {
         Application.init();
     });
 });

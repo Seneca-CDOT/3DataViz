@@ -12,7 +12,7 @@ Application.RootGlobeView = Backbone.View.extend({
     initialize: function(collections) {
 
         //  console.log("initialize RootGlobeView");
-
+        this.$el.attr("id", "rootGlobe");
         this.obj = {};
         this.collections = collections;
         this.obj.decorators = [];
@@ -82,7 +82,7 @@ Application.RootGlobeView = Backbone.View.extend({
         }
 
         var that = this;
-        require(Application.layers[layer], function() {
+        require(Application.templates[layer].url, function() {
             that.globeView = new Application[rootGlobeViewClass](decorator, collections);
             that.render();
         });

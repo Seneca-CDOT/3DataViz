@@ -1,24 +1,40 @@
 /**
  *  For modern browsers
  */
+
 .cf:before,
 .cf:after {
-    content:"";
-    display:table;
-}
-.cf:after {
-    clear:both;
+    content: "";
+    display: table;
 }
 
+.cf:after {
+    clear: both;
+}
 /***************************************
  * Layout
  ***************************************/
+
 body {
     width: 100%;
     height: 100%;
     margin: 0px;
     background: #000;
     overflow-x: hidden;
+}
+
+#vizInfoCenter {
+    color: white;
+    opacity: 0.9;
+    text-align: center;
+    font-size: 200%;
+    position: absolute;
+    top: 50%;
+    left: 5%;
+}
+
+#applicationRegion {
+    margin-right: 250px;
 }
 
 #main {
@@ -31,24 +47,52 @@ body {
     background-color: #1F1F2E;
     top: 0px;
     position: absolute;
-    width: 15%;
+    width: 250px;
     right: 0px;
     height: 100%;
+    opacity: 0.9;
 }
 
-a{
+a {
     color: #9797C2;
     text-decoration: underline;
 }
 
-#baseGlobe{
-    top: 0;
-    margin-left: -8%;
+dl {
+    float: left;
+    margin-right: 20px;
 }
 
+dt {
+    font-size: 16px;
+}
+
+b {
+    color: #fff;
+}
+
+#rootGlobe {
+    margin-right: 250px;
+}
+
+#baseGlobe {
+    top: 0;
+    /*margin-left: -250px;*/
+}
 /***************************************
  * Elements
  ***************************************/
+
+.btn-primary {
+    background: #56567A;
+    border: 1px solid #56567A;
+}
+
+.btn-primary:hover {
+    background: #40405C;
+    border: 1px solid #40405C;
+}
+
 #buttons {
     width: 100%;
 }
@@ -64,17 +108,18 @@ a{
 .button {
     width: 80%;
     margin-top: 10%;
+    /*background-color: #56567A;*/
 }
 
 .configList {
     position: relative;
     z-index: 100;
-    width: 100%;
-    margin-left: 10%;
+    margin: 0 10%;
     padding-bottom: 20px;
     background-color: #1F1F2E;
 }
-.configList label.label{
+
+.configList label.label {
     display: block;
     text-align: left;
     padding: 0;
@@ -82,8 +127,52 @@ a{
     font-size: 14px;
     font-weight: normal;
 }
-.configList .form-control{
-    width: 80%;
+
+.configList .form-control {
+    width: 100%;
+}
+
+.btn {
+    width: 100%;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+    margin-top: 10%;
+    box-sizing: border-box;
+}
+
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+#fileName {
+    display: none;
+    margin: 5px 0 0 0;
+    padding-left: 4px;
+    color: #fff;
+}
+
+#fileName:before {
+    font-family: 'Glyphicons Halflings';
+    content: "\e022";
+}
+
+#box-select {
+    margin: 10% auto 0;
 }
 
 /***************************************
@@ -94,37 +183,38 @@ a{
     position: absolute;
     left: 50%;
     top: 50%;
+    width: 460px;
     margin-left: -230px;
     margin-top: -15px;
     text-align: center;
 }
+
 .notification {
-    height: 30px;
+    line-height: 30px;
     border-radius: 4px;
     color: #fff;
     width: 460px;
-    margin-left: -100px;
+    margin-left: -125px;
     background-color: rgba(75, 75, 115, 0.7);
     border: 1px solid #4B4B73;
-
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
     -ms-flex-align: center;
+    -webkit-justify-content: center;
     -webkit-align-items: center;
     -webkit-box-align: center;
     justify-content: center;
     align-items: center;
 }
-
 /***************************************
  * Instruction module
  ***************************************/
-#instruction{
 
+#instruction {
     position: relative;
-    width: 85%;
     height: 100%;
+    margin-right: 250px;
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
@@ -135,43 +225,49 @@ a{
     align-items: center;
     z-index: 9999;
 }
-#instruction header{
-    margin-bottom: 40px;
+
+#instruction header {
+    margin-bottom: 30px;
 }
-#instruction header h1{
+
+#instruction header h1 {
     margin-top: 0;
     margin-bottom: 30px;
     text-align: center;
     color: #fff;
 }
 
-#instruction .inner{
+#instruction .inner {
     position: relative;
-    width: 950px;
+    width: 1000px;
+    margin: 0 auto;
     background-color: rgba(31, 31, 46, 0.9);
     border-radius: 10px;
     padding: 40px 40px 10px;
     color: #9797C2;
 }
 
-#instruction .inner h3{
+#instruction .inner h3 {
     border-bottom: 1px solid #56567A;
     padding-bottom: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     color: #fff;
 }
 
-#instruction .demo,
-#instruction .feedback{
+#instruction .feedback {
     margin-bottom: 30px;
 }
 
-#instruction ul.steps{
+#instruction .demo {}
+
+#instruction ul.steps {
     text-align: center;
     padding-left: 0;
     margin-right: -15px;
+    margin-bottom: 0;
 }
-#instruction ul.steps li{
+
+#instruction ul.steps li {
     position: relative;
     display: table;
     float: left;
@@ -179,21 +275,23 @@ a{
     margin-right: 20px;
     margin-bottom: 15px;
     background: #56567A;
-    padding: 10px;
+    padding: 2px 0px 2px 10px;
     color: #fff;
     border-radius: 5px;
 }
-#instruction ul.steps li div{
+
+#instruction ul.steps li div {
     display: table-cell;
     vertical-align: middle;
     padding-right: 10px;
 }
-#instruction ul.steps li div.ttl{
+
+#instruction ul.steps li div.ttl {
     float: left;
     font-size: 36px;
 }
 
-#instruction ul.steps li:after{
+#instruction ul.steps li:after {
     content: "";
     position: absolute;
     width: 0;
@@ -207,25 +305,103 @@ a{
     border-bottom: 15px solid transparent;
     border-left: 18px solid #56567A;
 }
-#instruction ul.steps li:last-child:after{
+
+#instruction ul.steps li:last-child:after {
     display: none;
 }
-#instruction .contacts p{
+
+#instruction .contacts p {
     display: inline;
 }
-#instruction .contacts ul{
+
+#instruction .contacts ul {
     display: inline;
     padding-left: 0;
 }
-#instruction .contacts ul li{
+
+#instruction .contacts ul li {
     display: inline;
     margin-right: 8px;
 }
 
-#helpButton{
+#helpButton {
     position: absolute;
     right: 10%;
     bottom: 25px;
     font-size: 40px;
     z-index: 90;
+}
+/***************************************
+ * Matcher module
+ ***************************************/
+
+#matcherBox {
+    background-color: rgba(75, 75, 115, 1);
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 800px;
+    height: 500px;
+    margin-top: -250px;
+    margin-left: -525px;
+    text-align: left;
+    color: white;
+    font-size: 150%;
+}
+
+.SetColumn {
+    /*position: absolute;*/
+    
+    float: left;
+    height: 80%;
+    left: 0;
+    width: 33%;
+    padding-left: 30px;
+    padding-right: 30px;
+    overflow-y: auto;
+    margin-top: 50px;
+}
+
+.checkbox:hover {
+    background-color: grey;
+    cursor: pointer;
+}
+
+.checkbox {
+    text-align: center;
+}
+
+#AttrsSubmitButton {
+    position: absolute;
+    width: 100px;
+    bottom: 5px;
+    right: 5px;
+    /*background-color: #56567A;*/
+}
+
+.heading {
+    font-size: 120%;
+    width: 33%;
+    text-align: center;
+    float: left;
+}
+
+#AttrsHeader {
+    margin-top: 10px;
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+    right: 0;
+}
+
+#pic {
+    margin-top: 20px;
+    width: 100%;
+    height: 80%;
+}
+
+img {
+    border-radius: 5px;
+    max-width: 100%;
+    max-height: 100%;
 }
