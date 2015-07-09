@@ -79,10 +79,21 @@
 
     <div id="applicationRegion"></div>
 
+<!-- <svg id="svgText" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+   height="600" width="600" viewBox="0 0 600 600">
+  <text x="0" y="300" fill="red" font-size="100">I love SVG!</text>
+</svg> -->
+
 </body>
 
-<script type="x-shader/x-vertex" id="vertexshader">
-
+<!--  TODO: move templates to separate file -->
+<script id="rootVisualizationViewTemplate" type="text/html">
+</script>
+<script id="globeViewTemplate" type="text/html">
+</script>
+<script id="viewTemplate" type="text/html">
+</script>
+<script type="x-shader/x-vertex" id="pointCloudVertexshader">
   attribute float size;
   attribute vec3 customColor;
   varying vec3 vColor;
@@ -92,10 +103,8 @@
     gl_PointSize = size * ( 1000.0 / length( mvPosition.xyz ) );
     gl_Position = projectionMatrix * mvPosition;
   }
-
 </script>
-
-<script type="x-shader/x-fragment" id="fragmentshader">
+<script type="x-shader/x-fragment" id="pointCloudFragmentshader">
   uniform sampler2D texture;
   varying vec3 vColor;
   void main() {
@@ -103,17 +112,8 @@
     gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
     if ( gl_FragColor.a < 0.90 ) discard;
   }
-
 </script>
 
-
-<!--  TODO: move templates to separate file -->
-<script id="rootVisualizationViewTemplate" type="text/html">
-</script>
-<script id="globeViewTemplate" type="text/html">
-</script>
-<script id="viewTemplate" type="text/html">
-</script>
 <!-- TODO: -->
 <!-- <script src="http://localhost:8080/socket.io/socket.io.js"></script> -->
 <!-- structure -->

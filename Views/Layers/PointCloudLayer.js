@@ -5,44 +5,12 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     // framework methods
     initialize: function(decorator, collections) {
         Application.BasePointCloudView.prototype.initialize.call(this, decorator, collections);
-        // this._vent = config._vent;
-        //this.countries = [];
-        //this.intersected; // intersected mesh
-        //this.moved = false; // for controls and mouse events
-        //this.timer; // represents timer for user mouse idle
-        //this.idle = true; // represents user mouse idle
-        this.sprites = [];
-        //this.suscribe();
-        //this.collection = config.collection[0];
-
-
     },
     suscribe: function() {
-
         Application.BasePointCloudView.prototype.suscribe.call(this);
-        //Application._vent.on('data/ready', this.showResults.bind(this));
-        //Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
     destroy: function() {
-
-        console.log("PointCloudLayer Destroy");
-
         Application.BasePointCloudView.prototype.destroy.call(this);
-        // Application._vent.unbind('globe/ready');
-        this.sprites = null;
-        // Application._vent.unbind('globe/ready');
-    },
-    // member methods
-    resetGlobe: function() {
-
-        var that = this;
-        this.sprites.forEach(function(sprite) {
-
-            that.scene.remove(sprite);
-
-            sprite.geometry.dispose();
-            sprite.material.dispose();
-        });
     },
 
     getMax: function(objarray){
@@ -58,10 +26,8 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
                 max = Math.abs(item.z);
             }
         });
-
         return max;
     },
-
     // visualization specific functionality
     showResults: function() {
 
@@ -79,7 +45,6 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         }
 
         Application._vent.trigger('controlpanel/message/off');
-        var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
 
         var geometry = new THREE.Geometry();
         this.attributes = {
@@ -95,23 +60,56 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         var shaderMaterial = new THREE.ShaderMaterial( {
             attributes: this.attributes,
             uniforms: this.uniforms,
-            vertexShader: document.getElementById( 'vertexshader' ).textContent,
-            fragmentShader: document.getElementById( 'fragmentshader' ).textContent
+            vertexShader: document.getElementById( 'pointCloudVertexshader' ).textContent,
+            fragmentShader: document.getElementById( 'pointCloudFragmentshader' ).textContent
         } );
 
-        //Creating points random
-        // var results = [];
-        // for(var i=0; i < 10000; i++){
-        //     var result = {
-        //       x: Math.floor((Math.random()*20000) - 10000),
-        //       y: Math.floor((Math.random()*20000) - 10000),
-        //       z: Math.floor((Math.random()*20000) - 10000)
-        //     }
-        //     results.push(result);
-        // }
+        // Creating points random
+        var results = [];
+        for(var i=0; i < 10000; i++){
+            var result = {
+              x: Math.floor((Math.random()*20000) - 10000),
+              y: Math.floor((Math.random()*20000) - 10000),
+              z: Math.floor((Math.random()*20000) - 10000)
+            }
+            results.push(result);
+        }
 
         var max = this.getMax(results);
         console.log(max);
+
+        //var sprite = new THREE.ImageUtils.loadTexture("/Assets/images/text.svg");
+        //var sprite = THREE.ImageUtils.loadTexture( '<svg id="svgText" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" height="600" width="600" viewBox="0 0 600 600"><text x="0" y="300" fill="red" font-size="100">I love SVG!</text></svg>' );
+        
+        // this.sprite = new Image();
+        // var svg = "data:image/svg+xml;utf8," + '<svg id="svgText" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" height="600" width="600" viewBox="0 0 600 600"><text x="0" y="300" fill="red" font-size="100">I love SVG!</text></svg>';
+        // // var svg = '/Assets/images/text.svg'; 
+        // this.sprite.src = svg;
+        // this.mesh;
+        // this.sprite.onload = function(){
+        //     console.log(this);
+        //     var sp = new THREE.SpriteMaterial({
+        //         map: this,
+        //         color: 0xffffff
+        //     });
+        //     that.mesh = new THREE.Sprite(sp);
+        //     that.mesh.scale.multiplyScalar(50);
+        //     that.scene.add(that.mesh);
+        // };
+        
+        // this.sprite.addEventListener('load', function () {
+        //     console.log("image onload");
+        //     ctx.drawImage(this, 0, 0);     
+        //     domURL.revokeObjectURL(url);
+        //     callback(this);
+        // });
+
+        // var element = document.getElementById('svgText');
+        // console.log(element);
+        // var cssObject = new THREE.CSS3DObject( element );
+        // cssObject.position = planeMesh.position;
+        // cssObject.rotation = planeMesh.rotation;
+        // this.scene.add(cssObject);
 
 
         var ratio = 60 / max;
