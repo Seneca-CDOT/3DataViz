@@ -13,17 +13,11 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         Application.BasePointCloudView.prototype.destroy.call(this);
     },
 
-    getMax: function(objarray){
+    getMax: function(objarray, key){
         var max = 0;
         $.each(objarray, function(index, item){
-            if(Math.abs(item.x) > max){
-                max = Math.abs(item.x);
-            }
-            if(Math.abs(item.y) > max){
-                max = Math.abs(item.y);
-            }
-            if(Math.abs(item.z) > max){
-                max = Math.abs(item.z);
+            if(Math.abs(item[key]) > max){
+                max = Math.abs(item[key]);
             }
         });
         return max;
@@ -61,62 +55,44 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
             attributes: this.attributes,
             uniforms: this.uniforms,
             vertexShader: document.getElementById( 'pointCloudVertexshader' ).textContent,
-            fragmentShader: document.getElementById( 'pointCloudFragmentshader' ).textContent
+            fragmentShader: document.getElementById( 'pointCloudFragmentshader' ).textContent,
+            blending: THREE.AdditiveBlending
         } );
 
         // Creating points random
         var results = [];
-        for(var i=0; i < 10000; i++){
+        for(var i=0; i < 500; i++){
             var result = {
               x: Math.floor((Math.random()*20000) - 10000),
-              y: Math.floor((Math.random()*20000) - 10000),
-              z: Math.floor((Math.random()*20000) - 10000)
+              y: Math.floor((Math.random()*10000) - 5000),
+              z: Math.floor((Math.random()*500) - 250)
             }
             results.push(result);
         }
 
-        var max = this.getMax(results);
-        console.log(max);
+        var maxX = this.getMax(results, 'x');
+        var maxY = this.getMax(results, 'y');
+        var maxZ = this.getMax(results, 'z');
 
-        //var sprite = new THREE.ImageUtils.loadTexture("/Assets/images/text.svg");
-        //var sprite = THREE.ImageUtils.loadTexture( '<svg id="svgText" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" height="600" width="600" viewBox="0 0 600 600"><text x="0" y="300" fill="red" font-size="100">I love SVG!</text></svg>' );
-        
-        // this.sprite = new Image();
-        // var svg = "data:image/svg+xml;utf8," + '<svg id="svgText" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" height="600" width="600" viewBox="0 0 600 600"><text x="0" y="300" fill="red" font-size="100">I love SVG!</text></svg>';
-        // // var svg = '/Assets/images/text.svg'; 
-        // this.sprite.src = svg;
-        // this.mesh;
-        // this.sprite.onload = function(){
-        //     console.log(this);
-        //     var sp = new THREE.SpriteMaterial({
-        //         map: this,
-        //         color: 0xffffff
-        //     });
-        //     that.mesh = new THREE.Sprite(sp);
-        //     that.mesh.scale.multiplyScalar(50);
-        //     that.scene.add(that.mesh);
-        // };
-        
-        // this.sprite.addEventListener('load', function () {
-        //     console.log("image onload");
-        //     ctx.drawImage(this, 0, 0);     
-        //     domURL.revokeObjectURL(url);
-        //     callback(this);
-        // });
+        Application.Helper.positionImageText(this.scene, 'X:0', 0, -55, 61);
+        Application.Helper.positionImageText(this.scene, 'X:'+maxX, 50, -55, 61);
+        Application.Helper.positionImageText(this.scene, 'X:'+(-maxX), -50, -55, 61);
 
-        // var element = document.getElementById('svgText');
-        // console.log(element);
-        // var cssObject = new THREE.CSS3DObject( element );
-        // cssObject.position = planeMesh.position;
-        // cssObject.rotation = planeMesh.rotation;
-        // this.scene.add(cssObject);
+        Application.Helper.positionImageText(this.scene, 'Z:0', 61, -55, 0);
+        Application.Helper.positionImageText(this.scene, 'Z:'+maxZ, 61, -55, 50);
+        Application.Helper.positionImageText(this.scene, 'Z:'+(-maxZ), 61, -55, -50);
 
+        Application.Helper.positionImageText(this.scene, 'Y:0', -55, 0, 61);
+        Application.Helper.positionImageText(this.scene, 'Y:'+maxY, -55, 50, 61);
+        Application.Helper.positionImageText(this.scene, 'Y:'+(-maxY), -55, -50, 61);
 
-        var ratio = 60 / max;
+        var ratioX = 60 / maxX;
+        var ratioY = 60 / maxY;
+        var ratioZ = 60 / maxZ;
 
         var that = this;
         $.each(results, function(index, item) {
-            var v = new THREE.Vector3(Math.ceil(item.x * ratio), Math.ceil(item.y * ratio), Math.ceil(item.z * ratio));
+            var v = new THREE.Vector3(Math.ceil(item.x * ratioX), Math.ceil(item.y * ratioY), Math.ceil(item.z * ratioZ));
             geometry.vertices.push(v);
             that.attributes.size.value[index] = 1;
 
@@ -129,7 +105,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
             // var b = Math.ceil((item.y + 250)/500.0*255);
             // var r = Math.ceil((item.z + 250)/500.0*255);
             // that.attributes.customColor.value[index] = new THREE.Color("rgb("+r+","+g+","+b+")");
-            that.attributes.customColor.value[index] = new THREE.Color(0xffffff);
+            that.attributes.customColor.value[index] = new THREE.Color(0xaaaaaa);
             that.attributes.size.needsUpdate = true;
         });
  
