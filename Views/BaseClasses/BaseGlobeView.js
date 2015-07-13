@@ -21,6 +21,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.scene = null;
         this.controls = null;
         this.tween = null;
+        this.categories = [];
 
         if (decorators !== undefined)
             this.decorators = decorators;
@@ -52,6 +53,7 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         // TODO: review
         $(window).on('resize', this.onWindowResize.bind(this));
+        Application._vent.on('controlpanel/subview/categories', this.sortResultsByCategory, this);
     },
     suscribe: function() {
         Application._vent.on('data/ready', this.showResults, this);
@@ -112,6 +114,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         $(window).unbind('resize');
         Application._vent.unbind('data/ready', this.showResults);
         this.collection[0].unbind();
+        Application._vent.unbind('controlpanel/subview/categories', this.sortResultsByCategory);
     },
     render: function() {
 
@@ -312,6 +315,7 @@ Application.BaseGlobeView = Backbone.View.extend({
 
             var closestIntersect = intersects[0];
             this.clickOnIntersect(closestIntersect);
+            Application._vent.trigger('vizinfocenter/message/on', closestIntersect.object.userData.name);
         }
 
         return intersects[0];
@@ -398,5 +402,12 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     showResults: function(results) {
 
-    }
+        this.categories = Application.Filter.getCategories(results);
+        if (this.categories.length > 0) {
+            Application._vent.trigger('controlpanel/categories', this.categories);
+        }
+
+    },
+    showAllResults: function() {},
+    sortResultsByCategory: function(category) {},
 });

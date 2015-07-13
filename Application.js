@@ -24,6 +24,7 @@ Application = {
         ],
         [
             'Helpers/Debug.js',
+            'Helpers/Filter.js',
             'Helpers/DataStructures.js',
             'DataProcessor/ParserFactory.js',
             'DataProcessor/TransformerFactory.js',
@@ -87,7 +88,7 @@ Application = {
         list: ['countries', 'points', 'dynamic', 'graph'],
         countries: {
             url: ['Views/Layers/CountriesLayer.js'],
-            default: ['countryname', 'value'],
+            default: ['countryname', 'value', 'category'],
             optional: ['category', 'countrycode', 'label']
         },
         points: {

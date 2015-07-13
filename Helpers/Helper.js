@@ -193,16 +193,16 @@ Application.Helper = {
 
         var array = string.split(/[\,\.\s]/);
         array.forEach(function(element, index) {
-           
+
             element.replace(/\s/g, '');
-           
+
             var index = array.indexOf('');
-           
+
             if (index != -1)
                 array.splice(index, 1);
         });
 
         return array;
 
-    }
+    },
 }
