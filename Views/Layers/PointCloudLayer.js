@@ -56,7 +56,8 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
             uniforms: this.uniforms,
             vertexShader: document.getElementById( 'pointCloudVertexshader' ).textContent,
             fragmentShader: document.getElementById( 'pointCloudFragmentshader' ).textContent,
-            blending: THREE.AdditiveBlending
+            // color: new THREE.Color(0xfffff),
+            // blending: THREE.AdditiveBlending
         } );
 
         // Creating points random
