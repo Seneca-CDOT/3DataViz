@@ -665,6 +665,7 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
 
         this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
+        this.submitbtn.$el.attr('disabled','disabled');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
     },
@@ -677,8 +678,13 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
     },
     KeywordFieldAction: function(e) {
 
-        if (e.which == 13) {
+        if(this.keywordfield.$el.val() != ''){
+            this.submitbtn.$el.removeAttr('disabled');
+        }else{
+            this.submitbtn.$el.attr('disabled','disabled');
+        }
 
+        if (e.which == 13) {
             this.submitAction(e);
         }
 
