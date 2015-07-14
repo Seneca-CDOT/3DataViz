@@ -171,6 +171,10 @@ b {
     content: "\e022";
 }
 
+#fileNameMsg{
+    color: red;
+}
+
 #box-select {
     margin: 10% auto 0;
 }

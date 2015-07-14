@@ -20,7 +20,6 @@ Application.ControlElementsGlobeView = Backbone.View.extend({
 
         if (e) e.stopPropagation();
 
-
     },
     addToConfig: function(value) {
 
@@ -74,6 +73,9 @@ Application.FileUpload = Application.ControlElementsGlobeView.extend({
         this.$list = $('<p id="fileName"></p>');
         this.$el.append(this.$list);
 
+        this.$errMsg = $('<p id="fileNameMsg"></p>');
+        this.$el.append(this.$errMsg);
+
     },
     render: function() {
         return this;
@@ -82,7 +84,10 @@ Application.FileUpload = Application.ControlElementsGlobeView.extend({
         return this.$file[0].files[0];
     },
     handleFile: function() {
-        $("#fileName").text(this.getFile().name).show();
+        this.$list.text(this.getFile().name).show();
+    },
+    changeErrMsg: function(text){
+        this.$errMsg.text(text);
     },
     action: function() {
 
@@ -98,7 +103,6 @@ Application.BoxExplorer = Application.ControlElementsGlobeView.extend({
         var that = this;
         this.fileInfo;
 
-
         this.$btnfile = $('<div id="box-select"></div>');
         this.boxSelect = new BoxSelect({
             clientId: "2cef1xake819jgxn76fpd9303j0ngmrs",
@@ -109,16 +113,24 @@ Application.BoxExplorer = Application.ControlElementsGlobeView.extend({
             that.boxSelect.closePopup();
             $("#fileName").text(response[0].name).show();
             that.fileInfo = response[0];
+            that.trigger('success');
         });
 
         this.$btnfile.on('click', this.handleFile.bind(this));
-        this.$list = $('<p id="fileName"></p>');
         this.$el.append(this.$btnfile);
+
+        this.$list = $('<p id="fileName"></p>');
         this.$el.append(this.$list);
+
+        this.$errMsg = $('<p id="fileNameMsg"></p>');
+        this.$el.append(this.$errMsg);
         
     },
     render: function() {
         return this;
+    },
+    changeErrMsg: function(text){
+        this.$errMsg.text(text);
     },
     getFileInfo: function(){
         return this.fileInfo;

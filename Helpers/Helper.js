@@ -204,5 +204,9 @@ Application.Helper = {
 
         return array;
 
+    },
+
+    getFileExtention: function(filename){
+        return (/[.]/.exec(filename)) ? (/[^.]+$/.exec(filename))[0] : undefined;
     }
 }
