@@ -22,6 +22,8 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.controls = null;
         this.tween = null;
         this.categories = [];
+        this.end = new THREE.Vector3();
+        this.direction = new THREE.Vector3();
 
         if (decorators !== undefined)
             this.decorators = decorators;
@@ -241,6 +243,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.globe = new THREE.Mesh(geometry, material);
 
         this.scene.add(this.globe);
+        this.globe.userData.name = 'globe';
         this.rayCatchers.push(this.globe);
     },
     addLight: function() {
@@ -403,11 +406,31 @@ Application.BaseGlobeView = Backbone.View.extend({
     showResults: function(results) {
 
         this.categories = Application.Filter.getCategories(results);
-        if (this.categories.length > 0) {
+        if (this.categories.length > 0 && this.categories[0] !== undefined) {
             Application._vent.trigger('controlpanel/categories', this.categories);
         }
 
     },
     showAllResults: function() {},
     sortResultsByCategory: function(category) {},
+    determineCountry: function(point) {
+        
+        this.direction.subVectors(this.end, point.position);
+        this.direction.normalize();
+
+        //this.scene.updateMatrixWorld();
+        var ray = new THREE.Raycaster(point.position, this.direction);
+
+        var rayIntersects = ray.intersectObjects(this.rayCatchers);
+
+        if (rayIntersects[0]) {
+
+            return rayIntersects[0].object.userData.name;
+        
+        } else {
+
+            return 'none';
+        }
+
+    },
 });

@@ -14,6 +14,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         this.sprites = [];
         //this.suscribe();
         //this.collection = config.collection[0];
+        this.texture = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
 
         console.log('link: https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
         console.log('key: 13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg');
@@ -32,6 +33,46 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         // Application._vent.unbind('globe/ready');
         this.sprites = null;
         // Application._vent.unbind('globe/ready');
+    },
+    clickOn: function(event) {
+
+      var that = this;
+
+        var intersectedMesh = Application.BaseGlobeView.prototype.clickOn.call(this, event);
+
+
+        if (intersectedMesh) {
+
+            $.each(this.rayCatchers, function(index, countrymesh) {
+
+                if (intersectedMesh.object == countrymesh) {
+
+                    var name = countrymesh.userData.name;
+
+                    Application._vent.trigger('vizinfocenter/message/on', name +
+                        ': ' + that.pointsPerCountry(name) + ' points');
+                }
+
+            });
+
+        }
+
+    },
+    pointsPerCountry: function(countryname) {
+
+        var i = 0;
+
+        $.each(this.sprites, function(index, sprite) {
+
+            if (sprite.userData.country == countryname) {
+
+                i++;
+            }
+
+        });
+
+        return i;
+
     },
     // member methods
     resetGlobe: function() {
@@ -53,10 +94,12 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         var results = this.collection[0].models;
         var that = this;
 
+         Application.BaseGlobeView.prototype.showResults.call(this, results);
+
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;
-        }else if( !results[0].latitude || !results[0].longitude ){
+        } else if (!results[0].latitude || !results[0].longitude) {
             Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
             return;
         }
@@ -64,15 +107,15 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         Application._vent.trigger('controlpanel/message/off');
         // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
-        var map = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
+        // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
         var material = new THREE.SpriteMaterial({
-            map: map,
+            map: this.texture,
             color: 0xff0000,
             blending: THREE.AdditiveBlending,
             //fog: true
         });
 
-       // var destination;
+        // var destination;
         var hasGeo = false;
 
         if (typeof results[0].longitude === "undefined" && typeof results[0].latitude === "undefined") {
@@ -81,7 +124,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
                 if (item.countrycode != "") {
                     var mesh = that.decorators[0].findCountryByCode(item.countrycode);
-                   var destination = mesh.geometry.boundingSphere.center.clone();
+                    var destination = mesh.geometry.boundingSphere.center.clone();
                     destination.setLength(that.globeRadius + 1);
                     results[index].destination = destination;
 
@@ -117,9 +160,12 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
             var sprite = new THREE.Sprite(material);
             sprite.scale.multiplyScalar(5);
+            
             var timer = setTimeout(function() {
 
-                if(that.globe == null){ return; };
+                if (that.globe == null) {
+                    return;
+                };
 
                 that.globe.add(sprite);
 
@@ -132,15 +178,18 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
                     var position = results[index].destination;
 
                 }
+
                 sprite.position.copy(position);
 
                 sprite.userData.label = item.label;
+                sprite.userData.country = that.determineCountry(sprite);
 
                 that.sprites.push(sprite);
 
+
             }, time);
 
-            if(that.timer != null) that.timer.push(timer);
+            if (that.timer != null) that.timer.push(timer);
 
         });
     }

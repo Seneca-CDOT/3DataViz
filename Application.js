@@ -43,6 +43,7 @@ Application = {
             'Views/ControlPanel/ControlPanelGlobeView.js',
             'Views/ControlPanel/ControlElementsGlobeView.js',
             'Views/ControlPanel/Matcher.js',
+            'Views/ControlPanel/FilterPanel.js',
 
             'Views/BaseClasses/RootView.js',
             'Views/BaseClasses/RootGlobeView.js',
@@ -93,7 +94,7 @@ Application = {
         },
         points: {
             url: ['Views/Layers/PointsLayer.js'],
-            default: ['latitude', 'longitude', 'label'],
+            default: ['latitude', 'longitude', 'label', 'category'],
             optional: ['label', 'value', 'category']
         },
         dynamic: {

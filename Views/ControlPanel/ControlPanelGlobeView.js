@@ -8,34 +8,52 @@ Application.ControlPanelRootView = Backbone.View.extend({
         this.dataSourcesView = new Application.DataSourcesView();
         this.matcher = new Application.Matcher();
 
-        Application._vent.on('data/parsed', this.addVisualizationsView, this);
+        Application._vent.on('data/parsed', this.addTemplatesView, this);
         Application._vent.on('controlpanel/categories', this.addCategoriesView, this);
         Application._vent.on('matcher/on', this.destroyViews, this);
         Application._vent.on('controlpanel/input/changed', this.destroyViews, this);
+        Application._vent.on('visualize', this.addFilterButton, this);
 
         this.helpButton = new Application.Help();
         this.helpButton.$el.attr('id', 'helpButton');
         this.$el.append(this.helpButton.render().$el);
 
-        //this.initMatcher();
+        this.filtersButton = new Application.Button();
+        this.filtersButton.$el.text('FILTERS');
+        this.filtersButton.$el.attr('id', 'filtersButton');
+        this.filtersButton.$el.on('mousedown', this.filterAction.bind(this));
+
+        this.filterBox = new Application.FilterPanel();
+        this.filterBox.$el.hide();
 
     },
     render: function() {
         this.$el.append(this.dataSourcesView.render().$el);
         this.$el.append(this.matcher.render().$el);
-        // this.$el.append(this.visualizationsView.render().$el);
+        this.$el.append(this.filterBox.render().$el);
         return this;
     },
+    addFilterButton: function() {
 
+        this.$el.append(this.filtersButton.render().$el);
+        // this.filtersButton.$el.show();
+
+    },
+    removeFilterButton: function() {
+
+        if (this.filtersButton) this.filtersButton.$el.remove();
+    },
+    filterAction: function() {
+
+     if (this.filterBox) this.filterBox.$el.toggle();
+    },
     addDataSourcesView: function() {
         if (this.dataSourcesView) this.dataSourcesView.destroy();
         this.dataSourcesView = new Application.DataSourcesView();
     },
-    addVisualizationsView: function(viewConfig) {
+    addTemplatesView: function(viewConfig) {
 
-        if (this.visualizationsView)
-
-            this.visualizationsView.destroy();
+        if (this.visualizationsView) this.visualizationsView.destroy();
         this.visualizationsView = new Application.VisualizationsView(viewConfig);
         this.$el.append(this.visualizationsView.render().$el);
 
@@ -51,8 +69,9 @@ Application.ControlPanelRootView = Backbone.View.extend({
 
     },
     destroyViews: function() {
-        this.destroyVisualizationView();
+        this.destroyTemplatesView();
         this.destroyCategoriesView();
+        this.removeFilterButton();
     },
     destroyCategoriesView: function() {
 
@@ -62,7 +81,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
         }
 
     },
-    destroyVisualizationView: function() {
+    destroyTemplatesView: function() {
 
         if (this.visualizationsView) {
 
@@ -72,7 +91,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
 
     },
     reset: function() {
-        Application._vent.on('data/parsed', this.addVisualizationsView, this);
+        Application._vent.on('data/parsed', this.addTemplatesView, this);
         if (this.visualizationsView != null) {
             this.visualizationsView.destroy();
             this.visualizationsView = null;

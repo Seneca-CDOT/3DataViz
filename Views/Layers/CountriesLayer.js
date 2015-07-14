@@ -17,11 +17,11 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
     },
     clickOn: function(event) {
 
+      //  this.inter();
+
         var intersectedMesh = Application.BaseGlobeView.prototype.clickOn.call(this, event);
 
         var found = false;
-
-        //Application._vent.trigger('vizinfocenter/message/off');
 
         if (intersectedMesh) {
 
@@ -37,7 +37,6 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
             });
 
-           // if (!found) Application._vent.trigger('vizinfocenter/message/on', intersectedMesh.object.userData.name);
         }
 
     },
@@ -112,8 +111,6 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.showResults.call(this, results);
 
-        this.categories;
-
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;
@@ -154,8 +151,8 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             obj.mesh = countrymesh;
             obj.color = countrymesh.material.color.getHex();
             obj.value = item.value;
-            if (item.category) obj.category = item.category;
 
+            if (item.category) obj.category = item.category;
 
             countrymesh.material.color.r = 1;
             countrymesh.material.color.g = 1 - colorsMap[item.value];
