@@ -41,9 +41,13 @@ Application.VizInfoCenter = Backbone.View.extend({
         return this;
     },
     showMessage: function(message) {
-        this.$el.fadeIn();
-        this.$el.empty();
-        this.$el.append(message);
+        if(!this.$el.is(":visible")){
+            this.$el.fadeIn();
+            this.$el.empty();
+            this.$el.append(message);
+        }else{
+            this.$el.text(message);
+        }
     },
     removeMessage: function() {
         this.$el.empty();

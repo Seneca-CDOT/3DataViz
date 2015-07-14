@@ -128,6 +128,26 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
         this.moved = false;
     },
+    rayCast: function(objects, e){
+
+        var x = e.clientX;
+        var y = e.clientY;
+
+        x -= this.container.offsetLeft;
+        y -= this.container.offsetTop;
+
+        var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
+        vector.unproject(this.camera);
+
+        var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
+        var intersects = ray.intersectObjects( objects );
+        
+        if(intersects[0] != null){
+            console.log( ray.ray.origin.distanceTo( intersects[0].point ) );
+        }
+
+        return intersects;
+    },
     onMouseMove: function(e) {
 
         if (e.which == 1) {
@@ -135,20 +155,17 @@ Application.BaseGlobeView = Backbone.View.extend({
             this.moved = true;
         }
 
-        // TODO: fix issue with particles then uncomment
-        // function setTimer() {
+        var intersects = this.rayCast(this.rayCatchers, e);
+        if ( intersects.length > 0 ) {
+            var data = intersects[0].object.userData;
+            console.log(intersects[0]);
 
-        //     this.idle = false;
-
-        //     clearTimeout(this.timer);
-
-        //     var that = this;
-        //     this.timer = setTimeout(function() {
-
-        //         that.idle = true
-        //     }, 5000);
-        // };
-        // setTimer.call(this);
+            if(data != null){
+                Application._vent.trigger('vizinfocenter/message/on', "City:" + data.label + "Lat:" + data.latitude + "Long:" + data.longitude)
+            }
+        }else{
+            Application._vent.trigger('vizinfocenter/message/off');
+        }
     },
     showGlobe: function() {
 
@@ -296,18 +313,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     // interaction
     clickOn: function(event) {
 
-        var x = event.clientX;
-        var y = event.clientY;
-
-        x -= this.container.offsetLeft;
-        y -= this.container.offsetTop;
-
-        var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
-        vector.unproject(this.camera);
-
-        var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
-        var intersects = ray.intersectObjects(this.rayCatchers);
-
+        var intersects = this.rayCast(this.rayCatchers, event);
         if (intersects.length > 0) {
 
             var closestIntersect = intersects[0];

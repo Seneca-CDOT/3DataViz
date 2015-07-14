@@ -135,8 +135,11 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
                 sprite.position.copy(position);
 
                 sprite.userData.label = item.label;
+                sprite.userData.longitude = item.longitude;
+                sprite.userData.latitude = item.latitude;
 
                 that.sprites.push(sprite);
+                that.rayCatchers.push(sprite);
 
             }, time);
 
