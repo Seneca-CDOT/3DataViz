@@ -57,8 +57,14 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             if(closest.object.name !== 'globe'){
                 this.prevObject = closest;
                 var data = closest.object.userData;
+                var msg = "";
+                if(typeof data.label !== 'undefined'){
+                    msg += data.label + " ";
+                }
                 if(typeof data.value !== 'undefined'){
-                    var msg += (": " + data.value);
+                    msg += ( "(" + data.value + ")" );
+                }
+                if(msg !== ""){
                     Application._vent.trigger('vizinfocenter/message/on', msg);
                 }
             }
