@@ -92,7 +92,7 @@ Application = {
         },
         points: {
             url: ['Views/Layers/PointsLayer.js'],
-            default: ['latitude', 'longitude', 'label'],
+            default: ['latitude', 'longitude', 'label', 'value', 'category'],
             optional: ['label', 'value', 'category']
         },
         dynamic: {
@@ -102,7 +102,7 @@ Application = {
         },
         graph: {
             url: ['Views/Layers/GraphsLayer.js'],
-            default: ['latitudeFrom', 'longitudeFrom', 'latitudeTo', 'longitudeTo'],
+            default: ['latitudeFrom', 'longitudeFrom', 'latitudeTo', 'longitudeTo', 'fromLabel', 'toLabel', 'value', 'category'],
             optional: ['timestamp', 'value', 'fromLabel', 'toLabel', 'category']
         },
     }
