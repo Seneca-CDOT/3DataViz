@@ -88,6 +88,20 @@ b {
     border: 1px solid #56567A;
 }
 
+.btn-primary.disabled,
+.btn-primary.disabled.active,
+.btn-primary.disabled.focus,
+.btn-primary.disabled:active,
+.btn-primary.disabled:focus,
+.btn-primary.disabled:hover,
+.btn-primary[disabled],
+.btn-primary[disabled].active,
+.btn-primary[disabled].focus,
+.btn-primary[disabled]:active,
+.btn-primary[disabled]:focus,
+.btn-primary[disabled]:hover,
+.btn-primary.active,
+.btn-primary:focus,
 .btn-primary:hover {
     background: #40405C;
     border: 1px solid #40405C;
@@ -169,6 +183,10 @@ b {
 #fileName:before {
     font-family: 'Glyphicons Halflings';
     content: "\e022";
+}
+
+#fileNameMsg{
+    color: red;
 }
 
 #box-select {
