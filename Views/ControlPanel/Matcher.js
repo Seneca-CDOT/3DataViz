@@ -396,7 +396,7 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
     },
     listAttributes: function(template) {
 
-        this.list = Application.templates[template].default;
+        this.list = Application.templates[template].attributes.default;
 
         Application.AttributesSet.prototype.listAttributes.call(this, this.list);
         this.makeInactiveTheRest();

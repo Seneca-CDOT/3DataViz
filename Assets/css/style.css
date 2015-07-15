@@ -349,19 +349,7 @@ b {
     font-size: 150%;
 }
 
-#filterBox {
-    background-color: rgba(75, 75, 115, 1);
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    width: 800px;
-    height: 500px;
-    margin-top: -250px;
-    margin-left: -525px;
-    text-align: left;
-    color: white;
-    font-size: 150%;
-}
+
 
 .SetColumn {
     /*position: absolute;*/
@@ -420,4 +408,18 @@ img {
     max-height: 100%;
 }
 
-#FiltersButton {}
+/***FILTERS****/
+
+#filterPanel {
+
+    background-color: #1F1F2E;
+    position: fixed;
+    right: 250px;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    text-align: left;
+    color: white;
+    font-size: 150%;
+    z-index: 999;
+}
