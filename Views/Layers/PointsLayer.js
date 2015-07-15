@@ -12,6 +12,8 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         //this.timer; // represents timer for user mouse idle
         //this.idle = true; // represents user mouse idle
         this.sprites = [];
+        this.moObjects = [];
+        this.prevObject;
         //this.suscribe();
         //this.collection = config.collection[0];
 
@@ -45,7 +47,26 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             sprite.material.dispose();
         });
     },
+    onMouseMove: function(e) {
 
+        Application.BaseGlobeView.prototype.onMouseMove.call(this, e);
+
+        //ray casting
+        var closest = this.rayCast(this.moObjects, e);
+        if ( closest != null ) {
+            if(closest.object.name !== 'globe'){
+                this.prevObject = closest;
+                var data = closest.object.userData;
+                if(typeof data.value !== 'undefined'){
+                    var msg += (": " + data.value);
+                    Application._vent.trigger('vizinfocenter/message/on', msg);
+                }
+            }
+        }else{
+            Application._vent.trigger('vizinfocenter/message/off');
+        }
+
+    },
     // visualization specific functionality
     showResults: function() {
 
@@ -69,7 +90,6 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             map: map,
             color: 0xff0000,
             blending: THREE.AdditiveBlending,
-            //fog: true
         });
 
        // var destination;
@@ -81,7 +101,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
                 if (item.countrycode != "") {
                     var mesh = that.decorators[0].findCountryByCode(item.countrycode);
-                   var destination = mesh.geometry.boundingSphere.center.clone();
+                    var destination = mesh.geometry.boundingSphere.center.clone();
                     destination.setLength(that.globeRadius + 1);
                     results[index].destination = destination;
 
@@ -133,18 +153,18 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
                 }
                 sprite.position.copy(position);
-
-                sprite.userData.label = item.label;
-                sprite.userData.longitude = item.longitude;
-                sprite.userData.latitude = item.latitude;
+                sprite.userData = item;
 
                 that.sprites.push(sprite);
-                that.rayCatchers.push(sprite);
+                that.moObjects.push(sprite);
 
             }, time);
 
             if(that.timer != null) that.timer.push(timer);
 
         });
+
+        that.moObjects.push(this.globe);
+
     }
 });

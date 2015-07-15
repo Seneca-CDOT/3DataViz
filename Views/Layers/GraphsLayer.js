@@ -27,7 +27,8 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         this.createdAirplaness = [];
         this.paths = [];
         this.categories = [];
-
+        this.moObjects = [];
+        this.prevObjects = [];
         // this is where I set up all the objects. Later on, I just instantiate them
         // with different positions/ rotations. This is the main improvement so far, 
         // performance wise
@@ -51,7 +52,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         var that = this;
 
-        console.log("GraphsLayer Destroy");
+        // console.log("GraphsLayer Destroy");
 
         Application.BaseGlobeView.prototype.destroy.call(this);
 
@@ -98,16 +99,15 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
             return;
         }
         else if(
-            !results[0].from.longitude 
-            || !results[0].from.latitude
-            || !results[0].to.longitude
-            || !results[0].to.latitude
+            !results[0].longitudeFrom 
+            || !results[0].latitudeFrom
+            || !results[0].longitudeTo
+            || !results[0].latitudeTo
         )
         {
             Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
             return;
         }
-        console.log("h????");
         Application._vent.trigger('controlpanel/message/off');
 
         this.addPaths();
@@ -150,6 +150,52 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         }
 
     },
+    onMouseMove: function(e) {
+
+        Application.BaseGlobeView.prototype.onMouseMove.call(this, e);
+        var that = this;
+        //ray casting  
+        var closest = this.rayCast(this.moObjects, e);
+        this.changePrevObjects();
+
+        if ( closest != null ) {
+
+            if(closest.object.name !== 'globe'){
+                closest.object.material.linewidth = 8;
+
+                this.prevObjects.push(closest);
+                var data = closest.object.userData;
+                var msg = "";
+                if(typeof data.fromLabel !== 'undefined' && typeof data.toLabel !== 'undefined' && data.toLabel !== "" && data.fromLabel !== "" ){
+                    msg += ( data.fromLabel + "  -  " + data.toLabel );
+                }
+                if(typeof data.value !== 'undefined'){
+                    msg += ( " (" + data.value + ")" );
+                }
+                if(msg !== ""){
+                    Application._vent.trigger('vizinfocenter/message/on', msg);
+                }
+                
+            }else{
+                this.changePrevObjects();
+            }
+        }else{
+            this.changePrevObjects();
+            Application._vent.trigger('vizinfocenter/message/off');
+        }
+
+    },
+    changePrevObjects: function(){
+        var that = this;
+        if(typeof this.prevObjects !== 'undefined'){
+            $.each(this.prevObjects, function(i, obj){
+                if(typeof obj != 'undefined'){
+                    obj.object.material.linewidth = 1;
+                    that.prevObjects.splice( $.inArray(i, that.prevObjects) , 1 );
+                }
+            });
+        }
+    },
     // core function of the application. THIS IS WHERE THE MAGIC HAPPENS
     addPaths: function() {
         var i = 0
@@ -170,24 +216,24 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         $.each(results, function(index, dataRecord) {
 
             time = time + 10;
-            if(dataRecord.from == null || dataRecord.to == null || dataRecord.from.latitude == null || dataRecord.from.longitude == null || dataRecord.to.latitude == null || dataRecord.to.longitude == null){
-                return;
+            if(dataRecord.latitudeFrom == null || dataRecord.longitudeFrom == null || dataRecord.latitudeTo== null || dataRecord.longitudeTo == null){
+latitudeTo
             }
 
             var timeoutref = setTimeout(function() {
 
-                console.log(dataRecord);
+                // console.log(dataRecord);
                 var category = that.getCategory(dataRecord.category);
 
                 var airportFrom = {
-                    longitude: dataRecord.from.longitude || null,
-                    latitude: dataRecord.from.latitude || null,
+                    longitude: dataRecord.longitudeFrom || null,
+                    latitude: dataRecord.latitudeFrom || null,
                     label: dataRecord.fromLabel || null,
                 }
 
                 var airportTo = {
-                    longitude: dataRecord.to.longitude || null,
-                    latitude: dataRecord.to.latitude || null,
+                    longitude: dataRecord.longitudeTo || null,
+                    latitude: dataRecord.latitudeTo|| null,
                     label: dataRecord.toLabel || null,
                 }
 
@@ -201,7 +247,8 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
                 var vF = Application.Helper.geoToxyz( airportFrom.longitude , airportFrom.latitude , 51);
                 var vT = Application.Helper.geoToxyz( airportTo.longitude , airportTo.latitude , 51);
                 var dist = vF.distanceTo(vT);
-                that.createPath(vF, vT, dist, category);
+                var line = that.createPath(vF, vT, dist, category);
+                line.userData = dataRecord;
 
                 //gets the distance between the points. Maxium = 2*radius
                 // var speed = Application.Helper.map(dist, 0, that.globeRadius * 2, 0, 2.9);
@@ -212,6 +259,8 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
             that.timer.push(timeoutref);
         });
+
+        this.moObjects.push(this.globe);
        
     },
 
@@ -225,10 +274,10 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
             return (airport.latitude == points.latitude && airport.longitude == points.longitude);
         });
         if(arr.length > 0){
-            console.log("exists");
+            // console.log("exists");
             return true;
         }else{
-            console.log("create new airport");
+            // console.log("create new airport");
             var newAirport = {
                 latitude: airport.latitude,
                 longitude: airport.longitude
@@ -244,11 +293,11 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         if(categoryName == null){
             return;
         }
-        console.log("categories", this.categories);
+        // console.log("categories", this.categories);
         var arr = $.grep(this.categories, function(category){
             return categoryName === category.name;
         });
-        console.log(arr);
+        // console.log(arr);
 
         if(arr.length > 0){
 
@@ -306,14 +355,16 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         if(category != null){
             material = new THREE.LineBasicMaterial({ color: category.color, transparent: true, });
         }else{
-            material = this.pathMaterial;
+            // material = this.pathMaterial;
+            material = new THREE.LineBasicMaterial({ color: 0xadedff, transparent: true});
         }
 
         var curveObject = new THREE.Line(pathGeometry, material);
-        
         this.paths.push(curve);
         this.scene.add(curveObject);
+        this.moObjects.push(curveObject);
 
+        return curveObject;
     },
 
     createAirplaneMesh: function(speed, point, category){

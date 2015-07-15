@@ -246,43 +246,68 @@ Application.DataProcessor.GraphTransformer = (function() {
 
     GraphTransformer.prototype.transform = function(data, complete) {
 
-        var tData = [];
+        var transData = [];
 
         $.each(data, function(index, item) {
-            console.log(item);
-            var obj = {
-                from: {
-                    latitude: "",
-                    longitude: ""
-                },
-                to: {
-                    latitude: "",
-                    longitude: ""
-                },
-                fromLabel: "",
-                toLabel: "",
-                category: "",
-                timestamp: "",
-                value: ""
-            };
-            obj.from = {
-                latitude: item.fromLatitude || null,
-                longitude: item.fromLongitude || null
-            };
-            obj.to = {
-                latitude: item.toLatitude || null,
-                longitude: item.toLongitude || null
-            };
-            obj.fromLabel = item.fromLabel || null;
-            obj.toLabel = item.toLabel || null;
-            obj.category = item.category || null;
-            obj.timestamp = Number(item.timestamp) || null;
-            obj.value = Number(item.value) || null;
 
-            tData.push(obj);
+            var obj = {};
+
+            $.each(item, function(attr, value) {
+
+                var parserAttr = _.invert(Application.attrsMap)[attr];
+
+                if (parserAttr) {
+
+                    if (parserAttr == 'value') value = Application.Helper.getNumber(value);
+                    
+                    obj[parserAttr] = value;
+
+                } else {
+
+                    console.log("Attribute " + attr + " wasn't included");
+                }
+
+            });
+
+            transData.push(obj);
+
         });
 
-        if (typeof complete === "function") complete(tData);
+        // $.each(data, function(index, item) {
+        //     console.log(item);
+        //     var obj = {
+        //         from: {
+        //             latitude: "",
+        //             longitude: ""
+        //         },
+        //         to: {
+        //             latitude: "",
+        //             longitude: ""
+        //         },
+        //         fromLabel: "",
+        //         toLabel: "",
+        //         category: "",
+        //         timestamp: "",
+        //         value: ""
+        //     };
+        //     obj.from = {
+        //         latitude: item.fromLatitude || null,
+        //         longitude: item.fromLongitude || null
+        //     };
+        //     obj.to = {
+        //         latitude: item.toLatitude || null,
+        //         longitude: item.toLongitude || null
+        //     };
+        //     obj.fromLabel = item.fromLabel || null;
+        //     obj.toLabel = item.toLabel || null;
+        //     obj.category = item.category || null;
+        //     obj.timestamp = Number(item.timestamp) || null;
+        //     obj.value = Number(item.value) || null;
+
+        //     tData.push(obj);
+        // });
+
+        if (typeof complete === "function") complete(transData);
     };
 
     return GraphTransformer;

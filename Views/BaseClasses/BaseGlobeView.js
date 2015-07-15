@@ -141,30 +141,24 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
         var intersects = ray.intersectObjects( objects );
-        
-        if(intersects[0] != null){
-            console.log( ray.ray.origin.distanceTo( intersects[0].point ) );
-        }
 
-        return intersects;
+        //Tweak distance and find closest object. Because there is a bug on calculating distance to sprite objects.
+        var minDis = 1000000;
+        var closest = null;
+        $.each(intersects, function(i, intersect){
+            var dis = ray.ray.origin.distanceTo( intersect.point );
+            if(minDis > dis){
+                minDis = dis;
+                closest = intersect;
+            }
+        });
+
+        return closest;
     },
     onMouseMove: function(e) {
-
+        
         if (e.which == 1) {
-
             this.moved = true;
-        }
-
-        var intersects = this.rayCast(this.rayCatchers, e);
-        if ( intersects.length > 0 ) {
-            var data = intersects[0].object.userData;
-            console.log(intersects[0]);
-
-            if(data != null){
-                Application._vent.trigger('vizinfocenter/message/on', "City:" + data.label + "Lat:" + data.latitude + "Long:" + data.longitude)
-            }
-        }else{
-            Application._vent.trigger('vizinfocenter/message/off');
         }
     },
     showGlobe: function() {
@@ -253,7 +247,7 @@ Application.BaseGlobeView = Backbone.View.extend({
             shininess: 20
         });
         this.globe = new THREE.Mesh(geometry, material);
-
+        this.globe.name = "globe";
         this.scene.add(this.globe);
         this.rayCatchers.push(this.globe);
     },
@@ -313,14 +307,11 @@ Application.BaseGlobeView = Backbone.View.extend({
     // interaction
     clickOn: function(event) {
 
-        var intersects = this.rayCast(this.rayCatchers, event);
-        if (intersects.length > 0) {
-
-            var closestIntersect = intersects[0];
-            this.clickOnIntersect(closestIntersect);
+        var closest = this.rayCast(this.rayCatchers, event);
+        if (closest != null) {
+            this.clickOnIntersect(closest);
         }
-
-        return intersects[0];
+        return closest;
     },
     clickOnIntersect: function(intersect) {
 
