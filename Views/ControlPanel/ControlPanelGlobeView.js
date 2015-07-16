@@ -140,7 +140,7 @@ Application.VizInfoCenter = Backbone.View.extend({
             this.$el.empty();
             this.$el.append(message);
         }else{
-            this.$el.text(message);
+            this.$el.html(message);
         }
     },
     removeMessage: function() {
