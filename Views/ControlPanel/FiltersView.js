@@ -9,16 +9,6 @@ Application.FiltersView = Backbone.View.extend({
 
         this.filterPanel = new Application.FilterPanel();
 
-        Application._vent.on('filters/add', function(data) {
-
-            console.log('add ' , data);
-        });
-
-        Application._vent.on('filters/remove', function(data) {
-
-            console.log('remove ' , data);
-        });
-
     },
     render: function() {
         this.$el.append(this.filterButton.$el);
@@ -45,6 +35,8 @@ Application.FiltersView = Backbone.View.extend({
     destroy: function() {
 
         this.remove();
+        this.filterButton.destroy();
+        this.filterPanel.destroy();
         // this.categoriesList = null;
     }
 });
@@ -56,7 +48,7 @@ Application.FilterPanel = Backbone.View.extend({
     initialize: function() {
 
         this.categoriesGroupsViews = []; // hold an array of views
-        this.getDefaultFilters();
+        //this.getDefaultFilters();
 
         Application._vent.on('controlpanel/categories', this.getFiltersFromDataset, this);
 
@@ -172,20 +164,17 @@ Application.FilterPanel = Backbone.View.extend({
     // },
     destroy: function() {
 
-        // this.userAttributesView.destroy();
-        // this.parserAttributesView.destroy();
-        // this.templatesView.destroy();
-        // this.templatesView = null;
-        // this.userAttributesView = null;
-        // this.parserAttributeView = null;
-        // Application._vent.unbind('matcher/on', this.showMatcher);
-        // Application._vent.unbind('matcher/off', this.hideMatcher);
-        // Application._vent.unbind('matcher/user/add', this.setUserAttribute);
-        // Application._vent.unbind('matcher/parser/add', this.setParserAttribute);
-        // Application._vent.unbind('matcher/user/remove', this.removeUserAttribute);
-        // Application._vent.unbind('matcher/parser/remove', this.removeParserAttribute);
-        // this.submit.destroy();
-        // this.submit = null;
+        var that = this;
+
+        Application._vent.unbind('controlpanel/categories', this.getFiltersFromDataset);
+
+        $.each( this.categoriesGroupsViews, function(i, view) {
+
+            view.destroy();
+
+        });
+
+
     }
 });
 
@@ -251,7 +240,7 @@ Application.FiltersSet = Backbone.View.extend({
 
             $(e.target).data('checked', 'false');
 
-             var group = {};
+            var group = {};
 
             group.name = groupname;
             group.category = e.target.innerHTML;
@@ -339,30 +328,24 @@ Application.FiltersSet = Backbone.View.extend({
     //         if (name == this.checkboxes[i].name) return this.checkboxes[i];
     //     }
     // },
-    // removeCheckboxes: function() {
+    removeCheckboxes: function() {
 
-    //     $.each(this.checkboxes, function(index, checkbox) {
+        $.each(this.checkboxes, function(index, checkbox) {
 
-    //         checkbox.unbind();
-    //         checkbox.remove();
-    //         checkbox = null;
+            checkbox.unbind();
+            checkbox.remove();
 
-    //     });
+        });
 
-    //     this.checkboxes.length = 0;
+        this.checkboxes = null;
 
-    // },
-    // destroy: function() {
+    },
+    destroy: function() {
 
-    //     this.removeCheckboxes();
-    //     this.checkboxes = null;
-    //     //Application.attrsMap = null;
-    //     this.inactiveColor = null;
-    //     this.activeColor = null;
-    //     this.checkedColor = null;
-    //     this.uncheckedColor = null;
-    //     this.chosenColor = null;
-    // }
+        this.removeCheckboxes();
+        this.checkedColor = null;
+        this.uncheckedColor = null;
+    }
 
 
 });

@@ -24,6 +24,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.categories = [];
         this.end = new THREE.Vector3();
         this.direction = new THREE.Vector3();
+        this.activeCategories = []; // holds active categories
 
         if (decorators !== undefined)
             this.decorators = decorators;
@@ -55,7 +56,8 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         // TODO: review
         $(window).on('resize', this.onWindowResize.bind(this));
-        Application._vent.on('controlpanel/subview/categories', this.sortResultsByCategory, this);
+        Application._vent.on('filters/add', this.addCategory, this);
+        Application._vent.on('filters/remove', this.removeCategory, this);
     },
     suscribe: function() {
         Application._vent.on('data/ready', this.showResults, this);
@@ -116,7 +118,8 @@ Application.BaseGlobeView = Backbone.View.extend({
         $(window).unbind('resize');
         Application._vent.unbind('data/ready', this.showResults);
         this.collection[0].unbind();
-        Application._vent.unbind('controlpanel/subview/categories', this.sortResultsByCategory);
+        Application._vent.unbind('filters/add', this.addCategory);
+        Application._vent.unbind('filters/remove', this.removeCategory);
     },
     render: function() {
 
@@ -318,7 +321,11 @@ Application.BaseGlobeView = Backbone.View.extend({
 
             var closestIntersect = intersects[0];
             this.clickOnIntersect(closestIntersect);
-            Application._vent.trigger('vizinfocenter/message/on', closestIntersect.object.userData.name);
+
+            if (closestIntersect.object.userData.name != 'globe') {
+
+                Application._vent.trigger('vizinfocenter/message/on', closestIntersect.object.userData.name);
+            }
         }
 
         return intersects[0];
@@ -412,9 +419,26 @@ Application.BaseGlobeView = Backbone.View.extend({
 
     },
     showAllResults: function() {},
-    sortResultsByCategory: function(category) {},
+    addCategory: function(group) {
+
+        group.name;
+
+        this.activeCategories.push(group.category);
+        this.sortResultsByCategory();
+    },
+    removeCategory: function(group) {
+
+        group.name;
+
+        var i = this.activeCategories.indexOf(group.category);
+        if (i != -1) {
+            this.activeCategories.splice(i, 1);
+        }
+        this.sortResultsByCategory();
+    },
+    sortResultsByCategory: function() {},
     determineCountry: function(point) {
-        
+
         this.direction.subVectors(this.end, point.position);
         this.direction.normalize();
 
@@ -426,7 +450,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         if (rayIntersects[0]) {
 
             return rayIntersects[0].object.userData.name;
-        
+
         } else {
 
             return 'none';

@@ -17,7 +17,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
     },
     clickOn: function(event) {
 
-      //  this.inter();
+        //  this.inter();
 
         var intersectedMesh = Application.BaseGlobeView.prototype.clickOn.call(this, event);
 
@@ -29,9 +29,10 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
                 if (intersectedMesh.object == country.mesh) {
 
+
                     console.log(country.value);
                     Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
-                        ' : ' + Application.Helper.formatNumber(country.value));
+                        '<br>' + Application.Helper.formatNumber(country.value));
                     found = true;
                 }
 
@@ -164,41 +165,52 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         });
     },
-    sortResultsByCategory: function(category) {
+    sortResultsByCategory: function() {
 
-        Application.BaseGlobeView.prototype.sortResultsByCategory.call(this, category);
+        var that = this;
+
+        Application.BaseGlobeView.prototype.sortResultsByCategory.call(this);
 
         this.resetGlobe();
         this.showAllResults();
 
-        if (category == 'All') return;
+       // if (category == 'All') return;
 
-        $.each(this.added, function(index, item) {
+        $.each(this.added, function(index, country) { // turn all added countries grey
 
-            if (category != item.category) {
+                country.mesh.material.color.r = 0.5;
+                country.mesh.material.color.g = 0.5;
+                country.mesh.material.color.b = 0.5;
 
-                console.log(item.category);
+        });
 
-                //var avg = (item.mesh.material.color.r + item.mesh.material.color.g + item.mesh.material.color.b) / 3;
+    $.each(this.activeCategories, function(i, category) {
 
-                item.mesh.material.color.r = 0.5;
-                item.mesh.material.color.g = 0.5;
-                item.mesh.material.color.b = 0.5;
+        $.each(that.added, function(i, country) {
+
+            if (country.category == category) {
+
+                country.mesh.material.color.setHex(country.result_color);
+
+                console.log(i++);
             }
 
         });
-    },
-    showAllResults: function() {
 
-        Application.BaseGlobeView.prototype.showAllResults.call(this);
+    });
 
-        this.resetGlobe();
+},
+showAllResults: function() {
 
-        $.each(this.added, function(index, country) {
+    Application.BaseGlobeView.prototype.showAllResults.call(this);
 
-            country.mesh.material.color.setHex(country.result_color);
+    this.resetGlobe();
 
-        });
-    },
+    $.each(this.added, function(index, country) {
+
+        country.mesh.material.color.setHex(country.result_color);
+
+    });
+},
 
 });
