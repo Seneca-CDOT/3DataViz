@@ -359,8 +359,8 @@ b {
     left: 50%;
     top: 50%;
     width: 800px;
-    height: 500px;
-    margin-top: -250px;
+    height: 620px;
+    margin-top: -310px;
     margin-left: -525px;
     text-align: left;
     color: white;
@@ -368,27 +368,36 @@ b {
 }
 
 .matcherBoxInner{
-    margin: 20px;
+    margin: 20px 30px;
 }
 
 .templateImgList{
+    padding: 0;
     display: table;
 }
 .templateImgList li{
     display: table-cell;
+    padding: 0 10px;
+}
+.templateImgList li img{
+    width: auto;
+    height: auto;
 }
 
+.SetColumns{
+    display: table;
+    width: 100%;
+    border: 1px solid #9797C2;
+}
 .SetColumn {
+    display: table-cell;
     /*position: absolute;*/
-    
-    float: left;
-    height: 80%;
-    left: 0;
-    width: 33%;
-    padding-left: 30px;
-    padding-right: 30px;
-    overflow-y: auto;
-    margin-top: 50px;
+    padding: 10px 20px;
+    /*float: left;*/
+    overflow-y: scroll;
+}
+.SetColumn:first-child{
+    border-right: 1px dotted #656490;
 }
 
 .checkbox:hover {
@@ -410,9 +419,10 @@ b {
 
 .heading {
     font-size: 120%;
-    width: 33%;
-    text-align: center;
-    float: left;
+    margin-bottom: 5px;
+    /*width: 33%;*/
+    /*text-align: center;*/
+    /*float: left;*/
 }
 
 #AttrsHeader {

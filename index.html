@@ -12,41 +12,36 @@
 
       <div class="matcherBoxInner">
         <div class="heading">Title</div>
-          <input class="form-control userInput" id="key" />
+          <input class="form-control userInput" id="key" placeholder="Title of your visualization." />
       </div>
 
       <div class="matcherBoxInner">
         <div class="heading">Choose a template</div>
         <ul class="templateImgList">
-          <li><img src="Assets/images/templates/countries.png"></li>
-          <li><img src="Assets/images/templates/dynamic.png"></li>
-          <li><img src="Assets/images/templates/graph.png"></li>
-          <li><img src="Assets/images/templates/points.png"></li>
+          <li><button><img src="Assets/images/templates/countries.png"></button></li>
+          <li><button><img src="Assets/images/templates/dynamic.png"></button></li>
+          <li><button><img src="Assets/images/templates/graph.png"></button></li>
+          <li><button><img src="Assets/images/templates/points.png"></button></li>
         </ul>
-        <!-- <select class="form-control">
-          <option value="" selected="" disabled=""></option>
-          <option value="countries">countries</option>
-          <option value="points">points</option>
-          <option value="dynamic">dynamic</option>
-          <option value="graph">graph</option>
-        </select> -->
       </div>
       
       <div class="matcherBoxInner">
         <div class="heading">Choose a template</div>
         
-        <div class="SetColumn">
-          <div class="checkbox" id="_name" style="color: rgb(255, 255, 255); background-color: rgb(121, 131, 159);">name</div><div class="checkbox" id="_longitude" style="color: rgb(121, 131, 159);">longitude</div>
-          <div class="checkbox" id="_latitude" style="color: rgb(121, 131, 159);">latitude</div>
-          <div class="checkbox" id="_population" style="color: rgb(121, 131, 159);">population</div>
-          <div class="checkbox" id="_category" style="color: rgb(121, 131, 159);">category</div>
-        </div>
-        <div class="SetColumn">
-          <div class="checkbox" id="_latitude" style="color: rgb(255, 255, 255);">latitude</div>
-          <div class="checkbox" id="_longitude" style="color: rgb(255, 255, 255);">longitude</div>
-          <div class="checkbox" id="_timestamp" style="color: rgb(255, 255, 255);">timestamp</div>
-        </div>
+        <div class="SetColumns">
+          <div class="SetColumn">
+            <div class="checkbox" id="_name" style="color: rgb(255, 255, 255); background-color: rgb(121, 131, 159);">name</div><div class="checkbox" id="_longitude" style="color: rgb(121, 131, 159);">longitude</div>
+            <div class="checkbox" id="_latitude" style="color: rgb(121, 131, 159);">latitude</div>
+            <div class="checkbox" id="_population" style="color: rgb(121, 131, 159);">population</div>
+            <div class="checkbox" id="_category" style="color: rgb(121, 131, 159);">category</div>
+          </div>
 
+          <div class="SetColumn">
+            <div class="checkbox" id="_latitude" style="color: rgb(255, 255, 255);">latitude</div>
+            <div class="checkbox" id="_longitude" style="color: rgb(255, 255, 255);">longitude</div>
+            <div class="checkbox" id="_timestamp" style="color: rgb(255, 255, 255);">timestamp</div>
+          </div>
+        </div>
 
       </div>
 
