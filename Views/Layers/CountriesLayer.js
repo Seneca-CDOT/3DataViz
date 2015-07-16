@@ -115,7 +115,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;
-        } else if (!(results[0].countryname || results[0].countrycode) || !results[0].value) {
+        } else if (!(results[0].countryname || results[0].countrycode)) {
             Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
             return;
         }
@@ -151,7 +151,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             var obj = {};
             obj.mesh = countrymesh;
             obj.color = countrymesh.material.color.getHex();
-            obj.value = item.value;
+            if (item.value) obj.value = item.value;
 
             if (item.category) obj.category = item.category;
 
@@ -176,13 +176,15 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
        // if (category == 'All') return;
 
-        $.each(this.added, function(index, country) { // turn all added countries grey
+       if (this.activeCategories.length != 0) {
+       $.each(this.added, function(index, country) { // turn all added countries grey
 
                 country.mesh.material.color.r = 0.5;
                 country.mesh.material.color.g = 0.5;
                 country.mesh.material.color.b = 0.5;
 
         });
+   }
 
     $.each(this.activeCategories, function(i, category) {
 
