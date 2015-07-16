@@ -16,7 +16,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         this.prevObject;
         //this.suscribe();
         //this.collection = config.collection[0];
-        this.texture = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
+        this.texture = THREE.ImageUtils.loadTexture("Assets/images/disc.png");
 
         console.log('link: https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
         console.log('key: 13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg');
@@ -38,7 +38,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     },
     clickOn: function(event) {
 
-      var that = this;
+        var that = this;
 
         var intersectedMesh = Application.BaseGlobeView.prototype.clickOn.call(this, event);
 
@@ -94,23 +94,28 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         //ray casting
         var closest = this.rayCast(this.moObjects, e);
-        if ( closest != null ) {
-            if(closest.object.name !== 'globe'){
+
+        if (closest != null) {
+            if (closest.object.name !== 'globe') {
+
+                if (this.prevObject) this.prevObject.object.material.color.set('white');
                 this.prevObject = closest;
+                closest.object.material.color.set('red');
                 var data = closest.object.userData;
                 var msg = "";
-                if(typeof data.label !== 'undefined'){
+                if (typeof data.label !== 'undefined') {
                     msg += data.label + " ";
                 }
-                if(typeof data.value !== 'undefined'){
-                    msg += ( "(" + data.value + ")" );
+                if (typeof data.value !== 'undefined') {
+                    msg += ("(" + data.value + ")");
                 }
-                if(msg !== ""){
+                if (msg !== "") {
                     Application._vent.trigger('vizinfocenter/message/on', msg);
                 }
             }
-        }else{
+        } else {
             Application._vent.trigger('vizinfocenter/message/off');
+
         }
 
     },
@@ -121,7 +126,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         var results = this.collection[0].models;
         var that = this;
 
-         Application.BaseGlobeView.prototype.showResults.call(this, results);
+        Application.BaseGlobeView.prototype.showResults.call(this, results);
 
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
@@ -137,7 +142,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
         var material = new THREE.SpriteMaterial({
             map: this.texture,
-            color: 0xff0000,
+            color: 0xFFFFFF,
             blending: THREE.AdditiveBlending,
         });
 
@@ -184,9 +189,15 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
             time += 20;
 
-            var sprite = new THREE.Sprite(material);
-            sprite.scale.multiplyScalar(5);
-            
+            var sprite = new THREE.Sprite(material.clone());
+            sprite.scale.multiplyScalar(2);
+
+
+            if (item.category) sprite.userData.category = item.category;
+
+            that.sprites.push(sprite);
+            that.moObjects.push(sprite);
+
             var timer = setTimeout(function() {
 
                 if (that.globe == null) {
@@ -206,13 +217,9 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
                 }
 
                 sprite.position.copy(position);
-
                 sprite.userData.label = item.label;
                 sprite.userData.country = that.determineCountry(sprite);
-
-                that.sprites.push(sprite);
-                that.moObjects.push(sprite);
-
+                sprite.userData.result_color = '0xFFFFFF';
 
             }, time);
 
@@ -222,5 +229,51 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         that.moObjects.push(this.globe);
 
-    }
+    },
+    sortResultsByCategory: function() {
+
+        var that = this;
+
+        Application.BaseGlobeView.prototype.sortResultsByCategory.call(this);
+
+        this.resetGlobe();
+        this.showAllResults();
+
+        // if (category == 'All') return;
+        if (this.activeCategories.length != 0) {
+
+            $.each(this.sprites, function(index, point) { // turn all added countries grey
+
+                point.material.color.setHex(0x000000);
+
+            });
+        }
+
+        $.each(this.activeCategories, function(i, category) {
+
+            $.each(that.sprites, function(i, point) {
+
+                if (point.userData.category == category) {
+
+                    point.material.color.setHex(point.userData.result_color);
+
+                }
+
+            });
+
+        });
+
+    },
+    showAllResults: function() {
+
+        Application.BaseGlobeView.prototype.showAllResults.call(this);
+
+        this.resetGlobe();
+
+        $.each(this.sprites, function(index, point) {
+
+            point.material.color.setHex(point.userData.result_color);
+
+        });
+    },
 });

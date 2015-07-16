@@ -136,7 +136,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
         this.moved = false;
     },
-    rayCast: function(objects, e){
+    rayCast: function(objects, e) {
 
         var x = e.clientX;
         var y = e.clientY;
@@ -148,14 +148,14 @@ Application.BaseGlobeView = Backbone.View.extend({
         vector.unproject(this.camera);
 
         var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
-        var intersects = ray.intersectObjects( objects );
+        var intersects = ray.intersectObjects(objects);
 
         //Tweak distance and find closest object. Because there is a bug on calculating distance to sprite objects.
         var minDis = 1000000;
         var closest = null;
-        $.each(intersects, function(i, intersect){
-            var dis = ray.ray.origin.distanceTo( intersect.point );
-            if(minDis > dis){
+        $.each(intersects, function(i, intersect) {
+            var dis = ray.ray.origin.distanceTo(intersect.point);
+            if (minDis > dis) {
                 minDis = dis;
                 closest = intersect;
             }
@@ -164,7 +164,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         return closest;
     },
     onMouseMove: function(e) {
-        
+
         if (e.which == 1) {
             this.moved = true;
         }
@@ -319,12 +319,13 @@ Application.BaseGlobeView = Backbone.View.extend({
         var closest = this.rayCast(this.rayCatchers, event);
         if (closest != null) {
             this.clickOnIntersect(closest);
-        }
 
             if (closest.object.userData.name != 'globe') {
 
-                Application._vent.trigger('vizinfocenter/message/on', closestIntersect.object.userData.name);
+                Application._vent.trigger('vizinfocenter/message/on', closest.object.userData.name);
             }
+        }
+
         return closest;
     },
     clickOnIntersect: function(intersect) {
