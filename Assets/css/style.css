@@ -367,6 +367,17 @@ b {
     font-size: 150%;
 }
 
+.matcherBoxInner{
+    margin: 20px;
+}
+
+.templateImgList{
+    display: table;
+}
+.templateImgList li{
+    display: table-cell;
+}
+
 .SetColumn {
     /*position: absolute;*/
     
