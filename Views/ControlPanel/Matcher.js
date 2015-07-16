@@ -22,9 +22,9 @@ Application.Matcher = Backbone.View.extend({
         this.hideMatcher();
     },
     render: function() {
+        this.$el.append(this.templatesView.render().$el);
         this.$el.append(this.userAttributesView.render().$el);
         this.$el.append(this.parserAttributesView.render().$el);
-        this.$el.append(this.templatesView.render().$el);
         this.$el.append(this.labelForTemplates);
         this.$el.append(this.submit.render().$el);
 
@@ -33,9 +33,9 @@ Application.Matcher = Backbone.View.extend({
     appendHeader: function() {
 
         var $header = $('<div id="AttrsHeader"></div>');
+        $header.append("<div class='heading'>Choose a template</div>");
         $header.append("<div class='heading'>User attributes</div>");
         $header.append("<div class='heading'>Parser attributes</div>");
-        $header.append("<div class='heading'>Choose a template</div>");
         this.$el.append($header);
 
     },
