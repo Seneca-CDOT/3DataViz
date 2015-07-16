@@ -135,9 +135,13 @@ Application.VizInfoCenter = Backbone.View.extend({
         return this;
     },
     showMessage: function(message) {
-        this.$el.fadeIn();
-        this.$el.empty();
-        this.$el.append(message);
+        if(!this.$el.is(":visible")){
+            this.$el.fadeIn();
+            this.$el.empty();
+            this.$el.append(message);
+        }else{
+            this.$el.text(message);
+        }
     },
     removeMessage: function() {
         this.$el.empty();
@@ -336,11 +340,25 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
     initialize: function() {
 
         Application.ButtonsView.prototype.initialize.call(this);
-
+        var that = this;
         this.fileUpload = new Application.FileUpload();
+        this.fileUpload.$el.on('change', function(){
+            var ex = Application.Helper.getFileExtention( that.fileUpload.getFile().name );
+            switch(ex){
+                case 'csv':
+                    that.submitbtn.$el.removeAttr('disabled');
+                    that.fileUpload.changeErrMsg('');
+                    break;
+                default:
+                    that.submitbtn.$el.attr('disabled','disabled');
+                    that.fileUpload.changeErrMsg('Please choose CSV file.');
+                    break;
+            }
+        });
 
         this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
+        this.submitbtn.$el.attr('disabled','disabled');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
     },
@@ -354,8 +372,6 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
 
         var files = this.fileUpload.getFile();
         Application.userConfig.files = files;
-        console.log(files);
-
         Application._vent.trigger('controlpanel/parse');
 
     },
@@ -371,11 +387,25 @@ Application.BoxControlPanel = Application.ButtonsView.extend({
     initialize: function() {
 
         Application.ButtonsView.prototype.initialize.call(this);
-
+        var that = this;
         this.boxExplorer = new Application.BoxExplorer();
+        this.boxExplorer.on('success', function(){
+            var ex = Application.Helper.getFileExtention( that.boxExplorer.getFileInfo().name );
+            switch(ex){
+                case 'csv':
+                    that.submitbtn.$el.removeAttr('disabled');
+                    that.boxExplorer.changeErrMsg('');
+                    break;
+                default:
+                    that.submitbtn.$el.attr('disabled','disabled');
+                    that.boxExplorer.changeErrMsg('Please choose CSV file.');
+                    break;
+            }
+        })
 
         this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
+        this.submitbtn.$el.attr('disabled','disabled');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
     },
@@ -673,6 +703,7 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
 
         this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
+        this.submitbtn.$el.attr('disabled','disabled');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
     },
@@ -685,8 +716,13 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
     },
     KeywordFieldAction: function(e) {
 
-        if (e.which == 13) {
+        if(this.keywordfield.$el.val() != ''){
+            this.submitbtn.$el.removeAttr('disabled');
+        }else{
+            this.submitbtn.$el.attr('disabled','disabled');
+        }
 
+        if (e.which == 13) {
             this.submitAction(e);
         }
 

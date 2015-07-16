@@ -136,27 +136,38 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
         this.moved = false;
     },
+    rayCast: function(objects, e){
+
+        var x = e.clientX;
+        var y = e.clientY;
+
+        x -= this.container.offsetLeft;
+        y -= this.container.offsetTop;
+
+        var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
+        vector.unproject(this.camera);
+
+        var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
+        var intersects = ray.intersectObjects( objects );
+
+        //Tweak distance and find closest object. Because there is a bug on calculating distance to sprite objects.
+        var minDis = 1000000;
+        var closest = null;
+        $.each(intersects, function(i, intersect){
+            var dis = ray.ray.origin.distanceTo( intersect.point );
+            if(minDis > dis){
+                minDis = dis;
+                closest = intersect;
+            }
+        });
+
+        return closest;
+    },
     onMouseMove: function(e) {
-
+        
         if (e.which == 1) {
-
             this.moved = true;
         }
-
-        // TODO: fix issue with particles then uncomment
-        // function setTimer() {
-
-        //     this.idle = false;
-
-        //     clearTimeout(this.timer);
-
-        //     var that = this;
-        //     this.timer = setTimeout(function() {
-
-        //         that.idle = true
-        //     }, 5000);
-        // };
-        // setTimer.call(this);
     },
     showGlobe: function() {
 
@@ -244,7 +255,7 @@ Application.BaseGlobeView = Backbone.View.extend({
             shininess: 20
         });
         this.globe = new THREE.Mesh(geometry, material);
-
+        this.globe.name = "globe";
         this.scene.add(this.globe);
         this.globe.userData.name = 'globe';
         this.rayCatchers.push(this.globe);
@@ -305,30 +316,16 @@ Application.BaseGlobeView = Backbone.View.extend({
     // interaction
     clickOn: function(event) {
 
-        var x = event.clientX;
-        var y = event.clientY;
+        var closest = this.rayCast(this.rayCatchers, event);
+        if (closest != null) {
+            this.clickOnIntersect(closest);
+        }
 
-        x -= this.container.offsetLeft;
-        y -= this.container.offsetTop;
-
-        var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
-        vector.unproject(this.camera);
-
-        var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
-        var intersects = ray.intersectObjects(this.rayCatchers);
-
-        if (intersects.length > 0) {
-
-            var closestIntersect = intersects[0];
-            this.clickOnIntersect(closestIntersect);
-
-            if (closestIntersect.object.userData.name != 'globe') {
+            if (closest.object.userData.name != 'globe') {
 
                 Application._vent.trigger('vizinfocenter/message/on', closestIntersect.object.userData.name);
             }
-        }
-
-        return intersects[0];
+        return closest;
     },
     clickOnIntersect: function(intersect) {
 

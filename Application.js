@@ -98,7 +98,7 @@ Application = {
         points: {
             url: ['Views/Layers/PointsLayer.js'],
             attributes: {
-                default: ['latitude', 'longitude', 'label', 'category'],
+                default: ['latitude', 'longitude', 'label', 'value', 'category'],
                 optional: ['label', 'value', 'category']
             },
             filters: [],
@@ -114,7 +114,7 @@ Application = {
         graph: {
             url: ['Views/Layers/GraphsLayer.js'],
             attributes: {
-                default: ['latitudeFrom', 'longitudeFrom', 'latitudeTo', 'longitudeTo'],
+                default: ['latitudeFrom', 'longitudeFrom', 'latitudeTo', 'longitudeTo', 'fromLabel', 'toLabel', 'value', 'category'],
                 optional: ['timestamp', 'value', 'fromLabel', 'toLabel', 'category']
             },
             filters: [],

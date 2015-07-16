@@ -12,6 +12,8 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         //this.timer; // represents timer for user mouse idle
         //this.idle = true; // represents user mouse idle
         this.sprites = [];
+        this.moObjects = [];
+        this.prevObject;
         //this.suscribe();
         //this.collection = config.collection[0];
         this.texture = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
@@ -86,7 +88,32 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             sprite.material.dispose();
         });
     },
+    onMouseMove: function(e) {
 
+        Application.BaseGlobeView.prototype.onMouseMove.call(this, e);
+
+        //ray casting
+        var closest = this.rayCast(this.moObjects, e);
+        if ( closest != null ) {
+            if(closest.object.name !== 'globe'){
+                this.prevObject = closest;
+                var data = closest.object.userData;
+                var msg = "";
+                if(typeof data.label !== 'undefined'){
+                    msg += data.label + " ";
+                }
+                if(typeof data.value !== 'undefined'){
+                    msg += ( "(" + data.value + ")" );
+                }
+                if(msg !== ""){
+                    Application._vent.trigger('vizinfocenter/message/on', msg);
+                }
+            }
+        }else{
+            Application._vent.trigger('vizinfocenter/message/off');
+        }
+
+    },
     // visualization specific functionality
     showResults: function() {
 
@@ -112,7 +139,6 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             map: this.texture,
             color: 0xff0000,
             blending: THREE.AdditiveBlending,
-            //fog: true
         });
 
         // var destination;
@@ -185,6 +211,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
                 sprite.userData.country = that.determineCountry(sprite);
 
                 that.sprites.push(sprite);
+                that.moObjects.push(sprite);
 
 
             }, time);
@@ -192,5 +219,8 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             if (that.timer != null) that.timer.push(timer);
 
         });
+
+        that.moObjects.push(this.globe);
+
     }
 });
