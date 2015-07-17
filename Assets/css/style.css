@@ -359,8 +359,8 @@ b {
     left: 50%;
     top: 50%;
     width: 800px;
-    height: 620px;
-    margin-top: -310px;
+    height: 700px;
+    margin-top: -350px;
     margin-left: -525px;
     text-align: left;
     color: white;
@@ -375,6 +375,10 @@ b {
     padding: 0;
     display: table;
 }
+.templateTitle{
+    font-size: 14px;
+    margin-bottom: 0;
+}
 .templateImgList li{
     display: table-cell;
     padding: 0 10px;
@@ -383,31 +387,164 @@ b {
     width: auto;
     height: auto;
 }
+.templateImgList li .imgBtn{
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    background: none;
+}
+.templateImgList li .imgBtn:hover,
+.templateImgList li .imgBtn.active{
+    background: #40405C;
+}
 
 .SetColumns{
-    display: table;
     width: 100%;
     border: 1px solid #9797C2;
+    padding: 10px;
+}   
+.SetColumns:after {
+  content: "";
+  clear: both;
+  display: block;
 }
 .SetColumn {
-    display: table-cell;
+    float: left;
     /*position: absolute;*/
-    padding: 10px 20px;
+    /*padding: 10px 20px;*/
     /*float: left;*/
+    width: 50%;
+}
+.SetColumn:first-child ul{
+    border-right: 1px dotted #9797C2;
+}
+.SetColumn{
+    cursor: pointer;
+    padding: 0 10px;
+    margin-bottom: 0;
+    height: 250px;
     overflow-y: scroll;
 }
-.SetColumn:first-child{
+.SetColumn{
+    position: relative;
+    margin: 0 0 11px;
+}
+.SetColumn button{
+    font-size: 16px;
+    width: 100%;
+    color: rgb(255, 255, 255);
+    border: none;
+    background: none;
+    text-align: left;
+}
+.SetColumn button span{
+    display: inline-block;
+    width: 30px;
+    text-align: center;
+    font-size: 9px;
+    margin: -1px 5px 0 0;
+    border-radius: 3px;
+    vertical-align: middle;
+    padding: 2px 4px;
+    color: #fff;
+    text-shadow: -1px -1px rgba(0,0,0,0.4);
+}
+.SetColumn button span.l-num{
+    background: #1f6c8f;
+}
+.SetColumn button span.l-str{
+    background: #4ab125;
+}
+.SetColumn button.disabled{
+    color: rgb(121, 131, 159);
+    background: none;
+}
+.SetColumn button.active{
+    color: rgb(255, 255, 255);
+    background-color: rgb(121, 131, 159);
+}
+.SetColumn button:hover{
+    color: #fff;
+    background-color: grey;
+}
+.SetColumn button.selected{
+    color: rgb(121, 131, 159);
+    background-color: #40405C;
+}
+.SetColumn button.selected:after{
+    content: "";
+    font-size: 12px;
+    position: absolute;
+    text-align: center;
+    right: 5px;
+    top: 50%;
+    margin-top: -4px;
+    width: 8px;
+    height: 8px;
+    line-height: 20px;
+    border-radius: 50%;
+    color: #9797C2;
+    background: #eeeeee;
+}
+.SetColumn button.s1:after,
+.SetColumn button.s11:after{
+    /*content: "1";*/
+    background: #eeeeee;
+}
+.SetColumn button.s2:after,
+.SetColumn button.s12:after{
+    /*content: "2";*/
+    background: #1f6c8f;
+}
+.SetColumn button.s3:after,
+.SetColumn button.s13:after{
+    /*content: "3";*/
+    background: #30ba00;
+}
+.SetColumn button.s4:after,
+.SetColumn button.s14:after{
+    /*content: "4";*/
+    background: #b82560;
+}
+.SetColumn button.s5:after,
+.SetColumn button.s15:after{
+    /*content: "5";*/
+    background: #d0ca1b;
+}
+.SetColumn button.s6:after,
+.SetColumn button.s16:after{
+    /*content: "6";*/
+    background: #8f541f;
+}
+.SetColumn button.s7:after,
+.SetColumn button.s17:after{
+    /*content: "7";*/
+    background: #9fe895;
+}
+.SetColumn button.s8:after,
+.SetColumn button.s18:after{
+    /*content: "8";*/
+    background: #bbbbbb;
+}
+.SetColumn button.s9:after,
+.SetColumn button.s19:after{
+    /*content: "8";*/
+    background: #ffa200;
+}
+.SetColumn button.s10:after,
+.SetColumn button.s20:after{
+    /*content: "8";*/
+    background: #f7a0ff;
+}
+
+
+/*.SetColumn:first-child{
     border-right: 1px dotted #656490;
 }
 
 .checkbox:hover {
-    background-color: grey;
-    cursor: pointer;
-}
-
-.checkbox {
-    text-align: center;
-}
+    
+}*/
 
 #AttrsSubmitButton {
     position: absolute;
@@ -418,11 +555,24 @@ b {
 }
 
 .heading {
+    position: relative;
     font-size: 120%;
     margin-bottom: 5px;
     /*width: 33%;*/
     /*text-align: center;*/
     /*float: left;*/
+}
+.heading p{
+    display: inline;
+    font-size: 12px;
+    color: #9797C2;
+    margin-left: 10px;
+}
+.heading a{
+    color: #9797C2;
+    position: absolute;
+    right: 0;
+    bottom: 4px;
 }
 
 #AttrsHeader {

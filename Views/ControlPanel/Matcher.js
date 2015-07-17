@@ -5,10 +5,13 @@ Application.Matcher = Backbone.View.extend({
         Application.attrsMap = {}; // a map of attributes
         this.lastUserPropName = ''; // the name of the last property created
         this.lastParserPropName = '';
-        this.appendHeader();
+
+        this.appendTitleBox();
+        this.templatesView = new Application.TemplatesView();
+        this.attributesView =  new Application.AttributesView();
+
         this.userAttributesView = new Application.UserAttributesSet(Application.attrsMap);
         this.parserAttributesView = new Application.ParserAttributesSet(Application.attrsMap);
-        this.templatesView = new Application.TemplatesView();
 
         this.submit = new Application.SubmitAttrs();
         this.submit.$el.on('click', this.action.bind(this));
@@ -23,21 +26,20 @@ Application.Matcher = Backbone.View.extend({
     },
     render: function() {
         this.$el.append(this.templatesView.render().$el);
-        this.$el.append(this.userAttributesView.render().$el);
-        this.$el.append(this.parserAttributesView.render().$el);
+        var attributesViewEl = this.attributesView.render().$el;
+        this.$el.append(attributesViewEl);
+        $('.SetColumns', attributesViewEl).append(this.userAttributesView.render().$el);
+        $('.SetColumns', attributesViewEl).append(this.parserAttributesView.render().$el);
         this.$el.append(this.labelForTemplates);
         this.$el.append(this.submit.render().$el);
 
         return this;
     },
-    appendHeader: function() {
-
-        var $header = $('<div id="AttrsHeader"></div>');
-        $header.append("<div class='heading'>Choose a template</div>");
-        $header.append("<div class='heading'>User attributes</div>");
-        $header.append("<div class='heading'>Parser attributes</div>");
-        this.$el.append($header);
-
+    appendTitleBox: function(){
+        var $box = $('<div class="matcherBoxInner"></div>');
+        $box.append('<div class="heading">Title<p>We will put some explanation here</p><div/>')
+        $box.append('<input class="form-control vizTitle">');
+        this.$el.append($box);
     },
     resetAttributes: function() {
 
@@ -201,11 +203,9 @@ Application.AttributesSet = Backbone.View.extend({
     },
     createCheckBox: function(name) {
 
-        var $box = $('<div class="checkbox"></div>');
+        var $box = $('<button class="checkbox">'+name+'</button>');
 
         $box.attr('id', '_' + name);
-
-        $box.html(name);
 
         $box.data('checked', 'false');
 
@@ -262,6 +262,7 @@ Application.AttributesSet = Backbone.View.extend({
 
 
 });
+
 
 
 Application.UserAttributesSet = Application.AttributesSet.extend({
@@ -436,22 +437,46 @@ Application.SubmitAttrs = Backbone.View.extend({
 
 Application.TemplatesView = Backbone.View.extend({
     tagName: 'div',
-    className: 'SetColumn',
+    className: 'matcherBoxInner',
     initialize: function() {
-        this.menu = new Application.DropDownList(Application.templates);
-        Application._vent.on('controlpanel/subview/vizLayer', this.addThumbnail, this);
-        this.pic = null;
+        var that = this;
+        this.$el.append('<div class="heading">Choose a template<p>We will put some explanation here</p><div/>')
+        var $templist = $('<ul class="templateImgList"></ul>');
+
+        $.each(Application.templates.list, function(index, item) {
+            $templist.append('<li><button class="imgBtn"><img src="Assets/images/templates/'+item+'.png"><p class="templateTitle">'+item+'</p></button></li>');
+        });
+        this.$el.append($templist);
+
+        $('button.imgBtn', this.$el).on('click', this.btnSelected);
+    },
+    btnSelected: function(){
+        var vizLayer = $('.templateTitle', this).text();
+        Application.userConfig.vizLayer = vizLayer;
+        Application._vent.trigger('controlpanel/subview/vizLayer', vizLayer);
     },
     render: function() {
-        this.$el.append(this.menu.render().$el);
         return this;
     },
-    addThumbnail: function(name) {
-        if (this.picDiv) this.picDiv.remove();
-        this.picDiv = $('<div id="pic"></div>');
-        this.pic = $('<img src="Assets/images/templates/' + name + '.png">');
-        this.picDiv.append(this.pic);
-        this.$el.append(this.picDiv);
+    destroy: function() {
+        this.$el.unbind();
+        this.remove();
+    }
+});
+
+
+Application.AttributesView = Backbone.View.extend({
+    tagName: 'div',
+    className: 'matcherBoxInner',
+    initialize: function() {
+        var that = this;
+        this.$el.append('<div class="heading">Match attributes<p>We will put some explanation here</p><div/>')
+        var $templist = $('<div class="SetColumns"></div>');
+        this.$el.append($templist);
+    },
+    render: function() {
+        // this.$el.append(this.menu.render().$el);
+        return this;
     },
     destroy: function() {
 
