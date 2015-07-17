@@ -171,7 +171,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.sortResultsByCategory.call(this);
 
-        this.resetGlobe();
+       // this.resetGlobe();
         this.showAllResults();
 
        // if (category == 'All') return;
