@@ -3,6 +3,7 @@ Application.Matcher = Backbone.View.extend({
     id: 'matcherBox',
     initialize: function() {
         Application.attrsMap = {}; // a map of attributes
+        Application.attrsMapIndex = 0;
         this.lastUserPropName = ''; // the name of the last property created
         this.lastParserPropName = '';
 
@@ -142,8 +143,9 @@ Application.AttributesSet = Backbone.View.extend({
             $(e.target).data('checked', 'true'); // makes button checked
 
             Application._vent.trigger(this.eventName + '/add', e.target.innerText);
-
-            $(e.target).css('background-color', this.checkedColor); // changes color to grey when checked
+            Application.attrsMapIndex++;
+            $(e.target).addClass('chosen');
+            //$(e.target).css('background-color', this.checkedColor); // changes color to grey when checked
 
             Application._vent.trigger(this.eventName + '/click', e.target.innerText);
 
@@ -155,9 +157,13 @@ Application.AttributesSet = Backbone.View.extend({
 
             Application._vent.trigger(this.eventName + '/unclick', e.target.innerText);
 
-            $(e.target).css('background-color', this.uncheckedColor);
+            $(e.target).removeClass('selected');
+            $(e.target).removeClass (function (index, css) { return (css.match (/(^|\s)sel-\S+/g) || []).join(' ');});
+            $(e.target).removeClass('chosen');
+            // $(e.target).css('background-color', this.uncheckedColor);
 
             Application._vent.trigger(this.eventName + '/remove', e.target.innerText);
+            Application.attrsMapIndex--;
 
             this.makeActiveTheRest();
 
@@ -167,7 +173,6 @@ Application.AttributesSet = Backbone.View.extend({
         }
 
     },
-
     makeActiveTheRest: function() {
 
         var that = this;
@@ -175,9 +180,7 @@ Application.AttributesSet = Backbone.View.extend({
         $.each(this.checkboxes, function(index, box) {
 
             if (box.data('checked') == 'false') {
-
-                box.css('color', that.activeColor);
-
+                box.removeClass('inactive');
                 box.click(that.action.bind(that));
             }
 
@@ -192,7 +195,9 @@ Application.AttributesSet = Backbone.View.extend({
 
             if (box.data('checked') == 'false') {
 
-                box.css('color', that.inactiveColor);
+                box.removeClass('active');
+                box.addClass('inactive');
+                // box.css('color', that.inactiveColor);
 
                 box.unbind();
             }
@@ -298,8 +303,12 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
 
         var attr = this.findPairByKey(ParserAttr);
         var box = this.getCheckbox(attr);
+        $(box).addClass('selected');
+        $(box).addClass('sel-' + Application.attrsMapIndex);
+        $(box).removeClass('active');
+        $(box).removeClass('chosen');
+        // $(box).css('background-color', this.chosenColor);
 
-        $(box).css('background-color', this.chosenColor);
         $(box).unbind();
     },
     unsetAttributeChosen: function(ParserAttr) {
@@ -307,7 +316,9 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
         var attr = this.findPairByKey(ParserAttr);
         var box = this.getCheckbox(attr);
 
-        $(box).css('background-color', this.checkedColor);
+        // $(box).css('background-color', this.checkedColor);
+        $(box).addClass('chosen');
+
         $(box).click(this.action.bind(this));
         this.makeInactiveTheRest();
         Application._vent.trigger('matcher/user/add', attr);
@@ -374,14 +385,18 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
 
         var box = this.getCheckbox(attr);
 
-        $(box).css('background-color', this.chosenColor);
+        $(box).addClass('selected');
+        $(box).addClass('sel-' + Application.attrsMapIndex);
+        // $(box).css('background-color', this.chosenColor);
 
     },
     unsetAttributeChosen: function(attr) {
 
         var box = this.getCheckbox(attr);
 
-        $(box).css('background-color', this.uncheckedColor);
+        // $(box).css('background-color', this.uncheckedColor);
+        $(box).removeClass('selected');
+        $(box).removeClass('chosen');
 
         $(box).data('checked', 'false');
 

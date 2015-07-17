@@ -455,7 +455,8 @@ b {
 .SetColumn button span.l-str{
     background: #4ab125;
 }
-.SetColumn button.disabled{
+.SetColumn button.inactive,
+.SetColumn button.inactive:hover{
     color: rgb(121, 131, 159);
     background: none;
 }
@@ -463,7 +464,8 @@ b {
     color: rgb(255, 255, 255);
     background-color: rgb(121, 131, 159);
 }
-.SetColumn button:hover{
+.SetColumn button:hover,
+.SetColumn button.chosen{
     color: #fff;
     background-color: grey;
 }
@@ -486,53 +488,53 @@ b {
     color: #9797C2;
     background: #eeeeee;
 }
-.SetColumn button.s1:after,
-.SetColumn button.s11:after{
+.SetColumn button.sel-1:after,
+.SetColumn button.sel-11:after{
     /*content: "1";*/
     background: #eeeeee;
 }
-.SetColumn button.s2:after,
-.SetColumn button.s12:after{
+.SetColumn button.sel-2:after,
+.SetColumn button.sel-12:after{
     /*content: "2";*/
     background: #1f6c8f;
 }
-.SetColumn button.s3:after,
-.SetColumn button.s13:after{
+.SetColumn button.sel-3:after,
+.SetColumn button.sel-13:after{
     /*content: "3";*/
     background: #30ba00;
 }
-.SetColumn button.s4:after,
-.SetColumn button.s14:after{
+.SetColumn button.sel-4:after,
+.SetColumn button.sel-14:after{
     /*content: "4";*/
     background: #b82560;
 }
-.SetColumn button.s5:after,
-.SetColumn button.s15:after{
+.SetColumn button.sel-5:after,
+.SetColumn button.sel-15:after{
     /*content: "5";*/
     background: #d0ca1b;
 }
-.SetColumn button.s6:after,
-.SetColumn button.s16:after{
+.SetColumn button.sel-6:after,
+.SetColumn button.sel-16:after{
     /*content: "6";*/
     background: #8f541f;
 }
-.SetColumn button.s7:after,
-.SetColumn button.s17:after{
+.SetColumn button.sel-7:after,
+.SetColumn button.sel-17:after{
     /*content: "7";*/
     background: #9fe895;
 }
-.SetColumn button.s8:after,
-.SetColumn button.s18:after{
+.SetColumn button.sel-8:after,
+.SetColumn button.sel-18:after{
     /*content: "8";*/
     background: #bbbbbb;
 }
-.SetColumn button.s9:after,
-.SetColumn button.s19:after{
+.SetColumn button.sel-9:after,
+.SetColumn button.sel-19:after{
     /*content: "8";*/
     background: #ffa200;
 }
-.SetColumn button.s10:after,
-.SetColumn button.s20:after{
+.SetColumn button.sel-10:after,
+.SetColumn button.sel-20:after{
     /*content: "8";*/
     background: #f7a0ff;
 }
