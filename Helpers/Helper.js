@@ -207,5 +207,10 @@ Application.Helper = {
     },
     getFileExtention: function(filename){
         return (/[.]/.exec(filename)) ? (/[^.]+$/.exec(filename))[0] : undefined;
+    },
+
+    capitalize: function(str){
+        return str.charAt(0).toUpperCase() + str.slice(1);
     }
+
 }

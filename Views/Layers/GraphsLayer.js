@@ -30,7 +30,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         this.moObjects = [];
         this.prevObjects = [];
         // this is where I set up all the objects. Later on, I just instantiate them
-        // with different positions/ rotations. This is the main improvement so far, 
+        // with different positions/ rotations. This is the main improvement so far,
         // performance wise
 
         this.airportGeometry = new THREE.SphereGeometry(this.cylinderRadius);
@@ -94,12 +94,14 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         console.log("GraphsLayer showResults");
 
         var results = this.collection[0].models;
+
+        Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;
         }
         else if(
-            !results[0].longitudeFrom 
+            !results[0].longitudeFrom
             || !results[0].latitudeFrom
             || !results[0].longitudeTo
             || !results[0].latitudeTo
@@ -130,7 +132,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         Application._vent.trigger('vizinfocenter/message/off');
 
         if (intersects[0]) {
-            
+
             $.each(this.createdAirports, function(index, airport) {
                 if (intersects[0].object == airport.mesh) {
                     if(airport.label != null){
@@ -144,7 +146,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
             this.cameraGoTo(destination);
 
         }else{
-            
+
             Application.BaseGlobeView.prototype.clickOn.call(this, event);
 
         }
@@ -154,7 +156,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.onMouseMove.call(this, e);
         var that = this;
-        //ray casting  
+        //ray casting
         var closest = this.rayCast(this.moObjects, e);
         this.changePrevObjects();
 
@@ -175,7 +177,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
                 if(msg !== ""){
                     Application._vent.trigger('vizinfocenter/message/on', msg);
                 }
-                
+
             }else{
                 this.changePrevObjects();
             }
@@ -243,7 +245,7 @@ latitudeTo
                 if(!that.airportCreated(airportTo)){
                     that.createAirportMesh(airportTo, category);
                 }
-                
+
                 var vF = Application.Helper.geoToxyz( airportFrom.longitude , airportFrom.latitude , 51);
                 var vT = Application.Helper.geoToxyz( airportTo.longitude , airportTo.latitude , 51);
                 var dist = vF.distanceTo(vT);
@@ -253,7 +255,7 @@ latitudeTo
                 //gets the distance between the points. Maxium = 2*radius
                 // var speed = Application.Helper.map(dist, 0, that.globeRadius * 2, 0, 2.9);
                 // that.createAirplaneMesh(speed, that.paths[that.paths.length-1].getPoint(0), category);
-                
+
 
             }, time);
 
@@ -261,7 +263,7 @@ latitudeTo
         });
 
         this.moObjects.push(this.globe);
-       
+
     },
 
     airportCreated: function(airport) {
@@ -289,7 +291,7 @@ latitudeTo
     },
 
     getCategory: function(categoryName){
-        
+
         if(categoryName == null){
             return;
         }
@@ -370,7 +372,7 @@ latitudeTo
     createAirplaneMesh: function(speed, point, category){
 
         //TODO avoid creating same airport that already exists.
-        
+
         //airplane 3D object
         var material;
         if(category != null){
@@ -386,7 +388,7 @@ latitudeTo
         var airplane = [ airplaneInstance, (3 - speed) / 500, 0 ];
 
         //gets the path first position
-        airplaneInstance.position.copy(point);        
+        airplaneInstance.position.copy(point);
 
         this.createdAirplaness.push(airplane);
         this.scene.add(airplaneInstance);
@@ -413,7 +415,7 @@ latitudeTo
         this.airportMeshes.push(airportInstance);
 
         airport.mesh = airportInstance;
-        
+
         this.createdAirports.push(airport);
         this.scene.add(airportInstance);
 
