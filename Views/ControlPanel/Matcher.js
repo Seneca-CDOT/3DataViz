@@ -105,11 +105,10 @@ Application.AttributesSet = Backbone.View.extend({
     initialize: function(attrsMap) {
         this.checkboxes = []; // array of checkboxes
         Application.attrsMap = attrsMap;
-        this.inactiveColor = '#79839F';
-        this.activeColor = '#FFFFFF';
-        this.checkedColor = '#79839F';
-        this.uncheckedColor = '';
-        this.chosenColor = '#40405C';
+        this.inactiveClass = 'inactive';
+        this.activeClass = 'active';
+        this.chosenClass = 'chosen';
+        this.selectedClass = 'selected';
     },
     render: function() {
 
@@ -136,6 +135,12 @@ Application.AttributesSet = Backbone.View.extend({
     },
     action: function(e) {
 
+        if($(e.target).hasClass(this.inactiveClass)){
+            return;
+        }
+
+        console.log(Application.attrsMapIndex);
+
         var checked = $(e.target).data('checked');
 
         if (checked == 'false') {
@@ -143,13 +148,11 @@ Application.AttributesSet = Backbone.View.extend({
             $(e.target).data('checked', 'true'); // makes button checked
 
             Application._vent.trigger(this.eventName + '/add', e.target.innerText);
-            Application.attrsMapIndex++;
-            $(e.target).addClass('chosen');
-            //$(e.target).css('background-color', this.checkedColor); // changes color to grey when checked
+            $(e.target).addClass(this.chosenClass);
 
             Application._vent.trigger(this.eventName + '/click', e.target.innerText);
 
-            this.makeInactiveTheRest();
+            this.makeInactiveTheRest(e.target);
 
         } else if (checked == 'true') {
 
@@ -157,15 +160,12 @@ Application.AttributesSet = Backbone.View.extend({
 
             Application._vent.trigger(this.eventName + '/unclick', e.target.innerText);
 
-            $(e.target).removeClass('selected');
-            $(e.target).removeClass (function (index, css) { return (css.match (/(^|\s)sel-\S+/g) || []).join(' ');});
-            $(e.target).removeClass('chosen');
-            // $(e.target).css('background-color', this.uncheckedColor);
+            $(e.target).removeClass(this.selectedClass);
+            $(e.target).removeClass(this.chosenClass);
 
             Application._vent.trigger(this.eventName + '/remove', e.target.innerText);
-            Application.attrsMapIndex--;
 
-            this.makeActiveTheRest();
+            this.makeActiveTheRest(e.target);
 
         } else {
 
@@ -173,35 +173,36 @@ Application.AttributesSet = Backbone.View.extend({
         }
 
     },
-    makeActiveTheRest: function() {
+    makeActiveTheRest: function(e) {
 
         var that = this;
 
         $.each(this.checkboxes, function(index, box) {
 
-            if (box.data('checked') == 'false') {
-                box.removeClass('inactive');
-                box.click(that.action.bind(that));
+            if(box.attr('id') != $(e).attr('id') || typeof e === 'undefined'){ // check id instead of checked.
+            // if (box.data('checked') == 'false') {
+                box.removeClass(that.inactiveClass);
             }
 
         });
 
     },
-    makeInactiveTheRest: function() {
+    makeInactiveTheRest: function(e) {
 
         var that = this;
 
         $.each(this.checkboxes, function(index, box) {
 
-            if (box.data('checked') == 'false') {
+            //if (box.data('checked') == 'false') {
+            if($(box).attr('id') != $(e).attr('id') && !$(box).hasClass(that.selectedClass)){
 
-                box.removeClass('active');
-                box.addClass('inactive');
+                box.removeClass(that.activeClass);
+                box.addClass(that.inactiveClass);
                 // box.css('color', that.inactiveColor);
-
-                box.unbind();
+                // box.unbind();
+                box.removeClass(that.chosenClass);
+                $(box).data('checked', 'false');
             }
-
 
         });
 
@@ -263,9 +264,26 @@ Application.AttributesSet = Backbone.View.extend({
         this.checkedColor = null;
         this.uncheckedColor = null;
         this.chosenColor = null;
+    },
+    getAvailableColor: function(){
+        var found = false;
+        var className = true;
+        for(var i=1; i<20; i++){
+            $.each(this.checkboxes, function(index, box) {
+                className = 'sel-' + i;
+                if(box.hasClass(className)){
+                    found = true;
+                    return true;
+                }
+            });
+            if(!found){
+                return className;
+            }else{
+                found = false;
+            }
+        }
+        return className;
     }
-
-
 });
 
 
@@ -289,6 +307,10 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
     },
     action: function(e) {
 
+        if($(e.target).hasClass(this.inactiveClass)){
+            return;
+        }
+
         Application.AttributesSet.prototype.action.call(this, e);
 
         var checked = $(e.target).data('checked');
@@ -303,11 +325,10 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
 
         var attr = this.findPairByKey(ParserAttr);
         var box = this.getCheckbox(attr);
-        $(box).addClass('selected');
-        $(box).addClass('sel-' + Application.attrsMapIndex);
-        $(box).removeClass('active');
-        $(box).removeClass('chosen');
-        // $(box).css('background-color', this.chosenColor);
+        $(box).addClass(this.selectedClass);
+        $(box).addClass(this.getAvailableColor());
+        $(box).removeClass(this.activeClass);
+        $(box).removeClass(this.chosenClass);
 
         $(box).unbind();
     },
@@ -316,11 +337,12 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
         var attr = this.findPairByKey(ParserAttr);
         var box = this.getCheckbox(attr);
 
-        // $(box).css('background-color', this.checkedColor);
-        $(box).addClass('chosen');
+        $(box).removeClass(this.selectedClass);
+        $(box).addClass(this.chosenClass);
+        $(box).removeClass (function (index, css) { return (css.match (/(^|\s)sel-\S+/g) || []).join(' ');});
 
         $(box).click(this.action.bind(this));
-        this.makeInactiveTheRest();
+        this.makeInactiveTheRest(box);
         Application._vent.trigger('matcher/user/add', attr);
     },
     render: function() {
@@ -385,18 +407,17 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
 
         var box = this.getCheckbox(attr);
 
-        $(box).addClass('selected');
-        $(box).addClass('sel-' + Application.attrsMapIndex);
-        // $(box).css('background-color', this.chosenColor);
+        $(box).addClass(this.selectedClass);
+        $(box).addClass(this.getAvailableColor());
 
     },
     unsetAttributeChosen: function(attr) {
 
         var box = this.getCheckbox(attr);
 
-        // $(box).css('background-color', this.uncheckedColor);
-        $(box).removeClass('selected');
-        $(box).removeClass('chosen');
+        $(box).removeClass(this.selectedClass);
+        $(box).removeClass(this.chosenClass);
+        $(box).removeClass (function (index, css) { return (css.match (/(^|\s)sel-\S+/g) || []).join(' ');});
 
         $(box).data('checked', 'false');
 
