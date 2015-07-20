@@ -419,7 +419,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         var xRotationSign = airport.longitude + 90 > 90 ? -1 : 1;
         airportInstance.rotation.x = xRotationSign * (90 - airport.latitude) * Math.PI / 180;
-        airportInstance.position.copy(Application.Helper.geoToxyz(airport.longitude, airport.latitude, 50));
+        airportInstance.position.copy(Application.Helper.geoToxyz(airport.longitude, airport.latitude, 50.5));
 
         airportInstance.userData = airport;
         this.airportMeshes.push(airportInstance);
