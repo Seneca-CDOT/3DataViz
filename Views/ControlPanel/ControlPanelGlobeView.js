@@ -60,6 +60,30 @@ Application.VizInfoCenter = Backbone.View.extend({
     }
 });
 
+Application.VizTitleCenter = Backbone.View.extend({
+    tagName: 'div',
+    id: 'titleBox',
+    initialize: function() {
+        Application._vent.on('title/message/on', this.showMessage, this);
+        this.$el.hide();
+    },
+    render: function() {
+        return this;
+    },
+    showMessage: function(message) {
+        this.$el.fadeIn();
+        this.$el.empty();
+        this.$el.append('<p>' + message + '</p>');
+    },
+    removeMessage: function() {
+        this.$el.empty();
+        this.$el.fadeOut();
+    },
+    destroy: function() {
+        Application._vent.unbind('title/message/on');
+    }
+});
+
 Application.ControlPanelRootView = Backbone.View.extend({
     tagName: 'div',
     id: 'panel',
@@ -262,7 +286,7 @@ Application.VisualizationsView = Backbone.View.extend({
             this.$el.append(this.subview.render().$el);
 
             this.visualizebtn = new Application.Button(this.viewConfigs.vizLayer); // to do submit button in elements
-             
+
             this.visualizebtn.$el.text('VISUALIZE');
             this.visualizebtn.$el.on('mousedown', this.submitAction.bind(this));
             this.$el.append(this.visualizebtn.render().$el);

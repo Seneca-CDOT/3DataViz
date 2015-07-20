@@ -38,7 +38,7 @@ Application.Matcher = Backbone.View.extend({
     },
     appendTitleBox: function(){
         var $box = $('<div class="matcherBoxInner"></div>');
-        $box.append('<div class="heading">Title<p>We will put some explanation here</p><div/>')
+        $box.append('<div class="heading">Title<p>Please input a title of your visualization.</p><div/>')
         $box.append('<input class="form-control vizTitle">');
         this.$el.append($box);
     },
@@ -47,7 +47,7 @@ Application.Matcher = Backbone.View.extend({
         for (var member in Application.attrsMap) delete Application.attrsMap[member];
     },
     showMatcher: function() {
-
+        this.templatesView.chooseDefault();
         this.$el.show();
     },
     hideMatcher: function() {
@@ -76,15 +76,20 @@ Application.Matcher = Backbone.View.extend({
     },
     action: function() {
 
+        var key = $('.vizTitle').val() || $('.vizTitle').attr('placeholder');
+        Application.userConfig.vizTitle = key;
+
         Application._vent.trigger('matcher/submit');
         Application._vent.trigger('matcher/off');
 
     },
     destroy: function() {
 
+        this.attributesView.destroy();
         this.userAttributesView.destroy();
         this.parserAttributesView.destroy();
         this.templatesView.destroy();
+        this.attributesView = null;
         this.templatesView = null;
         this.userAttributesView = null;
         this.parserAttributeView = null;
@@ -476,7 +481,7 @@ Application.TemplatesView = Backbone.View.extend({
     className: 'matcherBoxInner',
     initialize: function() {
         var that = this;
-        this.$el.append('<div class="heading">Choose a template<p>We will put some explanation here</p><div/>')
+        this.$el.append('<div class="heading">Choose a template<p>Please select a visualization template for your data.</p><div/>')
         var $templist = $('<ul class="templateImgList"></ul>');
 
         $.each(Application.templates.list, function(index, item) {
@@ -487,8 +492,17 @@ Application.TemplatesView = Backbone.View.extend({
         $('button.imgBtn', this.$el).on('click', this.btnSelected);
     },
     btnSelected: function(){
+
         var vizLayer = $('.templateTitle', this).text();
         Application.userConfig.vizLayer = vizLayer;
+        $(this).parent().siblings().removeClass('active');
+        $(this).parent().addClass('active');
+
+        if( $('.vizTitle').val() === ''){
+            var str = Application.Helper.capitalize(vizLayer) + " Visualization";
+            $('.vizTitle').attr('placeholder', str);
+        }
+
         Application._vent.trigger('controlpanel/subview/vizLayer', vizLayer);
     },
     render: function() {
@@ -497,6 +511,9 @@ Application.TemplatesView = Backbone.View.extend({
     destroy: function() {
         this.$el.unbind();
         this.remove();
+    },
+    chooseDefault: function(){
+        $('li:first-child .imgBtn', this.$el).trigger('click');
     }
 });
 
@@ -506,8 +523,8 @@ Application.AttributesView = Backbone.View.extend({
     className: 'matcherBoxInner',
     initialize: function() {
         var that = this;
-        this.$el.append('<div class="heading">Match attributes<p>We will put some explanation here</p><div/>')
-        var $templist = $('<div class="SetColumns"></div>');
+        this.$el.append('<div class="heading">Match attributes<p>Please match your data\'s attributes to attributes that are available in this template</p><div/>')
+        var $templist = $('<div class="SetColumns"><div class="colTitle">User\'s data attributes</div><div class="colTitle">Template\'s data attributes</div></div>');
         this.$el.append($templist);
     },
     render: function() {
@@ -515,7 +532,6 @@ Application.AttributesView = Backbone.View.extend({
         return this;
     },
     destroy: function() {
-
         this.$el.unbind();
         this.remove();
     }

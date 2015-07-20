@@ -193,11 +193,11 @@ Application.Helper = {
 
         var array = string.split(/[\,\.\s]/);
         array.forEach(function(element, index) {
-           
+
             element.replace(/\s/g, '');
-           
+
             var index = array.indexOf('');
-           
+
             if (index != -1)
                 array.splice(index, 1);
         });
@@ -208,5 +208,10 @@ Application.Helper = {
 
     getFileExtention: function(filename){
         return (/[.]/.exec(filename)) ? (/[^.]+$/.exec(filename))[0] : undefined;
+    },
+
+    capitalize: function(str){
+        return str.charAt(0).toUpperCase() + str.slice(1);
     }
+
 }

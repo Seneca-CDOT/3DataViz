@@ -80,6 +80,8 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         var results = this.collection[0].models;
         var that = this;
 
+        Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);
+
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;

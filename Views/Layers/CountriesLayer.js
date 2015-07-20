@@ -36,7 +36,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
                 }
 
             });
-            
+
          if (!found) Application._vent.trigger('vizinfocenter/message/on', intersectedMesh.object.userData.name);
         }
 
@@ -106,12 +106,13 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
     showResults: function() {
 
-        // console.log("CountriesLayer showResults");
+        // console.log("CountriesLayer showResult");
 
         Application.BaseGlobeView.prototype.showResults.call(this, results);
         var that = this;
-
         var results = this.collection[0].models;
+
+        Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);
 
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');

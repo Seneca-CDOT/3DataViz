@@ -33,6 +33,18 @@ body {
     left: 5%;
 }
 
+#titleBox {
+    color: white;
+    opacity: 0.9;
+    text-align: center;
+    font-size: 200%;
+    position: absolute;
+    top: 18px;
+    left: 100px;
+    font-size: 26px;
+    font-weight: bold;
+}
+
 #applicationRegion {
     margin-right: 250px;
 }
@@ -51,6 +63,7 @@ body {
     right: 0px;
     height: 100%;
     opacity: 0.9;
+    z-index: 9999;
 }
 
 a {
@@ -123,6 +136,9 @@ b {
     width: 80%;
     margin-top: 10%;
     /*background-color: #56567A;*/
+}
+button{
+    outline: none;
 }
 
 .configList {
@@ -205,6 +221,7 @@ b {
     margin-left: -230px;
     margin-top: -15px;
     text-align: center;
+    z-index: 9000;
 }
 
 .notification {
@@ -365,6 +382,7 @@ b {
     text-align: left;
     color: white;
     font-size: 150%;
+    z-index: 9999;
 }
 
 .matcherBoxInner{
@@ -397,6 +415,9 @@ b {
 .templateImgList li .imgBtn.active{
     background: #40405C;
 }
+.templateImgList li.active .imgBtn{
+    background: #40405C;
+}
 
 .SetColumns{
     width: 100%;
@@ -408,7 +429,13 @@ b {
   clear: both;
   display: block;
 }
-.SetColumn {
+.colTitle{
+    font-size: 12px;
+    text-align: center;
+    padding-bottom: 4px;
+}
+.SetColumn,
+.colTitle {
     float: left;
     /*position: absolute;*/
     /*padding: 10px 20px;*/
@@ -422,7 +449,7 @@ b {
     cursor: pointer;
     padding: 0 10px;
     margin-bottom: 0;
-    height: 250px;
+    height: 215px;
     overflow-y: scroll;
 }
 .SetColumn{
@@ -539,26 +566,19 @@ b {
     background: #f7a0ff;
 }
 
-
-/*.SetColumn:first-child{
-    border-right: 1px dotted #656490;
-}
-
-.checkbox:hover {
-
-}*/
-
 #AttrsSubmitButton {
     position: absolute;
-    width: 100px;
-    bottom: 5px;
+    width: 140px;
+    left: 50%;
+    margin-left: -70px;
+    bottom: 15px;
     right: 5px;
     /*background-color: #56567A;*/
 }
 
 .heading {
     position: relative;
-    font-size: 120%;
+    font-size: 18px;
     margin-bottom: 5px;
     /*width: 33%;*/
     /*text-align: center;*/
