@@ -16,6 +16,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         this.prevObject;
         //this.suscribe();
         //this.collection = config.collection[0];
+        this.texture = THREE.ImageUtils.loadTexture("Assets/images/disc.png");
 
         console.log('link: https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
         console.log('key: 13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg');
@@ -35,6 +36,46 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         this.sprites = null;
         // Application._vent.unbind('globe/ready');
     },
+    clickOn: function(event) {
+
+        var that = this;
+
+        var intersectedMesh = Application.BaseGlobeView.prototype.clickOn.call(this, event);
+
+
+        if (intersectedMesh) {
+
+            $.each(this.rayCatchers, function(index, countrymesh) {
+
+                if (intersectedMesh.object == countrymesh) {
+
+                    var name = countrymesh.userData.name;
+
+                    Application._vent.trigger('vizinfocenter/message/on', name +
+                        ': ' + that.pointsPerCountry(name) + ' points');
+                }
+
+            });
+
+        }
+
+    },
+    pointsPerCountry: function(countryname) {
+
+        var i = 0;
+
+        $.each(this.sprites, function(index, sprite) {
+
+            if (sprite.userData.country == countryname) {
+
+                i++;
+            }
+
+        });
+
+        return i;
+
+    },
     // member methods
     resetGlobe: function() {
 
@@ -53,23 +94,28 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         //ray casting
         var closest = this.rayCast(this.moObjects, e);
-        if ( closest != null ) {
-            if(closest.object.name !== 'globe'){
+
+        if (closest != null) {
+            if (closest.object.name !== 'globe') {
+
+                if (this.prevObject) this.prevObject.object.material.color.set('white');
                 this.prevObject = closest;
+                closest.object.material.color.set('red');
                 var data = closest.object.userData;
                 var msg = "";
-                if(typeof data.label !== 'undefined'){
+                if (typeof data.label !== 'undefined') {
                     msg += data.label + " ";
                 }
-                if(typeof data.value !== 'undefined'){
-                    msg += ( "(" + data.value + ")" );
+                if (typeof data.value !== 'undefined') {
+                    msg += ("(" + data.value + ")");
                 }
-                if(msg !== ""){
+                if (msg !== "") {
                     Application._vent.trigger('vizinfocenter/message/on', msg);
                 }
             }
-        }else{
+        } else {
             Application._vent.trigger('vizinfocenter/message/off');
+
         }
 
     },
@@ -80,12 +126,13 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         var results = this.collection[0].models;
         var that = this;
 
+        Application.BaseGlobeView.prototype.showResults.call(this, results);
         Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);
 
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;
-        }else if( !results[0].latitude || !results[0].longitude ){
+        } else if (!results[0].latitude || !results[0].longitude) {
             Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
             return;
         }
@@ -93,14 +140,14 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         Application._vent.trigger('controlpanel/message/off');
         // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
-        var map = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
+        // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
         var material = new THREE.SpriteMaterial({
-            map: map,
-            color: 0xff0000,
+            map: this.texture,
+            color: 0xFFFFFF,
             blending: THREE.AdditiveBlending,
         });
 
-       // var destination;
+        // var destination;
         var hasGeo = false;
 
         if (typeof results[0].longitude === "undefined" && typeof results[0].latitude === "undefined") {
@@ -143,11 +190,20 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
             time += 20;
 
-            var sprite = new THREE.Sprite(material);
-            sprite.scale.multiplyScalar(5);
+            var sprite = new THREE.Sprite(material.clone());
+            sprite.scale.multiplyScalar(2);
+
+
+            if (item.category) sprite.userData.category = item.category;
+
+            that.sprites.push(sprite);
+            that.moObjects.push(sprite);
+
             var timer = setTimeout(function() {
 
-                if(that.globe == null){ return; };
+                if (that.globe == null) {
+                    return;
+                };
 
                 that.globe.add(sprite);
 
@@ -160,19 +216,65 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
                     var position = results[index].destination;
 
                 }
-                sprite.position.copy(position);
-                sprite.userData = item;
 
-                that.sprites.push(sprite);
-                that.moObjects.push(sprite);
+                sprite.position.copy(position);
+                sprite.userData.label = item.label;
+                sprite.userData.country = that.determineCountry(sprite);
+                sprite.userData.result_color = '0xFFFFFF';
 
             }, time);
 
-            if(that.timer != null) that.timer.push(timer);
+            if (that.timer != null) that.timer.push(timer);
 
         });
 
         that.moObjects.push(this.globe);
 
-    }
+    },
+    sortResultsByCategory: function() {
+
+        var that = this;
+
+        Application.BaseGlobeView.prototype.sortResultsByCategory.call(this);
+
+        this.resetGlobe();
+        this.showAllResults();
+
+        // if (category == 'All') return;
+        if (this.activeCategories.length != 0) {
+
+            $.each(this.sprites, function(index, point) { // turn all added countries grey
+
+                point.material.color.setHex(0x000000);
+
+            });
+        }
+
+        $.each(this.activeCategories, function(i, category) {
+
+            $.each(that.sprites, function(i, point) {
+
+                if (point.userData.category == category) {
+
+                    point.material.color.setHex(point.userData.result_color);
+
+                }
+
+            });
+
+        });
+
+    },
+    showAllResults: function() {
+
+        Application.BaseGlobeView.prototype.showAllResults.call(this);
+
+        this.resetGlobe();
+
+        $.each(this.sprites, function(index, point) {
+
+            point.material.color.setHex(point.userData.result_color);
+
+        });
+    },
 });

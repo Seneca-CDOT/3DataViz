@@ -15,7 +15,6 @@ Application.Matcher = Backbone.View.extend({
         this.parserAttributesView = new Application.ParserAttributesSet(Application.attrsMap);
 
         this.submit = new Application.SubmitAttrs();
-        this.submit.$el.on('click', this.action.bind(this));
         Application._vent.on('matcher/on', this.showMatcher, this);
         Application._vent.on('matcher/off', this.hideMatcher, this);
         Application._vent.on('matcher/user/add', this.setUserAttribute, this);
@@ -73,15 +72,6 @@ Application.Matcher = Backbone.View.extend({
     removeParserAttribute: function(attr) {
 
         delete Application.attrsMap[attr];
-    },
-    action: function() {
-
-        var key = $('.vizTitle').val() || $('.vizTitle').attr('placeholder');
-        Application.userConfig.vizTitle = key;
-
-        Application._vent.trigger('matcher/submit');
-        Application._vent.trigger('matcher/off');
-
     },
     destroy: function() {
 
@@ -444,7 +434,7 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
     },
     listAttributes: function(template) {
 
-        this.list = Application.templates[template].default;
+        this.list = Application.templates[template].attributes.default;
 
         Application.AttributesSet.prototype.listAttributes.call(this, this.list);
         this.makeInactiveTheRest();
@@ -462,12 +452,22 @@ Application.SubmitAttrs = Backbone.View.extend({
     tagName: 'button',
     className: 'btn btn-primary',
     id: 'AttrsSubmitButton',
+    events: {
+        'mousedown':'action'
+    },
     initialize: function(viewConfig) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+      //  Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
         this.$el.text('VISUALIZE');
     },
     render: function() {
         return this;
+    },
+    action: function() {
+        var key = $('.vizTitle').val() || $('.vizTitle').attr('placeholder');
+        Application.userConfig.vizTitle = key;
+        Application._vent.trigger('matcher/submit');
+        Application._vent.trigger('matcher/off');
+
     },
     destroy: function() {
 

@@ -24,6 +24,7 @@ Application = {
         ],
         [
             'Helpers/Debug.js',
+            'Helpers/Filter.js',
             'Helpers/DataStructures.js',
             'DataProcessor/ParserFactory.js',
             'DataProcessor/TransformerFactory.js',
@@ -42,6 +43,7 @@ Application = {
             'Views/ControlPanel/ControlPanelGlobeView.js',
             'Views/ControlPanel/ControlElementsGlobeView.js',
             'Views/ControlPanel/Matcher.js',
+            'Views/ControlPanel/FiltersView.js',
 
             'Views/BaseClasses/RootView.js',
             'Views/BaseClasses/RootGlobeView.js',
@@ -87,23 +89,35 @@ Application = {
         list: ['countries', 'points', 'dynamic', 'graph'],
         countries: {
             url: ['Views/Layers/CountriesLayer.js'],
-            default: ['countryname', 'value'],
-            optional: ['category', 'countrycode', 'label']
+            attributes: {
+                default: ['countryname', 'value', 'category'],
+                optional: ['category', 'countrycode', 'label']
+            },
+            filters: ['country'],
         },
         points: {
             url: ['Views/Layers/PointsLayer.js'],
-            default: ['latitude', 'longitude', 'label', 'value', 'category'],
-            optional: ['label', 'value', 'category']
+            attributes: {
+                default: ['latitude', 'longitude', 'label', 'value', 'category'],
+                optional: ['label', 'value', 'category']
+            },
+            filters: [],
         },
         dynamic: {
             url: ['Views/Layers/DynamicLayer.js', 'Views/Layers/DynamicLayerParticle.js'],
-            default: ['latitude', 'longitude', 'timestamp'],
-            optional: ['value', 'category']
+            attributes: {
+                default: ['latitude', 'longitude', 'timestamp'],
+                optional: ['value', 'category']
+            },
+            filters: [],
         },
         graph: {
             url: ['Views/Layers/GraphsLayer.js'],
-            default: ['latitudeFrom', 'longitudeFrom', 'latitudeTo', 'longitudeTo', 'fromLabel', 'toLabel', 'value', 'category'],
-            optional: ['timestamp', 'value', 'fromLabel', 'toLabel', 'category']
+            attributes: {
+                default: ['latitudeFrom', 'longitudeFrom', 'latitudeTo', 'longitudeTo', 'fromLabel', 'toLabel', 'value', 'category'],
+                optional: ['timestamp', 'value', 'fromLabel', 'toLabel', 'category']
+            },
+            filters: [],
         },
     }
 
