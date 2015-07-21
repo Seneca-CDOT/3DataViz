@@ -412,6 +412,9 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         this.categories = Application.Filter.getCategories(results);
         if (this.categories.length > 0 && this.categories[0] !== undefined) {
+            $.each(this.categories, function(index, category){
+                category.color = Application.getRandomColor();
+            });
             Application._vent.trigger('controlpanel/categories', this.categories);
         }
 
@@ -433,6 +436,17 @@ Application.BaseGlobeView = Backbone.View.extend({
             this.activeCategories.splice(i, 1);
         }
         this.sortResultsByCategory();
+    },
+    getColorByCategory: function(category){
+
+        var color = Application.colors[0];
+        var i = this.categories.indexOf(category);
+
+        if (i != -1) {
+          color = Application.colors[i].replace("#","0x");
+        }
+        return color;
+
     },
     sortResultsByCategory: function() {},
     determineCountry: function(point) {

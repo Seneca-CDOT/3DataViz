@@ -211,6 +211,10 @@ Application.Helper = {
 
     capitalize: function(str){
         return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+
+    getRandomColor: function(obj){
+      return randomColor(obj);
     }
 
 }

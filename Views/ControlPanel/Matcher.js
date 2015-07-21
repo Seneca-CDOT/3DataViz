@@ -134,8 +134,6 @@ Application.AttributesSet = Backbone.View.extend({
             return;
         }
 
-        console.log(Application.attrsMapIndex);
-
         var checked = $(e.target).data('checked');
 
         if (checked == 'false') {
