@@ -455,4 +455,20 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
 
     },
+    pointsPerCountry: function(array, countryname) {
+
+        var i = 0;
+
+        $.each(array, function(index, sprite) {
+
+            if (sprite.userData.country == countryname) {
+
+                i++;
+            }
+
+        });
+
+        return i;
+
+    },
 });

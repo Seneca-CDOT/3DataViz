@@ -15,7 +15,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         this.timer = []; // array of timers for setTimeout
 
         //variables used to set the size of the objects and camera/controls orientation
-        this.cylinderRadius = this.globeRadius * 0.01;
+        this.cylinderRadius = this.globeRadius * 0.005;
         this.cylinderHeight = this.globeRadius / 500;
 
         // Arrays for controlling the scene actors
@@ -33,10 +33,10 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         // with different positions/ rotations. This is the main improvement so far,
         // performance wise
 
-        var airportGeometry = new THREE.SphereGeometry(this.cylinderRadius);
+        var airportGeometry = new THREE.SphereGeometry(this.cylinderRadius, 12, 10);
         this.bufferSphereGeometry = new THREE.BufferGeometry().fromGeometry( airportGeometry );
-        this.airportMaterial = new THREE.MeshPhongMaterial({
-            color: 0xadedff
+        this.airportMaterial = new THREE.MeshBasicMaterial({
+            color: 0x1944e4
         });
 
         this.pathMaterial = new THREE.LineBasicMaterial({
@@ -107,36 +107,17 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
     clickOn: function(event) {
 
-        var x = event.clientX;
-        var y = event.clientY;
-
-        x -= this.container.offsetLeft;
-        y -= this.container.offsetTop;
-
-        var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
-        vector.unproject(this.camera);
-
-        var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
-        var intersects = ray.intersectObjects(this.airportMeshes);
+        var intersectedMesh = Application.BaseGlobeView.prototype.clickOn.call(this, event);
 
         Application._vent.trigger('vizinfocenter/message/off');
 
-        if (intersects[0]) {
+        if (intersectedMesh) {
 
-            //if (airport.label != null) {
-            Application._vent.trigger('vizinfocenter/message/on', intersects[0].object.userData.label);
-            //}
-
-            var destination = intersects[0].point;
-            destination.setLength(this.controls.getRadius());
-            this.cameraGoTo(destination);
-
-        } else {
-
-            Application.BaseGlobeView.prototype.clickOn.call(this, event);
+            var name = intersectedMesh.object.userData.name;
+            Application._vent.trigger('vizinfocenter/message/on', name +
+            ': ' + this.pointsPerCountry(this.airportMeshes, name) + ' points');
 
         }
-
     },
     onMouseMove: function(e) {
 
@@ -281,6 +262,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
                 latitude: airport.latitude,
                 longitude: airport.longitude
             }
+
             this.airportPoints.push(newAirport);
             return false;
         }
@@ -314,12 +296,11 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
     },
 
     getRandomColor: function() {
-        var letters = '789ABC'.split('');
-        var color = '0x';
-        for (var i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 5)];
-        }
-        return parseInt(color, 16);
+
+        return randomColor({
+            luminosity: 'bright',
+            format: 'rgb' // e.g. 'rgb(225,200,20)'
+        })
     },
 
     createPath: function(vT, vF, dist, category) {
@@ -405,8 +386,10 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         var material;
         if (category != null) {
-            material = new THREE.MeshPhongMaterial({
-                color: category.color
+            material = new THREE.MeshBasicMaterial({
+                color: category.color,
+                transparent: true,
+                opacity: 0.6
             });
         } else {
             material = this.airportMaterial;
@@ -421,6 +404,9 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         airportInstance.position.copy(Application.Helper.geoToxyz(airport.longitude, airport.latitude, 50.5));
 
         airportInstance.userData = airport;
+
+        airportInstance.userData.country = this.determineCountry(airportInstance);
+
         this.airportMeshes.push(airportInstance);
 
         //airport.mesh = airportInstance;
