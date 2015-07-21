@@ -30,7 +30,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         this.moObjects = [];
         this.prevObjects = [];
         // this is where I set up all the objects. Later on, I just instantiate them
-        // with different positions/ rotations. This is the main improvement so far, 
+        // with different positions/ rotations. This is the main improvement so far,
         // performance wise
 
         var airportGeometry = new THREE.SphereGeometry(this.cylinderRadius);
@@ -105,7 +105,6 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.updateGlobe.call(this);
     },
 
-
     clickOn: function(event) {
 
         var x = event.clientX;
@@ -143,7 +142,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.onMouseMove.call(this, e);
         var that = this;
-        //ray casting  
+        //ray casting
         var closest = this.rayCast(this.moObjects, e);
         this.changePrevObjects();
 
@@ -175,7 +174,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
             Application._vent.trigger('vizinfocenter/message/off');
         }
 
-    },
+      },
     changePrevObjects: function() {
         var that = this;
         if (typeof this.prevObjects !== 'undefined') {
@@ -235,8 +234,8 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
                     var to = that.createAirportMesh(airportTo, category);
                 }
 
-                var vF = Application.Helper.geoToxyz(airportFrom.longitude, airportFrom.latitude, 51);
-                var vT = Application.Helper.geoToxyz(airportTo.longitude, airportTo.latitude, 51);
+                var vF = Application.Helper.geoToxyz( airportFrom.longitude , airportFrom.latitude , 51);
+                var vT = Application.Helper.geoToxyz( airportTo.longitude , airportTo.latitude , 51);
                 var dist = vF.distanceTo(vT);
                 var path = that.createPath(vF, vT, dist, category);
                 path.userData = dataRecord;
@@ -440,6 +439,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.showResults.call(this, results);
 
+        Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);
 
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');

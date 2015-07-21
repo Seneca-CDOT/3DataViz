@@ -9,12 +9,12 @@ Application.ControlPanelRootView = Backbone.View.extend({
         this.matcher = new Application.Matcher();
 
         Application._vent.on('data/parsed', this.addTemplatesView, this);
-        
+
         Application._vent.on('matcher/on', this.destroyViews, this);
         Application._vent.on('controlpanel/input/changed', this.destroyViews, this);
         Application._vent.on('visualize', this.addFiltersView, this);
         Application._vent.on('matcher/submit', this.addFiltersView, this);
-     
+
 
         this.helpButton = new Application.Help();
         this.helpButton.$el.attr('id', 'helpButton');
@@ -154,7 +154,29 @@ Application.VizInfoCenter = Backbone.View.extend({
     }
 });
 
-
+Application.VizTitleCenter = Backbone.View.extend({
+    tagName: 'div',
+    id: 'titleBox',
+    initialize: function() {
+        Application._vent.on('title/message/on', this.showMessage, this);
+        this.$el.hide();
+    },
+    render: function() {
+        return this;
+    },
+    showMessage: function(message) {
+        this.$el.fadeIn();
+        this.$el.empty();
+        this.$el.append('<p>' + message + '</p>');
+    },
+    removeMessage: function() {
+        this.$el.empty();
+        this.$el.fadeOut();
+    },
+    destroy: function() {
+        Application._vent.unbind('title/message/on');
+    }
+});
 
 Application.DataSourcesView = Backbone.View.extend({
     tagName: 'div',
