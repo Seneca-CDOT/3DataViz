@@ -110,6 +110,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         var results = this.collection[0].models;
         var that = this;
 
+        this.getCategories(results);
         Application.BaseGlobeView.prototype.showResults.call(this, results);
 
         Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);

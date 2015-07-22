@@ -45,17 +45,17 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         if (intersectedMesh) {
 
-            //$.each(this.rayCatchers, function(index, countrymesh) {
-
+            // $.each(this.rayCatchers, function(index, countrymesh) {
+            //
             //    if (intersectedMesh.object == countrymesh) {
 
                     var name = intersectedMesh.object.userData.name;
 
                     Application._vent.trigger('vizinfocenter/message/on', name +
                         ': ' + that.pointsPerCountry(that.sprites, name) + ' points');
-                }
+                // }
 
-            });
+            // });
 
         }
 
@@ -82,7 +82,8 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         if (closest != null) {
             if (closest.object.name !== 'globe') {
 
-                if (this.prevObject) this.prevObject.object.material.color.set('white');
+                if (this.prevObject) this.prevObject.object.material.color.setHex(this.prevObject.object.userData.result_color);
+
                 this.prevObject = closest;
                 closest.object.material.color.set('red');
                 var data = closest.object.userData;
@@ -91,15 +92,23 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
                     msg += data.label + " ";
                 }
                 if (typeof data.value !== 'undefined') {
-                    msg += ("(" + data.value + ")");
+                    msg += ("<br>(" + data.value + ")");
                 }
                 if (msg !== "") {
                     Application._vent.trigger('vizinfocenter/message/on', msg);
                 }
+            }else{
+                if (this.prevObject){
+                    this.prevObject.object.material.color.setHex(this.prevObject.object.userData.result_color);
+                    this.prevObject = null;
+                }
             }
         } else {
+            if (this.prevObject){
+                this.prevObject.object.material.color.setHex(this.prevObject.object.userData.result_color);
+                this.prevObject = null;
+            }
             Application._vent.trigger('vizinfocenter/message/off');
-
         }
 
     },
@@ -107,9 +116,11 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     showResults: function() {
 
         console.log("PointsLayer showResults");
+
         var results = this.collection[0].models;
         var that = this;
 
+        this.getCategoriesWithColors(results);
         Application.BaseGlobeView.prototype.showResults.call(this, results);
         Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);
 
@@ -121,14 +132,12 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             return;
         }
 
-
         Application._vent.trigger('controlpanel/message/off');
         // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
         // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
         var material = new THREE.SpriteMaterial({
             map: this.texture,
             color: 0xFFFFFF,
-            blending: THREE.AdditiveBlending,
         });
 
         // var destination;
@@ -177,8 +186,11 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             var sprite = new THREE.Sprite(material.clone());
             sprite.scale.multiplyScalar(2);
 
-
             if (item.category) sprite.userData.category = item.category;
+
+            var color = that.getColorByCategory(sprite.userData.category) || '0xffffff';
+
+            sprite.material.color.setHex(color);
 
             that.sprites.push(sprite);
             that.moObjects.push(sprite);
@@ -203,8 +215,10 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
                 sprite.position.copy(position);
                 sprite.userData.label = item.label;
+                sprite.userData.value = item.value;
                 sprite.userData.country = that.determineCountry(sprite);
-                sprite.userData.result_color = '0xFFFFFF';
+
+                sprite.userData.result_color = color;
 
             }, time);
 
@@ -229,7 +243,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
             $.each(this.sprites, function(index, point) { // turn all added countries grey
 
-                point.material.color.setHex(0x000000);
+                point.visible = false;
 
             });
         }
@@ -240,6 +254,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
                 if (point.userData.category == category) {
 
+                    point.visible = true;
                     point.material.color.setHex(point.userData.result_color);
 
                 }
@@ -257,6 +272,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         $.each(this.sprites, function(index, point) {
 
+            point.visible = true;
             point.material.color.setHex(point.userData.result_color);
 
         });
