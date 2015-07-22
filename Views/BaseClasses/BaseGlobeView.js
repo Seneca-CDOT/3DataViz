@@ -409,14 +409,20 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.tween.start();
     },
     showResults: function(results) {
-
-        this.categories = Application.Filter.getCategories(results);
-        if (this.categories.length > 0 && this.categories[0] !== undefined) {
-            Application._vent.trigger('controlpanel/categories', this.categories);
-        }
-
+      if (this.categories.length > 0 && this.categories[0] !== undefined) {
+          Application._vent.trigger('controlpanel/categories', this.categories);
+      }
     },
     showAllResults: function() {},
+    getCategories: function(results){
+      this.categories = Application.Filter.getCategories(results);
+    },
+    getCategoriesWithColors: function(results, obj){
+      this.categories = Application.Filter.getCategories(results);
+      $.each(this.categories, function(index, category){
+          category.color = Application.Helper.getRandomColor(obj);
+      });
+    },
     addCategory: function(group) {
 
         group.name;
@@ -433,6 +439,28 @@ Application.BaseGlobeView = Backbone.View.extend({
             this.activeCategories.splice(i, 1);
         }
         this.sortResultsByCategory();
+    },
+    getCategoryObj: function(categoryName){
+
+      var category;
+      $.each(this.categories, function(index, c){
+        if(c.name === categoryName){
+          category = c;
+        }
+      });
+      return category;
+
+    },
+    getColorByCategory: function(categoryName){
+
+      var color;
+      $.each(this.categories, function(index, category){
+        if(category.name === categoryName){
+          color = category.color.replace('#','0x');
+        }
+      });
+      return color || '0xffffff';
+
     },
     sortResultsByCategory: function() {},
     determineCountry: function(point) {

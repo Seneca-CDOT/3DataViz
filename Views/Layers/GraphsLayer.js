@@ -169,6 +169,8 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
     },
     // core function of the application. THIS IS WHERE THE MAGIC HAPPENS
     addPaths: function() {
+
+      console.log(Application.attrsMap);
         var i = 0
         var dataRecord;
         var randomIndex;
@@ -188,13 +190,13 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
             time = time + 10;
             if (dataRecord.latitudeFrom == null || dataRecord.longitudeFrom == null || dataRecord.latitudeTo == null || dataRecord.longitudeTo == null) {
-                latitudeTo
+                return;
             }
 
             var timeoutref = setTimeout(function() {
 
                 // console.log(dataRecord);
-                var category = that.getCategory(dataRecord.category);
+                var category = that.getCategoryObj(dataRecord.category);
 
                 var airportFrom = {
                     longitude: dataRecord.longitudeFrom || null,
@@ -267,40 +269,6 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
             return false;
         }
 
-    },
-
-    getCategory: function(categoryName) {
-
-        if (categoryName == null) {
-            return;
-        }
-        // console.log("categories", this.categories);
-        var arr = $.grep(this.categories, function(category) {
-            return categoryName === category.name;
-        });
-        // console.log(arr);
-
-        if (arr.length > 0) {
-
-            return arr[0];
-        } else {
-            var newCategory = {
-                name: categoryName,
-                color: new THREE.Color(this.getRandomColor())
-            }
-
-            this.categories.push(newCategory);
-            return newCategory;
-        }
-
-    },
-
-    getRandomColor: function() {
-
-        return randomColor({
-            luminosity: 'bright',
-            format: 'rgb' // e.g. 'rgb(225,200,20)'
-        })
     },
 
     createPath: function(vT, vF, dist, category) {
@@ -423,6 +391,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         var results = this.collection[0].models;
 
+        this.getCategoriesWithColors(results);
         Application.BaseGlobeView.prototype.showResults.call(this, results);
 
         Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);

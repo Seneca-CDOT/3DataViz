@@ -165,6 +165,21 @@ Application.DateTime = Application.ControlElementsGlobeView.extend({
 
 });
 
+Application.FeedBack = Application.ControlElementsGlobeView.extend({
+    tagName: 'a',
+    className: 'feedbackButton',
+    initialize: function() {},
+    events: {
+        'mousedown': 'action'
+    },
+    render: function() {
+        this.$el.attr('href','http://goo.gl/forms/M4xWnUXCNx');
+        this.$el.attr('target','_blank');
+        this.$el.append('<span class="glyphicon glyphicon-envelope"></span>');
+        return this;
+    }
+});
+
 Application.Help = Application.ControlElementsGlobeView.extend({
     tagName: 'a',
     className: 'helpButton',

@@ -131,11 +131,10 @@ Application.FiltersSet = Backbone.View.extend({
 
         var that = this;
 
-        $.each(group.list, function(index, categoryname) {
+        $.each(group.list, function(index, category) {
 
-            var checkbox = that.createCheckBox(categoryname, group.name);
+            var checkbox = that.createCheckBox(category, group.name);
             that.$el.append(checkbox);
-
         });
 
     },
@@ -149,7 +148,8 @@ Application.FiltersSet = Backbone.View.extend({
             $(e.target).data('checked', 'true'); // makes button checked
             var group = {};
             group.name = groupname;
-            group.category = e.target.innerHTML;
+
+            group.category = $(e.target).data('category');
             Application._vent.trigger('filters/add', group);
             $(e.target).css('background-color', this.checkedColor); // changes color to grey when checked
 
@@ -159,7 +159,8 @@ Application.FiltersSet = Backbone.View.extend({
             $(e.target).data('checked', 'false');
             var group = {};
             group.name = groupname;
-            group.category = e.target.innerHTML;
+            group.category = $(e.target).data('category');
+
             Application._vent.trigger('filters/remove', group);
             $(e.target).css('background-color', this.uncheckedColor);
 
@@ -171,11 +172,19 @@ Application.FiltersSet = Backbone.View.extend({
     },
     createCheckBox: function(category, groupname) {
 
-        var $box = $('<div class="checkbox"></div>');
-        $box.attr('id', '_' + category);
-        $box.html(category);
+        var $box = $('<div class="checkbox">'+category.name+'</div>');
+
+        $box.attr('id', '_' + category.name);
+        $box.data('category',category.name);
+
+        if(category.color){
+          var $label = $('<span></span>');
+          $label.css({'background': category.color});
+          $box.prepend($label);
+        }
+
         $box.data('checked', 'false');
-        $box.name = category;
+        $box.name = category.name;
         $box.data('group', groupname);
         this.checkboxes.push($box);
         $box.click(this.action.bind(this));
@@ -192,7 +201,6 @@ Application.FiltersSet = Backbone.View.extend({
         });
 
         this.checkboxes = null;
-
     },
     destroy: function() {
 
@@ -200,6 +208,4 @@ Application.FiltersSet = Backbone.View.extend({
         this.checkedColor = null;
         this.uncheckedColor = null;
     }
-
-
 });

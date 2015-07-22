@@ -11,6 +11,7 @@
 .cf:after {
     clear: both;
 }
+
 /***************************************
  * Layout
  ***************************************/
@@ -69,21 +70,33 @@ body {
     right: 0px;
     height: 100%;
     opacity: 0.9;
-    z-index: 9999;
+    z-index: 9995;
 }
 
-a {
-    color: #9797C2;
+a,
+a:visited {
+    color: #ffffff;
     text-decoration: underline;
+}
+a:hover{
+    color: #9797C2;
 }
 
 dl {
-    float: left;
     margin-right: 20px;
+    margin-bottom: 3px;
 }
 
 dt {
+    width: 200px;
+    display: inline-block;
     font-size: 16px;
+}
+
+dd {
+    display: inline;
+    margin-right: 10px;
+    font-size: 12px;
 }
 
 b {
@@ -172,6 +185,19 @@ button{
 
 .btn {
     width: 100%;
+}
+
+.checkbox{
+    cursor: pointer;
+    position: relative;
+}
+.checkbox span{
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  border-radius: 50%;
+  margin-right: 8px;
 }
 
 .btn-file {
@@ -352,6 +378,9 @@ button{
     display: none;
 }
 
+#instruction .contacts{
+  margin-bottom: 4px;
+}
 #instruction .contacts p {
     display: inline;
 }
@@ -367,12 +396,23 @@ button{
 }
 
 #helpButton {
+    cursor: pointer;
     position: absolute;
     right: 10%;
     bottom: 25px;
     font-size: 40px;
     z-index: 90;
 }
+
+#feedbackButton {
+    cursor: pointer;
+    position: absolute;
+    right: 35%;
+    bottom: 25px;
+    font-size: 40px;
+    z-index: 90;
+}
+
 /***************************************
  * Matcher module
  ***************************************/
@@ -409,8 +449,8 @@ button{
     padding: 0 10px;
 }
 .templateImgList li img{
-    width: auto;
-    height: auto;
+    width: 145px;
+    height: 145px;
 }
 .templateImgList li .imgBtn{
     border: none;
