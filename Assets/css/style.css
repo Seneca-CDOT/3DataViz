@@ -11,6 +11,7 @@
 .cf:after {
     clear: both;
 }
+
 /***************************************
  * Layout
  ***************************************/
@@ -72,18 +73,30 @@ body {
     z-index: 9999;
 }
 
-a {
-    color: #9797C2;
+a,
+a:visited {
+    color: #ffffff;
     text-decoration: underline;
+}
+a:hover{
+    color: #9797C2;
 }
 
 dl {
-    float: left;
     margin-right: 20px;
+    margin-bottom: 3px;
 }
 
 dt {
+    width: 200px;
+    display: inline-block;
     font-size: 16px;
+}
+
+dd {
+    display: inline;
+    margin-right: 10px;
+    font-size: 12px;
 }
 
 b {
@@ -365,6 +378,9 @@ button{
     display: none;
 }
 
+#instruction .contacts{
+  margin-bottom: 4px;
+}
 #instruction .contacts p {
     display: inline;
 }
@@ -380,12 +396,23 @@ button{
 }
 
 #helpButton {
+    cursor: pointer;
     position: absolute;
     right: 10%;
     bottom: 25px;
     font-size: 40px;
     z-index: 90;
 }
+
+#feedbackButton {
+    cursor: pointer;
+    position: absolute;
+    right: 35%;
+    bottom: 25px;
+    font-size: 40px;
+    z-index: 90;
+}
+
 /***************************************
  * Matcher module
  ***************************************/

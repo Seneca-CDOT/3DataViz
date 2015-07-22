@@ -15,10 +15,14 @@ Application.ControlPanelRootView = Backbone.View.extend({
         Application._vent.on('visualize', this.addFiltersView, this);
         Application._vent.on('matcher/submit', this.addFiltersView, this);
 
-
         this.helpButton = new Application.Help();
         this.helpButton.$el.attr('id', 'helpButton');
+
+        this.feedback = new Application.FeedBack();
+        this.feedback.$el.attr('id', 'feedbackButton');
+
         this.$el.append(this.helpButton.render().$el);
+        this.$el.append(this.feedback.render().$el);
 
     },
     render: function() {
@@ -783,4 +787,3 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
     }
 
 });
-
