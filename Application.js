@@ -34,6 +34,7 @@ Application = {
             'Libraries/tween.min.js',
             'Libraries/map3d.js',
             'Libraries/papaparse.js',
+            // 'Libraries/randomColor.js',
 
             'Routes/RootRouter.js',
             'Views/GlobeDecorators/GeometryGlobeDecorator.js',
