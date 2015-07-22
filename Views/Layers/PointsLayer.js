@@ -132,9 +132,11 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     showResults: function() {
 
         console.log("PointsLayer showResults");
+
         var results = this.collection[0].models;
         var that = this;
 
+        this.getCategoriesWithColors(results);
         Application.BaseGlobeView.prototype.showResults.call(this, results);
         Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);
 
@@ -146,14 +148,12 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             return;
         }
 
-
         Application._vent.trigger('controlpanel/message/off');
         // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
         // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
         var material = new THREE.SpriteMaterial({
             map: this.texture,
             color: 0xFFFFFF,
-            // blending: THREE.AdditiveBlending,
         });
 
         // var destination;
@@ -203,7 +203,9 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             sprite.scale.multiplyScalar(2);
 
             if (item.category) sprite.userData.category = item.category;
+
             var color = that.getColorByCategory(sprite.userData.category) || '0xffffff';
+
             sprite.material.color.setHex(color);
 
             that.sprites.push(sprite);
@@ -256,7 +258,6 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
             $.each(this.sprites, function(index, point) { // turn all added countries grey
 
-                // point.material.color.setHex(0x000000);
                 point.visible = false;
 
             });
@@ -287,7 +288,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         $.each(this.sprites, function(index, point) {
 
             point.visible = true;
-            // point.material.color.setHex(point.userData.result_color);
+            point.material.color.setHex(point.userData.result_color);
 
         });
     },

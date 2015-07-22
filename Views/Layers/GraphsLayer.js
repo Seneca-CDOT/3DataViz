@@ -188,6 +188,8 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
     },
     // core function of the application. THIS IS WHERE THE MAGIC HAPPENS
     addPaths: function() {
+
+      console.log(Application.attrsMap);
         var i = 0
         var dataRecord;
         var randomIndex;
@@ -207,7 +209,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
             time = time + 10;
             if (dataRecord.latitudeFrom == null || dataRecord.longitudeFrom == null || dataRecord.latitudeTo == null || dataRecord.longitudeTo == null) {
-                latitudeTo
+                return;
             }
 
             var timeoutref = setTimeout(function() {
@@ -437,6 +439,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         var results = this.collection[0].models;
 
+        this.getCategoriesWithColors(results, {luminosity: 'light'});
         Application.BaseGlobeView.prototype.showResults.call(this, results);
 
         Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);

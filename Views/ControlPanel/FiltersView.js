@@ -208,9 +208,9 @@ Application.FiltersSet = Backbone.View.extend({
 
         var that = this;
 
-        $.each(group.list, function(index, categoryname) {
+        $.each(group.list, function(index, category) {
 
-            var checkbox = that.createCheckBox(categoryname, group.name, group.list);
+            var checkbox = that.createCheckBox(category, group.name);
 
             that.$el.append(checkbox);
 
@@ -290,18 +290,22 @@ Application.FiltersSet = Backbone.View.extend({
     //     });
 
     // },
-    createCheckBox: function(category, groupname, list) {
+    createCheckBox: function(category, groupname) {
 
-        var $box = $('<div class="checkbox"><span></span>'+category+'</div>');
-        var color = Application.colors[list.indexOf(category)];
-        $box.attr('id', '_' + category);
-        $box.data('category',category);
+        var $box = $('<div class="checkbox">'+category.name+'</div>');
 
-        $('span',$box).css({'background':color});
+        $box.attr('id', '_' + category.name);
+        $box.data('category',category.name);
+
+        if(category.color){
+          var $label = $('<span></span>');
+          $label.css({'background': category.color});
+          $box.prepend($label);
+        }
 
         $box.data('checked', 'false');
 
-        $box.name = category;
+        $box.name = category.name;
 
         $box.data('group', groupname);
 

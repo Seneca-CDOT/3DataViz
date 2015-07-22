@@ -409,17 +409,20 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.tween.start();
     },
     showResults: function(results) {
-
-        this.categories = Application.Filter.getCategories(results);
-        if (this.categories.length > 0 && this.categories[0] !== undefined) {
-            $.each(this.categories, function(index, category){
-                category.color = Application.getRandomColor();
-            });
-            Application._vent.trigger('controlpanel/categories', this.categories);
-        }
-
+      if (this.categories.length > 0 && this.categories[0] !== undefined) {
+          Application._vent.trigger('controlpanel/categories', this.categories);
+      }
     },
     showAllResults: function() {},
+    getCategories: function(results){
+      this.categories = Application.Filter.getCategories(results);
+    },
+    getCategoriesWithColors: function(results, obj){
+      this.categories = Application.Filter.getCategories(results);
+      $.each(this.categories, function(index, category){
+          category.color = Application.Helper.getRandomColor(obj);
+      });
+    },
     addCategory: function(group) {
 
         group.name;
@@ -437,15 +440,26 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
         this.sortResultsByCategory();
     },
-    getColorByCategory: function(category){
+    getCategoryObj: function(categoryName){
 
-        var color = Application.colors[0];
-        var i = this.categories.indexOf(category);
-
-        if (i != -1) {
-          color = Application.colors[i].replace("#","0x");
+      var category;
+      $.each(this.categories, function(index, c){
+        if(c.name === categoryName){
+          category = c;
         }
-        return color;
+      });
+      return category;
+
+    },
+    getColorByCategory: function(categoryName){
+
+      var color;
+      $.each(this.categories, function(index, category){
+        if(category.name === categoryName){
+          color = category.color.replace('#','0x');
+        }
+      });
+      return color || '0xffffff';
 
     },
     sortResultsByCategory: function() {},
