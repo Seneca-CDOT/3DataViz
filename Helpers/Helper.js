@@ -214,7 +214,7 @@ Application.Helper = {
     },
 
     getRandomColor: function(obj){
-      return randomColor(obj);
+      return randomColor(obj || {luminosity: 'bright' });
     }
 
 }

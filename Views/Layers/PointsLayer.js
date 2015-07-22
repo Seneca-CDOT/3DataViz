@@ -45,17 +45,17 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         if (intersectedMesh) {
 
-            //$.each(this.rayCatchers, function(index, countrymesh) {
-
+            // $.each(this.rayCatchers, function(index, countrymesh) {
+            //
             //    if (intersectedMesh.object == countrymesh) {
 
                     var name = intersectedMesh.object.userData.name;
 
                     Application._vent.trigger('vizinfocenter/message/on', name +
                         ': ' + that.pointsPerCountry(that.sprites, name) + ' points');
-                }
+                // }
 
-            });
+            // });
 
         }
 
