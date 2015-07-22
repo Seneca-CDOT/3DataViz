@@ -22,11 +22,8 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
 
         window.google = {
             visualization: {
-
                 Query: {
-
                     setResponse: function(data) {
-
                         that.parse(data);
                     }
                 }
@@ -47,8 +44,8 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
 
         pModule.processData(response.table.rows, options, function(response) {
                 console.log("parse:", response);
-                Application._vent.trigger('data/parsed', that.getViewConfigs(response));
-                //that.transform(response); 
+                Application._vent.trigger('data/parsed');
+                //that.transform(response);
                 that.data = response; // to hold data until visualization starts
             });
     },
@@ -56,7 +53,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         var pModule = Application.DataProcessor.ProcessorModule;
         var that = this;
         var options = {
-            visualizationType: Application.userConfig.vizLayer
+            visualizationType: Application.userConfig.template
         }
         //pModule.transformData(this.data, options, function(response) {
             console.log("transform:", this.data);
@@ -76,7 +73,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         var fileref = document.createElement('script');
         fileref.setAttribute("type", "text/javascript");
         fileref.setAttribute("src", this.url);
-        document.getElementsByTagName("head")[0].appendChild(fileref);
+        var test = document.getElementsByTagName("head")[0].appendChild(fileref);
 
     },
     fetch: function() {
@@ -92,12 +89,12 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
     },
     getViewConfigs: function(data) {
         var defaults = {
-            vizType: {
-                name: 'vizType',
+            decorator: {
+                name: 'decorator',
                 list: ['geometry']
             },
-            vizLayer: {
-                name: 'vizLayer',
+            template: {
+                name: 'template',
                 list: ['countries']
             }
         }

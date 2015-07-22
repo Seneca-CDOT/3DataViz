@@ -48,36 +48,18 @@ Application.FilterPanel = Backbone.View.extend({
     initialize: function() {
 
         this.categoriesGroupsViews = []; // hold an array of views
-        //this.getDefaultFilters();
 
         Application._vent.on('controlpanel/categories', this.getFiltersFromDataset, this);
 
-        // Application._vent.on('controlpanel/categories', this.addCategoriesView, this);
-
-        // Application.attrsMap = {}; // a map of attributes
         this.lastUserPropName = ''; // the name of the last property created
         this.lastParserPropName = '';
-        // this.appendHeader();
-        //this.userAttributesView = new Application.UserAttributesSet(Application.attrsMap);
-        //this.parserAttributesView = new Application.ParserAttributesSet(Application.attrsMap);
-        //this.templatesView = new Application.TemplatesView();
 
-        // this.submit = new Application.SubmitAttrs();
-        // this.submit.$el.on('click', this.action.bind(this));
-        // Application._vent.on('matcher/on', this.showMatcher, this);
-        // Application._vent.on('matcher/off', this.hideMatcher, this);
-        // Application._vent.on('matcher/user/add', this.setUserAttribute, this);
-        // Application._vent.on('matcher/parser/add', this.setParserAttribute, this);
-        // Application._vent.on('matcher/user/remove', this.removeUserAttribute, this);
-        // Application._vent.on('matcher/parser/remove', this.removeParserAttribute, this);
-        // Application._vent.on('controlpanel/subview/vizLayer', this.resetAttributes, this);
-        //this.hideMatcher();
     },
     getDefaultFilters: function() {
 
         var that = this;
 
-        var filterslist = Application.templates[Application.userConfig.vizLayer].filters; // default categories
+        var filterslist = Application.templates[Application.userConfig.template].filters; // default categories
 
         $.each(filterslist, function(i, filtername) {
 
@@ -107,61 +89,10 @@ Application.FilterPanel = Backbone.View.extend({
 
     },
     render: function() {
-        // this.$el.append(this.userAttributesView.render().$el);
-        // this.$el.append(this.parserAttributesView.render().$el);
-        // this.$el.append(this.templatesView.render().$el);
-        // this.$el.append(this.labelForTemplates);
-        // this.$el.append(this.submit.render().$el);
+
 
         return this;
     },
-    // appendHeader: function() {
-
-    //     var $header = $('<div id="AttrsHeader"></div>');
-    //     $header.append("<div class='heading'>User attributes</div>");
-    //     $header.append("<div class='heading'>Parser attributes</div>");
-    //     $header.append("<div class='heading'>Choose a template</div>");
-    //     this.$el.append($header);
-
-    // },
-    // resetAttributes: function() {
-
-    //     for (var member in Application.attrsMap) delete Application.attrsMap[member];
-    // },
-    // showMatcher: function() {
-
-    //     this.$el.show();
-    // },
-    // hideMatcher: function() {
-
-    //     this.$el.hide();
-    // },
-    // setUserAttribute: function(attr) {
-
-    //     this.lastUserPropName = attr;
-
-    // },
-    // removeUserAttribute: function(attr) {
-
-    //     Application.attrsMap[this.lastParserPropName] = '';
-
-    // },
-    // setParserAttribute: function(attr) {
-
-    //     Application.attrsMap[attr] = this.lastUserPropName;
-    //     this.lastParserPropertyName = attr;
-
-    // },
-    // removeParserAttribute: function(attr) {
-
-    //     delete Application.attrsMap[attr];
-    // },
-    // action: function() {
-
-    //     Application._vent.trigger('matcher/submit');
-    //     Application._vent.trigger('matcher/off');
-
-    // },
     destroy: function() {
 
         var that = this;
@@ -169,12 +100,8 @@ Application.FilterPanel = Backbone.View.extend({
         Application._vent.unbind('controlpanel/categories', this.getFiltersFromDataset);
 
         $.each( this.categoriesGroupsViews, function(i, view) {
-
             view.destroy();
-
         });
-
-
     }
 });
 
@@ -184,16 +111,12 @@ Application.FiltersSet = Backbone.View.extend({
     className: 'configList',
     initialize: function(group) {
         this.checkboxes = []; // array of checkboxes
-        // this.group = group;
         this.addLabel(group.name);
         this.list(group);
-        // Application.attrsMap = attrsMap;
-        //this.inactiveColor = '#79839F';
-        //this.activeColor = '#FFFFFF';
+
         this.checkedColor = '#79839F';
         this.uncheckedColor = '';
-        //this.chosenColor = '#40405C';
-        // this.list(Application.!!!!)
+
     },
     render: function() {
 
@@ -211,9 +134,7 @@ Application.FiltersSet = Backbone.View.extend({
         $.each(group.list, function(index, category) {
 
             var checkbox = that.createCheckBox(category, group.name);
-
             that.$el.append(checkbox);
-
         });
 
     },
@@ -225,28 +146,22 @@ Application.FiltersSet = Backbone.View.extend({
         if (checked == 'false') {
 
             $(e.target).data('checked', 'true'); // makes button checked
-
             var group = {};
-
             group.name = groupname;
+
             group.category = $(e.target).data('category');
-
             Application._vent.trigger('filters/add', group);
-
             $(e.target).css('background-color', this.checkedColor); // changes color to grey when checked
 
 
         } else if (checked == 'true') {
 
             $(e.target).data('checked', 'false');
-
             var group = {};
-
             group.name = groupname;
             group.category = $(e.target).data('category');
 
             Application._vent.trigger('filters/remove', group);
-
             $(e.target).css('background-color', this.uncheckedColor);
 
 
@@ -254,42 +169,7 @@ Application.FiltersSet = Backbone.View.extend({
 
             console.log("Couldn't check if the target was checked", e);
         }
-
     },
-
-    // makeActiveTheRest: function() {
-
-    //     var that = this;
-
-    //     $.each(this.checkboxes, function(index, box) {
-
-    //         if (box.data('checked') == 'false') {
-
-    //             box.css('color', that.activeColor);
-
-    //             box.click(that.action.bind(that));
-    //         }
-
-    //     });
-
-    // },
-    // makeInactiveTheRest: function() {
-
-    //     var that = this;
-
-    //     $.each(this.checkboxes, function(index, box) {
-
-    //         if (box.data('checked') == 'false') {
-
-    //             box.css('color', that.inactiveColor);
-
-    //             box.unbind();
-    //         }
-
-
-    //     });
-
-    // },
     createCheckBox: function(category, groupname) {
 
         var $box = $('<div class="checkbox">'+category.name+'</div>');
@@ -304,46 +184,23 @@ Application.FiltersSet = Backbone.View.extend({
         }
 
         $box.data('checked', 'false');
-
         $box.name = category.name;
-
         $box.data('group', groupname);
-
         this.checkboxes.push($box);
-
         $box.click(this.action.bind(this));
 
         return $box;
 
     },
-    // findPairByKey: function(attr) {
-
-    //     return Application.attrsMap[attr];
-
-    // },
-    // findPairByValue: function(attr) {
-
-    //     return _.invert(Application.attrsMap)[attr];
-
-    // },
-    // getCheckbox: function(name) {
-
-    //     for (var i = 0; i < this.checkboxes.length; i++) {
-
-    //         if (name == this.checkboxes[i].name) return this.checkboxes[i];
-    //     }
-    // },
     removeCheckboxes: function() {
 
         $.each(this.checkboxes, function(index, checkbox) {
 
             checkbox.unbind();
             checkbox.remove();
-
         });
 
         this.checkboxes = null;
-
     },
     destroy: function() {
 
@@ -351,6 +208,4 @@ Application.FiltersSet = Backbone.View.extend({
         this.checkedColor = null;
         this.uncheckedColor = null;
     }
-
-
 });

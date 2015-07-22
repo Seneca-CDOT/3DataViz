@@ -42,23 +42,13 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         var intersectedMesh = Application.BaseGlobeView.prototype.clickOn.call(this, event);
 
-
         if (intersectedMesh) {
-
-            // $.each(this.rayCatchers, function(index, countrymesh) {
-            //
-            //    if (intersectedMesh.object == countrymesh) {
 
                     var name = intersectedMesh.object.userData.name;
 
                     Application._vent.trigger('vizinfocenter/message/on', name +
                         ': ' + that.pointsPerCountry(that.sprites, name) + ' points');
-                // }
-
-            // });
-
         }
-
     },
     // member methods
     resetGlobe: function() {
@@ -122,7 +112,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         this.getCategoriesWithColors(results);
         Application.BaseGlobeView.prototype.showResults.call(this, results);
-        Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);
+        Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
 
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
@@ -133,14 +123,12 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         }
 
         Application._vent.trigger('controlpanel/message/off');
-        // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
-        // var map = THREE.ImageUtils.loadTexture("Assets/images/sprite_spark.png");
+
         var material = new THREE.SpriteMaterial({
             map: this.texture,
             color: 0xFFFFFF,
         });
 
-        // var destination;
         var hasGeo = false;
 
         if (typeof results[0].longitude === "undefined" && typeof results[0].latitude === "undefined") {
@@ -162,9 +150,6 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
                     console.log('Data has no country identified');
                 }
-
-
-
             });
         } else {
 

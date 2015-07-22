@@ -238,14 +238,13 @@ Application.VizButton = Application.ControlElementsGlobeView.extend({
 Application.DropDownList = Application.ControlElementsGlobeView.extend({
     tagName: 'select',
     className: 'form-control',
-    initialize: function(viewConfig) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
-        this.viewConfig = viewConfig;
+    initialize: function(config) {
+        Application.ControlElementsGlobeView.prototype.initialize.call(this, config);
+        this.config = config;
         // this.config = config; // list of the options
         // this.name = null; // name of the option in the list
     },
     events: {
-
         'change': 'action'
     },
     render: function() {
@@ -254,9 +253,8 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
         //this.name = this.$el.attr('id');
 
         this.$el.append("<option value='' selected disabled></option>");
-        $.each(this.viewConfig.list, function(index, item) {
-
-            that.$el.append("<option value='" + item + "'>" + item + "</option>");
+        $.each(this.config.map, function(index, item) {
+            that.$el.append("<option value='" + index + "'>" + item + "</option>");
         });
         return this;
     },
@@ -271,7 +269,7 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
             if (option.selected == true && e.target.value != "") {
 
                 that.addToConfig(e.target.value);
-                Application._vent.trigger('controlpanel/subview/' + that.viewConfig.name, option.innerHTML);
+                Application._vent.trigger('controlpanel/subview/' + that.config.name, e.target.value);
             }
         });
     }

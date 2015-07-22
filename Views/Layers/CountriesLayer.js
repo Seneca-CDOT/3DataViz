@@ -113,7 +113,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         this.getCategories(results);
         Application.BaseGlobeView.prototype.showResults.call(this, results);
 
-        Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);
+        Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
 
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');

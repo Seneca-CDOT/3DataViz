@@ -18,17 +18,6 @@ Application.RootView = Backbone.View.extend({
         this.rootView = null;
         this.collections = [];
 
-        Application.userConfig = {
-            dataSource: '',
-            vizType: 'geometry',
-            files: '',
-            vizLayer: '',
-            input: '',
-            interval: '',
-            timeFrom: '',
-            timeTo: ''
-
-        };
         Application._vent.on('controlpanel/parse', this.submitOn, this);
         Application._vent.on('visualize', this.visualizeOn, this);
         Application._vent.on('matcher/submit', this.visualizeOn, this);
@@ -77,7 +66,7 @@ Application.RootView = Backbone.View.extend({
 
         var collectionClasses = [];
         var that = this;
-        switch (Application.userConfig.dataSource) {
+        switch (Application.userConfig.model) {
 
             case 'twitterLive':
                 {
@@ -95,8 +84,6 @@ Application.RootView = Backbone.View.extend({
                 }
             case 'csv':
                 {
-
-                    // collectionClasses = ['AirportsCollection', 'AirportRoutesCollection'];
                     collectionClasses = ['CSVCollection'];
                     break;
                 }
@@ -122,7 +109,7 @@ Application.RootView = Backbone.View.extend({
 
         }
 
-        require(Application.models[Application.userConfig.dataSource].url, function() {
+        require(Application.models[Application.userConfig.model].url, function() {
 
             $.each(collectionClasses, function(index, collectionName) {
 
@@ -136,7 +123,7 @@ Application.RootView = Backbone.View.extend({
     },
     resetGlobeView: function() {
         if (this.rootView) {
-            console.log("destroy rootView");
+        //    console.log("destroy rootView");
             this.rootView.destroy();
             this.rootView = null;
         }

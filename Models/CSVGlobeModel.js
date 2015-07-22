@@ -20,19 +20,6 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
         this.data = null;
 
     },
-    // preParse: function() {
-
-    //     var that = this;
-    //     Papa.parse(this.file, {
-    //         preview: 1,
-    //         header: true,
-    //         complete: function(response){
-    //             console.log("Preparse:", response.data);
-    //             Application._vent.trigger('data/parsed', that.getViewConfigs(response.data));
-    //         }
-    //     });
-
-    // },
     parse: function() {
 
         // console.log(response);
@@ -51,8 +38,6 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
             },
             complete: function(response) {
                 console.log("parse:", response);
-               // Application._vent.trigger('data/parsed', that.getViewConfigs(response));
-                //that.transform(response); 
                 that.data = response; // to hold data until visualization starts
             }
 
@@ -63,13 +48,13 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
         var pModule = Application.DataProcessor.ProcessorModule;
         var that = this;
         var options = {
-            visualizationType: Application.userConfig.vizLayer
+            visualizationType: Application.userConfig.template
         }
 
         pModule.transformData(this.data, options, function(response){
             console.log("transform:",response);
             that.models = response;
-            Application._vent.trigger('data/ready'); 
+            Application._vent.trigger('data/ready');
         });
     },
     fetch: function() {
@@ -78,21 +63,6 @@ Application.CSVCollection = Application.BaseGlobeCollection.extend({
     destroy: function() {
        // console.log("Destroy SpreadSheetCollection");
        Application.BaseGlobeCollection.prototype.destroy.call(this);
-    },
-    // getViewConfigs: function(data) {
-
-    //     var defaults = {
-    //         vizType: {
-    //             name: 'vizType',
-    //             list: ['geometry', 'texture']
-    //         },
-    //         vizLayer: {
-    //             name: 'vizLayer',
-    //             list: ['points', 'countries', 'graph']
-    //         }
-    //     }
-    //     return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
-
-    // }
+   },
 
 });

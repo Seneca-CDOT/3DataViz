@@ -53,6 +53,8 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         var that = this;
 
+
+
         // console.log("GraphsLayer Destroy");
         $.each(this.airportMeshes, function(i, mesh) {
 
@@ -73,7 +75,6 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         this.airportMeshes = null;
 
-        // Application._vent.unbind('globe/ready');
 
     },
     // visualization specific functionality
@@ -394,7 +395,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         this.getCategoriesWithColors(results);
         Application.BaseGlobeView.prototype.showResults.call(this, results);
 
-        Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);
+        Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
 
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');

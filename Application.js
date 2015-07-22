@@ -56,38 +56,43 @@ Application = {
     ],
 
     models: {
-        name: 'dataSource',
-        list: ['twitterDB', 'twitterLive', 'csv', 'box', 'spreadSheet', 'googleTrends'],
+        name: 'model',
+        map: { twitterDB: 'Tweets from DB', twitterLive: 'Twitter Live', csv: '*.CSV', box: 'BOX', spreadSheet:'Google SpreadSheet', googleTrends: 'Google Trends' },
         spreadSheet: {
             url: ['Models/SpreadSheetGlobeModel.js'],
-            attributes: true
+            attributes: true,
+            templates: ['points', 'countries', 'graph']
         },
         googleTrends: {
             url: ['Models/GoogleTrendsGlobeModel.js'],
-            attributes: false
+            attributes: false,
+            templates: ['countries']
         },
         twitterDB: {
             url: ['Models/TwitterDBModel.js'],
-            attributes: false
+            attributes: false,
+            templates: ['dynamic']
         },
         twitterLive: {
             url: ['Models/TwitterLiveModel.js'],
-            attributes: false
+            attributes: false,
+            templates: ['dynamic']
         },
-        // csv: ['Models/FlightPathGlobeModel.js','Models/data/path.js', 'Models/data/countriesList.js']
         csv: {
             url: ['Models/CSVGlobeModel.js'],
-            attributes: true
+            attributes: true,
+            templates: ['points', 'countries', 'graph']
         },
         box: {
             url: ['Models/BoxGlobeModel.js'],
-            attributes: true
+            attributes: true,
+            templates: ['points', 'countries', 'graph']
         }
     },
 
     templates: {
-        name: 'vizLayer',
-        list: ['countries', 'points', 'dynamic', 'graph'],
+        name: 'template',
+        map: { countries: 'regional', points: 'location', dynamic: 'realtime', graph: 'relationship' },  // internal name / display name
         countries: {
             url: ['Views/Layers/CountriesLayer.js'],
             attributes: {
@@ -120,6 +125,17 @@ Application = {
             },
             filters: [],
         },
+    },
+    userConfig: {
+        model: '',
+        decorator: 'geometry',
+        files: '',
+        template: '',
+        input: '',
+        interval: '',
+        timeFrom: '',
+        timeTo: '',
+        fileInfo: {}
     }
 
 }
