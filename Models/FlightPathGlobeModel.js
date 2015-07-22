@@ -26,7 +26,7 @@ Application.AirportRouteModel = Application.BaseDataRecord.extend({
     });
 
 // For flightPathView we need to parse the csv files.
-// This is the best way I found to keep the backbone structure designed and 
+// This is the best way I found to keep the backbone structure designed and
 // make my application work. So, yeah. Papaparse is doing the job
 // The test.json is an object that contains {x:1}
 Application.AirportsCollection = Application.BaseGlobeCollection.extend({
@@ -98,7 +98,7 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
     },
     preParse: function() {
         var data = {};
-        Application._vent.trigger('data/parsed', this.getViewConfigs(data));
+        Application._vent.trigger('data/parsed');
     },
     parse: function(response) {
         var collection = that = this;
@@ -149,12 +149,12 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
     },
     getViewConfigs: function(data) {
         var defaults = {
-            vizType: {
-                name: 'vizType',
+            decorator: {
+                name: 'decorator',
                 list: ['geometry', 'texture']
             },
-            vizLayer: {
-                name: 'vizLayer',
+            template: {
+                name: 'template',
                 list: ['graph']
             }
         }

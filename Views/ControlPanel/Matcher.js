@@ -21,7 +21,7 @@ Application.Matcher = Backbone.View.extend({
         Application._vent.on('matcher/parser/add', this.setParserAttribute, this);
         Application._vent.on('matcher/user/remove', this.removeUserAttribute, this);
         Application._vent.on('matcher/parser/remove', this.removeParserAttribute, this);
-        Application._vent.on('controlpanel/subview/vizLayer', this.resetAttributes, this);
+        Application._vent.on('controlpanel/subview/template', this.resetAttributes, this);
         this.hideMatcher();
     },
     render: function() {
@@ -134,7 +134,7 @@ Application.AttributesSet = Backbone.View.extend({
             return;
         }
 
-        console.log(Application.attrsMapIndex);
+        //console.log(Application.attrsMapIndex);
 
         var checked = $(e.target).data('checked');
 
@@ -289,7 +289,6 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
         this.eventName = 'matcher/user';
         Application.AttributesSet.prototype.initialize.call(this, attrsMap);
         Application._vent.on(this.eventName, this.listAttributes, this);
-        // Application._vent.on('controlpanel/subview/vizLayer', this.resetAttributes, this);
         Application._vent.on('matcher/parser/click', this.makeActiveTheRest, this);
         Application._vent.on('matcher/parser/click', this.setAttributeChosen, this);
         Application._vent.on('matcher/on', this.suscribe, this);
@@ -348,7 +347,7 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
     },
     suscribe: function() {
 
-        Application._vent.on('controlpanel/subview/vizLayer', this.resetAttributes, this);
+        Application._vent.on('controlpanel/subview/template', this.resetAttributes, this);
         this.resetAttributes();
     },
     resetAttributes: function() {
@@ -370,7 +369,7 @@ Application.UserAttributesSet = Application.AttributesSet.extend({
         this.list = list;
     },
     unsuscribe: function() {
-        Application._vent.unbind('controlpanel/subview/vizLayer', this.listAttributes);
+        Application._vent.unbind('controlpanel/subview/template', this.listAttributes);
     },
     destroy: function() {
 
@@ -383,7 +382,6 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
     initialize: function(attrsMap) {
         this.eventName = 'matcher/parser';
         Application.AttributesSet.prototype.initialize.call(this, attrsMap);
-        // Application._vent.on('controlpanel/subview/vizLayer', this.listAttributes, this);
         Application._vent.on('matcher/on', this.suscribe, this);
         Application._vent.on('matcher/off', this.unsuscribe, this);
         Application._vent.on('matcher/user/click', this.makeActiveTheRest, this);
@@ -419,7 +417,7 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
     },
     suscribe: function() {
 
-        Application._vent.on('controlpanel/subview/vizLayer', this.listAttributes, this);
+        Application._vent.on('controlpanel/subview/template', this.listAttributes, this);
         this.resetAttributes();
     },
     resetAttributes: function() {
@@ -441,7 +439,7 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
         this.templateIsChosen = true;
     },
     unsuscribe: function() {
-        Application._vent.unbind('controlpanel/subview/vizLayer', this.listAttributes);
+        Application._vent.unbind('controlpanel/subview/template', this.listAttributes);
     },
     destroy: function() {
         Application.AttributesSet.prototype.destroy.call(this);
@@ -464,7 +462,7 @@ Application.SubmitAttrs = Backbone.View.extend({
     },
     action: function() {
         var key = $('.vizTitle').val() || $('.vizTitle').attr('placeholder');
-        Application.userConfig.vizTitle = key;
+        Application.userConfig.templateTitle = key;
         Application._vent.trigger('matcher/submit');
         Application._vent.trigger('matcher/off');
 
@@ -484,8 +482,9 @@ Application.TemplatesView = Backbone.View.extend({
         this.$el.append('<div class="heading">Choose a template<p>Please select a visualization template for your data.</p><div/>')
         var $templist = $('<ul class="templateImgList"></ul>');
 
-        $.each(Application.templates.list, function(index, item) {
-            $templist.append('<li><button class="imgBtn"><img src="Assets/images/templates/'+item+'.png"><p class="templateTitle">'+item+'</p></button></li>');
+
+        $.each(Application.templates.map, function(index, item) {
+            $templist.append('<li><button class="imgBtn"><img src="Assets/images/templates/'+ index + '.png"><p class="templateTitle" id="' + index + '">'+item+'</p></button></li>');
         });
         this.$el.append($templist);
 
@@ -493,17 +492,17 @@ Application.TemplatesView = Backbone.View.extend({
     },
     btnSelected: function(){
 
-        var vizLayer = $('.templateTitle', this).text();
-        Application.userConfig.vizLayer = vizLayer;
+        var template = $('.templateTitle', this).attr('id');
+        Application.userConfig.template = template;
         $(this).parent().siblings().removeClass('active');
         $(this).parent().addClass('active');
 
         if( $('.vizTitle').val() === ''){
-            var str = Application.Helper.capitalize(vizLayer) + " Visualization";
+            var str = Application.Helper.capitalize(template) + " Visualization";
             $('.vizTitle').attr('placeholder', str);
         }
 
-        Application._vent.trigger('controlpanel/subview/vizLayer', vizLayer);
+        Application._vent.trigger('controlpanel/subview/template', template);
     },
     render: function() {
         return this;
@@ -528,7 +527,6 @@ Application.AttributesView = Backbone.View.extend({
         this.$el.append($templist);
     },
     render: function() {
-        // this.$el.append(this.menu.render().$el);
         return this;
     },
     destroy: function() {

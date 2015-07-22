@@ -24,13 +24,6 @@ Application.BoxCollection = Application.BaseGlobeCollection.extend({
         Application.BaseGlobeCollection.prototype.initialize.call(this);
 
     },
-    // preParse: function() {
-
-    //     // console.log("preParse");
-    //     var data = {};
-    //     Application._vent.trigger('data/parsed', this.getViewConfigs(data));
-
-    // },
     parse: function(dataText) {
 
         // console.log(response);
@@ -50,8 +43,6 @@ Application.BoxCollection = Application.BaseGlobeCollection.extend({
             },
             complete: function(response) {
                 console.log("parse:", response);
-               // Application._vent.trigger('data/parsed', that.getViewConfigs(response));
-                //that.transform(response); 
                 that.data = response; // to hold data until visualization starts
             }
 
@@ -62,13 +53,13 @@ Application.BoxCollection = Application.BaseGlobeCollection.extend({
         var pModule = Application.DataProcessor.ProcessorModule;
         var that = this;
         var options = {
-            visualizationType: Application.userConfig.vizLayer
+            visualizationType: Application.userConfig.template
         }
 
         pModule.transformData(that.data, options, function(response){
             console.log("transform:",response);
             that.models = response;
-            Application._vent.trigger('data/ready'); 
+            Application._vent.trigger('data/ready');
         });
     },
     request: function() {
@@ -100,12 +91,12 @@ Application.BoxCollection = Application.BaseGlobeCollection.extend({
     getViewConfigs: function(data) {
 
         var defaults = {
-            vizType: {
-                name: 'vizType',
+            decorator: {
+                name: 'decorator',
                 list: ['geometry', 'texture']
             },
-            vizLayer: {
-                name: 'vizLayer',
+            template: {
+                name: 'template',
                 list: ['points', 'countries', 'graph']
             }
         }

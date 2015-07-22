@@ -293,9 +293,9 @@ Application.DataProcessor.SpreadSheetParser = (function() {
             headers[cellId.substring(0, 1)] = entries[i].content.$t;
             count++;
         }
-        
+
         if (typeof callbacks.preparsed === "function") callbacks.preparsed(headers);
-        
+
         headers.length = count;
 
 
@@ -342,11 +342,10 @@ Application.DataProcessor.CSVParser = (function() {
             complete: function(response){
                 console.log("Preparse:", response.meta.fields);
         if (typeof callbacks.preparsed === "function") callbacks.preparsed(response.meta.fields);
-                // Application._vent.trigger('data/parsed', that.getViewConfigs(response.data));
             }
         });
 
-       
+
         Papa.parse(file, {
             // worker: true,
             header: true,

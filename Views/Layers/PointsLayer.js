@@ -45,20 +45,11 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         if (intersectedMesh) {
 
-            //$.each(this.rayCatchers, function(index, countrymesh) {
-
-            //    if (intersectedMesh.object == countrymesh) {
-
                     var name = intersectedMesh.object.userData.name;
 
                     Application._vent.trigger('vizinfocenter/message/on', name +
                         ': ' + that.pointsPerCountry(that.sprites, name) + ' points');
-                }
-
-            });
-
         }
-
     },
     // member methods
     resetGlobe: function() {
@@ -111,7 +102,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         var that = this;
 
         Application.BaseGlobeView.prototype.showResults.call(this, results);
-        Application._vent.trigger('title/message/on', Application.userConfig.vizTitle);
+        Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
 
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');

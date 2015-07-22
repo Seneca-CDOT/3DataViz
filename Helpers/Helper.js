@@ -30,9 +30,9 @@ Application.Helper = {
             } else {
                 _files = files[index];
             }
-            console.log(_files);
+        //    console.log(_files);
             require(_files, function() {
-                console.log("loaded.");
+            //    console.log("loaded.");
                 Application.Helper.loadFiles(files, index + 1, callback);
             });
         }
