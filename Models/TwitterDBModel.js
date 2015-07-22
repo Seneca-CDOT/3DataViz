@@ -31,7 +31,7 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
     parse: function() {
 
         var data = {};
-        Application._vent.trigger('data/parsed', this.getViewConfigs(data));
+        Application._vent.trigger('data/parsed');
 
     },
     parseAll: function(response) {
@@ -48,14 +48,14 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
         });
     },
     transform: function(pData) {
-        if (Application.userConfig.vizLayer == "") {
+        if (Application.userConfig.template == "") {
             this.add(pData);
 
         } else {
             var that = this;
             var pModule = Application.DataProcessor.ProcessorModule;
             var options = {
-                visualizationType: Application.userConfig.vizLayer
+                visualizationType: Application.userConfig.template
             };
             pModule.transformData(pData, options, function(response){
                 that.add(response);
@@ -68,7 +68,7 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
     fetchAll: function() {
 
         this.destroy();
-        console.log('userconf', Application.userConfig);
+        //console.log('userconf', Application.userConfig);
         var that = this;
         this.ws = new WebSocket("ws://threedataviz.herokuapp.com/");
 
@@ -76,7 +76,7 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
 
             var msg = {
                 type: "start",
-                dataSource: Application.userConfig.dataSource,
+                dataSource: Application.userConfig.model,
                 keyword: Application.userConfig.input,
                 interval: '',
                 timeFrom: Application.Helper.convertDateTimeToStamp(Application.userConfig.timeFrom),
@@ -123,12 +123,12 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
     },
     getViewConfigs: function(data) {
         var defaults = {
-            vizType: {
-                name: 'vizType',
+            decorator: {
+                name: 'decorator',
                 list: ['geometry', 'texture']
             },
-            vizLayer: {
-                name: 'vizLayer',
+            template: {
+                name: 'template',
                 list: ['dynamic']
             }
         }

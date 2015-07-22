@@ -21,6 +21,10 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.scene = null;
         this.controls = null;
         this.tween = null;
+        this.categories = [];
+        this.end = new THREE.Vector3();
+        this.direction = new THREE.Vector3();
+        this.activeCategories = []; // holds active categories
 
         if (decorators !== undefined)
             this.decorators = decorators;
@@ -52,6 +56,8 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         // TODO: review
         $(window).on('resize', this.onWindowResize.bind(this));
+        Application._vent.on('filters/add', this.addCategory, this);
+        Application._vent.on('filters/remove', this.removeCategory, this);
     },
     suscribe: function() {
         Application._vent.on('data/ready', this.showResults, this);
@@ -112,6 +118,8 @@ Application.BaseGlobeView = Backbone.View.extend({
         $(window).unbind('resize');
         Application._vent.unbind('data/ready', this.showResults);
         this.collection[0].unbind();
+        Application._vent.unbind('filters/add', this.addCategory);
+        Application._vent.unbind('filters/remove', this.removeCategory);
     },
     render: function() {
 
@@ -128,27 +136,38 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
         this.moved = false;
     },
+    rayCast: function(objects, e) {
+
+        var x = e.clientX;
+        var y = e.clientY;
+
+        x -= this.container.offsetLeft;
+        y -= this.container.offsetTop;
+
+        var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
+        vector.unproject(this.camera);
+
+        var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
+        var intersects = ray.intersectObjects(objects);
+
+        //Tweak distance and find closest object. Because there is a bug on calculating distance to sprite objects.
+        var minDis = 1000000;
+        var closest = null;
+        $.each(intersects, function(i, intersect) {
+            var dis = ray.ray.origin.distanceTo(intersect.point);
+            if (minDis > dis) {
+                minDis = dis;
+                closest = intersect;
+            }
+        });
+
+        return closest;
+    },
     onMouseMove: function(e) {
 
         if (e.which == 1) {
-
             this.moved = true;
         }
-
-        // TODO: fix issue with particles then uncomment
-        // function setTimer() {
-
-        //     this.idle = false;
-
-        //     clearTimeout(this.timer);
-
-        //     var that = this;
-        //     this.timer = setTimeout(function() {
-
-        //         that.idle = true
-        //     }, 5000);
-        // };
-        // setTimer.call(this);
     },
     showGlobe: function() {
 
@@ -236,8 +255,9 @@ Application.BaseGlobeView = Backbone.View.extend({
             shininess: 20
         });
         this.globe = new THREE.Mesh(geometry, material);
-
+        this.globe.name = "globe";
         this.scene.add(this.globe);
+        this.globe.userData.name = 'globe';
         this.rayCatchers.push(this.globe);
     },
     addLight: function() {
@@ -296,25 +316,17 @@ Application.BaseGlobeView = Backbone.View.extend({
     // interaction
     clickOn: function(event) {
 
-        var x = event.clientX;
-        var y = event.clientY;
+        var closest = this.rayCast(this.rayCatchers, event);
+        if (closest != null) {
+            this.clickOnIntersect(closest);
 
-        x -= this.container.offsetLeft;
-        y -= this.container.offsetTop;
+            if (closest.object.userData.name != 'globe') {
 
-        var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
-        vector.unproject(this.camera);
-
-        var ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
-        var intersects = ray.intersectObjects(this.rayCatchers);
-
-        if (intersects.length > 0) {
-
-            var closestIntersect = intersects[0];
-            this.clickOnIntersect(closestIntersect);
+                Application._vent.trigger('vizinfocenter/message/on', closest.object.userData.name);
+            }
+            if (closest.object.userData.name == 'globe') { return null; }
         }
-
-        return intersects[0];
+        return closest;
     },
     clickOnIntersect: function(intersect) {
 
@@ -397,6 +409,94 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.tween.start();
     },
     showResults: function(results) {
+      if (this.categories.length > 0 && this.categories[0] !== undefined) {
+          Application._vent.trigger('controlpanel/categories', this.categories);
+      }
+    },
+    showAllResults: function() {},
+    getCategories: function(results){
+      this.categories = Application.Filter.getCategories(results);
+    },
+    getCategoriesWithColors: function(results, obj){
+      this.categories = Application.Filter.getCategories(results);
+      $.each(this.categories, function(index, category){
+          category.color = Application.Helper.getRandomColor(obj);
+      });
+    },
+    addCategory: function(group) {
 
-    }
+        group.name;
+
+        this.activeCategories.push(group.category);
+        this.sortResultsByCategory();
+    },
+    removeCategory: function(group) {
+
+        group.name;
+
+        var i = this.activeCategories.indexOf(group.category);
+        if (i != -1) {
+            this.activeCategories.splice(i, 1);
+        }
+        this.sortResultsByCategory();
+    },
+    getCategoryObj: function(categoryName){
+
+      var category;
+      $.each(this.categories, function(index, c){
+        if(c.name === categoryName){
+          category = c;
+        }
+      });
+      return category;
+
+    },
+    getColorByCategory: function(categoryName){
+
+      var color;
+      $.each(this.categories, function(index, category){
+        if(category.name === categoryName){
+          color = category.color.replace('#','0x');
+        }
+      });
+      return color || '0xffffff';
+
+    },
+    sortResultsByCategory: function() {},
+    determineCountry: function(point) {
+
+        this.direction.subVectors(this.end, point.position);
+        this.direction.normalize();
+
+        //this.scene.updateMatrixWorld();
+        var ray = new THREE.Raycaster(point.position, this.direction);
+
+        var rayIntersects = ray.intersectObjects(this.rayCatchers);
+
+        if (rayIntersects[0]) {
+
+            return rayIntersects[0].object.userData.name;
+
+        } else {
+
+            return 'none';
+        }
+
+    },
+    pointsPerCountry: function(array, countryname) {
+
+        var i = 0;
+
+        $.each(array, function(index, sprite) {
+
+            if (sprite.userData.country == countryname) {
+
+                i++;
+            }
+
+        });
+
+        return i;
+
+    },
 });

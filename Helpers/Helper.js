@@ -30,9 +30,9 @@ Application.Helper = {
             } else {
                 _files = files[index];
             }
-            console.log(_files);
+        //    console.log(_files);
             require(_files, function() {
-                console.log("loaded.");
+            //    console.log("loaded.");
                 Application.Helper.loadFiles(files, index + 1, callback);
             });
         }
@@ -193,16 +193,28 @@ Application.Helper = {
 
         var array = string.split(/[\,\.\s]/);
         array.forEach(function(element, index) {
-           
+
             element.replace(/\s/g, '');
-           
+
             var index = array.indexOf('');
-           
+
             if (index != -1)
                 array.splice(index, 1);
         });
 
         return array;
 
+    },
+    getFileExtention: function(filename){
+        return (/[.]/.exec(filename)) ? (/[^.]+$/.exec(filename))[0] : undefined;
+    },
+
+    capitalize: function(str){
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+
+    getRandomColor: function(obj){
+      return randomColor(obj || {luminosity: 'bright' });
     }
+
 }

@@ -1,3 +1,109 @@
+Application.ControlPanelRootView = Backbone.View.extend({
+    tagName: 'div',
+    id: 'panel',
+    initialize: function() {
+
+        this.visualizationsView = null;
+
+        this.dataSourcesView = new Application.DataSourcesView();
+        this.matcher = new Application.Matcher();
+
+        Application._vent.on('data/parsed', this.addTemplatesView, this);
+
+        Application._vent.on('matcher/on', this.destroyViews, this);
+        Application._vent.on('controlpanel/input/changed', this.destroyViews, this);
+        Application._vent.on('visualize', this.addFiltersView, this);
+        Application._vent.on('matcher/submit', this.addFiltersView, this);
+
+        this.helpButton = new Application.Help();
+        this.helpButton.$el.attr('id', 'helpButton');
+
+        this.feedback = new Application.FeedBack();
+        this.feedback.$el.attr('id', 'feedbackButton');
+
+        this.$el.append(this.helpButton.render().$el);
+        this.$el.append(this.feedback.render().$el);
+
+    },
+    render: function() {
+        this.$el.append(this.dataSourcesView.render().$el);
+        this.$el.append(this.matcher.render().$el);
+        return this;
+    },
+    addFiltersView: function() {
+
+        if (this.filtersView) this.filtersView.destroy();
+
+        this.filtersView = new Application.FiltersView();
+        this.$el.append(this.filtersView.render().$el);
+        //this.filterPanel.$el.hide();
+
+    },
+    addDataSourcesView: function() {
+        if (this.dataSourcesView) this.dataSourcesView.destroy();
+        this.dataSourcesView = new Application.DataSourcesView();
+    },
+    addTemplatesView: function() {
+
+        var viewConfig = this.getTemplatesMap();
+
+        if (this.visualizationsView) this.visualizationsView.destroy();
+        this.visualizationsView = new Application.VisualizationsView(viewConfig);
+        this.$el.append(this.visualizationsView.render().$el);
+
+    },
+    getTemplatesMap: function() {
+
+        var config = {};
+        var list = Application.models[Application.userConfig.model].templates;
+        var map = {};
+
+        $.each(list, function(i, internalName) {
+
+            map[internalName] = Application.templates.map[internalName];
+
+        });
+        config.name = Application.templates.name;
+        config.map = map;
+
+        return config;
+    },
+    destroyViews: function() {
+        this.destroyTemplatesView();
+        this.destroyCategoriesView();
+    },
+    destroyCategoriesView: function() {
+
+        if (this.categoriesView) {
+            this.categoriesView.destroy();
+            this.categoriesView = null;
+        }
+
+    },
+    destroyTemplatesView: function() {
+
+        if (this.visualizationsView) {
+
+            this.visualizationsView.destroy();
+            this.visualizationsView = null;
+        }
+
+    },
+    reset: function() {
+        Application._vent.on('data/parsed', this.addTemplatesView, this);
+        if (this.visualizationsView != null) {
+            this.visualizationsView.destroy();
+            this.visualizationsView = null;
+        }
+        if (this.dataSourcesView.subview != null) {
+            this.dataSourcesView.subview.destroy();
+            this.dataSourcesView.subview = null;
+        }
+        this.dataSourcesView.$el.children()[0].selectedIndex = 0;
+    },
+    destroy: function() {}
+});
+
 Application.NotificationsCenter = Backbone.View.extend({
     tagName: 'div',
     id: 'notificationsBox',
@@ -41,9 +147,13 @@ Application.VizInfoCenter = Backbone.View.extend({
         return this;
     },
     showMessage: function(message) {
-        this.$el.fadeIn();
-        this.$el.empty();
-        this.$el.append(message);
+        if(!this.$el.is(":visible")){
+            this.$el.fadeIn();
+            this.$el.empty();
+            this.$el.append(message);
+        }else{
+            this.$el.html(message);
+        }
     },
     removeMessage: function() {
         this.$el.empty();
@@ -56,71 +166,28 @@ Application.VizInfoCenter = Backbone.View.extend({
     }
 });
 
-Application.ControlPanelRootView = Backbone.View.extend({
+Application.VizTitleCenter = Backbone.View.extend({
     tagName: 'div',
-    id: 'panel',
+    id: 'titleBox',
     initialize: function() {
-
-        this.visualizationsView = null;
-
-        this.dataSourcesView = new Application.DataSourcesView();
-        this.matcher = new Application.Matcher();
-
-        Application._vent.on('data/parsed', this.addVisualizationsView, this);
-        //Application._vent.on('controlpanel/subview/dataSource', this.addVisualizationsView, this);
-        Application._vent.on('controlpanel/input/changed', this.destroyVisualizationView, this);
-        Application._vent.on('matcher/on', this.destroyVisualizationView, this);
-        this.helpButton = new Application.Help();
-        this.helpButton.$el.attr('id', 'helpButton');
-        this.$el.append(this.helpButton.render().$el);
-
-        //this.initMatcher();
-
+        Application._vent.on('title/message/on', this.showMessage, this);
+        this.$el.hide();
     },
     render: function() {
-        this.$el.append(this.dataSourcesView.render().$el);
-        this.$el.append(this.matcher.render().$el);
-        // this.$el.append(this.visualizationsView.render().$el);
         return this;
     },
-
-    addDataSourcesView: function() {
-        if (this.dataSourcesView) this.dataSourcesView.destroy();
-        this.dataSourcesView = new Application.DataSourcesView();
+    showMessage: function(message) {
+        this.$el.fadeIn();
+        this.$el.empty();
+        this.$el.append('<p>' + message + '</p>');
     },
-    addVisualizationsView: function(viewConfig) {
-
-        if (this.visualizationsView)
-
-            this.visualizationsView.destroy();
-        this.visualizationsView = new Application.VisualizationsView(viewConfig);
-        this.$el.append(this.visualizationsView.render().$el);
-
-        // Application._vent.unbind('data/parsed');
-
+    removeMessage: function() {
+        this.$el.empty();
+        this.$el.fadeOut();
     },
-    destroyVisualizationView: function() {
-
-        if (this.visualizationsView) {
-
-            this.visualizationsView.destroy();
-            this.visualizationsView = null;
-        }
-
-    },
-    reset: function() {
-        Application._vent.on('data/parsed', this.addVisualizationsView, this);
-        if (this.visualizationsView != null) {
-            this.visualizationsView.destroy();
-            this.visualizationsView = null;
-        }
-        if (this.dataSourcesView.subview != null) {
-            this.dataSourcesView.subview.destroy();
-            this.dataSourcesView.subview = null;
-        }
-        this.dataSourcesView.$el.children()[0].selectedIndex = 0;
-    },
-    destroy: function() {}
+    destroy: function() {
+        Application._vent.unbind('title/message/on');
+    }
 });
 
 Application.DataSourcesView = Backbone.View.extend({
@@ -135,7 +202,7 @@ Application.DataSourcesView = Backbone.View.extend({
         this.dataSourcesList.$el.attr('id', 'dataSourcesList');
         this.$el.append('<label for="dataSourcesList" class="label">CHOOSE A DATA SOURCE</label>');
 
-        Application._vent.on('controlpanel/subview/dataSource', this.addSubView, this);
+        Application._vent.on('controlpanel/subview/model', this.addSubView, this);
 
     },
     render: function() {
@@ -146,7 +213,7 @@ Application.DataSourcesView = Backbone.View.extend({
     },
     destroy: function() {
 
-        Application._vent.unbind('controlpanel/subview/dataSource');
+        Application._vent.unbind('controlpanel/subview/model');
         this.remove();
         this.unbind();
         delete this.$el;
@@ -164,26 +231,26 @@ Application.DataSourcesView = Backbone.View.extend({
     },
     getSubView: function() {
 
-        switch (Application.userConfig.dataSource) {
+        switch (Application.userConfig.model) {
 
             case 'twitterDB':
-                this.subview = new Application.DynamicTwitterDBControlPanel();
-                break;
+            this.subview = new Application.DynamicTwitterDBControlPanel();
+            break;
             case 'twitterLive':
-                this.subview = new Application.DynamicTwitterLiveControlPanel();
-                break;
+            this.subview = new Application.DynamicTwitterLiveControlPanel();
+            break;
             case 'csv':
-                this.subview = new Application.CSVControlPanel();
-                break;
+            this.subview = new Application.CSVControlPanel();
+            break;
             case 'box':
-                this.subview = new Application.BoxControlPanel();
-                break;
+            this.subview = new Application.BoxControlPanel();
+            break;
             case 'spreadSheet':
-                this.subview = new Application.SpreadSheetControlPanel();
-                break;
+            this.subview = new Application.SpreadSheetControlPanel();
+            break;
             case 'googleTrends':
-                this.subview = new Application.GoogleTrendsControlPanel();
-                break;
+            this.subview = new Application.GoogleTrendsControlPanel();
+            break;
         }
 
         return this.subview;
@@ -195,40 +262,28 @@ Application.DataSourcesView = Backbone.View.extend({
 Application.VisualizationsView = Backbone.View.extend({
     tagName: 'div',
     className: 'configList',
-    initialize: function(viewConfigs) {
+    initialize: function(config) {
 
         this.subview = null;
         this.visualizebtn = null;
-        this.viewConfigs = viewConfigs;
-        Application._vent.on('controlpanel/subview/vizLayer', this.addThumbnail, this);
-
-        // this.visualizationList = new Application.DropDownList(this.viewConfigs.vizType);
-        // this.visualizationList.$el.attr('id', 'visualizationList');
-        // this.labelForViz = '<label for="visualizationList" class="label">CHOOSE A VISUALIZATION</label>';
-
-        // Application._vent.on('data/parsed', this.addSubView, this);
-        //Application._vent.on('matcher/on', this.addMatcher, this);
-
+        this.config = config;
+        Application._vent.on('controlpanel/subview/template', this.addThumbnail, this);
         this.getSubView();
-
-
-
     },
     render: function() {
-
-        // this.$el.append(this.labelForViz);
-        // this.$el.append(this.visualizationList.render().$el);
 
         return this;
     },
     destroy: function() {
 
         this.remove();
-        this.viewConfigs = null;
+        this.config = null;
         this.visualizationList = null;
+        this.subview.destroy();
         this.subview = null;
-        //Application._vent.unbind('controlpanel/subview/vizType', this.addSubView);
-        // Application._vent.unbind('matcher/on', this.addMatcher);
+        this.filterButton.destroy();
+        this.filterButton = null;
+
     },
     addSubView: function() {
 
@@ -238,27 +293,23 @@ Application.VisualizationsView = Backbone.View.extend({
         }
 
         if (this.visualizebtn) this.visualizebtn.destroy(); // to rework
-
         this.subview = this.getSubView();
-
-        Application._vent.unbind('controlpanel/subview/vizLayer', this.addThumbnail);
-
-
+        Application._vent.unbind('controlpanel/subview/template', this.addThumbnail);
     },
 
     getSubView: function() {
         var that = this;
 
-        if (Application.models[Application.userConfig.dataSource].attributes == false) {
-            this.subview = new Application.DropDownList(this.viewConfigs.vizLayer);
+        if (Application.models[Application.userConfig.model].attributes == false) {
+            this.subview = new Application.DropDownList(this.config);
             this.subview.$el.attr('id', 'templatesList');
             this.labelForTemplates = $('<label for="templatesList" class="label">CHOOSE A TEMPLATE</label>');
             this.$el.append(this.labelForTemplates);
 
             this.$el.append(this.subview.render().$el);
 
-            this.visualizebtn = new Application.Button(this.viewConfigs.vizLayer); // to do submit button in elements
-             
+            this.visualizebtn = new Application.Button(this.config.map); // to do submit button in elements
+
             this.visualizebtn.$el.text('VISUALIZE');
             this.visualizebtn.$el.on('mousedown', this.submitAction.bind(this));
             this.$el.append(this.visualizebtn.render().$el);
@@ -277,6 +328,7 @@ Application.VisualizationsView = Backbone.View.extend({
         this.picDiv.append(this.pic);
         this.$el.append(this.picDiv);
     },
+
 
 });
 
@@ -302,11 +354,25 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
     initialize: function() {
 
         Application.ButtonsView.prototype.initialize.call(this);
-
+        var that = this;
         this.fileUpload = new Application.FileUpload();
+        this.fileUpload.$el.on('change', function(){
+            var ex = Application.Helper.getFileExtention( that.fileUpload.getFile().name );
+            switch(ex){
+                case 'csv':
+                that.submitbtn.$el.removeAttr('disabled');
+                that.fileUpload.changeErrMsg('');
+                break;
+                default:
+                that.submitbtn.$el.attr('disabled','disabled');
+                that.fileUpload.changeErrMsg('Please choose CSV file.');
+                break;
+            }
+        });
 
         this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
+        this.submitbtn.$el.attr('disabled','disabled');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
     },
@@ -320,8 +386,6 @@ Application.CSVControlPanel = Application.ButtonsView.extend({
 
         var files = this.fileUpload.getFile();
         Application.userConfig.files = files;
-        console.log(files);
-
         Application._vent.trigger('controlpanel/parse');
 
     },
@@ -337,11 +401,25 @@ Application.BoxControlPanel = Application.ButtonsView.extend({
     initialize: function() {
 
         Application.ButtonsView.prototype.initialize.call(this);
-
+        var that = this;
         this.boxExplorer = new Application.BoxExplorer();
+        this.boxExplorer.on('success', function(){
+            var ex = Application.Helper.getFileExtention( that.boxExplorer.getFileInfo().name );
+            switch(ex){
+                case 'csv':
+                that.submitbtn.$el.removeAttr('disabled');
+                that.boxExplorer.changeErrMsg('');
+                break;
+                default:
+                that.submitbtn.$el.attr('disabled','disabled');
+                that.boxExplorer.changeErrMsg('Please choose CSV file.');
+                break;
+            }
+        })
 
         this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
+        this.submitbtn.$el.attr('disabled','disabled');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
     },
@@ -639,6 +717,7 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
 
         this.submitbtn = new Application.Button();
         this.submitbtn.$el.text('SUBMIT');
+        this.submitbtn.$el.attr('disabled','disabled');
         this.submitbtn.$el.on('mousedown', this.submitAction.bind(this));
 
     },
@@ -651,8 +730,13 @@ Application.GoogleTrendsControlPanel = Application.ButtonsView.extend({
     },
     KeywordFieldAction: function(e) {
 
-        if (e.which == 13) {
+        if(this.keywordfield.$el.val() != ''){
+            this.submitbtn.$el.removeAttr('disabled');
+        }else{
+            this.submitbtn.$el.attr('disabled','disabled');
+        }
 
+        if (e.which == 13) {
             this.submitAction(e);
         }
 

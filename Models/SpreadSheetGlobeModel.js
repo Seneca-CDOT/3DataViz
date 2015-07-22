@@ -42,8 +42,6 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
             },
             complete: function(response) {
                 console.log("parse:", response);
-               // Application._vent.trigger('data/parsed', that.getViewConfigs(response));
-                //that.transform(response); 
                 that.data = response; // to hold data until visualization starts
             }
 
@@ -56,7 +54,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         var that = this;
 
         var options = {
-            visualizationType: Application.userConfig.vizLayer
+            visualizationType: Application.userConfig.template
         }
 
         pModule.transformData(this.data, options, function(response) {
@@ -74,18 +72,4 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         // console.log("Destroy SpreadSheetCollection");
         Application.BaseGlobeCollection.prototype.destroy.call(this);
     },
-    // getViewConfigs: function(data) {
-    //     var defaults = {
-    //         vizType: {
-    //             name: 'vizType',
-    //             list: ['geometry', 'texture']
-    //         },
-    //         vizLayer: {
-    //             name: 'vizLayer',
-    //             list: ['points', 'countries', 'graph']
-    //         }
-    //     }
-    //     return Application.BaseGlobeCollection.prototype.getViewConfigs.call(this, data, defaults);
-    // }
-
 });

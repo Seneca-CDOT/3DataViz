@@ -17,11 +17,11 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
     },
     clickOn: function(event) {
 
+        //  this.inter();
+
         var intersectedMesh = Application.BaseGlobeView.prototype.clickOn.call(this, event);
 
         var found = false;
-
-        Application._vent.trigger('vizinfocenter/message/off');
 
         if (intersectedMesh) {
 
@@ -29,15 +29,15 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
                 if (intersectedMesh.object == country.mesh) {
 
+
                     console.log(country.value);
                     Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
-                        ' : ' + Application.Helper.formatNumber(country.value));
+                        '<br>' + Application.Helper.formatNumber(country.value));
                     found = true;
                 }
 
             });
-            
-         if (!found) Application._vent.trigger('vizinfocenter/message/on', intersectedMesh.object.userData.name);
+
         }
 
     },
@@ -107,16 +107,18 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
     showResults: function() {
 
         // console.log("CountriesLayer showResults");
-
-        Application.BaseGlobeView.prototype.showResults.call(this, results);
+        var results = this.collection[0].models;
         var that = this;
 
-        var results = this.collection[0].models;
+        this.getCategories(results);
+        Application.BaseGlobeView.prototype.showResults.call(this, results);
+
+        Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
 
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;
-        }else if( !(results[0].countryname || results[0].countrycode ) || !results[0].value ){
+        } else if (!(results[0].countryname || results[0].countrycode)) {
             Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
             return;
         }
@@ -143,7 +145,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             var countrymesh = that.decorators[0].findCountry(item[search], search);
 
             if (!countrymesh) {
-                console.log('Country ' + ( item.countrycode || item.countryname ) + ' is not available ');
+                console.log('Country ' + (item.countrycode || item.countryname) + ' is not available ');
                 return;
             }
 
@@ -152,16 +154,68 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             var obj = {};
             obj.mesh = countrymesh;
             obj.color = countrymesh.material.color.getHex();
-            obj.value = item.value;
+            if (item.value) obj.value = item.value;
 
-            that.added.push(obj);
+            if (item.category) obj.category = item.category;
 
             countrymesh.material.color.r = 1;
             countrymesh.material.color.g = 1 - colorsMap[item.value];
             countrymesh.material.color.b = 1 - colorsMap[item.value];
 
+            obj.result_color = countrymesh.material.color.getHex();
+
+            that.added.push(obj);
 
         });
-    }
+    },
+    sortResultsByCategory: function() {
+
+        var that = this;
+
+        Application.BaseGlobeView.prototype.sortResultsByCategory.call(this);
+
+       // this.resetGlobe();
+        this.showAllResults();
+
+       // if (category == 'All') return;
+
+       if (this.activeCategories.length != 0) {
+       $.each(this.added, function(index, country) { // turn all added countries grey
+
+                country.mesh.material.color.r = 0.5;
+                country.mesh.material.color.g = 0.5;
+                country.mesh.material.color.b = 0.5;
+
+        });
+   }
+
+    $.each(this.activeCategories, function(i, category) {
+
+        $.each(that.added, function(i, country) {
+
+            if (country.category == category) {
+
+                country.mesh.material.color.setHex(country.result_color);
+
+                console.log(i++);
+            }
+
+        });
+
+    });
+
+},
+showAllResults: function() {
+
+    Application.BaseGlobeView.prototype.showAllResults.call(this);
+
+    this.resetGlobe();
+
+    $.each(this.added, function(index, country) {
+
+        country.mesh.material.color.setHex(country.result_color);
+
+    });
+},
 
 });
