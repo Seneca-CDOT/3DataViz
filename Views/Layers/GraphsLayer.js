@@ -53,6 +53,8 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         var that = this;
 
+
+
         // console.log("GraphsLayer Destroy");
         $.each(this.airportMeshes, function(i, mesh) {
 
@@ -73,7 +75,6 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         this.airportMeshes = null;
 
-        // Application._vent.unbind('globe/ready');
 
     },
     // visualization specific functionality

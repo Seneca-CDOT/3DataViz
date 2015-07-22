@@ -42,8 +42,8 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         var intersectedMesh = Application.BaseGlobeView.prototype.clickOn.call(this, event);
 
-
         if (intersectedMesh) {
+
                     var name = intersectedMesh.object.userData.name;
 
                     Application._vent.trigger('vizinfocenter/message/on', name +

@@ -324,8 +324,8 @@ Application.BaseGlobeView = Backbone.View.extend({
 
                 Application._vent.trigger('vizinfocenter/message/on', closest.object.userData.name);
             }
+            if (closest.object.userData.name == 'globe') { return null; }
         }
-
         return closest;
     },
     clickOnIntersect: function(intersect) {
