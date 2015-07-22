@@ -140,10 +140,10 @@ Application.AttributesSet = Backbone.View.extend({
 
             $(e.target).data('checked', 'true'); // makes button checked
 
-            Application._vent.trigger(this.eventName + '/add', e.target.innerText);
+            Application._vent.trigger(this.eventName + '/add', e.target.innerHTML);
             $(e.target).addClass(this.chosenClass);
 
-            Application._vent.trigger(this.eventName + '/click', e.target.innerText);
+            Application._vent.trigger(this.eventName + '/click', e.target.innerHTML);
 
             this.makeInactiveTheRest(e.target);
 
@@ -151,12 +151,12 @@ Application.AttributesSet = Backbone.View.extend({
 
             $(e.target).data('checked', 'false');
 
-            Application._vent.trigger(this.eventName + '/unclick', e.target.innerText);
+            Application._vent.trigger(this.eventName + '/unclick', e.target.innerHTML);
 
             $(e.target).removeClass(this.selectedClass);
             $(e.target).removeClass(this.chosenClass);
 
-            Application._vent.trigger(this.eventName + '/remove', e.target.innerText);
+            Application._vent.trigger(this.eventName + '/remove', e.target.innerHTML);
 
             this.makeActiveTheRest(e.target);
 

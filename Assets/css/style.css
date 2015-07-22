@@ -422,8 +422,8 @@ button{
     padding: 0 10px;
 }
 .templateImgList li img{
-    width: auto;
-    height: auto;
+    width: 145px;
+    height: 145px;
 }
 .templateImgList li .imgBtn{
     border: none;

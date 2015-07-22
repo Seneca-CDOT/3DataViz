@@ -92,7 +92,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
                     msg += data.label + " ";
                 }
                 if (typeof data.value !== 'undefined') {
-                    msg += ("(" + data.value + ")");
+                    msg += ("<br>(" + data.value + ")");
                 }
                 if (msg !== "") {
                     Application._vent.trigger('vizinfocenter/message/on', msg);
@@ -215,6 +215,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
                 sprite.position.copy(position);
                 sprite.userData.label = item.label;
+                sprite.userData.value = item.value;
                 sprite.userData.country = that.determineCountry(sprite);
 
                 sprite.userData.result_color = color;
