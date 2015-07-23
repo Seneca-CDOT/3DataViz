@@ -57,7 +57,7 @@ Application = {
 
     models: {
         name: 'model',
-        map: { twitterDB: 'Tweets from DB', twitterLive: 'Twitter Live', csv: '*.CSV', box: 'BOX', spreadSheet:'Google SpreadSheet', googleTrends: 'Google Trends' },
+        map: { /*twitterDB: 'Tweets from DB', twitterLive: 'Twitter Live',*/ csv: 'Local File', box: 'BOX', spreadSheet:'Google SpreadSheet', googleTrends: 'Google Trends' },
         spreadSheet: {
             url: ['Models/SpreadSheetGlobeModel.js'],
             attributes: true,
@@ -92,7 +92,7 @@ Application = {
 
     templates: {
         name: 'template',
-        map: { countries: 'regional', points: 'location', dynamic: 'realtime', graph: 'relationship' },  // internal name / display name
+        map: { countries: 'regional', points: 'location', /*dynamic: 'realtime',*/ graph: 'relationship' },  // internal name / display name
         countries: {
             url: ['Views/Layers/CountriesLayer.js'],
             attributes: {
