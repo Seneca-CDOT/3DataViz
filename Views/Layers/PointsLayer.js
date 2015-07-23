@@ -175,9 +175,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
             var color = that.getColorByCategory(sprite.userData.category) || '0xffffff';
 
-            sprite.material.color.setHex(color);
-
-            that.sprites.push(sprite);
+            that.sprites.push(sprite)
             that.moObjects.push(sprite);
 
             var timer = setTimeout(function() {
@@ -198,6 +196,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
                 }
 
+                sprite.material.color.setHex(color);
                 sprite.position.copy(position);
                 sprite.userData.label = item.label;
                 sprite.userData.value = item.value;
