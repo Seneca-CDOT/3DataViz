@@ -188,7 +188,7 @@ THREE.OrbitControls = function(object, domElement) {
     }
 
     this.getRadius = function() {
-  
+
      return this.object.position.distanceTo( new THREE.Vector3() );
 
     }
@@ -334,9 +334,11 @@ THREE.OrbitControls = function(object, domElement) {
 
             // console.log( event.webkitMovementX, event.webkitMovementY );
 
-            // if ( momentumLeft == 0 ) momentumLeft = (event.clientX - oldX) / 10 ; // Manually calculate delta x for safari due to lack of movementx
-            // if ( momentumUp == 0 ) momentumUp = (event.clientY - oldY) / 10 ; // Manually calculate delta x for safari due to lack of movementx
+            if ( momentumLeft == 0 ) momentumLeft = (event.clientX - oldX) ; // Manually calculate delta x for safari due to lack of movementx
+            if ( momentumUp == 0 ) momentumUp = (event.clientY - oldY) ; // Manually calculate delta x for safari due to lack of movementx
 
+            oldX = event.clientX;
+            oldY = event.clientY;
 
             // momentumLeft += 2 * Math.PI * rotateDelta.x / PIXELS_PER_ROUND * scope.userRotateSpeed;
             // momentumUp   += 2 * Math.PI * rotateDelta.y / PIXELS_PER_ROUND * scope.userRotateSpeed;
@@ -363,7 +365,7 @@ THREE.OrbitControls = function(object, domElement) {
 
         //   zoomStart.copy( zoomEnd );
 
-        // } 
+        // }
 
         // else if ( state === STATE.PAN ) {
 
@@ -447,7 +449,7 @@ element.addEventListener('mousedown', onMouseDown, false);
      this.removeMouse = function () {
 
 element.removeEventListener('mousedown', onMouseDown, false);
-        
+
     }
 
 

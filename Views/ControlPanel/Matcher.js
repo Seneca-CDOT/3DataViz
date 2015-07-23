@@ -494,7 +494,7 @@ Application.TemplatesView = Backbone.View.extend({
         $(this).parent().addClass('active');
 
         if( $('.vizTitle').val() === ''){
-            var str = Application.Helper.capitalize(template) + " Visualization";
+            var str = Application.Helper.capitalize(Application.templates.map[template]) + " Visualization";
             $('.vizTitle').attr('placeholder', str);
         }
 

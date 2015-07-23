@@ -61,7 +61,7 @@ Application.FileUpload = Application.ControlElementsGlobeView.extend({
     initialize: function() {
         Application.ControlElementsGlobeView.prototype.initialize.call(this);
 
-        this.$btnfile = $('<div class="btn btn-default btn-file">Choose File</div>');
+        this.$btnfile = $('<div class="btn btn-default btn-file">Choose File (*.csv)</div>');
 
         this.$file = $('<input id="fileUpload" type="file">');
         this.$file.on('change', this.handleFile.bind(this));
