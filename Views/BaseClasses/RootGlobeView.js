@@ -54,6 +54,10 @@ Application.RootGlobeView = Backbone.View.extend({
     createGlobeView: function(layer, decorator, collections) {
 
         var rootGlobeViewClass = null;
+
+        // TODO We can automate this switch statement by using configs from Application.js.
+        // We need to add manually when we have a new template.
+        
         switch (layer) {
 
             case "countries":
@@ -76,6 +80,12 @@ Application.RootGlobeView = Backbone.View.extend({
                     rootGlobeViewClass = 'GraphsLayer';
                     break;
                 }
+            case "pointcloud":
+              	{
+              		rootGlobeViewClass = 'PointCloudLayer';
+              		break;
+              	}
+
         }
 
         var that = this;

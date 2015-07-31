@@ -25,6 +25,10 @@ Application.DataProcessor.TransformerFactory = (function() {
                 console.log("graphVisualTransformer");
                 TransformerClass = Application.DataProcessor.GraphTransformer;
                 break;
+            case "pointcloudVisualTransformer":
+                console.log("pointcloudVisualTransformer");
+                TransformerClass = Application.DataProcessor.PointCloudTransformer;
+                break;
         }
         // console.log(TransformerClass);
         return new TransformerClass(options);
@@ -131,7 +135,7 @@ Application.DataProcessor.CountriesVisualTransformer = (function() {
                 if (parserAttr) {
 
                     if (parserAttr == 'value') value = Application.Helper.getNumber(value);
-                    
+
                     obj[parserAttr] = value;
 
                 } else {
@@ -164,7 +168,7 @@ Application.DataProcessor.PointsVisualTransformer = (function() {
     PointsVisualTransformer.prototype.transform = function(data, complete) {
 
         // if(data[0].latitude == "" && data[0].longitude == ""){
-        //      var transData = [];  
+        //      var transData = [];
 
         //     $.each( data, function (index, item ) {
 
@@ -210,7 +214,7 @@ Application.DataProcessor.PointsVisualTransformer = (function() {
 
 })();
 
-// point visual
+// Dynamic visual
 Application.DataProcessor.DynamicVisualTransformer = (function() {
 
     function DynamicVisualTransformer() {
@@ -259,7 +263,7 @@ Application.DataProcessor.GraphTransformer = (function() {
                 if (parserAttr) {
 
                     if (parserAttr == 'value') value = Application.Helper.getNumber(value);
-                    
+
                     obj[parserAttr] = value;
 
                 } else {
@@ -311,5 +315,32 @@ Application.DataProcessor.GraphTransformer = (function() {
     };
 
     return GraphTransformer;
+
+})();
+
+// point cloud visual
+Application.DataProcessor.PointCloudTransformer = (function(){
+
+    function PointCloudTransformer() {
+
+        Application.DataProcessor.BaseTransformer.call(this);
+    };
+    Application.Helper.inherit(PointCloudTransformer, Application.DataProcessor.BaseTransformer);
+
+    PointCloudTransformer.prototype.transform = function(data, complete) {
+
+        transData = [];
+        $.each(data, function(index, item){
+            var obj = {};
+            obj.x = Number(item.x) || null;
+            obj.y = Number(item.y) || null;
+            obj.z = Number(item.z) || null;
+            transData.push(obj);
+        });
+
+        if( typeof complete === "function" ) complete(transData);
+    };
+
+    return PointCloudTransformer;
 
 })();

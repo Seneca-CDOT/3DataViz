@@ -215,6 +215,46 @@ Application.Helper = {
 
     getRandomColor: function(obj){
       return randomColor(obj || {luminosity: 'bright' });
-    }
+    },
+
+    positionImageText: function(scene, text, x, y, z){
+        this.getSVGTextImage(text, function(img){
+
+            var sprite = new THREE.Texture(img);
+            var sp = new THREE.SpriteMaterial({
+                map: sprite,
+                color: 0xffffff
+            });
+            var mesh = new THREE.Sprite(sp);
+            mesh.scale.multiplyScalar(20);
+            mesh.position.x = x;
+            mesh.position.y = y;
+            mesh.position.z = z;
+            sprite.needsUpdate = true;
+            scene.add(mesh);
+
+        });
+    },
+    getSVGTextImage: function(str, callback){
+        var data = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" height="2000" width="2000" viewBox="0 0 2000 2000"><text x="1000" y="1000" fill="white" font-size="600" style="text-anchor: middle; dominant-baseline: middle;">'+str+'</text></svg>';
+        var DOMURL = self.URL || self.webkitURL || self;
+        var img = new Image();
+        var svg = new Blob([data], {type: "image/svg+xml;charset=utf-8"});
+        var url = DOMURL.createObjectURL(svg);
+
+        var canvas = document.createElement( "canvas" );
+        canvas.width = 2000;
+        canvas.height = 2000;
+        var ctx = canvas.getContext( "2d" );
+        img.onload = function() {
+            ctx.drawImage( img, 0, 0 );
+            var pngImg = new Image();
+            pngImg.onload = function(){
+                if( callback ) callback(pngImg);
+            }
+            pngImg.src = canvas.toDataURL( "image/png" )
+        };
+        img.src = url;
+    },
 
 }
