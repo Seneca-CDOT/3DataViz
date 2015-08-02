@@ -23,16 +23,19 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         var found = false;
 
+        var sign = '';
+
+         if (Application.userConfig.model == 'googleTrends') sign = '%';
+
         if (intersectedMesh) {
 
             $.each(this.added, function(index, country) {
 
                 if (intersectedMesh.object == country.mesh) {
 
-
                     //console.log(country.value);
                     Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
-                        '<br>' + Application.Helper.formatNumber(country.value));
+                        '<br>' + Application.Helper.formatNumber(country.value) + sign );
                     found = true;
                 }
 
@@ -75,6 +78,10 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         });
     },
     getColor: function(cur, min, max) {
+
+       if (Application.userConfig.model == 'googleTrends') {
+         min = 0; max = 100;
+        }
 
         var x = cur - min;
         var y = max - min;
