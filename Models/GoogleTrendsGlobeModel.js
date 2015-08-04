@@ -43,9 +43,11 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         };
 
         pModule.processData(response.table.rows, options, function(response) {
-                // console.log("parse:", response);
-                Application._vent.trigger('data/parsed');
-                //that.transform(response);
+
+                Application.userConfig.templateTitle = 'Google Trends Visualization';
+                Application.userConfig.template = 'countries';
+                Application._vent.trigger('visualize');
+
                 that.data = response; // to hold data until visualization starts
             });
     },

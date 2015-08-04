@@ -9,11 +9,13 @@ getCategories: function(data) {
         var categories = [];
         categoriesArray = _.chain(data).pluck('category').unique().value();
 
-        $.each(categoriesArray, function(index, category){
-          if (category == '') category = 'unnamed';
-          var obj = { name: category };
-          categories.push(obj);
-        });
+        if(categoriesArray.length > 0 && categoriesArray[0] ){
+          $.each(categoriesArray, function(index, category){
+            if (category == '') category = 'unnamed';
+            var obj = { name: category };
+            categories.push(obj);
+          });
+        }
 
         return categories;
     },
