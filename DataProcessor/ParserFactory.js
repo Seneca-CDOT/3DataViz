@@ -207,8 +207,7 @@ Application.DataProcessor.GoogleTrendsParser = (function() {
     GoogleTrendsParser.prototype.parse = function(data, complete) {
 
         var filter = {
-            countryname: "",
-            countrycode: "c[0].v",
+            country: "c[0].v",
             value: "c[1].v",
             longitude: "",
             latitude: "",
