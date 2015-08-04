@@ -30,7 +30,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
                 if (intersectedMesh.object == country.mesh) {
 
 
-                    console.log(country.value);
+                    // console.log(country.value);
                     Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
                         '<br>' + Application.Helper.formatNumber(country.value));
                     found = true;
@@ -145,7 +145,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             var countrymesh = that.decorators[0].findCountry(item[search], search);
 
             if (!countrymesh) {
-                console.log('Country ' + (item.countrycode || item.countryname) + ' is not available ');
+                // console.log('Country ' + (item.countrycode || item.countryname) + ' is not available ');
                 return;
             }
 
@@ -197,7 +197,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
                 country.mesh.material.color.setHex(country.result_color);
 
-                console.log(i++);
+                // console.log(i++);
             }
 
         });

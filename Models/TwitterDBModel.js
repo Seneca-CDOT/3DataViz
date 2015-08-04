@@ -41,7 +41,7 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             dataType: "twitter",
             visualizationType: this.templatesList
         };
-        console.log('tweets', response);
+        // console.log('tweets', response);
         var that = this;
         pModule.processData(response, options, function(data){
             that.transform(data);
@@ -84,12 +84,12 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
             }
             Application._vent.trigger('data/ready');
             Application._vent.trigger('controlpanel/message/on','AWAITING TWEETS');
-            console.log(msg, JSON.stringify(msg));
+            // console.log(msg, JSON.stringify(msg));
             that.ws.send(JSON.stringify(msg));
 
         };
         this.ws.onmessage = function(results) {
-            console.log('twit obj: ', results);
+            // console.log('twit obj: ', results);
             if (results.data == '0') {
 
                 Application._vent.trigger('controlpanel/message/on','NO RESULTS RETURNED');
@@ -107,12 +107,12 @@ Application.TweetsDB = Application.BaseGlobeCollection.extend({
         }
     },
     destroy: function() {
-        console.log("Destroy Tweets");
+        // console.log("Destroy Tweets");
         for (var i = 0; i < this.models.length; i++) {
             this.models[i].destroy();
         }
         if (this.ws) {
-            console.log("WebSocket disconnected");
+            // console.log("WebSocket disconnected");
             this.ws.send(JSON.stringify({
                 type: "stop",
                 dataSource: "twitterDB"

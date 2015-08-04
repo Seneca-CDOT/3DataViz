@@ -99,7 +99,7 @@ Application.TextureGlobeDecorator = (function() {
         var canvasCtx = this.canvas.getContext("2d");
 
         // This are the functions for drawing the textures.
-        // it works like this: readCountries() is going to read 
+        // it works like this: readCountries() is going to read
         // each and every country from that huge countries file and then
         // pass it to addBorders() with a color to draw it on the canvas.
         // Canvas needs to be set up before hand.
@@ -116,8 +116,8 @@ Application.TextureGlobeDecorator = (function() {
             // var hg = '55';
 
             var color = 0;
-            console.log("'type' : 'countryColorTable',");
-            console.log("'elements' : [");
+            // console.log("'type' : 'countryColorTable',");
+            // console.log("'elements' : [");
             var i = 0
             var nameC;
             for (; i < data[0].features.length; i++) {
@@ -136,23 +136,23 @@ Application.TextureGlobeDecorator = (function() {
                     b++;
                 }
                 nameC = data[0].features[i].properties.NAME;
-                console.log("  {");
-                console.log("  'color' : '" + color + "',");
-                console.log("  'country' : '" + nameC + "',");
+                // console.log("  {");
+                // console.log("  'color' : '" + color + "',");
+                // console.log("  'country' : '" + nameC + "',");
 
                 addBorders(data[0].features[i].geometry.coordinates, data[0].features[i].properties.NAME, color);
 
-                console.log("  'countrySize' : " + dist + ",");
-                console.log("  'midPoint' : {");
-                console.log("    'x' : " + midPoint.x + ", ");
-                console.log("    'y' : " + midPoint.y + ", ");
-                console.log("    'z' : " + midPoint.z + ", ");
-                console.log("  }");
+                // console.log("  'countrySize' : " + dist + ",");
+                // console.log("  'midPoint' : {");
+                // console.log("    'x' : " + midPoint.x + ", ");
+                // console.log("    'y' : " + midPoint.y + ", ");
+                // console.log("    'z' : " + midPoint.z + ", ");
+                // console.log("  }");
 
-                console.log((i == data[0].features.length - 1) ? " }" : " },");
+                // console.log((i == data[0].features.length - 1) ? " }" : " },");
             }
-            console.log("]");
-            console.log("}");
+            // console.log("]");
+            // console.log("}");
         };
 
         function addBorders(coordinates, name, color) {

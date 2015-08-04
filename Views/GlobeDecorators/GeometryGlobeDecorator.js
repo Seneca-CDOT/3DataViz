@@ -72,7 +72,6 @@ Application.GeometryGlobeDecorator = (function() {
             dataType: 'json',
             cache: false,
             error: function() {
-
                 console.log('An error occurred while processing a countries file.');
             },
             success: function(data) {
@@ -147,7 +146,7 @@ Application.GeometryGlobeDecorator = (function() {
                 }
 
                 if (match > 2) {
-                    console.log(nameFromSystem, match);
+                    // console.log(nameFromSystem, match);
                     return countries[i];
                 }
             }

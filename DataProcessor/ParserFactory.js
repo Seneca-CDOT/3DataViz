@@ -76,7 +76,7 @@ Application.DataProcessor.BaseStrategy = (function() {
     BaseStrategy.prototype.testPublicFunction2 = function(data) {
 
         // accessing public and private variables form public function
-        console.log("From public function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
+        // console.log("From public function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
     };
 
     // define private methods after prototype has been inhereted and defined
@@ -89,7 +89,7 @@ Application.DataProcessor.BaseStrategy = (function() {
         privateMethods.testPublicFunction2.call(this);
 
         // accessing public and private variables form private function
-        console.log("From private function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
+        // console.log("From private function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
     };
     // } ***
 
@@ -340,7 +340,7 @@ Application.DataProcessor.CSVParser = (function() {
             preview: 1,
             header: true,
             complete: function(response){
-                console.log("Preparse:", response.meta.fields);
+                // console.log("Preparse:", response.meta.fields);
         if (typeof callbacks.preparsed === "function") callbacks.preparsed(response.meta.fields);
             }
         });
