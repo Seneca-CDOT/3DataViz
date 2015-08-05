@@ -15,7 +15,7 @@ Application.BasePointCloudView = Application.BaseView.extend({
     var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
     vector.unproject(this.camera);
     this.raycaster = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
-    
+
     intersects = this.raycaster.intersectObject( this.pointcloud );
     if ( intersects.length > 0 ) {
       var index = intersects[0].index;
@@ -37,7 +37,7 @@ Application.BasePointCloudView = Application.BaseView.extend({
       this.xz.material.dispose();
       this.xz.geometry.dispose();
       this.xz = null;
-      
+
       this.gridHelper1.material.dispose;
       this.gridHelper1.material.dispose;
       this.gridHelper1 = null;
@@ -59,7 +59,7 @@ Application.BasePointCloudView = Application.BaseView.extend({
       this.addGrids();
   },
   addGrids: function() {
-      var geometry = new THREE.PlaneGeometry( 120, 120, 1 );
+      var geometry = new THREE.PlaneGeometry( 60, 60, 1 );
       var mtYZ = new THREE.MeshBasicMaterial( {color: 0x0000ff, transparent:true, side: THREE.DoubleSide, opacity: 0.4} );
       var mtXY = new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent:true, side: THREE.DoubleSide, opacity: 0.4} );
       var mtXZ = new THREE.MeshBasicMaterial( {color: 0xff0000, transparent:true, side: THREE.DoubleSide, opacity: 0.4} );
@@ -74,9 +74,9 @@ Application.BasePointCloudView = Application.BaseView.extend({
       this.xz.rotation.y = 90*(Math.PI/180);
       this.xz.position.x = -60;
 
-      this.scene.add(this.yz);
-      this.scene.add(this.xy);
-      this.scene.add(this.xz);
+      // this.scene.add(this.yz);
+      // this.scene.add(this.xy);
+      // this.scene.add(this.xz);
 
       Application.Debug.addAxes(this.scene);
 
@@ -90,11 +90,12 @@ Application.BasePointCloudView = Application.BaseView.extend({
       this.gridHelper1.rotation.x = 90*(Math.PI/180);
       this.gridHelper2.rotation.y = 90*(Math.PI/180);
       this.gridHelper3.rotation.z = 90*(Math.PI/180);
-      
-      this.scene.add( this.gridHelper1 );
-      this.scene.add( this.gridHelper2 );
-      this.scene.add( this.gridHelper3 );
-      
+
+      // this.scene.add( this.gridHelper1 );
+      // this.scene.add( this.gridHelper2 );
+      // this.scene.add( this.gridHelper3 );
+
+
       //TODO templorary solution
       Application._vent.trigger('globe/ready');
   }

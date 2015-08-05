@@ -128,7 +128,7 @@ Application = {
             filters: [],
         },
         pointcloud: {
-        	url: ['Views/Layers/PointCloudLayer.js'],
+        	url: ['Libraries/d3.min.js','Libraries/d33d.js', 'Views/Layers/PointCloudLayer.js'],
             attributes: {
         	    default: ['x','y','z','value','category'],
               optional: ['value','category']

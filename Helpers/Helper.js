@@ -226,7 +226,7 @@ Application.Helper = {
                 color: 0xffffff
             });
             var mesh = new THREE.Sprite(sp);
-            mesh.scale.multiplyScalar(20);
+            mesh.scale.multiplyScalar(10);
             mesh.position.x = x;
             mesh.position.y = y;
             mesh.position.z = z;
