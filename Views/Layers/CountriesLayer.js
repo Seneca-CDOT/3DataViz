@@ -23,16 +23,19 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         var found = false;
 
+        var sign = '';
+
+         if (Application.userConfig.model == 'googleTrends') sign = '%';
+
         if (intersectedMesh) {
 
             $.each(this.added, function(index, country) {
 
                 if (intersectedMesh.object == country.mesh) {
 
-
-                    console.log(country.value);
+                    //console.log(country.value);
                     Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
-                        '<br>' + Application.Helper.formatNumber(country.value));
+                        '<br>' + Application.Helper.formatNumber(country.value) + sign );
                     found = true;
                 }
 
@@ -76,12 +79,36 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
     },
     getColor: function(cur, min, max) {
 
+       if (Application.userConfig.model == 'googleTrends') {
+         min = 0; max = 100;
+        }
+
         var x = cur - min;
         var y = max - min;
         var value = x / y;
 
-        return value;
+        return this.percentToRGB(value*100);
 
+    },
+      percentToRGB:  function(percent) {
+        if (percent === 100) {
+            percent = 99
+        }
+        var r, g, b;
+        //
+        // if (percent < 50) {
+        //     // green to yellow
+        //     r = Math.floor(255 * (percent / 50));
+        //     g = 255;
+        //
+        // } else {
+            // yellow to red
+            r = 255;
+            g = Math.floor(255 * ((100 - percent) / 50));
+            console.log(percent);
+        // }
+        b = 0;
+        return "rgb(" + r + "," + g + "," + b + ")";
     },
     createColors: function(results) {
 
@@ -141,7 +168,6 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         results.forEach(function(item, index) {
 
-
             var countrymesh = that.decorators[0].findCountry(item[search], search);
 
             if (!countrymesh) {
@@ -155,12 +181,14 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             obj.mesh = countrymesh;
             obj.color = countrymesh.material.color.getHex();
             if (item.value) obj.value = item.value;
+            console.log(countrymesh.userData.name)
 
             if (item.category) obj.category = item.category;
 
-            countrymesh.material.color.r = 1;
-            countrymesh.material.color.g = 1 - colorsMap[item.value];
-            countrymesh.material.color.b = 1 - colorsMap[item.value];
+            // countrymesh.material.color.r = 1;
+            // countrymesh.material.color.g = 1 - colorsMap[item.value];
+            // countrymesh.material.color.b = 1 - colorsMap[item.value];
+            countrymesh.material.color.set(colorsMap[item.value]);
 
             obj.result_color = countrymesh.material.color.getHex();
 
