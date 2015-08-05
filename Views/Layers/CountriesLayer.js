@@ -33,7 +33,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
                 if (intersectedMesh.object == country.mesh) {
 
-                    Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
+                    Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name[0] +
                         '<br>' + Application.Helper.formatNumber(country.value) + sign );
                     found = true;
                 }
