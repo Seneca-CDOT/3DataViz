@@ -33,7 +33,6 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
                 if (intersectedMesh.object == country.mesh) {
 
-                    //console.log(country.value);
                     Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
                         '<br>' + Application.Helper.formatNumber(country.value) + sign );
                     found = true;
@@ -145,7 +144,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;
-        } else if (!(results[0].countryname || results[0].countrycode)) {
+        } else if (!(results[0].country)) {
             Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
             return;
         }
@@ -158,20 +157,13 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         var colorsMap = this.createColors(results); // creates a colors map relative to the values
 
-        if (results[0].countryname) {
-            var search = 'countryname';
-        }
-
-        if (results[0].countrycode) {
-            var search = 'countrycode';
-        }
 
         results.forEach(function(item, index) {
 
-            var countrymesh = that.decorators[0].findCountry(item[search], search);
+            var countrymesh = that.decorators[0].findCountry(item.country);
 
             if (!countrymesh) {
-                console.log('Country ' + (item.countrycode || item.countryname) + ' is not available ');
+                // console.log('Country ' + (item.countrycode || item.countryname) + ' is not available ');
                 return;
             }
 
@@ -225,7 +217,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
                 country.mesh.material.color.setHex(country.result_color);
 
-                console.log(i++);
+                // console.log(i++);
             }
 
         });

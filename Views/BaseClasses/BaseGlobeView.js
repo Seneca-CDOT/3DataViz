@@ -322,7 +322,7 @@ Application.BaseGlobeView = Backbone.View.extend({
 
             if (closest.object.userData.name != 'globe') {
 
-                Application._vent.trigger('vizinfocenter/message/on', closest.object.userData.name);
+                Application._vent.trigger('vizinfocenter/message/on', closest.object.userData.name[0]);
             }
             if (closest.object.userData.name == 'globe') { return null; }
         }

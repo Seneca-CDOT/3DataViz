@@ -118,7 +118,7 @@ Application.NotificationsCenter = Backbone.View.extend({
         return this;
     },
     showMessage: function(message) {
-        console.log("showMessage", message);
+        // console.log("showMessage", message);
         this.$el.fadeIn();
         this.$el.empty();
         this.$el.append('<div class="notification">' + message + '</div>');
@@ -572,7 +572,7 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
         var path = 'http://threedataviz.herokuapp.com/';
 
         $.get(path + 'twitterDB/apple/timeto').done(function(data) {
-            console.log(data[0].timestamp_ms);
+            // console.log(data[0].timestamp_ms);
             var datetime = that.convertStampToDateTime(data[0].timestamp_ms)
             that.timeTo.$el.val(datetime);
         });

@@ -95,7 +95,7 @@ Application = {
         countries: {
             url: ['Views/Layers/CountriesLayer.js'],
             attributes: {
-                default: ['countryname', 'value', 'category'],
+                default: ['country', 'value', 'category'],
                 optional: ['category', 'countrycode', 'label']
             },
             filters: ['country'],

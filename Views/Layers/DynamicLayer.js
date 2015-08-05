@@ -64,7 +64,7 @@ Application.DynamicLayer = Application.BaseGlobeView.extend({
             clearTimeout(this.particlesTimer);
             this.particlesTimer = null;
         }
-        
+
         Application.BaseGlobeView.prototype.destroy.call(this);
     },
 
@@ -133,7 +133,7 @@ Application.DynamicLayer = Application.BaseGlobeView.extend({
 
     onDataReceive: function(data) {
 
-        console.log(data);
+        // console.log(data);
 
         var dataRecord = new Application.GeoDataRecord({
 
@@ -182,10 +182,10 @@ Application.DynamicLayer = Application.BaseGlobeView.extend({
             time = dataRecord.timestamp;
         }
 
-        console.log("----------------");
-        console.log("Twittes Viewed: " + count + " Within Iterval Of: " + 0.001 * timeInterval + "sec.");
-        console.log("Twittes Viewed Total: " + beginIndex);
-        console.log("Twittes Left To View: " + (results.length - beginIndex));
+        // console.log("----------------");
+        // console.log("Twittes Viewed: " + count + " Within Iterval Of: " + 0.001 * timeInterval + "sec.");
+        // console.log("Twittes Viewed Total: " + beginIndex);
+        // console.log("Twittes Left To View: " + (results.length - beginIndex));
 
         var that = this;
         this.particlesTimer = setTimeout(function() {

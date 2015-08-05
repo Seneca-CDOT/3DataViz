@@ -43,14 +43,11 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         };
 
         pModule.processData(response.table.rows, options, function(response) {
-                //console.log("parse:", response);
-                // Application._vent.trigger('data/parsed');
 
                 Application.userConfig.templateTitle = 'Google Trends Visualization';
                 Application.userConfig.template = 'countries';
                 Application._vent.trigger('visualize');
 
-                //that.transform(response);
                 that.data = response; // to hold data until visualization starts
             });
     },
@@ -61,7 +58,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
             visualizationType: Application.userConfig.template
         }
         //pModule.transformData(this.data, options, function(response) {
-            console.log("transform:", this.data);
+            // console.log("transform:", this.data);
             that.models = this.data;
             Application._vent.trigger('data/ready');
        // });

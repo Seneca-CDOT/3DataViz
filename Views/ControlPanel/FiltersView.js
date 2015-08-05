@@ -124,11 +124,10 @@ Application.FiltersSet = Backbone.View.extend({
     },
     addLabel: function(name) {
 
-        if(name){
+        if (name) {
             var $label = $('<div><label class="label">BY ' + name.toUpperCase() + '</label></div>');
             this.$el.append($label);
         }
-        
     },
     list: function(group) {
 
