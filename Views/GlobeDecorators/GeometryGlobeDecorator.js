@@ -130,7 +130,6 @@ Application.GeometryGlobeDecorator = (function() {
         Application._vent.trigger('globe/ready'); // notifies about ready state of geometry
     };
 
-
     privateMethods.highlightCountry = function(object) {
 
         var intersected = this.intersected;

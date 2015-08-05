@@ -262,12 +262,12 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     addLight: function() {
 
-        // var ambLight = new THREE.AmbientLight(0xFFFFFF);
-        var dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.5);
-        dirLight.position.set(-1000, 1000, 1000);
+        // var globalLight = new THREE.HemisphereLight(0xFFFFFF,0xFFFFFF,1);
+        var dirLight = new THREE.DirectionalLight(0xFFFFFF, 1);
+        dirLight.position.set(-500, 500, 500);
         dirLight.target = this.globe;
 
-        // this.scene.add(ambLight);
+        // this.scene.add(globalLight);
         this.camera.add(dirLight);
     },
     renderGlobe: function() {
