@@ -13,24 +13,26 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         Application.BasePointCloudView.prototype.destroy.call(this);
     },
     getMin: function(objarray, key){
-        var min = null;
+        var min = undefined;
         $.each(objarray, function(index, item){
-            if(item[key] < min || !min){
-                min = item[key];
-            }
+          var num = Number(item[key]);
+          if( num < min || typeof min == 'undefined'){
+            min = num;
+          }
         });
         // min = Math.round(min/10)*10;
-        return Number(min);
+        return min;
     },
     getMax: function(objarray, key){
-        var max = null;
+        var max = undefined;
         $.each(objarray, function(index, item){
-            if(item[key] > max || !max){
-                max = item[key];
-            }
+          var num = Number(item[key]);
+          if( num > max || typeof max == 'undefined'){
+              max = num;
+          }
         });
         // max = Math.round(max/10)*10;
-        return Number(max);
+        return max;
     },
     // visualization specific functionality
     showResults: function() {
@@ -93,7 +95,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         //     results.push(result);
         // }
 
-        console.log(results);
+
 
         var maxX = this.getMax(results, 'x');
         var maxY = this.getMax(results, 'y');
@@ -115,13 +117,13 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         for(var i=0; i<5; i++){
 
           if(i==0){
-            Application.Helper.positionImageText(this.scene, minX+(i*stX), (i*15) - 25, -30, -30);
-            Application.Helper.positionImageText(this.scene, minZ+(i*stZ), -30, -30, (i*15) - 25);
-            Application.Helper.positionImageText(this.scene, minY+(i*stY), -30, (i*15) - 27, -30);
+            Application.Helper.positionImageText(this.scene, Math.round((minX+(i*stX))*10)/10, (i*15) - 25, -30, -30);
+            Application.Helper.positionImageText(this.scene, Math.round((minZ+(i*stZ))*10)/10, -30, -30, (i*15) - 25);
+            Application.Helper.positionImageText(this.scene, Math.round((minY+(i*stY))*10)/10, -30, (i*15) - 27, -30);
           }else{
-            Application.Helper.positionImageText(this.scene, minX+(i*stX), (i*15) - 30, -30, -30);
-            Application.Helper.positionImageText(this.scene, minZ+(i*stZ), -30, -30, (i*15) - 30);
-            Application.Helper.positionImageText(this.scene, minY+(i*stY), -30, (i*15) - 30, -30);
+            Application.Helper.positionImageText(this.scene, Math.round((minX+(i*stX))*10)/10, (i*15) - 30, -30, -30);
+            Application.Helper.positionImageText(this.scene, Math.round((minZ+(i*stZ))*10)/10, -30, -30, (i*15) - 30);
+            Application.Helper.positionImageText(this.scene, Math.round((minY+(i*stY))*10)/10, -30, (i*15) - 30, -30);
           }
 
           for (var j=0; j<5; j++) {
@@ -152,23 +154,9 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     		var lineMesh =  new THREE.Line(lineGeometry, lineMaterial, THREE.LinePieces);
         this.scene.add(lineMesh);
 
-        // Application.Helper.positionImageText(this.scene, 'X:0', 0, -55, 61);
-        // Application.Helper.positionImageText(this.scene, 'X:'+maxX, 50, -55, 61);
-        // Application.Helper.positionImageText(this.scene, 'X:'+(-maxX), -50, -55, 61);
-
-        // Application.Helper.positionImageText(this.scene, 'Z:0', 61, -55, 0);
-        // Application.Helper.positionImageText(this.scene, 'Z:'+maxZ, 61, -55, 50);
-        // Application.Helper.positionImageText(this.scene, 'Z:'+(-maxZ), 61, -55, -50);
-        //
-        // Application.Helper.positionImageText(this.scene, 'Y:0', -55, 0, 61);
-        // Application.Helper.positionImageText(this.scene, 'Y:'+maxY, -55, 50, 61);
-        // Application.Helper.positionImageText(this.scene, 'Y:'+(-maxY), -55, -50, 61);
-
         var ratioX = 60 / (maxX - minX);
         var ratioY = 60 / (maxY - minY);
         var ratioZ = 60 / (maxZ - minZ);
-
-        console.log(maxX, minX);
 
         var that = this;
         $.each(results, function(index, item) {
