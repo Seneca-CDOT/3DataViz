@@ -67,42 +67,6 @@ Application.BasePointCloudView = Application.BaseView.extend({
       this.addGrids();
   },
   addGrids: function() {
-      var geometry = new THREE.PlaneGeometry( 60, 60, 1 );
-      var mtYZ = new THREE.MeshBasicMaterial( {color: 0x0000ff, transparent:true, side: THREE.DoubleSide, opacity: 0.4} );
-      var mtXY = new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent:true, side: THREE.DoubleSide, opacity: 0.4} );
-      var mtXZ = new THREE.MeshBasicMaterial( {color: 0xff0000, transparent:true, side: THREE.DoubleSide, opacity: 0.4} );
-
-      this.yz = new THREE.Mesh( geometry, mtYZ );
-      this.xy = new THREE.Mesh( geometry, mtXY );
-      this.xz = new THREE.Mesh( geometry, mtXZ );
-
-      this.yz.position.z = -60;
-      this.xy.rotation.x = 90*(Math.PI/180);
-      this.xy.position.y = -60;
-      this.xz.rotation.y = 90*(Math.PI/180);
-      this.xz.position.x = -60;
-
-      // this.scene.add(this.yz);
-      // this.scene.add(this.xy);
-      // this.scene.add(this.xz);
-
-      // Application.Debug.addAxes(this.scene);
-
-      var size = 60;
-      var step = 40;
-
-      this.gridHelper1 = new THREE.GridHelper( size, step );
-      this.gridHelper2 = new THREE.GridHelper( size, step );
-      this.gridHelper3 = new THREE.GridHelper( size, step );
-
-      this.gridHelper1.rotation.x = 90*(Math.PI/180);
-      this.gridHelper2.rotation.y = 90*(Math.PI/180);
-      this.gridHelper3.rotation.z = 90*(Math.PI/180);
-
-      // this.scene.add( this.gridHelper1 );
-      // this.scene.add( this.gridHelper2 );
-      // this.scene.add( this.gridHelper3 );
-
 
       //TODO templorary solution
       Application._vent.trigger('globe/ready');

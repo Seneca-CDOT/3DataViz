@@ -164,8 +164,6 @@ Application.Helper = {
 
         date = new Date(dateParts[2], parseInt(dateParts[1], 10) - 1, dateParts[0], timeParts[0], timeParts[1], timeParts[2]);
 
-        console.log(date.getTime());
-
         return date.getTime();
 
     },
@@ -232,7 +230,7 @@ Application.Helper = {
             mesh.position.z = z;
             sprite.needsUpdate = true;
             scene.add(mesh);
-            if(typeof callback !== 'undefined') callback(img);
+            if(typeof callback !== 'undefined') callback(mesh);
         });
     },
     getSVGTextImage: function(str, callback){

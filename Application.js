@@ -102,6 +102,7 @@ Application = {
                 optional: ['category', 'countrycode', 'label']
             },
             filters: ['country'],
+            decorator: 'geometry',
         },
         points: {
             url: ['Views/Layers/PointsLayer.js'],
@@ -110,6 +111,7 @@ Application = {
                 optional: ['label', 'value', 'category']
             },
             filters: [],
+            decorator: 'geometry',
         },
         dynamic: {
             url: ['Views/Layers/DynamicLayer.js', 'Views/Layers/DynamicLayerParticle.js'],
@@ -118,6 +120,7 @@ Application = {
                 optional: ['value', 'category']
             },
             filters: [],
+            decorator: 'geometry',
         },
         graph: {
             url: ['Views/Layers/GraphsLayer.js'],
@@ -126,19 +129,21 @@ Application = {
                 optional: ['timestamp', 'value', 'fromLabel', 'toLabel', 'category']
             },
             filters: [],
+            decorator: 'geometry',
         },
         pointcloud: {
-        	url: ['Views/Layers/PointCloudLayer.js'],
-            attributes: {
-        	    default: ['x','y','z','value','category'],
-              optional: ['value','category']
-            },
-        	filters: [],
+          	url: ['Views/Layers/PointCloudLayer.js'],
+              attributes: {
+          	    default: ['x','y','z','value','category'],
+                optional: ['value','category']
+              },
+          	filters: [],
+            decorator: ''
         }
     },
     userConfig: {
         model: '',
-        decorator: 'geometry',
+        decorator: '',
         files: '',
         template: '',
         input: '',

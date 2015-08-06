@@ -6,7 +6,6 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     initialize: function(decorator, collections) {
         Application.BasePointCloudView.prototype.initialize.call(this, decorator, collections);
         this.textMeshs = [];
-        this.textImgs = [];
     },
     suscribe: function() {
         Application.BasePointCloudView.prototype.suscribe.call(this);
@@ -19,9 +18,6 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         this.results = null;
         $.each(this.textMeshs, function(index, mesh) {
             mesh = null;
-        });
-        $.each(this.textImgs, function(index, img) {
-            img = null;
         });
     },
     getMin: function(objarray, key){
@@ -127,9 +123,8 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
 
         var lineGeometry = new THREE.Geometry();
 
-        var storeTexts = function(mesh, img){
+        var storeTexts = function(mesh){
           that.textMeshs.push(mesh);
-          that.textImgs.push(img);
         }
         //Label
         Application.Helper.positionImageText(this.scene, Application.attrsMap['x'], 38, -30, -30, storeTexts);
