@@ -398,5 +398,54 @@ Application.BaseView = Backbone.View.extend({
       if (this.categories.length > 0 && this.categories[0] !== undefined) {
           Application._vent.trigger('controlpanel/categories', this.categories);
       }
-    }
+    },
+    sortResultsByCategory: function() {},
+    getCategories: function(results){
+      this.categories = Application.Filter.getCategories(results);
+    },
+    getCategoriesWithColors: function(results, obj){
+      this.categories = Application.Filter.getCategories(results);
+      $.each(this.categories, function(index, category){
+          category.color = Application.Helper.getRandomColor(obj);
+      });
+    },
+    addCategory: function(group) {
+
+        group.name;
+
+        this.activeCategories.push(group.category);
+        this.sortResultsByCategory();
+    },
+    removeCategory: function(group) {
+
+        group.name;
+
+        var i = this.activeCategories.indexOf(group.category);
+        if (i != -1) {
+            this.activeCategories.splice(i, 1);
+        }
+        this.sortResultsByCategory();
+    },
+    getCategoryObj: function(categoryName){
+
+      var category;
+      $.each(this.categories, function(index, c){
+        if(c.name === categoryName){
+          category = c;
+        }
+      });
+      return category;
+
+    },
+    getColorByCategory: function(categoryName){
+
+      var color;
+      $.each(this.categories, function(index, category){
+        if(category.name === categoryName){
+          color = category.color.replace('#','0x');
+        }
+      });
+      return color || '0xffffff';
+
+    },
 });

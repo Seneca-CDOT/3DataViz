@@ -166,7 +166,7 @@ Application.DataProcessor.PointsVisualTransformer = (function() {
     Application.Helper.inherit(PointsVisualTransformer, Application.DataProcessor.BaseTransformer);
 
     PointsVisualTransformer.prototype.transform = function(data, complete) {
-      
+
         var transData = [];
 
         $.each(data, function(index, item) {
@@ -328,9 +328,6 @@ Application.DataProcessor.PointCloudTransformer = (function(){
 
                     obj[parserAttr] = value;
 
-                } else {
-
-                    //console.log("Attribute " + attr + " wasn't included");
                 }
 
             });
@@ -338,15 +335,6 @@ Application.DataProcessor.PointCloudTransformer = (function(){
             transData.push(obj);
 
         });
-
-        // transData = [];
-        // $.each(data, function(index, item){
-        //     var obj = {};
-        //     obj.x = Number(item.x) || null;
-        //     obj.y = Number(item.y) || null;
-        //     obj.z = Number(item.z) || null;
-        //     transData.push(obj);
-        // });
 
         if( typeof complete === "function" ) complete(transData);
     };

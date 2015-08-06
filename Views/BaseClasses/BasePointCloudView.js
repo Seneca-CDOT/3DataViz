@@ -32,32 +32,10 @@ Application.BasePointCloudView = Application.BaseView.extend({
     }else{
     }
   },
+  showResults: function(results){
+    Application.BaseView.prototype.showResults.call(this, results);
+  },
   destroy: function() {
-
-      this.yz.material.dispose();
-      this.yz.geometry.dispose();
-      this.yz = null;
-
-      this.xy.material.dispose();
-      this.xy.geometry.dispose();
-      this.xy = null;
-
-      this.xz.material.dispose();
-      this.xz.geometry.dispose();
-      this.xz = null;
-
-      this.gridHelper1.material.dispose;
-      this.gridHelper1.material.dispose;
-      this.gridHelper1 = null;
-
-      this.gridHelper2.material.dispose;
-      this.gridHelper2.material.dispose;
-      this.gridHelper2 = null;
-
-      this.gridHelper3.material.dispose;
-      this.gridHelper3.material.dispose;
-      this.gridHelper3 = null;
-
       Application.BaseView.prototype.destroy.call(this);
   },
   init: function() {

@@ -49,6 +49,8 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
 
         var that = this;
         var results = this.collection[0].models;
+        this.getCategoriesWithColors(results);
+        Application.BaseGlobeView.prototype.showResults.call(this, results);
 
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
