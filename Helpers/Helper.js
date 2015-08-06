@@ -217,7 +217,7 @@ Application.Helper = {
       return randomColor(obj || {luminosity: 'bright' });
     },
 
-    positionImageText: function(scene, text, x, y, z){
+    positionImageText: function(scene, text, x, y, z, callback){
         this.getSVGTextImage(text, function(img){
 
             var sprite = new THREE.Texture(img);
@@ -232,7 +232,7 @@ Application.Helper = {
             mesh.position.z = z;
             sprite.needsUpdate = true;
             scene.add(mesh);
-
+            if(typeof callback !== 'undefined') callback(img);
         });
     },
     getSVGTextImage: function(str, callback){
@@ -250,7 +250,10 @@ Application.Helper = {
             ctx.drawImage( img, 0, 0 );
             var pngImg = new Image();
             pngImg.onload = function(){
-                if( callback ) callback(pngImg);
+              svg = null;
+              canvas = null;
+              ctx = null;
+              if( callback ) callback(pngImg);
             }
             pngImg.src = canvas.toDataURL( "image/png" )
         };

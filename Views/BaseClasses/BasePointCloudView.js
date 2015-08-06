@@ -18,11 +18,19 @@ Application.BasePointCloudView = Application.BaseView.extend({
 
     intersects = this.raycaster.intersectObject( this.pointcloud );
     if ( intersects.length > 0 ) {
+      var results = this.collection[0].models;
       var index = intersects[0].index;
-      console.log("Value= ", this.attributes.x.value[index] + "," + this.attributes.y.value[index] + "," + this.attributes.z.value[index]);
+      if (results[index].value) {
+        clearTimeout(this.timer);
+        this.timer = setTimeout(function(){
+            Application._vent.trigger('vizinfocenter/message/off');
+            clearTimeout(this.timer);
+            this.timer = null;
+        }, 3000);
+        Application._vent.trigger('vizinfocenter/message/on', results[index].value);
+      }
+    }else{
     }
-
-
   },
   destroy: function() {
 

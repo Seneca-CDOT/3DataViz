@@ -341,13 +341,11 @@ Application.DataProcessor.PointCloudTransformer = (function(){
 
                 if (parserAttr) {
 
-                    if (parserAttr == 'value') value = Application.Helper.getNumber(value);
-
                     obj[parserAttr] = value;
 
                 } else {
 
-                    console.log("Attribute " + attr + " wasn't included");
+                    //console.log("Attribute " + attr + " wasn't included");
                 }
 
             });

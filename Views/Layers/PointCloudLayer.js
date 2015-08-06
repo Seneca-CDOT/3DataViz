@@ -5,12 +5,24 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     // framework methods
     initialize: function(decorator, collections) {
         Application.BasePointCloudView.prototype.initialize.call(this, decorator, collections);
+        this.textMeshs = [];
+        this.textImgs = [];
     },
     suscribe: function() {
         Application.BasePointCloudView.prototype.suscribe.call(this);
     },
     destroy: function() {
         Application.BasePointCloudView.prototype.destroy.call(this);
+
+        this.pointcloud = null;
+        this.lineMesh = null;
+        this.results = null;
+        $.each(this.textMeshs, function(index, mesh) {
+            mesh = null;
+        });
+        $.each(this.textImgs, function(index, img) {
+            img = null;
+        });
     },
     getMin: function(objarray, key){
         var min = undefined;
@@ -114,16 +126,26 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         var stZ = (maxZ - minZ)/4;
 
         var lineGeometry = new THREE.Geometry();
+
+        var storeTexts = function(mesh, img){
+          that.textMeshs.push(mesh);
+          that.textImgs.push(img);
+        }
+        //Label
+        Application.Helper.positionImageText(this.scene, Application.attrsMap['x'], 38, -30, -30, storeTexts);
+        Application.Helper.positionImageText(this.scene, Application.attrsMap['z'], -30, -30, 38, storeTexts);
+        Application.Helper.positionImageText(this.scene, Application.attrsMap['y'], -30, 35, -30, storeTexts);
+
         for(var i=0; i<5; i++){
 
           if(i==0){
-            Application.Helper.positionImageText(this.scene, Math.round((minX+(i*stX))*10)/10, (i*15) - 25, -30, -30);
-            Application.Helper.positionImageText(this.scene, Math.round((minZ+(i*stZ))*10)/10, -30, -30, (i*15) - 25);
-            Application.Helper.positionImageText(this.scene, Math.round((minY+(i*stY))*10)/10, -30, (i*15) - 27, -30);
+            Application.Helper.positionImageText(this.scene, Math.round((minX+(i*stX))*100)/100, (i*15) - 25, -30, -30, storeTexts);
+            Application.Helper.positionImageText(this.scene, Math.round((minZ+(i*stZ))*100)/100, -30, -30, (i*15) - 25, storeTexts);
+            Application.Helper.positionImageText(this.scene, Math.round((minY+(i*stY))*100)/100, -30, (i*15) - 27, -30, storeTexts);
           }else{
-            Application.Helper.positionImageText(this.scene, Math.round((minX+(i*stX))*10)/10, (i*15) - 30, -30, -30);
-            Application.Helper.positionImageText(this.scene, Math.round((minZ+(i*stZ))*10)/10, -30, -30, (i*15) - 30);
-            Application.Helper.positionImageText(this.scene, Math.round((minY+(i*stY))*10)/10, -30, (i*15) - 30, -30);
+            Application.Helper.positionImageText(this.scene, Math.round((minX+(i*stX))*100)/100, (i*15) - 30, -30, -30, storeTexts);
+            Application.Helper.positionImageText(this.scene, Math.round((minZ+(i*stZ))*100)/100, -30, -30, (i*15) - 30, storeTexts);
+            Application.Helper.positionImageText(this.scene, Math.round((minY+(i*stY))*100)/100, -30, (i*15) - 30, -30, storeTexts);
           }
 
           for (var j=0; j<5; j++) {
@@ -151,8 +173,8 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     				opacity: 0.5,
     				transparent: true,
     		});
-    		var lineMesh =  new THREE.Line(lineGeometry, lineMaterial, THREE.LinePieces);
-        this.scene.add(lineMesh);
+    		this.lineMesh =  new THREE.Line(lineGeometry, lineMaterial, THREE.LinePieces);
+        this.scene.add(this.lineMesh);
 
         var ratioX = 60 / (maxX - minX);
         var ratioY = 60 / (maxY - minY);
