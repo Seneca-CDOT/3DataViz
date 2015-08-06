@@ -78,7 +78,7 @@ Application.BasePointCloudView = Application.BaseView.extend({
       // this.scene.add(this.xy);
       // this.scene.add(this.xz);
 
-      Application.Debug.addAxes(this.scene);
+      // Application.Debug.addAxes(this.scene);
 
       var size = 60;
       var step = 40;

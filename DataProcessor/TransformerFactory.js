@@ -329,14 +329,41 @@ Application.DataProcessor.PointCloudTransformer = (function(){
 
     PointCloudTransformer.prototype.transform = function(data, complete) {
 
-        transData = [];
-        $.each(data, function(index, item){
+        var transData = [];
+
+        $.each(data, function(index, item) {
+
             var obj = {};
-            obj.x = Number(item.x) || null;
-            obj.y = Number(item.y) || null;
-            obj.z = Number(item.z) || null;
+
+            $.each(item, function(attr, value) {
+
+                var parserAttr = _.invert(Application.attrsMap)[attr];
+
+                if (parserAttr) {
+
+                    if (parserAttr == 'value') value = Application.Helper.getNumber(value);
+
+                    obj[parserAttr] = value;
+
+                } else {
+
+                    console.log("Attribute " + attr + " wasn't included");
+                }
+
+            });
+
             transData.push(obj);
+
         });
+
+        // transData = [];
+        // $.each(data, function(index, item){
+        //     var obj = {};
+        //     obj.x = Number(item.x) || null;
+        //     obj.y = Number(item.y) || null;
+        //     obj.z = Number(item.z) || null;
+        //     transData.push(obj);
+        // });
 
         if( typeof complete === "function" ) complete(transData);
     };

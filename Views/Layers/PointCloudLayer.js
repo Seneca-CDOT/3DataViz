@@ -19,8 +19,8 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
                 min = item[key];
             }
         });
-        min = Math.round(min/10)*10;
-        return min;
+        // min = Math.round(min/10)*10;
+        return Number(min);
     },
     getMax: function(objarray, key){
         var max = null;
@@ -29,8 +29,8 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
                 max = item[key];
             }
         });
-        max = Math.round(max/10)*10;
-        return max;
+        // max = Math.round(max/10)*10;
+        return Number(max);
     },
     // visualization specific functionality
     showResults: function() {
@@ -79,31 +79,21 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         });
 
         // Creating points random
-        // var result = {
-        //   x: Math.floor((Math.random()*20001) - 10000),
-        //   y: Math.floor((Math.random()*10001) - 5000),
-        //   z: Math.floor((Math.random()*1501) - 750)
-        // }
+        // var result = { x: -10000, y: 10000, z: 10000 }
         // results.push(result);
-
-        var results = [];
+        // result = { x: 10000, y: -10000, z: -10000 }
+        // results.push(result);
+        //
         // for(var i=0; i < 1500; i++){
         //     var result = {
-        //       x: Math.floor((Math.random()*20001) - 15000),
-        //       y: Math.floor((Math.random()*10001)),
-        //       z: Math.floor((Math.random()*501) - 250)
+        //       x: Math.floor((Math.random()*20000) - 10000),
+        //       y: Math.floor((Math.random()*20000) - 10000),
+        //       z: Math.floor((Math.random()*20000) - 10000)
         //     }
         //     results.push(result);
         // }
-        var result = { x: -3000, y: 300, z: 200 };
-        results.push(result);
-        result = { x: 2000, y: -100, z: -200 }
-        results.push(result);
 
-        result = { x: 0, y: 0, z: 0 }
-        results.push(result);
-        result = { x: 100, y: 100, z: 100 }
-        results.push(result);
+        console.log(results);
 
         var maxX = this.getMax(results, 'x');
         var maxY = this.getMax(results, 'y');
@@ -117,8 +107,6 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         var midY = (maxY+minY)/2;
         var midZ = (maxZ+minZ)/2;
 
-        console.log(midX, midY, midZ);
-
         var stX = (maxX - minX)/4;
         var stY = (maxY - minY)/4;
         var stZ = (maxZ - minZ)/4;
@@ -127,13 +115,13 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         for(var i=0; i<5; i++){
 
           if(i==0){
-            Application.Helper.positionImageText(this.scene, "X:"+(minX+(i*stX)), (i*15) - 25, -30, -30);
-            Application.Helper.positionImageText(this.scene, "Y:"+(minY+(i*stY)), -30, -30, (i*15) - 25);
-            Application.Helper.positionImageText(this.scene, "Z:"+(minZ+(i*stZ)), -30, (i*15) - 27, -30);
+            Application.Helper.positionImageText(this.scene, minX+(i*stX), (i*15) - 25, -30, -30);
+            Application.Helper.positionImageText(this.scene, minZ+(i*stZ), -30, -30, (i*15) - 25);
+            Application.Helper.positionImageText(this.scene, minY+(i*stY), -30, (i*15) - 27, -30);
           }else{
             Application.Helper.positionImageText(this.scene, minX+(i*stX), (i*15) - 30, -30, -30);
-            Application.Helper.positionImageText(this.scene, minY+(i*stY), -30, -30, (i*15) - 30);
-            Application.Helper.positionImageText(this.scene, minZ+(i*stZ), -30, (i*15) - 30, -30);
+            Application.Helper.positionImageText(this.scene, minZ+(i*stZ), -30, -30, (i*15) - 30);
+            Application.Helper.positionImageText(this.scene, minY+(i*stY), -30, (i*15) - 30, -30);
           }
 
           for (var j=0; j<5; j++) {
@@ -163,6 +151,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     		});
     		var lineMesh =  new THREE.Line(lineGeometry, lineMaterial, THREE.LinePieces);
         this.scene.add(lineMesh);
+
         // Application.Helper.positionImageText(this.scene, 'X:0', 0, -55, 61);
         // Application.Helper.positionImageText(this.scene, 'X:'+maxX, 50, -55, 61);
         // Application.Helper.positionImageText(this.scene, 'X:'+(-maxX), -50, -55, 61);
@@ -178,6 +167,8 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         var ratioX = 60 / (maxX - minX);
         var ratioY = 60 / (maxY - minY);
         var ratioZ = 60 / (maxZ - minZ);
+
+        console.log(maxX, minX);
 
         var that = this;
         $.each(results, function(index, item) {
