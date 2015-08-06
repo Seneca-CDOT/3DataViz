@@ -18,8 +18,8 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         //this.collection = config.collection[0];
         this.texture = THREE.ImageUtils.loadTexture("Assets/images/disc.png");
 
-        console.log('link: https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
-        console.log('key: 13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg');
+        // console.log('link: https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
+        // console.log('key: 13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg');
     },
     suscribe: function() {
 
@@ -29,7 +29,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
-        console.log("PointsLayer Destroy");
+        // console.log("PointsLayer Destroy");
 
         Application.BaseGlobeView.prototype.destroy.call(this);
         // Application._vent.unbind('globe/ready');
@@ -105,7 +105,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     // visualization specific functionality
     showResults: function() {
 
-        console.log("PointsLayer showResults");
+        // console.log("PointsLayer showResults");
 
         var results = this.collection[0].models;
         var that = this;

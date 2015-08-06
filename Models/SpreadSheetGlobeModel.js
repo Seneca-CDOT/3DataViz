@@ -35,13 +35,13 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         pModule.processData(response, options, {
 
             preparsed: function(headers) {
-                console.log("preparsed:", headers);
+                // console.log("preparsed:", headers);
                 headers = _.values(headers);
                 Application._vent.trigger('matcher/user', headers);
                 Application._vent.trigger('matcher/on');
             },
             complete: function(response) {
-                console.log("parse:", response);
+                // console.log("parse:", response);
                 that.data = response; // to hold data until visualization starts
             }
 

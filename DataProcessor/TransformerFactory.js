@@ -10,19 +10,19 @@ Application.DataProcessor.TransformerFactory = (function() {
         switch (options.transformerType) {
 
             case "countriesVisualTransformer":
-                console.log("countriesVisualTransformer");
+                // console.log("countriesVisualTransformer");
                 TransformerClass = Application.DataProcessor.CountriesVisualTransformer;
                 break;
             case "pointsVisualTransformer":
-                console.log("pointsVisualTransformer");
+                // console.log("pointsVisualTransformer");
                 TransformerClass = Application.DataProcessor.PointsVisualTransformer;
                 break;
             case "dynamicVisualTransformer":
-                console.log("dynamicVisualTransformer");
+                // console.log("dynamicVisualTransformer");
                 TransformerClass = Application.DataProcessor.DynamicVisualTransformer;
                 break;
             case "graphVisualTransformer":
-                console.log("graphVisualTransformer");
+                // console.log("graphVisualTransformer");
                 TransformerClass = Application.DataProcessor.GraphTransformer;
                 break;
             case "pointcloudVisualTransformer":
@@ -73,7 +73,7 @@ Application.DataProcessor.BaseTransformerStrategy = (function() {
     BaseTransformerStrategy.prototype.testPublicFunction2 = function(data) {
 
         // accessing public and private variables form public function
-        console.log("From public function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
+        // console.log("From public function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
     };
 
     // define private methods after prototype has been inhereted and defined
@@ -86,7 +86,7 @@ Application.DataProcessor.BaseTransformerStrategy = (function() {
         privateMethods.testPublicFunction2.call(this);
 
         // accessing public and private variables form private function
-        console.log("From private function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
+        // console.log("From private function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
     };
     // } ***
 
@@ -166,22 +166,7 @@ Application.DataProcessor.PointsVisualTransformer = (function() {
     Application.Helper.inherit(PointsVisualTransformer, Application.DataProcessor.BaseTransformer);
 
     PointsVisualTransformer.prototype.transform = function(data, complete) {
-
-        // if(data[0].latitude == "" && data[0].longitude == ""){
-        //      var transData = [];
-
-        //     $.each( data, function (index, item ) {
-
-        //       var obj = {};
-        //       obj.countrycode = item.countrycode || "";
-        //       obj.countryname = item.countryname || "";
-        //       obj.percent = item.percent || 0;
-        //       transData.push(obj);
-
-        //      });
-
-        // }
-
+      
         var transData = [];
 
         $.each(data, function(index, item) {
