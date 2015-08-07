@@ -268,7 +268,8 @@ Application.BaseGlobeView = Backbone.View.extend({
         dirLight.target = this.globe;
 
         // this.scene.add(globalLight);
-        this.camera.add(dirLight);
+       this.camera.add(dirLight);
+
     },
     renderGlobe: function() {
 
@@ -283,10 +284,10 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         this.controls.update();
 
-        if (this.orbitOn === true) {
+      //  if (this.orbitOn === true) {
 
             TWEEN.update();
-        }
+      //  }
 
         // TODO: fix issue with particles then uncomment
         // if (this.idle === true) {
@@ -432,7 +433,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     removeCategory: function(group) {
 
-        group.name;
+        //group.name;
 
         var i = this.activeCategories.indexOf(group.category);
         if (i != -1) {

@@ -111,6 +111,8 @@ Application.GeometryGlobeDecorator = (function() {
             var geometry = new Map3DGeometry(data[countryName], 0);
             var mesh = new THREE.Mesh(geometry, material);
 
+            //mesh.material.color.setHSL( mesh.material.color.getHSL().h, 1, 0.2);
+
             // TODO: review
             var scale = globeView.globeRadius + 0.5;
 

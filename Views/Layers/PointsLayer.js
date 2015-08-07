@@ -89,13 +89,13 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
                 }
             }else{
                 if (this.prevObject){
-                    this.prevObject.object.material.color.setHex(this.prevObject.object.userData.result_color);
+                    this.prevObject.object.material.color.copy(this.prevObject.object.userData.result_color);
                     this.prevObject = null;
                 }
             }
         } else {
             if (this.prevObject){
-                this.prevObject.object.material.color.setHex(this.prevObject.object.userData.result_color);
+                this.prevObject.object.material.color.copy(this.prevObject.object.userData.result_color);
                 this.prevObject = null;
             }
             Application._vent.trigger('vizinfocenter/message/off');

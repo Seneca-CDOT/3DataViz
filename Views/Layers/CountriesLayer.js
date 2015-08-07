@@ -9,6 +9,8 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         this.added = []; // list of countries participating and their old colors
 
+        Application._vent.on('run', this.resetGlobe, this);
+
     },
     render: function() {
 
@@ -72,9 +74,25 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         var that = this;
         $.each(that.added, function(index, country) {
 
-            country.mesh.material.color.setHex(country.color);
+    //    that.changeCountryColor(country.mesh.material.color, country.color, country.mesh);
+
+          country.mesh.material.color.setHex(country.color);
 
         });
+    },
+    changeCountryColor: function(from, to, mesh) {
+
+      var t =  new TWEEN.Tween(from).to(to, 1000);
+
+      t.easing( TWEEN.Easing.Exponential.Out );
+
+      t.onUpdate(function(){
+
+        mesh.material.color.copy(this);
+
+      });
+
+      t.start();
     },
     getColor: function(cur, min, max) {
 
@@ -89,7 +107,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         return this.percentToRGB(value*100);
 
     },
-      percentToRGB:  function(percent) {
+      percentToRGB:  function(percent) { // from yellow to red
         if (percent === 100) {
             percent = 99
         }
@@ -104,10 +122,11 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             // yellow to red
             r = 255;
             g = Math.floor(255 * ((100 - percent) / 50));
-            console.log(percent);
+          //  console.log(percent);
         // }
         b = 0;
-        return "rgb(" + r + "," + g + "," + b + ")";
+        // return "rgb(" + r + "," + g + "," + b + ")";
+        return { r: r/255, g: g/255, b: b/255 };
     },
     createColors: function(results) {
 
@@ -157,7 +176,6 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         var colorsMap = this.createColors(results); // creates a colors map relative to the values
 
-
         results.forEach(function(item, index) {
 
             var countrymesh = that.decorators[0].findCountry(item.country);
@@ -171,18 +189,20 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
             var obj = {};
             obj.mesh = countrymesh;
-            obj.color = countrymesh.material.color.getHex();
+            obj.color = countrymesh.material.color.clone();
             if (item.value) obj.value = item.value;
-            console.log(countrymesh.userData.name)
+            // console.log(countrymesh.userData.name)
 
             if (item.category) obj.category = item.category;
 
             // countrymesh.material.color.r = 1;
             // countrymesh.material.color.g = 1 - colorsMap[item.value];
             // countrymesh.material.color.b = 1 - colorsMap[item.value];
-            countrymesh.material.color.set(colorsMap[item.value]);
+            //countrymesh.material.color.set(colorsMap[item.value]);
 
-            obj.result_color = countrymesh.material.color.getHex();
+            that.changeCountryColor(countrymesh.material.color, colorsMap[item.value], countrymesh);
+
+            obj.result_color = countrymesh.material.color.clone();
 
             that.added.push(obj);
 
@@ -194,20 +214,19 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.sortResultsByCategory.call(this);
 
-       // this.resetGlobe();
-        this.showAllResults();
+        this.resetGlobe();
+      //  this.showAllResults();
 
        // if (category == 'All') return;
 
-       if (this.activeCategories.length != 0) {
-       $.each(this.added, function(index, country) { // turn all added countries grey
-
-                country.mesh.material.color.r = 0.5;
-                country.mesh.material.color.g = 0.5;
-                country.mesh.material.color.b = 0.5;
-
-        });
-   }
+      //  if (this.activeCategories.length != 0) {
+  //
+  //      $.each(this.rayCatchers, function(index, country) { // turn all added countries grey
+  //            if (country == that.globe) return;
+   //
+  //               that.changeCountryColor(country.material.color, { r: 0.5, g: 0.5, b: 0.5 }, country);
+  //       });
+  //  }
 
     $.each(this.activeCategories, function(i, category) {
 
@@ -215,7 +234,8 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
             if (country.category == category) {
 
-                country.mesh.material.color.setHex(country.result_color);
+                that.changeCountryColor(country.mesh.material.color, country.result_color, country.mesh)
+            //    country.mesh.material.color.setHex(country.result_color);
 
                 // console.log(i++);
             }
@@ -233,7 +253,7 @@ showAllResults: function() {
 
     $.each(this.added, function(index, country) {
 
-        country.mesh.material.color.setHex(country.result_color);
+        this.changeCountryColor(country.mesh.material.color, country.result_color, country.mesh)
 
     });
 },
