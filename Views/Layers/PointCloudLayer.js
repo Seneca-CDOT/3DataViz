@@ -21,7 +21,6 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         Application.BasePointCloudView.prototype.destroy.call(this);
 
         this.pointcloud = null;
-
         this.lineMesh = null;
         this.results = null;
         $.each(this.textMeshs, function(index, mesh) {
@@ -32,9 +31,6 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         });
         $.each(this.geometries, function(index, geometry){
             geometry = null;
-        });
-        $.each(this.materials, function(index, material){
-            material = null;
         });
     },
     getMin: function(objarray, key){
@@ -137,11 +133,14 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         }
 
         //Create pointclouds
-        for(var i=0; i<this.categories.length; i++){
+        var pointcloudNum = this.categories.length || 1;
+        for(var i=0; i< pointcloudNum; i++){
 
           this.geometries.push(new THREE.Geometry());
           var material = this.material.clone();
-          material.color = new THREE.Color(this.categories[i].color);
+          if(this.categories[i]){
+            material.color = new THREE.Color(this.categories[i].color);
+          }
 
           var pointcloud = new THREE.PointCloud(this.geometries[i], material);
           pointcloud.userData.values = [];
@@ -152,10 +151,14 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         //Iterate each items
         $.each(results, function(index, item) {
             var v = new THREE.Vector3( item.x*ratioX -(midX*ratioX), item.y*ratioY - (midY*ratioY), item.z*ratioZ -(midZ*ratioZ));
+            var i = 0;
             var category = that.getCategoryObj(item.category);
-            that.geometries[category.index].vertices.push(v);
-            that.pointclouds[category.index].userData.values.push(item.value);
-            that.pointclouds[category.index].userData.category = category.name;
+            if(category){
+              i = category.index;
+              that.pointclouds[i].userData.category = category.name;
+            }
+            that.geometries[i].vertices.push(v);
+            that.pointclouds[i].userData.values.push(item.value);
         });
 
     },
