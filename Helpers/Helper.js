@@ -3,10 +3,10 @@ var Application = Application || {};
 Application.Helper = {
 
     /**
-     * Load files orderly.
-     * @param files An array of files.
-     * @param callback A callback function to be fired when it complete.
-     */
+    * Load files orderly.
+    * @param files An array of files.
+    * @param callback A callback function to be fired when it complete.
+    */
     requireOrderly: function(files, callback) {
         Application.Helper.loadFiles(files, 0, function() {
             if (typeof callback === 'function') {
@@ -16,8 +16,8 @@ Application.Helper = {
     },
 
     /**
-     * Load files recursively.
-     */
+    * Load files recursively.
+    */
     loadFiles: function(files, index, callback) {
         if (typeof files[index] === 'undefined') { // load completed.
             if (typeof callback === 'function') {
@@ -30,19 +30,19 @@ Application.Helper = {
             } else {
                 _files = files[index];
             }
-        //    console.log(_files);
+            //    console.log(_files);
             require(_files, function() {
-            //    console.log("loaded.");
+                //    console.log("loaded.");
                 Application.Helper.loadFiles(files, index + 1, callback);
             });
         }
     },
 
     /**
-     * Inherits prototype of the parent object and copies it into the child object.
-     * @param childObject A child object.
-     * @param parentObject A parent object.
-     */
+    * Inherits prototype of the parent object and copies it into the child object.
+    * @param childObject A child object.
+    * @param parentObject A parent object.
+    */
     inherit: function(childObject, parentObject) {
 
         var copyOfParent = Object.create(parentObject.prototype);
@@ -52,9 +52,9 @@ Application.Helper = {
     },
 
     /**
-     * Convert Geo coordinates to XYZ coordinates
-     * @return THREE.Vector3
-     */
+    * Convert Geo coordinates to XYZ coordinates
+    * @return THREE.Vector3
+    */
     geoToxyz: function(lon, lat, r) {
 
         var r = r || 1;
@@ -77,9 +77,9 @@ Application.Helper = {
         return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     },
     /**
-     * Convert decimal to HEX
-     * @return hex
-     */
+    * Convert decimal to HEX
+    * @return hex
+    */
     decToHex: function(c) {
         var hc;
         if (c < 10) {
@@ -93,17 +93,17 @@ Application.Helper = {
     },
 
     /**
-     * Convert RBG to HEX
-     * @return hex
-     */
+    * Convert RBG to HEX
+    * @return hex
+    */
     rgbToHex: function(r, g, b) {
         return "#" + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b);
     },
 
     /**
-     * Convert component to HEX
-     * @return hex
-     */
+    * Convert component to HEX
+    * @return hex
+    */
     componentToHex: function(c) {
         var hex = c.toString(16);
         return hex.length == 1 ? "0" + hex : hex;
@@ -123,19 +123,19 @@ Application.Helper = {
         var pixel = imageData.data;
 
         var r = pixel[0],
-            g = pixel[1],
-            b = pixel[2];
+        g = pixel[1],
+        b = pixel[2];
 
         var color = this.decToHex(r) +
-            this.decToHex(g) +
-            this.decToHex(b);
+        this.decToHex(g) +
+        this.decToHex(b);
 
         return color;
     },
     getCountryById: function(id) {
         var country = countiresList[0].elements;
         if (id == '000000')
-            return false;
+        return false;
         for (var i = 0; i < country.length; i++) {
             if (country[i].id == id) {
                 return country[i];
@@ -145,7 +145,7 @@ Application.Helper = {
     getCountryByName: function(name) {
         var country = countiresList[0].elements;
         if (id == '')
-            return false;
+        return false;
         for (var i = 0; i < country.length; i++) {
             if (country[i].name == name) {
                 return country[i];
@@ -156,9 +156,9 @@ Application.Helper = {
     convertDateTimeToStamp: function(datetime) {
 
         var dateString = datetime,
-            dateParts = dateString.split(' '),
-            timeParts = dateParts[1].split(':'),
-            date;
+        dateParts = dateString.split(' '),
+        timeParts = dateParts[1].split(':'),
+        date;
 
         dateParts = dateParts[0].split('/');
 
@@ -199,7 +199,7 @@ Application.Helper = {
             var index = array.indexOf('');
 
             if (index != -1)
-                array.splice(index, 1);
+            array.splice(index, 1);
         });
 
         return array;
@@ -214,7 +214,60 @@ Application.Helper = {
     },
 
     getRandomColor: function(obj){
-      return randomColor(obj || {luminosity: 'bright' });
-    }
+        return randomColor(obj || {luminosity: 'bright' });
+    },
+    lerp: function(a,b,u) {
+        return (1-u) * a + u * b;
+    },
+    produceColorsArray: function(start, end, amount) {
+        var array = [];
+        var step_u = 1.0/amount;
+        var u = 0.0;
 
-}
+        for (var i = 0; i < amount; i++) {
+            var r = parseInt(lerp(start.r, end.r, u));
+            var g = parseInt(lerp(start.g, end.g, u));
+            var b = parseInt(lerp(start.b, end.b, u));
+            var colorname = 'rgb('+r+','+g+','+b+')';
+            u += step_u;
+
+            array.push(colorname);
+        }
+
+        return array;
+    },
+    HSV2HEX : function(h,s,v) {
+        // adapted from http://schinckel.net/2012/01/10/hsv-to-rgb-in-javascript/
+        var rgb, i, data = [];
+        if (s === 0) {
+            rgb = [v,v,v];
+        } else {
+            h = h / 60;
+            i = Math.floor(h);
+            data = [v*(1-s), v*(1-s*(h-i)), v*(1-s*(1-(h-i)))];
+            switch(i) {
+                case 0:
+                rgb = [v, data[2], data[0]];
+                break;
+                case 1:
+                rgb = [data[1], v, data[0]];
+                break;
+                case 2:
+                rgb = [data[0], v, data[2]];
+                break;
+                case 3:
+                rgb = [data[0], data[1], v];
+                break;
+                case 4:
+                rgb = [data[2], data[0], v];
+                break;
+                default:
+                rgb = [v, data[0], data[1]];
+                break;
+            }
+        }
+        return '#' + rgb.map(function(x){
+            return ("0" + Math.round(x*255).toString(16)).slice(-2);
+        }).join('');
+    }
+};

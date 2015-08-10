@@ -34,7 +34,7 @@ Application = {
             'Libraries/tween.min.js',
             'Libraries/map3d.js',
             'Libraries/papaparse.js',
-            
+
             'Routes/RootRouter.js',
             'Views/GlobeDecorators/GeometryGlobeDecorator.js',
             'Views/GlobeDecorators/TextureGlobeDecorator.js',
@@ -95,7 +95,7 @@ Application = {
         countries: {
             url: ['Views/Layers/CountriesLayer.js'],
             attributes: {
-                default: ['country', 'value', 'category'],
+                default: ['country', 'value', 'category','date'],
                 optional: ['category', 'countrycode', 'label']
             },
             filters: ['country'],

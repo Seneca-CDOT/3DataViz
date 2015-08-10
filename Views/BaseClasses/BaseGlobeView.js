@@ -27,9 +27,9 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.activeCategories = []; // holds active categories
 
         if (decorators !== undefined)
-            this.decorators = decorators;
+        this.decorators = decorators;
         else
-            this.decorators = [];
+        this.decorators = [];
 
         this.rayCatchers = [];
         this.globeRadius = 50;
@@ -58,6 +58,9 @@ Application.BaseGlobeView = Backbone.View.extend({
         $(window).on('resize', this.onWindowResize.bind(this));
         Application._vent.on('filters/add', this.addCategory, this);
         Application._vent.on('filters/remove', this.removeCategory, this);
+
+        // to remove! for testing purposes
+        Application._vent.on('test', this.sortResultsByDate, this);
     },
     suscribe: function() {
         Application._vent.on('data/ready', this.showResults, this);
@@ -263,7 +266,7 @@ Application.BaseGlobeView = Backbone.View.extend({
     addLight: function() {
 
         // var globalLight = new THREE.HemisphereLight(0xFFFFFF,0xFFFFFF,1);
-        var dirLight = new THREE.DirectionalLight(0xFFFFFF, 1);
+        var dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.5);
         dirLight.position.set(-500, 500, 500);
         dirLight.target = this.globe;
 
@@ -369,26 +372,26 @@ Application.BaseGlobeView = Backbone.View.extend({
         }
 
         this.tween = new TWEEN.Tween(current)
-            .to({
-                x: destination.x,
-                y: destination.y,
-                z: destination.z
-            }, 1000)
-            .easing(TWEEN.Easing.Sinusoidal.InOut)
-            .onUpdate((function(that) {
+        .to({
+            x: destination.x,
+            y: destination.y,
+            z: destination.z
+        }, 1000)
+        .easing(TWEEN.Easing.Sinusoidal.InOut)
+        .onUpdate((function(that) {
 
-                return function() {
+            return function() {
 
-                    onUpdate(this, that);
-                };
-            })(this))
-            .onComplete((function(that) {
+                onUpdate(this, that);
+            };
+        })(this))
+        .onComplete((function(that) {
 
-                return function() {
+            return function() {
 
-                    onComplete(this, that);
-                };
-            })(this));
+                onComplete(this, that);
+            };
+        })(this));
 
         function onUpdate(point, that) {
 
@@ -409,19 +412,19 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.tween.start();
     },
     showResults: function(results) {
-      if (this.categories.length > 0 && this.categories[0] !== undefined) {
-          Application._vent.trigger('controlpanel/categories', this.categories);
-      }
+        if (this.categories.length > 0 && this.categories[0] !== undefined) {
+            Application._vent.trigger('controlpanel/categories', this.categories);
+        }
     },
     showAllResults: function() {},
     getCategories: function(results){
-      this.categories = Application.Filter.getCategories(results);
+        this.categories = Application.Filter.getCategories(results);
     },
     getCategoriesWithColors: function(results, obj){
-      this.categories = Application.Filter.getCategories(results);
-      $.each(this.categories, function(index, category){
-          category.color = Application.Helper.getRandomColor(obj);
-      });
+        this.categories = Application.Filter.getCategories(results);
+        $.each(this.categories, function(index, category){
+            category.color = Application.Helper.getRandomColor(obj);
+        });
     },
     addCategory: function(group) {
 
@@ -442,24 +445,24 @@ Application.BaseGlobeView = Backbone.View.extend({
     },
     getCategoryObj: function(categoryName){
 
-      var category;
-      $.each(this.categories, function(index, c){
-        if(c.name === categoryName){
-          category = c;
-        }
-      });
-      return category;
+        var category;
+        $.each(this.categories, function(index, c){
+            if(c.name === categoryName){
+                category = c;
+            }
+        });
+        return category;
 
     },
     getColorByCategory: function(categoryName){
 
-      var color;
-      $.each(this.categories, function(index, category){
-        if(category.name === categoryName){
-          color = category.color.replace('#','0x');
-        }
-      });
-      return color || '0xffffff';
+        var color;
+        $.each(this.categories, function(index, category){
+            if(category.name === categoryName){
+                color = category.color.replace('#','0x');
+            }
+        });
+        return color || '0xffffff';
 
     },
     sortResultsByCategory: function() {},
@@ -497,6 +500,44 @@ Application.BaseGlobeView = Backbone.View.extend({
         });
 
         return i;
+
+    },
+    sortResultsByDate: function() {
+
+        var data = this.collection[0].models;
+
+        data.sort(function(a,b) {
+            return new Date(a.date).getTime() - new Date(b.date).getTime()
+        });
+
+        var uniques = _.chain(data).map(function(item) {
+            return item.date
+        }).uniq().value();
+
+        $.each(uniques, function(i, element) {
+            if (element === undefined)
+            uniques.splice(i, 1);
+        });
+
+        var newdata = {};
+
+        $.each(uniques, function(i,unique) {
+
+            newdata[unique] = [];
+
+        });
+
+        $.each(data, function(i, obj) {
+
+            $.each(uniques, function(i, unique) {
+
+                if (unique == obj.date) {
+
+                    newdata[unique].push(obj);
+
+                }
+            });
+        });
 
     },
 });

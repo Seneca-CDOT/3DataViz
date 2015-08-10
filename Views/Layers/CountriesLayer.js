@@ -9,6 +9,8 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         this.added = []; // list of countries participating and their old colors
 
+        Application._vent.on('test', this.resetGlobe, this);
+
     },
     render: function() {
 
@@ -25,7 +27,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         var sign = '';
 
-         if (Application.userConfig.model == 'googleTrends') sign = '%';
+        if (Application.userConfig.model == 'googleTrends') sign = '%';
 
         if (intersectedMesh) {
 
@@ -34,7 +36,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
                 if (intersectedMesh.object == country.mesh) {
 
                     Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
-                        '<br>' + Application.Helper.formatNumber(country.value) + sign );
+                    '<br>' + Application.Helper.formatNumber(country.value) + sign );
                     found = true;
                 }
 
@@ -70,16 +72,31 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
     resetGlobe: function() {
 
         var that = this;
+
         $.each(that.added, function(index, country) {
 
             country.mesh.material.color.setHex(country.color);
 
         });
+        // $.each(that.added, function(index, country) {
+        //
+        //      for (var i = 1; i < 100; i++ ) {
+        //
+        //          setTimeout(function(){
+        //
+        //     country.mesh.material.color.lerp({r:255,g:255,b:255}, i/120 );
+        //
+        //     console.log(new Date());
+        //
+        // }, (100 + i*1000) );
+        // }
+        //
+        // });
     },
     getColor: function(cur, min, max) {
 
-       if (Application.userConfig.model == 'googleTrends') {
-         min = 0; max = 100;
+        if (Application.userConfig.model == 'googleTrends') {
+            min = 0; max = 100;
         }
 
         var x = cur - min;
@@ -89,7 +106,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         return this.percentToRGB(value*100);
 
     },
-      percentToRGB:  function(percent) {
+    percentToRGB:  function(percent) {
         if (percent === 100) {
             percent = 99
         }
@@ -101,10 +118,10 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         //     g = 255;
         //
         // } else {
-            // yellow to red
-            r = 255;
-            g = Math.floor(255 * ((100 - percent) / 50));
-            console.log(percent);
+        // yellow to red
+        r = 255;
+        g = Math.floor(255 * ((100 - percent) / 50));
+        console.log(percent);
         // }
         b = 0;
         return "rgb(" + r + "," + g + "," + b + ")";
@@ -173,7 +190,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             obj.mesh = countrymesh;
             obj.color = countrymesh.material.color.getHex();
             if (item.value) obj.value = item.value;
-            console.log(countrymesh.userData.name)
+            //console.log(countrymesh.userData.name)
 
             if (item.category) obj.category = item.category;
 
@@ -194,48 +211,48 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.sortResultsByCategory.call(this);
 
-       // this.resetGlobe();
+        // this.resetGlobe();
         this.showAllResults();
 
-       // if (category == 'All') return;
+        // if (category == 'All') return;
 
-       if (this.activeCategories.length != 0) {
-       $.each(this.added, function(index, country) { // turn all added countries grey
+        if (this.activeCategories.length != 0) {
+            $.each(this.added, function(index, country) { // turn all added countries grey
 
                 country.mesh.material.color.r = 0.5;
                 country.mesh.material.color.g = 0.5;
                 country.mesh.material.color.b = 0.5;
 
+            });
+        }
+
+        $.each(this.activeCategories, function(i, category) {
+
+            $.each(that.added, function(i, country) {
+
+                if (country.category == category) {
+
+                    country.mesh.material.color.setHex(country.result_color);
+
+                    // console.log(i++);
+                }
+
+            });
+
         });
-   }
 
-    $.each(this.activeCategories, function(i, category) {
+    },
+    showAllResults: function() {
 
-        $.each(that.added, function(i, country) {
+        Application.BaseGlobeView.prototype.showAllResults.call(this);
 
-            if (country.category == category) {
+        this.resetGlobe();
 
-                country.mesh.material.color.setHex(country.result_color);
+        $.each(this.added, function(index, country) {
 
-                // console.log(i++);
-            }
+            country.mesh.material.color.setHex(country.result_color);
 
         });
-
-    });
-
-},
-showAllResults: function() {
-
-    Application.BaseGlobeView.prototype.showAllResults.call(this);
-
-    this.resetGlobe();
-
-    $.each(this.added, function(index, country) {
-
-        country.mesh.material.color.setHex(country.result_color);
-
-    });
-},
+    },
 
 });
