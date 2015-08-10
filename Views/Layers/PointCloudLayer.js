@@ -13,6 +13,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
           color: 0xffffff,
           transparent: true
         });
+        Application._vent.on('controlpanel/cameraGoTo', this.cameraGoTo, this);
     },
     suscribe: function() {
         Application.BasePointCloudView.prototype.suscribe.call(this);
@@ -32,6 +33,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         $.each(this.geometries, function(index, geometry){
             geometry = null;
         });
+        Application._vent.off('controlpanel/cameraGoTo');
     },
     getMin: function(objarray, key){
         var min = undefined;
