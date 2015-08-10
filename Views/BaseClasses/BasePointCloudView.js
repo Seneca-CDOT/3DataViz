@@ -32,6 +32,7 @@ Application.BasePointCloudView = Application.BaseView.extend({
   },
   showResults: function(results){
     Application.BaseView.prototype.showResults.call(this, results);
+    Application._vent.trigger('controlpanel/cameraswitcher');
   },
   destroy: function() {
       Application.BaseView.prototype.destroy.call(this);

@@ -665,7 +665,8 @@ img {
 }
 /***FILTERS****/
 
-#filterPanel {
+#filterPanel,
+#cameraSwitcherPanel {
     background-color: #1F1F2E;
     position: fixed;
     right: 250px;

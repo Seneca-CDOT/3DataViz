@@ -35,7 +35,7 @@ Application = {
             'Libraries/tween.min.js',
             'Libraries/map3d.js',
             'Libraries/papaparse.js',
-            
+
             'Routes/RootRouter.js',
             'Views/GlobeDecorators/GeometryGlobeDecorator.js',
             'Views/GlobeDecorators/TextureGlobeDecorator.js',
@@ -45,6 +45,7 @@ Application = {
             'Views/ControlPanel/ControlElementsGlobeView.js',
             'Views/ControlPanel/Matcher.js',
             'Views/ControlPanel/FiltersView.js',
+            'Views/ControlPanel/CameraSwitcherView.js',
 
             'Views/BaseClasses/RootView.js',
             'Views/BaseClasses/RootGlobeView.js',
