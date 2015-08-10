@@ -379,7 +379,6 @@ Application.BaseView = Backbone.View.extend({
         function onUpdate(point, that) {
 
             that.controls.updateView({
-
                 x: point.x,
                 y: point.y,
                 z: point.z
