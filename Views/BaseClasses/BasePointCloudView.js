@@ -6,17 +6,13 @@ Application.BasePointCloudView = Application.BaseView.extend({
   onMouseMove: function(e) {
     e.preventDefault();
 
-    var x = e.clientX;
-    var y = e.clientY;
+    this.raycaster= new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
+    mouse.x = ( event.clientX / this.container.offsetWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / this.container.offsetHeight ) * 2 + 1;
+    this.raycaster.setFromCamera(mouse, this.camera);
 
-    x -= this.container.offsetLeft;
-    y -= this.container.offsetTop;
-
-    var vector = new THREE.Vector3((x / this.container.offsetWidth) * 2 - 1, -(y / this.container.offsetHeight) * 2 + 1, 0.5);
-    vector.unproject(this.camera);
-    this.raycaster = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
-
-    intersects = this.raycaster.intersectObjects( this.pointclouds );
+    var intersects = this.raycaster.intersectObjects( this.pointclouds );
 
     if ( intersects.length > 0 ) {
       var results = this.collection[0].models;
@@ -31,8 +27,8 @@ Application.BasePointCloudView = Application.BaseView.extend({
         }, 3000);
         Application._vent.trigger('vizinfocenter/message/on', value);
       }
-    }else{
     }
+
   },
   showResults: function(results){
     Application.BaseView.prototype.showResults.call(this, results);
@@ -40,24 +36,24 @@ Application.BasePointCloudView = Application.BaseView.extend({
   destroy: function() {
       Application.BaseView.prototype.destroy.call(this);
   },
-  // addCamera: function() {
-  //
-  //     var width = this.options.size.width - this.offset;
-  //     var height = this.options.size.height;
-  //     this.camera = new THREE.OrthographicCamera(width / - 16, width / 16, height / 16, height / - 16, 1, 1000);
-  //
-  //     if (this.options.position) {
-  //
-  //         this.camera.position.x = this.options.position.x;
-  //         this.camera.position.y = this.options.position.y;
-  //         this.camera.position.z = this.options.position.z;
-  //     } else {
-  //
-  //         this.camera.position.z = 100;
-  //     }
-  //
-  //     this.scene.add(this.camera);
-  // },
+  addCamera: function() {
+
+      var width = this.options.size.width - this.offset;
+      var height = this.options.size.height;
+      this.camera = new THREE.OrthographicCamera(width / - 16, width / 16, height / 16, height / - 16, 1, 1000);
+
+      if (this.options.position) {
+
+          this.camera.position.x = this.options.position.x;
+          this.camera.position.y = this.options.position.y;
+          this.camera.position.z = this.options.position.z;
+      } else {
+
+          this.camera.position.z = 100;
+      }
+
+      this.scene.add(this.camera);
+  },
   onWindowResize: function() {
 
   },
