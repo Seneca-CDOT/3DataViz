@@ -6,6 +6,13 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     initialize: function(decorator, collections) {
         Application.BasePointCloudView.prototype.initialize.call(this, decorator, collections);
         this.textMeshs = [];
+        this.pointclouds = [];
+        this.geometries = [];
+        this.material = new THREE.PointCloudMaterial( {
+          size: 1,
+          color: 0xffffff,
+          transparent: true
+        });
     },
     suscribe: function() {
         Application.BasePointCloudView.prototype.suscribe.call(this);
@@ -14,10 +21,20 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         Application.BasePointCloudView.prototype.destroy.call(this);
 
         this.pointcloud = null;
+
         this.lineMesh = null;
         this.results = null;
         $.each(this.textMeshs, function(index, mesh) {
             mesh = null;
+        });
+        $.each(this.pointclouds, function(index, pointcloud){
+            pointcloud = null;
+        });
+        $.each(this.geometries, function(index, geometry){
+            geometry = null;
+        });
+        $.each(this.materials, function(index, material){
+            material = null;
         });
     },
     getMin: function(objarray, key){
@@ -62,34 +79,6 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
 
         Application._vent.trigger('controlpanel/message/off');
 
-        var geometry = new THREE.Geometry();
-
-        // this.attributes = {
-        //     size: {type: 'f', value:[]},
-        //     customColor: {type: 'c', value:[]},
-        //     x: {type: 'f', value:[]},
-        //     y: {type: 'f', value:[]},
-        //     z: {type: 'f', value:[]}
-        // }
-        // this.uniforms = {
-        //     texture: {type: "t", value: THREE.ImageUtils.loadTexture("/Assets/images/sprite_disc.png")}
-        // }
-        // var shaderMaterial = new THREE.ShaderMaterial( {
-        //     attributes: this.attributes,
-        //     uniforms: this.uniforms,
-        //     vertexShader: document.getElementById( 'pointCloudVertexshader' ).textContent,
-        //     fragmentShader: document.getElementById( 'pointCloudFragmentshader' ).textContent,
-        //     // color: new THREE.Color(0xfffff),
-        //     // blending: THREE.AdditiveBlending
-        // } );
-
-        var map = THREE.ImageUtils.loadTexture("Assets/images/sprite.png");
-        var material = new THREE.SpriteMaterial({
-            map: map,
-            color: 0xffffff,
-            fog: true
-        });
-
         // Creating points random
         // var result = { x: -10000, y: 10000, z: 10000 }
         // results.push(result);
@@ -106,7 +95,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         // }
 
 
-
+        //Retrieve and calculate all parameters required.
         var maxX = this.getMax(results, 'x');
         var maxY = this.getMax(results, 'y');
         var maxZ = this.getMax(results, 'z');
@@ -123,18 +112,19 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         var stY = (maxY - minY)/4;
         var stZ = (maxZ - minZ)/4;
 
-        var lineGeometry = new THREE.Geometry();
+        var ratioX = 60 / (maxX - minX);
+        var ratioY = 60 / (maxY - minY);
+        var ratioZ = 60 / (maxZ - minZ);
 
+
+        //Create Legends
         var storeTexts = function(mesh){
           that.textMeshs.push(mesh);
         }
-        //Label
         Application.Helper.positionImageText(this.scene, Application.attrsMap['x'], 38, -30, -30, storeTexts);
         Application.Helper.positionImageText(this.scene, Application.attrsMap['z'], -30, -30, 38, storeTexts);
         Application.Helper.positionImageText(this.scene, Application.attrsMap['y'], -30, 35, -30, storeTexts);
-
         for(var i=0; i<5; i++){
-
           if(i==0){
             Application.Helper.positionImageText(this.scene, Math.round((minX+(i*stX))*100)/100, (i*15) - 25, -30, -30, storeTexts);
             Application.Helper.positionImageText(this.scene, Math.round((minZ+(i*stZ))*100)/100, -30, -30, (i*15) - 25, storeTexts);
@@ -144,61 +134,52 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
             Application.Helper.positionImageText(this.scene, Math.round((minZ+(i*stZ))*100)/100, -30, -30, (i*15) - 30, storeTexts);
             Application.Helper.positionImageText(this.scene, Math.round((minY+(i*stY))*100)/100, -30, (i*15) - 30, -30, storeTexts);
           }
-
-          for (var j=0; j<5; j++) {
-		        lineGeometry.vertices.push(new THREE.Vector3( -30, (j*15)-30, -30));
-            lineGeometry.vertices.push(new THREE.Vector3( 30, (j*15)-30, -30));
-            lineGeometry.vertices.push(new THREE.Vector3( (j*15)-30, 30, -30));
-            lineGeometry.vertices.push(new THREE.Vector3( (j*15)-30, -30, -30));
-
-            lineGeometry.vertices.push(new THREE.Vector3( -30, -30, (j*15)-30));
-            lineGeometry.vertices.push(new THREE.Vector3( 30, -30, (j*15)-30));
-            lineGeometry.vertices.push(new THREE.Vector3( (j*15)-30, -30, 30));
-            lineGeometry.vertices.push(new THREE.Vector3( (j*15)-30, -30, -30));
-
-            lineGeometry.vertices.push(new THREE.Vector3(-30, -30, (j*15)-30));
-            lineGeometry.vertices.push(new THREE.Vector3(-30, 30, (j*15)-30));
-            lineGeometry.vertices.push(new THREE.Vector3(-30, (j*15)-30, 30));
-            lineGeometry.vertices.push(new THREE.Vector3(-30, (j*15)-30, -30));
-          }
-
         }
 
-        var lineMaterial = new THREE.LineBasicMaterial({
-    				color: 0xffffff,
-    				linewidth: 0.5, // will always be 1 on windows
-    				opacity: 0.5,
-    				transparent: true,
-    		});
-    		this.lineMesh =  new THREE.Line(lineGeometry, lineMaterial, THREE.LinePieces);
-        this.scene.add(this.lineMesh);
+        //Create pointclouds
+        for(var i=0; i<this.categories.length; i++){
 
-        var ratioX = 60 / (maxX - minX);
-        var ratioY = 60 / (maxY - minY);
-        var ratioZ = 60 / (maxZ - minZ);
+          this.geometries.push(new THREE.Geometry());
+          var material = this.material.clone();
+          material.color = new THREE.Color(this.categories[i].color);
 
-        var that = this;
+          var pointcloud = new THREE.PointCloud(this.geometries[i], material);
+          pointcloud.userData.values = [];
+          this.pointclouds.push(pointcloud);
+          this.scene.add(pointcloud);
+        }
+
+        //Iterate each items
         $.each(results, function(index, item) {
             var v = new THREE.Vector3( item.x*ratioX -(midX*ratioX), item.y*ratioY - (midY*ratioY), item.z*ratioZ -(midZ*ratioZ));
-            geometry.vertices.push(v);
-
-            // that.attributes.size.value[index] = 1;
-            //
-            // that.attributes.x.value[index] = item.x;
-            // that.attributes.y.value[index] = item.y;
-            // that.attributes.z.value[index] = item.z;
-
-            // Coloring
-            // var g = Math.ceil((item.x + 250)/500.0*255);
-            // var b = Math.ceil((item.y + 250)/500.0*255);
-            // var r = Math.ceil((item.z + 250)/500.0*255);
-            // that.attributes.customColor.value[index] = new THREE.Color("rgb("+r+","+g+","+b+")");
-            // that.attributes.customColor.value[index] = new THREE.Color(0xaaaaaa);
-            // that.attributes.size.needsUpdate = true;
+            var category = that.getCategoryObj(item.category);
+            that.geometries[category.index].vertices.push(v);
+            that.pointclouds[category.index].userData.values.push(item.value);
+            that.pointclouds[category.index].userData.category = category.name;
         });
 
-        this.pointcloud = new THREE.PointCloud(geometry);
-        this.scene.add(this.pointcloud);
+    },
+    sortResultsByCategory: function() {
+
+        var that = this;
+        Application.BaseGlobeView.prototype.sortResultsByCategory.call(this);
+
+        if (this.activeCategories.length != 0) {
+            $.each(this.pointclouds, function(index, pointcloud) {
+                pointcloud.visible = false;
+            });
+        }else{
+            $.each(this.pointclouds, function(index, pointcloud) {
+                pointcloud.visible = true;
+            });
+        }
+        $.each(this.activeCategories, function(i, category) {
+            $.each(that.pointclouds, function(index, pointcloud) {
+                if (pointcloud.userData.category == category) {
+                    pointcloud.visible = true;
+                }
+            });
+        });
 
     }
 });
