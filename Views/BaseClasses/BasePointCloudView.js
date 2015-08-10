@@ -38,6 +38,27 @@ Application.BasePointCloudView = Application.BaseView.extend({
   destroy: function() {
       Application.BaseView.prototype.destroy.call(this);
   },
+  addCamera: function() {
+
+      var width = this.options.size.width - this.offset;
+      var height = this.options.size.height;
+      this.camera = new THREE.OrthographicCamera(width / - 16, width / 16, height / 16, height / - 16, 1, 1000);
+
+      if (this.options.position) {
+
+          this.camera.position.x = this.options.position.x;
+          this.camera.position.y = this.options.position.y;
+          this.camera.position.z = this.options.position.z;
+      } else {
+
+          this.camera.position.z = 100;
+      }
+
+      this.scene.add(this.camera);
+  },
+  onWindowResize: function() {
+      
+  },
   init: function() {
       Application.BaseView.prototype.init.call(this);
   },
