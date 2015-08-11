@@ -13,7 +13,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
           color: 0xffffff,
           transparent: true
         });
-        Application._vent.on('controlpanel/cameraGoTo', this.cameraGoTo, this);
+        Application._vent.on('controlpanel/cameraSnap', this.cameraSnap, this);
     },
     suscribe: function() {
         Application.BasePointCloudView.prototype.suscribe.call(this);
@@ -186,5 +186,8 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
             });
         });
 
-    }
+    },
+    cameraSnap: function(obj){
+      this.cameraGoTo(obj.cameraPos);
+    },
 });
