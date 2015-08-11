@@ -21,19 +21,22 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     destroy: function() {
         Application.BasePointCloudView.prototype.destroy.call(this);
 
-        this.pointcloud = null;
         this.lineMesh = null;
         this.results = null;
+        this.material = null;
         $.each(this.textMeshs, function(index, mesh) {
+          console.log(mesh);
             mesh = null;
         });
         $.each(this.pointclouds, function(index, pointcloud){
+          console.log(pointcloud);
             pointcloud = null;
         });
         $.each(this.geometries, function(index, geometry){
+          console.log(geometry);
             geometry = null;
         });
-        Application._vent.off('controlpanel/cameraGoTo');
+        Application._vent.unbind('controlpanel/cameraSnap', this.cameraSnap);
     },
     getMin: function(objarray, key){
         var min = undefined;

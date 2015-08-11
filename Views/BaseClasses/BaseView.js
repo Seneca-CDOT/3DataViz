@@ -60,6 +60,7 @@ Application.BaseView = Backbone.View.extend({
         Application._vent.on('filters/remove', this.removeCategory, this);
     },
     suscribe: function() {
+        console.log("BaseView suscribe");
         Application._vent.on('data/ready', this.showResults, this);
     },
     destroy: function() {

@@ -57,7 +57,7 @@ Application.BoxCollection = Application.BaseGlobeCollection.extend({
         }
 
         pModule.transformData(that.data, options, function(response){
-            //console.log("transform:",response);
+            
             that.models = response;
             Application._vent.trigger('data/ready');
         });
