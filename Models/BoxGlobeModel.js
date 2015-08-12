@@ -57,7 +57,7 @@ Application.BoxCollection = Application.BaseGlobeCollection.extend({
         }
 
         pModule.transformData(that.data, options, function(response){
-            
+
             that.models = response;
             Application._vent.trigger('data/ready');
         });
@@ -87,6 +87,7 @@ Application.BoxCollection = Application.BaseGlobeCollection.extend({
         for (var i = 0; i < this.models.length; i++) {
             this.models[i] = null;
         }
+        Application.BaseGlobeCollection.prototype.destroy.call(this);
     },
     getViewConfigs: function(data) {
 

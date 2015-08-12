@@ -25,15 +25,12 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         this.results = null;
         this.material = null;
         $.each(this.textMeshs, function(index, mesh) {
-          console.log(mesh);
             mesh = null;
         });
         $.each(this.pointclouds, function(index, pointcloud){
-          console.log(pointcloud);
             pointcloud = null;
         });
         $.each(this.geometries, function(index, geometry){
-          console.log(geometry);
             geometry = null;
         });
         Application._vent.unbind('controlpanel/cameraSnap', this.cameraSnap);
@@ -62,8 +59,6 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     },
     // visualization specific functionality
     showResults: function() {
-
-        console.log("PointCloudLayer showResults");
 
         var that = this;
         var results = this.collection[0].models;
