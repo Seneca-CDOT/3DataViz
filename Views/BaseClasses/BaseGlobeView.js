@@ -60,7 +60,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         Application._vent.on('filters/remove', this.removeCategory, this);
 
         // to remove! for testing purposes
-        Application._vent.on('test', this.sortResultsByDate, this);
+    //    Application._vent.on('test', this.sortResultsByDate, this);
     },
     suscribe: function() {
         Application._vent.on('data/ready', this.showResults, this);
@@ -538,6 +538,8 @@ Application.BaseGlobeView = Backbone.View.extend({
                 }
             });
         });
+
+        return newdata;
 
     },
 });

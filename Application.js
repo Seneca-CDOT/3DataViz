@@ -44,6 +44,7 @@ Application = {
             'Views/ControlPanel/ControlElementsGlobeView.js',
             'Views/ControlPanel/Matcher.js',
             'Views/ControlPanel/FiltersView.js',
+            'Views/ControlPanel/Timeline.js',
 
             'Views/BaseClasses/RootView.js',
             'Views/BaseClasses/RootGlobeView.js',
