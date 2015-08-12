@@ -185,7 +185,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         });
 
     },
-    cameraSnap: function(obj){
-      this.cameraGoTo(obj.cameraPos);
-    },
+    // cameraSnap: function(obj){
+    //   this.cameraGoTo(obj.cameraPos);
+    // },
 });

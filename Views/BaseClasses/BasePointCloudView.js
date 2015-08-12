@@ -41,7 +41,8 @@ Application.BasePointCloudView = Application.BaseView.extend({
 
       var width = this.options.size.width - this.offset;
       var height = this.options.size.height;
-      this.camera = new THREE.OrthographicCamera(width / - 16, width / 16, height / 16, height / - 16, 1, 1000);
+      // this.camera = new THREE.OrthographicCamera(width / - 16, width / 16, height / 16, height / - 16, 1, 1000);
+      this.camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000);
 
       if (this.options.position) {
 
@@ -54,6 +55,21 @@ Application.BasePointCloudView = Application.BaseView.extend({
       }
 
       this.scene.add(this.camera);
+  },
+  onMouseDown: function(e){
+    console.log("onMouseDOwn");
+    // this.switchCamera();
+  },
+  cameraSnap: function(obj){
+    this.switchCamera();
+    this.cameraGoTo(obj.cameraPos);
+  },
+  switchCamera: function(){
+
+    var width = this.options.size.width - this.offset;
+    var height = this.options.size.height;
+    this.camera = new THREE.OrthographicCamera(width / - 8, width / 8, height / 8, height / - 8, 1, 1000);
+    this.addControls();
   },
   onWindowResize: function() {
 

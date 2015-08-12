@@ -7,7 +7,8 @@ Application.BaseView = Backbone.View.extend({
     events: {
 
         'mousemove': 'onMouseMove',
-        'mouseup': 'onMouseUp'
+        'mouseup': 'onMouseUp',
+        'mousedown': 'onMouseDown'
     },
 
     // framework methods
@@ -140,6 +141,10 @@ Application.BaseView = Backbone.View.extend({
         });
 
         return closest;
+    },
+    onMouseDown: function(e){
+    },
+    switchCamera: function(){
     },
     // member methods
     onMouseUp: function(e) {
