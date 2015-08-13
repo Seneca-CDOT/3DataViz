@@ -8,12 +8,14 @@ Application.ControlPanelRootView = Backbone.View.extend({
         this.dataSourcesView = new Application.DataSourcesView();
         this.matcher = new Application.Matcher();
 
+
         Application._vent.on('data/parsed', this.addTemplatesView, this);
 
         Application._vent.on('matcher/on', this.destroyViews, this);
         Application._vent.on('controlpanel/input/changed', this.destroyViews, this);
         Application._vent.on('visualize', this.addFiltersView, this);
         Application._vent.on('matcher/submit', this.addFiltersView, this);
+        Application._vent.on('test', this.addTimelineView, this);
 
         this.helpButton = new Application.Help();
         this.helpButton.$el.attr('id', 'helpButton');
@@ -28,7 +30,15 @@ Application.ControlPanelRootView = Backbone.View.extend({
     render: function() {
         this.$el.append(this.dataSourcesView.render().$el);
         this.$el.append(this.matcher.render().$el);
+        
         return this;
+    },
+    addTimelineView: function() {
+
+        if (this.timeline) this.timeline.destroy();
+        this.timeline = new Application.Timeline([1980,1990,2000,2010,2015]);
+        this.$el.append(this.timeline.$el);
+        this.timeline.update();
     },
     addFiltersView: function() {
 
