@@ -14,11 +14,13 @@ Application.ControlPanelRootView = Backbone.View.extend({
         Application._vent.on('matcher/on', this.destroyViews, this);
         Application._vent.on('controlpanel/input/changed', this.destroyViews, this);
         Application._vent.on('controlpanel/subview/model', this.destroyViews, this);
-        
+
         Application._vent.on('visualize', this.addFiltersView, this);
         Application._vent.on('visualize', this.enableTimeline, this);
         Application._vent.on('matcher/submit', this.addFiltersView, this);
         Application._vent.on('matcher/submit', this.enableTimeline, this);
+
+        Application._vent.on('timeline/ready', this.addTimelineView, this);
 
         this.helpButton = new Application.Help();
         this.helpButton.$el.attr('id', 'helpButton');
@@ -36,29 +38,35 @@ Application.ControlPanelRootView = Backbone.View.extend({
 
         return this;
     },
-    addTimelineView: function() {
+    addTimelineView: function(dates) {
 
         if (this.timeline) this.timeline.destroy();
-        this.timeline = new Application.Timeline([1980,1990,2000,2010,2015]);
+        this.timeline = new Application.Timeline(dates);
         this.$el.append(this.timeline.$el);
         this.timeline.update();
     },
     enableTimeline: function() {
 
-        if ( typeof Application.attrsMap['date2'] == "undefined") return;
+        if ( typeof Application.attrsMap['date'] != "undefined") {
 
-      if (this.timelineButton) this.timelineButton.destroy();
-      this.timelineButton = new Application.Button();
-      this.timelineButton.$el.text('TIMELINE');
-      this.timelineButton.$el.on('mousedown', this.timelineButtonAction.bind(this));
-      var div = $('<div class="configList"</div>');
-      this.$el.append(div)
-      div.append(this.timelineButton.render().$el);
+            if (this.timelineButton) this.timelineButton.destroy();
+            this.timelineButton = new Application.Button();
+            this.timelineButton.$el.text('TIMELINE');
+            this.timelineButton.$el.on('mousedown', this.timelineButtonAction.bind(this));
+            var div = $('<div class="configList"</div>');
+            this.$el.append(div)
+            div.append(this.timelineButton.render().$el);
+        }
     },
     timelineButtonAction: function() {
 
-      this.addTimelineView();
-      Application._vent.trigger('timeline/on');
+        if (this.timeline) {
+
+            this.timeline.$el.toggle();
+
+        } else {
+        Application._vent.trigger('timeline/on');
+    }
     },
     addFiltersView: function() {
 

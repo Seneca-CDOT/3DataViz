@@ -2,6 +2,7 @@ Application.Timeline = Backbone.View.extend({
     tagName: 'div',
     id: 'tl_timebox',
     initialize: function(points) {
+        points.sort(function(a, b){return a-b});
         this.points = points;
         this.pointsObjects = []; // holds data about points
         this.initElements();
@@ -74,6 +75,7 @@ Application.Timeline = Backbone.View.extend({
         this.distance = this.timelineLength/this.points.length; // distance between the points
         this.configPoints(this.points);
         this.addPoints(this.pointsObjects);
+        $('#tl_timebox').css('margin-left',-($('#tl_timebox').innerWidth()/2));
         this.suscribe();
     },
     destroy: function() {

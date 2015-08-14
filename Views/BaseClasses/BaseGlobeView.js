@@ -503,6 +503,20 @@ Application.BaseGlobeView = Backbone.View.extend({
         return i;
 
     },
+    sortResultsByDate: function() {
+
+        if ( typeof Application.attrsMap['date2'] == "undefined") {
+
+            var dates = this.sortResultsByDateColumn();
+
+        } else {
+
+            var dates = this.sortResultsByDateRow();
+        }
+
+        Application._vent.trigger('timeline/ready', dates);
+
+    },
     sortResultsByDateColumn: function() {
 
         var data = this.collection[0].models;
@@ -542,47 +556,52 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         // return newdata;
         console.log(newdata);
+        return uniques;
 
     },
     sortResultsByDateRow: function() {
 
         var data = this.collection[0].models;
 
-        data.sort(function(a,b) {
-            return new Date(a.date).getTime() - new Date(b.date).getTime()
-        });
+        var dateAttrs = this.getDatesColumnNames();
 
-        var uniques = _.chain(data).map(function(item) {
-            return item.date
-        }).uniq().value();
-
-        $.each(uniques, function(i, element) {
-            if (element === undefined)
-            uniques.splice(i, 1);
-        });
 
         var newdata = {};
 
-        $.each(uniques, function(i,unique) {
+        $.each(dateAttrs, function(i, date) {
 
-            newdata[unique] = [];
+            newdata[date] = [];
 
         });
 
         $.each(data, function(i, obj) {
 
-            $.each(uniques, function(i, unique) {
+            $.each(dateAttrs, function(i, date) {
 
-                if (unique == obj.date) {
+                   var name = _.invert(Application.attrsMap)[date];
 
-                    newdata[unique].push(obj);
-
-                }
+                    newdata[date].push({ value: obj[name], country: obj['country'] });
             });
         });
 
         // return newdata;
         console.log(newdata);
+        return dateAttrs;
+
+    },
+    getDatesColumnNames: function() {
+
+        var array = [];
+
+      $.each(Application.attrsMap, function(key, value) {
+
+          if (/date/.exec(key)) {
+            //   var val = Application.Helper.getNumber(value);
+              array.push(value);
+          }
+      });
+
+      return array;
 
     },
 });
