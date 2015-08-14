@@ -3,23 +3,32 @@ Application.CameraSwitcherView = Backbone.View.extend({
     className: 'configList',
     initialize: function() {
 
+        this.cameraSwitcher = new Application.DropDownList({ map:["PerspectiveCamera" , "OrthographicCamera"], map_default: "PerspectiveCamera" });
+        this.cameraSwitcher.$el.attr('id', 'cameraList');
+        this.cameraSwitcher.$el.on('change', this.changeCamera);
         this.cameraButton = new Application.Button();
         this.cameraButton.$el.text('CAMERA ANGLE');
         this.cameraButton.$el.on('mousedown', this.cameraButtonAction.bind(this));
 
-        this.cameraSwitcherPanel = new Application.CameraSwitcherPanel();
+        this.cameraSwitcherPanel = new Application.AngleSwitcherPanel();
         Application._vent.on('controlpanel/cameraswitcher', this.showCameraSwitcher, this);
 
     },
     render: function() {
+
+        this.$el.append('<label for="dataSourcesList" class="label">CAMERA SETTINGS</label>');
+        this.$el.append(this.cameraSwitcher.render().$el);
         this.$el.append(this.cameraButton.$el);
         this.$el.append(this.cameraSwitcherPanel.$el);
         this.cameraSwitcherPanel.$el.hide();
 
         return this;
     },
+    changeCamera: function(e){
+      Application._vent.trigger('controlpanel/camerachange', $("option:selected", e.target).val() );
+    },
     showCameraSwitcher: function(){
-      this.$el.show();
+        this.$el.show();
     },
     toggleCameraSwitcherPanel: function() {
 
@@ -39,10 +48,9 @@ Application.CameraSwitcherView = Backbone.View.extend({
     }
 });
 
-
-Application.CameraSwitcherPanel = Backbone.View.extend({
+Application.AngleSwitcherPanel = Backbone.View.extend({
     tagName: 'div',
-    id: 'cameraSwitcherPanel',
+    id: 'angleSwitcherPanel',
     initialize: function() {
 
         this.categoriesGroupsViews = []; // hold an array of views
@@ -54,8 +62,6 @@ Application.CameraSwitcherPanel = Backbone.View.extend({
 
     },
     getAnglesFromDataset: function(list) {
-
-      console.log("getAnglesFromDataset !!");
 
         var obj = {};
         var x = Application.attrsMap['x'];
@@ -121,7 +127,7 @@ Application.CameraAngleSet = Backbone.View.extend({
     action: function(e) {
       var obj = {};
       obj.cameraPos = new THREE.Vector3($(e.target).data('px'), $(e.target).data('py'), $(e.target).data('pz'));
-      Application._vent.trigger('controlpanel/cameraSnap', obj);
+      Application._vent.trigger('controlpanel/camerasnap', obj);
     },
     createCheckBox: function(obj, groupname) {
 

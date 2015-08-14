@@ -3,6 +3,63 @@ var Application = Application || {};
 Application.BasePointCloudView = Application.BaseView.extend({
   tagName: "div",
   id: "basePointCloud",
+  initialize: function(decorator, collections){
+    Application.BaseView.prototype.initialize.call(this, decorator, collections);
+
+    this.cameraId = 0;
+    Application._vent.on('controlpanel/camerasnap', this.cameraSnap, this);
+    Application._vent.on('controlpanel/camerachange', this.cameraChange, this);
+  },
+  showResults: function(results){
+    Application.BaseView.prototype.showResults.call(this, results);
+    Application._vent.trigger('controlpanel/cameraswitcher');
+  },
+  destroy: function() {
+      Application.BaseView.prototype.destroy.call(this);
+      Application._vent.unbind('controlpanel/camerasnap', this.cameraSnap);
+      Application._vent.unbind('controlpanel/camerachange', this.cameraChange);
+  },
+  addCamera: function() {
+
+      var width = this.options.size.width - this.offset;
+      var height = this.options.size.height;
+      // this.camera = new THREE.OrthographicCamera(width / - 16, width / 16, height / 16, height / - 16, 1, 1000);
+      this.camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000);
+
+      if (this.options.position) {
+
+          this.camera.position.x = this.options.position.x;
+          this.camera.position.y = this.options.position.y;
+          this.camera.position.z = this.options.position.z;
+      } else {
+
+          this.camera.position.z = 100;
+      }
+
+      this.scene.add(this.camera);
+  },
+  switchCamera: function(cameraId){
+    if(this.cameraId != cameraId){
+      var width = this.options.size.width - this.offset;
+      var height = this.options.size.height;
+      switch(Number(cameraId)){
+        case 0:
+          this.camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000);
+          break;
+        case 1:
+          this.camera = new THREE.OrthographicCamera(width / - 8, width / 8, height / 8, height / - 8, 1, 1000);
+          break;
+      }
+      this.addControls();
+      this.cameraId = cameraId;
+    }
+  },
+  cameraChange: function(cameraId){
+    this.switchCamera(cameraId);
+  },
+  cameraSnap: function(obj){
+    this.cameraGoTo(obj.cameraPos);
+  },
   onMouseMove: function(e) {
     e.preventDefault();
 
@@ -29,47 +86,6 @@ Application.BasePointCloudView = Application.BaseView.extend({
       }
     }
 
-  },
-  showResults: function(results){
-    Application.BaseView.prototype.showResults.call(this, results);
-    Application._vent.trigger('controlpanel/cameraswitcher');
-  },
-  destroy: function() {
-      Application.BaseView.prototype.destroy.call(this);
-  },
-  addCamera: function() {
-
-      var width = this.options.size.width - this.offset;
-      var height = this.options.size.height;
-      // this.camera = new THREE.OrthographicCamera(width / - 16, width / 16, height / 16, height / - 16, 1, 1000);
-      this.camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000);
-
-      if (this.options.position) {
-
-          this.camera.position.x = this.options.position.x;
-          this.camera.position.y = this.options.position.y;
-          this.camera.position.z = this.options.position.z;
-      } else {
-
-          this.camera.position.z = 100;
-      }
-
-      this.scene.add(this.camera);
-  },
-  onMouseDown: function(e){
-    console.log("onMouseDOwn");
-    // this.switchCamera();
-  },
-  cameraSnap: function(obj){
-    this.switchCamera();
-    this.cameraGoTo(obj.cameraPos);
-  },
-  switchCamera: function(){
-
-    var width = this.options.size.width - this.offset;
-    var height = this.options.size.height;
-    this.camera = new THREE.OrthographicCamera(width / - 8, width / 8, height / 8, height / - 8, 1, 1000);
-    this.addControls();
   },
   onWindowResize: function() {
 
