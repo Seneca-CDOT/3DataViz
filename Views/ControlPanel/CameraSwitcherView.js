@@ -9,14 +9,14 @@ Application.CameraSwitcherView = Backbone.View.extend({
         this.cameraButton = new Application.Button();
         this.cameraButton.$el.text('CAMERA ANGLE');
         this.cameraButton.$el.on('mousedown', this.cameraButtonAction.bind(this));
-
+        this.label = $('<label for="dataSourcesList" class="label">CAMERA SETTINGS</label>');
         this.cameraSwitcherPanel = new Application.AngleSwitcherPanel();
         Application._vent.on('controlpanel/cameraswitcher', this.showCameraSwitcher, this);
 
     },
     render: function() {
 
-        this.$el.append('<label for="dataSourcesList" class="label">CAMERA SETTINGS</label>');
+        this.$el.append(this.label);
         this.$el.append(this.cameraSwitcher.render().$el);
         this.$el.append(this.cameraButton.$el);
         this.$el.append(this.cameraSwitcherPanel.$el);
@@ -41,10 +41,16 @@ Application.CameraSwitcherView = Backbone.View.extend({
     destroy: function() {
 
         Application._vent.unbind('controlpanel/cameraswitcher', this.showCameraSwitcher);
-        this.cameraButton.destroy();
-        this.cameraButton = null;
+
+        this.cameraSwitcher.destroy();
+        this.label.remove();
+        if(this.cameraButton){
+          this.cameraButton.destroy();
+          this.cameraButton = null;
+        }
         this.cameraSwitcherPanel.destroy();
         this.cameraSwitcherPanel = null;
+        delete this.$el;
     }
 });
 
@@ -92,7 +98,10 @@ Application.AngleSwitcherPanel = Backbone.View.extend({
     },
     destroy: function() {
       Application._vent.unbind('controlpanel/cameraswitcher', this.getAnglesFromDataset);
-      this.cameraAngleView.destroy();
+      if(this.cameraAngleView){
+        this.cameraAngleView.destroy();
+        this.cameraAngleView = null;
+      }
     }
 });
 
@@ -155,6 +164,7 @@ Application.CameraAngleSet = Backbone.View.extend({
         this.checkboxes = null;
     },
     destroy: function() {
+
         this.label.remove();
         this.removeCheckboxes();
         this.checkedColor = null;
