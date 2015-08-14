@@ -7,6 +7,7 @@ Application.BasePointCloudView = Application.BaseView.extend({
     Application.BaseView.prototype.initialize.call(this, decorator, collections);
 
     this.cameraId = 0;
+    this.zoom = 1;
     Application._vent.on('controlpanel/camerasnap', this.cameraSnap, this);
     Application._vent.on('controlpanel/camerachange', this.cameraChange, this);
   },
@@ -39,20 +40,38 @@ Application.BasePointCloudView = Application.BaseView.extend({
       this.scene.add(this.camera);
   },
   switchCamera: function(cameraId){
+
     if(this.cameraId != cameraId){
       var width = this.options.size.width - this.offset;
       var height = this.options.size.height;
-      switch(Number(cameraId)){
+      var rotation = this.camera.rotation;
+      var position = this.camera.position;
+
+      switch(cameraId){
         case 0:
           this.camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000);
+          this.addControls();
+          this.controls.useOrthographicCamera = false;
           break;
         case 1:
           this.camera = new THREE.OrthographicCamera(width / - 8, width / 8, height / 8, height / - 8, 1, 1000);
+          this.camera.zoom = this.zoom;
+          this.camera.updateProjectionMatrix();
+          this.addControls();
+          this.controls.useOrthographicCamera = true;
           break;
       }
-      this.addControls();
+      this.camera.rotation.x = rotation.x;
+      this.camera.rotation.y = rotation.y;
+      this.camera.rotation.z = rotation.z;
+
+      this.camera.position.x = position.x;
+      this.camera.position.y = position.y;
+      this.camera.position.z = position.z;
+
       this.cameraId = cameraId;
     }
+
   },
   cameraChange: function(cameraId){
     this.switchCamera(cameraId);
@@ -88,6 +107,16 @@ Application.BasePointCloudView = Application.BaseView.extend({
 
   },
   onWindowResize: function() {
+
+  },
+  updateScene: function() {
+
+      Application.BaseView.prototype.updateScene.call(this);
+      this.zoom += this.controls.zoomStart;
+      if(this.cameraId === 1){
+        this.camera.zoom = this.zoom;
+        this.camera.updateProjectionMatrix();
+      }
 
   },
   init: function() {

@@ -25,7 +25,7 @@ Application.CameraSwitcherView = Backbone.View.extend({
         return this;
     },
     changeCamera: function(e){
-      Application._vent.trigger('controlpanel/camerachange', $("option:selected", e.target).val() );
+      Application._vent.trigger('controlpanel/camerachange', Number($("option:selected", e.target).val()) );
     },
     showCameraSwitcher: function(){
         this.$el.show();

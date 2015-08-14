@@ -265,13 +265,15 @@ Application.BaseView = Backbone.View.extend({
     },
     updateScene: function() {
 
-        this.controls.update();
+        if(this.controls){
+          this.controls.update();
 
-        if (this.orbitOn === true) {
+          if (this.orbitOn === true) {
 
-            TWEEN.update();
+              TWEEN.update();
+          }
         }
-
+      
         // TODO: fix issue with particles then uncomment
         // if (this.idle === true) {
 
