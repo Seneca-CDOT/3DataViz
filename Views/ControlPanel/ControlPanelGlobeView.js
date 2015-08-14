@@ -14,8 +14,9 @@ Application.ControlPanelRootView = Backbone.View.extend({
         Application._vent.on('matcher/on', this.destroyViews, this);
         Application._vent.on('controlpanel/input/changed', this.destroyViews, this);
         Application._vent.on('visualize', this.addFiltersView, this);
+        Application._vent.on('visualize', this.enableTimeline, this);
         Application._vent.on('matcher/submit', this.addFiltersView, this);
-        Application._vent.on('test', this.addTimelineView, this);
+        Application._vent.on('matcher/submit', this.enableTimeline, this);
 
         this.helpButton = new Application.Help();
         this.helpButton.$el.attr('id', 'helpButton');
@@ -30,7 +31,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
     render: function() {
         this.$el.append(this.dataSourcesView.render().$el);
         this.$el.append(this.matcher.render().$el);
-        
+
         return this;
     },
     addTimelineView: function() {
@@ -39,6 +40,19 @@ Application.ControlPanelRootView = Backbone.View.extend({
         this.timeline = new Application.Timeline([1980,1990,2000,2010,2015]);
         this.$el.append(this.timeline.$el);
         this.timeline.update();
+    },
+    enableTimeline: function() {
+
+      if(this.timelineButton) this.timelineButton.destroy();
+      this.timelineButton = new Application.Button();
+      this.timelineButton.$el.text('TIMELINE');
+      this.timelineButton.$el.on('mousedown', this.timelineButtonAction.bind(this));
+      this.$el.append(this.timelineButton.render().$el);
+    },
+    timelineButtonAction: function() {
+
+      this.addTimelineView();
+      Application._vent.trigger('timeline/on');
     },
     addFiltersView: function() {
 

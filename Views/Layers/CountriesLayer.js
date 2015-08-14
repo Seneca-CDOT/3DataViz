@@ -121,7 +121,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         // yellow to red
         r = 255;
         g = Math.floor(255 * ((100 - percent) / 50));
-        console.log(percent);
+        //console.log(percent);
         // }
         b = 0;
         return "rgb(" + r + "," + g + "," + b + ")";

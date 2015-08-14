@@ -6,7 +6,6 @@ Application.Timeline = Backbone.View.extend({
         this.pointsObjects = []; // holds data about points
         this.initElements();
         this.appendElements();
-        this.points = [];
         this.started = false; // reflects the state of timeline
         this.timerId = 0; // timerID of moving slider function
         this.cur_index = 0;
@@ -16,7 +15,6 @@ Application.Timeline = Backbone.View.extend({
         // this.SVGRestartButton = document.getElementById('restartButton'); // holding a reference to SVG control  element
         // this.SVGLine = document.getElementById('timeline');
         this.timelineLength = 0;
-        this.suscribe();
     },
     render: function() {
 
@@ -56,26 +54,27 @@ Application.Timeline = Backbone.View.extend({
         this.$control.on('mousedown', this.mouseDownControl.bind(this));
         this.$control.on('mouseover', this.mouseOverControl.bind(this));
         this.$control.on('mouseout', this.mouseOutControl.bind(this));
-        $('.tl_point').on('mouseover', this.pointMouseOver.bind(this));
+        $('.tl_point').on('mouseover', this.mouseOverPoint.bind(this));
         $('.tl_point').on('mousedown', this.mouseDownPoint.bind(this));
         $('.tl_point').on('mouseout', this.mouseOutPoint.bind(this));
 
     },
     unsuscribe: function() {
 
-        this.$control.off('mousedown', this.control.bind(this));
+        this.$control.off('mousedown', this.mouseDownControl.bind(this));
         this.$control.off('mouseover', this.mouseOverPlay.bind(this));
         this.$control.off('mouseout', this.mouseOutPlay.bind(this));
-        $('.tl_point').off('mouseover', this.pointMouseOver.bind(this));
+        $('.tl_point').off('mouseover', this.mouseOverPoint.bind(this));
         $('.tl_point').off('mousedown', this.mouseDownPoint.bind(this));
         $('.tl_point').off('mouseout', this.mouseOutPoint.bind(this));
 
     },
     update: function() {
-        this.distance = this.timelineLength/this.points.length; // distance between the points
         this.setTimelineLength();
+        this.distance = this.timelineLength/this.points.length; // distance between the points
         this.configPoints(this.points);
-        this.addPoints(this.points);
+        this.addPoints(this.pointsObjects);
+        this.suscribe();
     },
     destroy: function() {
 
@@ -142,8 +141,8 @@ Application.Timeline = Backbone.View.extend({
         this.timerId = setInterval(function() {
             cur_pos += step;
             that.$slider.css('left',  cur_pos);
-            if (cur_pos >= that.points[that.cur_index].position) {
-                console.log(that.points[that.cur_index].position, that.points[that.cur_index].label);
+            if (cur_pos >= that.pointsObjects[that.cur_index].position) {
+                console.log(that.pointsObjects[that.cur_index].position, that.pointsObjects[that.cur_index].label);
                 that.cur_index++;
                 traveled += distance;
             }
@@ -193,7 +192,7 @@ Application.Timeline = Backbone.View.extend({
     mouseOutControl: function(e) {
         e.target.setAttribute('stroke-width', 1);
     },
-    pointMouseOver: function(e) {
+    mouseOverPoint: function(e) {
         var circle = $(e.target)[0];
         circle.setAttribute('r', 10);
     },

@@ -58,6 +58,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         $(window).on('resize', this.onWindowResize.bind(this));
         Application._vent.on('filters/add', this.addCategory, this);
         Application._vent.on('filters/remove', this.removeCategory, this);
+        Application._vent.on('timeline/on', this.sortResultsByDate, this);
 
         // to remove! for testing purposes
     //    Application._vent.on('test', this.sortResultsByDate, this);
@@ -539,7 +540,8 @@ Application.BaseGlobeView = Backbone.View.extend({
             });
         });
 
-        return newdata;
+        // return newdata;
+        console.log(newdata);
 
     },
 });
