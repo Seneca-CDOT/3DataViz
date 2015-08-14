@@ -243,6 +243,12 @@ Application.AttributesSet = Backbone.View.extend({
         });
 
         this.checkboxes.length = 0;
+        if (this.$newAttr) {
+        this.$newAttr.remove();
+        this.$newAttr.unbind();
+        this.valueIndex = 1;
+        this.dateIndex = 1;
+    }
 
     },
     destroy: function() {

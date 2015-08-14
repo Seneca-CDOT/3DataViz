@@ -87,6 +87,8 @@ Application.Timeline = Backbone.View.extend({
         this.$point = null;
         this.$pause = null;
         this.$play = null;
+        this.$el.unbind();
+        this.$el.remove();
     },
     configPoints: function(points) {
 

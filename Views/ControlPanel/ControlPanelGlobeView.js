@@ -13,6 +13,8 @@ Application.ControlPanelRootView = Backbone.View.extend({
 
         Application._vent.on('matcher/on', this.destroyViews, this);
         Application._vent.on('controlpanel/input/changed', this.destroyViews, this);
+        Application._vent.on('controlpanel/subview/model', this.destroyViews, this);
+        
         Application._vent.on('visualize', this.addFiltersView, this);
         Application._vent.on('visualize', this.enableTimeline, this);
         Application._vent.on('matcher/submit', this.addFiltersView, this);
@@ -43,11 +45,15 @@ Application.ControlPanelRootView = Backbone.View.extend({
     },
     enableTimeline: function() {
 
-      if(this.timelineButton) this.timelineButton.destroy();
+        if ( typeof Application.attrsMap['date2'] == "undefined") return;
+
+      if (this.timelineButton) this.timelineButton.destroy();
       this.timelineButton = new Application.Button();
       this.timelineButton.$el.text('TIMELINE');
       this.timelineButton.$el.on('mousedown', this.timelineButtonAction.bind(this));
-      this.$el.append(this.timelineButton.render().$el);
+      var div = $('<div class="configList"</div>');
+      this.$el.append(div)
+      div.append(this.timelineButton.render().$el);
     },
     timelineButtonAction: function() {
 
@@ -95,6 +101,26 @@ Application.ControlPanelRootView = Backbone.View.extend({
     destroyViews: function() {
         this.destroyTemplatesView();
         this.destroyCategoriesView();
+        this.destroyFilters();
+        this.destroyTimeline();
+    },
+    destroyFilters: function() {
+        if (this.filtersView) {
+            this.filtersView.destroy();
+            this.filtersView = null;
+        }
+    },
+    destroyTimeline: function() {
+        if (this.timeline) {
+            this.timeline.destroy();
+            this.timeline = null;
+        }
+
+        if (this.timelineButton) {
+            this.timelineButton.destroy();
+            this.timelineButton = null;
+
+        }
     },
     destroyCategoriesView: function() {
 
