@@ -199,6 +199,12 @@ button{
   border-radius: 50%;
   margin-right: 8px;
 }
+#newAttr {
+
+position: relative;
+width: 100%;
+color: black;
+}
 
 .btn-file {
     position: relative;

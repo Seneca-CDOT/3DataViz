@@ -503,7 +503,48 @@ Application.BaseGlobeView = Backbone.View.extend({
         return i;
 
     },
-    sortResultsByDate: function() {
+    sortResultsByDateColumn: function() {
+
+        var data = this.collection[0].models;
+
+        data.sort(function(a,b) {
+            return new Date(a.date).getTime() - new Date(b.date).getTime()
+        });
+
+        var uniques = _.chain(data).map(function(item) {
+            return item.date
+        }).uniq().value();
+
+        $.each(uniques, function(i, element) {
+            if (element === undefined)
+            uniques.splice(i, 1);
+        });
+
+        var newdata = {};
+
+        $.each(uniques, function(i,unique) {
+
+            newdata[unique] = [];
+
+        });
+
+        $.each(data, function(i, obj) {
+
+            $.each(uniques, function(i, unique) {
+
+                if (unique == obj.date) {
+
+                    newdata[unique].push(obj);
+
+                }
+            });
+        });
+
+        // return newdata;
+        console.log(newdata);
+
+    },
+    sortResultsByDateRow: function() {
 
         var data = this.collection[0].models;
 
