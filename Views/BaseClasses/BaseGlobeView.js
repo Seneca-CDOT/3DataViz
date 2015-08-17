@@ -53,12 +53,14 @@ Application.BaseGlobeView = Backbone.View.extend({
         });
 
         this.suscribe();
+        this.sortedByDateData;
 
         // TODO: review
         $(window).on('resize', this.onWindowResize.bind(this));
         Application._vent.on('filters/add', this.addCategory, this);
         Application._vent.on('filters/remove', this.removeCategory, this);
         Application._vent.on('timeline/on', this.sortResultsByDate, this);
+        Application._vent.on('timeline/message', this.findObjectsbyDate, this);
 
         // to remove! for testing purposes
     //    Application._vent.on('test', this.sortResultsByDate, this);
@@ -124,6 +126,9 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.collection[0].unbind();
         Application._vent.unbind('filters/add', this.addCategory);
         Application._vent.unbind('filters/remove', this.removeCategory);
+        Application._vent.unbind('timeline/on', this.sortResultsByDate);
+        Application._vent.unbind('timeline/message', this.findObjectsbyDate);
+
     },
     render: function() {
 
@@ -287,10 +292,10 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         this.controls.update();
 
-        if (this.orbitOn === true) {
+    //    if (this.orbitOn === true) {
 
             TWEEN.update();
-        }
+    //    }
 
         // TODO: fix issue with particles then uncomment
         // if (this.idle === true) {
@@ -503,18 +508,29 @@ Application.BaseGlobeView = Backbone.View.extend({
         return i;
 
     },
+    findObjectsbyDate: function(date) {
+
+        this.showResults(this.sortedByDateData[date]);
+    },
     sortResultsByDate: function() {
+
+        this.resetGlobe();
 
         if ( typeof Application.attrsMap['date2'] == "undefined") {
 
-            var dates = this.sortResultsByDateColumn();
+            this.sortedByDateData = this.sortResultsByDateColumn();
 
         } else {
 
-            var dates = this.sortResultsByDateRow();
+            this.sortedByDateData = this.sortResultsByDateRow();
         }
 
-        Application._vent.trigger('timeline/ready', dates);
+        var names = _.keys(this.sortedByDateData);
+
+        Application._vent.trigger('timeline/ready', names);
+
+        var first = _.keys(this.sortedByDateData)[0];
+        //this.showResults(this.sortedByDateData[first]);
 
     },
     sortResultsByDateColumn: function() {
@@ -556,7 +572,7 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         // return newdata;
         console.log(newdata);
-        return uniques;
+        return newdata;
 
     },
     sortResultsByDateRow: function() {
@@ -580,13 +596,15 @@ Application.BaseGlobeView = Backbone.View.extend({
 
                    var name = _.invert(Application.attrsMap)[date];
 
-                    newdata[date].push({ value: obj[name], country: obj['country'] });
+                   var value = Application.Helper.getNumber(obj[name]);
+
+                    newdata[date].push({ value: value, country: obj['country'] });
             });
         });
 
         // return newdata;
         console.log(newdata);
-        return dateAttrs;
+        return newdata;
 
     },
     getDatesColumnNames: function() {

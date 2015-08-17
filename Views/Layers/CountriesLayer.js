@@ -78,6 +78,9 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             country.mesh.material.color.setHex(country.color);
 
         });
+
+        that.added.length = 0;
+
         // $.each(that.added, function(index, country) {
         //
         //      for (var i = 1; i < 100; i++ ) {
@@ -92,6 +95,22 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         // }
         //
         // });
+    },
+    lerpColor: function(initial, end, seconds) {
+             var that = this;
+
+            var t = new TWEEN.Tween(initial);
+
+            t.to(end, seconds*1000);
+
+            t.onUpdate( function() {
+                initial.setRGB(this.r, this.g, this.b);
+                // console.log(this);
+            }
+            );
+
+            t.start();
+
     },
     getColor: function(cur, min, max) {
 
@@ -120,11 +139,12 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         // } else {
         // yellow to red
         r = 255;
-        g = Math.floor(255 * ((100 - percent) / 50));
+        g = Math.floor(255 * ((100 - percent) / 100));
         //console.log(percent);
         // }
         b = 0;
-        return "rgb(" + r + "," + g + "," + b + ")";
+        // return "rgb(" + r + "," + g + "," + b + ")";
+        return { r: (r/255), g: (g/255), b: (b/255) }
     },
     createColors: function(results) {
 
@@ -147,10 +167,13 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         return colors;
     },
 
-    showResults: function() {
+    showResults: function(results) {
+
+    //    this.resetGlobe();
 
         // console.log("CountriesLayer showResults");
-        var results = this.collection[0].models;
+        if(!results) results = this.collection[0].models;
+
         var that = this;
 
         this.getCategories(results);
@@ -174,7 +197,6 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         var colorsMap = this.createColors(results); // creates a colors map relative to the values
 
-
         results.forEach(function(item, index) {
 
             var countrymesh = that.decorators[0].findCountry(item.country);
@@ -197,7 +219,8 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             // countrymesh.material.color.r = 1;
             // countrymesh.material.color.g = 1 - colorsMap[item.value];
             // countrymesh.material.color.b = 1 - colorsMap[item.value];
-            countrymesh.material.color.set(colorsMap[item.value]);
+            // countrymesh.material.color.set(colorsMap[item.value]);
+            that.lerpColor(countrymesh.material.color, colorsMap[item.value], 2);
 
             obj.result_color = countrymesh.material.color.getHex();
 

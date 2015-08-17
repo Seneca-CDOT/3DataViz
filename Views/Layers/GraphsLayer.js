@@ -53,9 +53,6 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         var that = this;
 
-
-
-        // console.log("GraphsLayer Destroy");
         $.each(this.airportMeshes, function(i, mesh) {
 
             that.scene.remove(mesh);
