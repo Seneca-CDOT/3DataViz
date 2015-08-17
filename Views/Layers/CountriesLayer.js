@@ -8,6 +8,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.initialize.call(this, decorator, collections);
 
         this.added = []; // list of countries participating and their old colors
+        this.old = [] ; // holds added countries from the previos call
 
         Application._vent.on('test', this.resetGlobe, this);
 
@@ -225,6 +226,16 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             obj.result_color = countrymesh.material.color.getHex();
 
             that.added.push(obj);
+
+        });
+
+        this.old = that.added;
+
+        var old_countries = this.compareCountriesArrays(this.added, this.old);
+
+        $.each(old_countries, function(i, country) {
+
+            this.lerpColor(country.mesh.material.color, country.color);
 
         });
     },

@@ -63,7 +63,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         Application._vent.on('timeline/message', this.findObjectsbyDate, this);
 
         // to remove! for testing purposes
-    //    Application._vent.on('test', this.sortResultsByDate, this);
+        //    Application._vent.on('test', this.sortResultsByDate, this);
     },
     suscribe: function() {
         Application._vent.on('data/ready', this.showResults, this);
@@ -292,10 +292,10 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         this.controls.update();
 
-    //    if (this.orbitOn === true) {
+        //    if (this.orbitOn === true) {
 
-            TWEEN.update();
-    //    }
+        TWEEN.update();
+        //    }
 
         // TODO: fix issue with particles then uncomment
         // if (this.idle === true) {
@@ -594,11 +594,11 @@ Application.BaseGlobeView = Backbone.View.extend({
 
             $.each(dateAttrs, function(i, date) {
 
-                   var name = _.invert(Application.attrsMap)[date];
+                var name = _.invert(Application.attrsMap)[date];
 
-                   var value = Application.Helper.getNumber(obj[name]);
+                var value = Application.Helper.getNumber(obj[name]);
 
-                    newdata[date].push({ value: value, country: obj['country'] });
+                newdata[date].push({ value: value, country: obj['country'] });
             });
         });
 
@@ -611,15 +611,41 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         var array = [];
 
-      $.each(Application.attrsMap, function(key, value) {
+        $.each(Application.attrsMap, function(key, value) {
 
-          if (/date/.exec(key)) {
-            //   var val = Application.Helper.getNumber(value);
-              array.push(value);
-          }
-      });
+            if (/date/.exec(key)) {
+                //   var val = Application.Helper.getNumber(value);
+                array.push(value);
+            }
+        });
 
-      return array;
+        return array;
+
+    },
+    compareCountriesArrays: function(current, old) {
+
+        var found = false;
+        var difference = [];
+
+        $.each(old, function(i, old_country) {
+
+            $.each(current, function(k, cur_country) {
+
+                if (cur_country.mesh == old_country.mesh) {
+                    found = true;
+                }
+
+            });
+
+            if (!found) {
+                difference.push(old_country);
+
+            }
+
+            found = false;
+        });
+
+        return difference;
 
     },
 });
