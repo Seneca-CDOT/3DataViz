@@ -167,6 +167,7 @@ Application.Timeline = Backbone.View.extend({
                 if (that.cur_index < (that.pointsObjects.length - 1) ) {
                 console.log(that.pointsObjects[that.cur_index].position, that.pointsObjects[that.cur_index + 1].label);
                 Application._vent.trigger('timeline/message', that.pointsObjects[that.cur_index + 1].label);
+                //Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.cur_index + 1].label);
                 that.cur_index++;
                 traveled += distance;
             }
