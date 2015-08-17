@@ -254,7 +254,11 @@ Application.DropDownList = Application.ControlElementsGlobeView.extend({
 
         this.$el.append("<option value='' selected disabled></option>");
         $.each(this.config.map, function(index, item) {
-            that.$el.append("<option value='" + index + "'>" + item + "</option>");
+          var selected = "";
+          if(that.config && that.config.map_default && that.config.map_default === item){
+            selected = 'selected';
+          }
+          that.$el.append("<option value='" + index + "' "+selected+">" + item + "</option>");
         });
         return this;
     },

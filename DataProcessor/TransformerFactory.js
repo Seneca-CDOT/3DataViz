@@ -25,6 +25,10 @@ Application.DataProcessor.TransformerFactory = (function() {
                 // console.log("graphVisualTransformer");
                 TransformerClass = Application.DataProcessor.GraphTransformer;
                 break;
+            case "pointcloudVisualTransformer":
+                console.log("pointcloudVisualTransformer");
+                TransformerClass = Application.DataProcessor.PointCloudTransformer;
+                break;
         }
         // console.log(TransformerClass);
         return new TransformerClass(options);
@@ -195,7 +199,7 @@ Application.DataProcessor.PointsVisualTransformer = (function() {
 
 })();
 
-// point visual
+// Dynamic visual
 Application.DataProcessor.DynamicVisualTransformer = (function() {
 
     function DynamicVisualTransformer() {
@@ -296,5 +300,45 @@ Application.DataProcessor.GraphTransformer = (function() {
     };
 
     return GraphTransformer;
+
+})();
+
+// point cloud visual
+Application.DataProcessor.PointCloudTransformer = (function(){
+
+    function PointCloudTransformer() {
+
+        Application.DataProcessor.BaseTransformer.call(this);
+    };
+    Application.Helper.inherit(PointCloudTransformer, Application.DataProcessor.BaseTransformer);
+
+    PointCloudTransformer.prototype.transform = function(data, complete) {
+
+        var transData = [];
+
+        $.each(data, function(index, item) {
+
+            var obj = {};
+
+            $.each(item, function(attr, value) {
+
+                var parserAttr = _.invert(Application.attrsMap)[attr];
+
+                if (parserAttr) {
+
+                    obj[parserAttr] = value;
+
+                }
+
+            });
+
+            transData.push(obj);
+
+        });
+
+        if( typeof complete === "function" ) complete(transData);
+    };
+
+    return PointCloudTransformer;
 
 })();

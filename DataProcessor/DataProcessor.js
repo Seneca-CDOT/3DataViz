@@ -49,6 +49,9 @@ Application.DataProcessor.ProcessorModule = (function() {
             case "graph":
                 options.transformerType = "graphVisualTransformer";
                 break;
+            case "pointcloud":
+                options.transformerType = "pointcloudVisualTransformer";
+                break;
         }
 
         var transformer = Application.DataProcessor.TransformerFactory.createTransformer(options);
@@ -63,7 +66,7 @@ Application.DataProcessor.ProcessorModule = (function() {
         var dtProcessor = privateMethods.dataTypedProcessor(options);
         // preprocess data depending on its type
         dtProcessor.process(data, complete);
-        
+
     };
 
     publicMethods.preProcessData = function(data, options, complete) {
@@ -71,7 +74,7 @@ Application.DataProcessor.ProcessorModule = (function() {
         var dtProcessor = privateMethods.dataTypedProcessor(options);
         // preprocess data depending on its type
         dtProcessor.preProcess(data, complete);
-        
+
     };
 
     publicMethods.transformData = function(data, options, complete) {

@@ -15,7 +15,7 @@ Application.RootGlobeView = Backbone.View.extend({
         this.obj = {};
         this.collections = collections;
         this.obj.decorators = [];
-        var decorator = this.createDecorators(Application.userConfig.decorator);
+        var decorator = this.createDecorators(Application.templates[Application.userConfig.template].decorator);
         this.createGlobeView(Application.userConfig.template, decorator, collections);
 
     },
@@ -54,6 +54,10 @@ Application.RootGlobeView = Backbone.View.extend({
     createGlobeView: function(layer, decorator, collections) {
 
         var rootGlobeViewClass = null;
+
+        // TODO We can automate this switch statement by using configs from Application.js.
+        // We need to add manually when we have a new template.
+
         switch (layer) {
 
             case "countries":
@@ -76,6 +80,12 @@ Application.RootGlobeView = Backbone.View.extend({
                     rootGlobeViewClass = 'GraphsLayer';
                     break;
                 }
+            case "pointcloud":
+              	{
+              		rootGlobeViewClass = 'PointCloudLayer';
+              		break;
+              	}
+
         }
 
         var that = this;
@@ -87,6 +97,7 @@ Application.RootGlobeView = Backbone.View.extend({
     },
     createDecorators: function(config) {
 
+        if(!config) return "";
         var decorators = [];
         var decorator = Application.GlobeDecoratorFactory.createDecorator(config)
 
