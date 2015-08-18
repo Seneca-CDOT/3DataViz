@@ -73,6 +73,7 @@ Application.Timeline = Backbone.View.extend({
     update: function() {
         this.setTimelineLength();
         this.distance = this.timelineLength / this.points.length; // distance between the points
+        this.setInitialPoint();
         this.configPoints(this.points);
         this.addPoints(this.pointsObjects);
         $('#tl_timebox').css('margin-left',-($('#tl_timebox').innerWidth()/2));
@@ -91,6 +92,14 @@ Application.Timeline = Backbone.View.extend({
         this.$play = null;
         this.$el.unbind();
         this.$el.remove();
+    },
+    setInitialPoint: function() {
+
+        var $point = this.$point.clone();
+        $point.data('index', 0);
+        this.$lineBox.append($point);
+        $point.css('left', 0 - 5);
+
     },
     configPoints: function(points) {
 
@@ -167,7 +176,7 @@ Application.Timeline = Backbone.View.extend({
                 if (that.cur_index < (that.pointsObjects.length - 1) ) {
                 console.log(that.pointsObjects[that.cur_index].position, that.pointsObjects[that.cur_index + 1].label);
                 Application._vent.trigger('timeline/message', that.pointsObjects[that.cur_index + 1].label);
-                //Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.cur_index + 1].label);
+                Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.cur_index].label);
                 that.cur_index++;
                 traveled += distance;
             }
@@ -175,6 +184,7 @@ Application.Timeline = Backbone.View.extend({
             if (cur_pos >= (that.timelineLength)) {
                 clearTimeout(that.timerId);
                 that.addRestart();
+                Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.pointsObjects.length - 1].label)
                 that.cur_index = 0;
 
             }

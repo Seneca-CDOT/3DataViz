@@ -676,7 +676,8 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
         this.urlfield.$el.attr('class', 'form-control userInput');
         this.urlfield.$el.attr('id', 'key');
         // this.urlfield.$el.val("13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg");
-        this.urlfield.$el.val("1HFYTBC2iKabiidtP2U148PKvMW5tRUvxTAzoJ7w3vNo");
+        // this.urlfield.$el.val("1HFYTBC2iKabiidtP2U148PKvMW5tRUvxTAzoJ7w3vNo");
+        this.urlfield.$el.val("1GAYmPSBgK0yuluRcIWjyVVWnh41L4fDG00fJbHVZnFk");
         this.urlfield.$el.on('mousedown', this.urlFieldAction.bind(this));
         this.labelForKey = $('<label for="key" class="label">ENTER A KEY</label>');
 

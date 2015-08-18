@@ -98,6 +98,8 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
     t.start();
 
+    this.tweenings.push(t);
+
 },
 getColor: function(cur, min, max) {
 
@@ -138,16 +140,16 @@ createColors: function(results) {
     var that = this;
     var colors = {};
 
-    var min = results[0].value;
-    var max = results[results.length - 1].value;
+    var min = Math.log10(Math.log10(results[0].value));
+    var max = Math.log10(Math.log10(results[results.length - 1].value));
 
     var uniques = _.chain(results).map(function(item) {
-        return item.value
+        return item.value;
     }).uniq().value();
 
     $.each(uniques, function(index, number) {
 
-        colors[number] = that.getColor(number, min, max);
+        colors[number] = that.getColor(Math.log10(Math.log10(number)), min, max);
 
     });
 

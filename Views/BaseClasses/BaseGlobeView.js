@@ -54,12 +54,13 @@ Application.BaseGlobeView = Backbone.View.extend({
 
         this.suscribe();
         this.sortedByDateData;
+        this.tweenings = []; // holds references for tween instances
 
         // TODO: review
         $(window).on('resize', this.onWindowResize.bind(this));
         Application._vent.on('filters/add', this.addCategory, this);
         Application._vent.on('filters/remove', this.removeCategory, this);
-        Application._vent.on('timeline/on', this.sortResultsByDate, this);
+        Application._vent.on('timeline/on', this.timelineAction, this);
         Application._vent.on('timeline/message', this.findObjectsbyDate, this);
 
         // to remove! for testing purposes
@@ -128,6 +129,8 @@ Application.BaseGlobeView = Backbone.View.extend({
         Application._vent.unbind('filters/remove', this.removeCategory);
         Application._vent.unbind('timeline/on', this.sortResultsByDate);
         Application._vent.unbind('timeline/message', this.findObjectsbyDate);
+
+        this.tweenings.length = 0;
 
     },
     render: function() {
@@ -266,6 +269,7 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.globe = new THREE.Mesh(geometry, material);
         this.globe.name = "globe";
         this.scene.add(this.globe);
+        this.globe.rotation.y = -Math.PI / 2 * 3;
         this.globe.userData.name = 'globe';
         this.rayCatchers.push(this.globe);
     },
@@ -333,319 +337,332 @@ Application.BaseGlobeView = Backbone.View.extend({
 
                 Application._vent.trigger('vizinfocenter/message/on', closest.object.userData.name[0]);
             }
-            if (closest.object.userData.name == 'globe') { return null; }
-        }
-        return closest;
-    },
-    clickOnIntersect: function(intersect) {
+            if (closest.object.userData.name == 'globe') {
 
-        var destination = null;
-        var mesh = intersect.object;
-        if (mesh !== this.globe) {
+                return null; }
+            } else {
+
+                Application._vent.trigger('vizinfocenter/message/off');
+            }
+            return closest;
+        },
+        clickOnIntersect: function(intersect) {
+
+            var destination = null;
+            var mesh = intersect.object;
+            if (mesh !== this.globe) {
+
+                // TODO: review
+                for (var i = 0; i < this.decorators.length; ++i) {
+
+                    this.decorators[i].clickOnIntersect(this, intersect);
+                }
+
+                destination = mesh.geometry.boundingSphere.center.clone();
+            } else {
+
+                destination = intersect.point;
+            }
+
+            if (destination) {
+
+                destination.setLength(this.controls.getRadius());
+                this.cameraGoTo(destination);
+            }
+        },
+        cameraGoTo: function(destination) {
 
             // TODO: review
             for (var i = 0; i < this.decorators.length; ++i) {
 
-                this.decorators[i].clickOnIntersect(this, intersect);
+                this.decorators[i].cameraGoTo(this, destination);
             }
 
-            destination = mesh.geometry.boundingSphere.center.clone();
-        } else {
+            var current = this.controls.getPosition();
+            this.moved = true;
 
-            destination = intersect.point;
-        }
+            if (this.orbitOn == true) {
 
-        if (destination) {
+                this.tween.stop();
+            }
 
-            destination.setLength(this.controls.getRadius());
-            this.cameraGoTo(destination);
-        }
-    },
-    cameraGoTo: function(destination) {
+            this.tween = new TWEEN.Tween(current)
+            .to({
+                x: destination.x,
+                y: destination.y,
+                z: destination.z
+            }, 1000)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .onUpdate((function(that) {
 
-        // TODO: review
-        for (var i = 0; i < this.decorators.length; ++i) {
+                return function() {
 
-            this.decorators[i].cameraGoTo(this, destination);
-        }
+                    onUpdate(this, that);
+                };
+            })(this))
+            .onComplete((function(that) {
 
-        var current = this.controls.getPosition();
-        this.moved = true;
+                return function() {
 
-        if (this.orbitOn == true) {
+                    onComplete(this, that);
+                };
+            })(this));
 
-            this.tween.stop();
-        }
+            function onUpdate(point, that) {
 
-        this.tween = new TWEEN.Tween(current)
-        .to({
-            x: destination.x,
-            y: destination.y,
-            z: destination.z
-        }, 1000)
-        .easing(TWEEN.Easing.Sinusoidal.InOut)
-        .onUpdate((function(that) {
+                that.controls.updateView({
 
-            return function() {
-
-                onUpdate(this, that);
+                    x: point.x,
+                    y: point.y,
+                    z: point.z
+                });
             };
-        })(this))
-        .onComplete((function(that) {
 
-            return function() {
+            function onComplete(point, that) {
 
-                onComplete(this, that);
+                that.orbitOn = false;
             };
-        })(this));
 
-        function onUpdate(point, that) {
-
-            that.controls.updateView({
-
-                x: point.x,
-                y: point.y,
-                z: point.z
+            this.orbitOn = true;
+            this.tween.start();
+        },
+        showResults: function(results) {
+            if (this.categories.length > 0 && this.categories[0] !== undefined) {
+                Application._vent.trigger('controlpanel/categories', this.categories);
+            }
+        },
+        showAllResults: function() {},
+        getCategories: function(results){
+            this.categories = Application.Filter.getCategories(results);
+        },
+        getCategoriesWithColors: function(results, obj){
+            this.categories = Application.Filter.getCategories(results);
+            $.each(this.categories, function(index, category){
+                category.color = Application.Helper.getRandomColor(obj);
             });
-        };
+        },
+        addCategory: function(group) {
 
-        function onComplete(point, that) {
+            group.name;
 
-            that.orbitOn = false;
-        };
+            this.activeCategories.push(group.category);
+            this.sortResultsByCategory();
+        },
+        removeCategory: function(group) {
 
-        this.orbitOn = true;
-        this.tween.start();
-    },
-    showResults: function(results) {
-        if (this.categories.length > 0 && this.categories[0] !== undefined) {
-            Application._vent.trigger('controlpanel/categories', this.categories);
-        }
-    },
-    showAllResults: function() {},
-    getCategories: function(results){
-        this.categories = Application.Filter.getCategories(results);
-    },
-    getCategoriesWithColors: function(results, obj){
-        this.categories = Application.Filter.getCategories(results);
-        $.each(this.categories, function(index, category){
-            category.color = Application.Helper.getRandomColor(obj);
-        });
-    },
-    addCategory: function(group) {
+            group.name;
 
-        group.name;
-
-        this.activeCategories.push(group.category);
-        this.sortResultsByCategory();
-    },
-    removeCategory: function(group) {
-
-        group.name;
-
-        var i = this.activeCategories.indexOf(group.category);
-        if (i != -1) {
-            this.activeCategories.splice(i, 1);
-        }
-        this.sortResultsByCategory();
-    },
-    getCategoryObj: function(categoryName){
-
-        var category;
-        $.each(this.categories, function(index, c){
-            if(c.name === categoryName){
-                category = c;
+            var i = this.activeCategories.indexOf(group.category);
+            if (i != -1) {
+                this.activeCategories.splice(i, 1);
             }
-        });
-        return category;
+            this.sortResultsByCategory();
+        },
+        getCategoryObj: function(categoryName){
 
-    },
-    getColorByCategory: function(categoryName){
-
-        var color;
-        $.each(this.categories, function(index, category){
-            if(category.name === categoryName){
-                color = category.color.replace('#','0x');
-            }
-        });
-        return color || '0xffffff';
-
-    },
-    sortResultsByCategory: function() {},
-    determineCountry: function(point) {
-
-        this.direction.subVectors(this.end, point.position);
-        this.direction.normalize();
-
-        //this.scene.updateMatrixWorld();
-        var ray = new THREE.Raycaster(point.position, this.direction);
-
-        var rayIntersects = ray.intersectObjects(this.rayCatchers);
-
-        if (rayIntersects[0]) {
-
-            return rayIntersects[0].object.userData.name;
-
-        } else {
-
-            return 'none';
-        }
-
-    },
-    pointsPerCountry: function(array, countryname) {
-
-        var i = 0;
-
-        $.each(array, function(index, sprite) {
-
-            if (sprite.userData.country == countryname) {
-
-                i++;
-            }
-
-        });
-
-        return i;
-
-    },
-    findObjectsbyDate: function(date) {
-
-        this.showResults(this.sortedByDateData[date]);
-    },
-    sortResultsByDate: function() {
-
-        this.resetGlobe();
-
-        if ( typeof Application.attrsMap['date2'] == "undefined") {
-
-            this.sortedByDateData = this.sortResultsByDateColumn();
-
-        } else {
-
-            this.sortedByDateData = this.sortResultsByDateRow();
-        }
-
-        var names = _.keys(this.sortedByDateData);
-
-        Application._vent.trigger('timeline/ready', names);
-
-        var first = _.keys(this.sortedByDateData)[0];
-        //this.showResults(this.sortedByDateData[first]);
-
-    },
-    sortResultsByDateColumn: function() {
-
-        var data = this.collection[0].models;
-
-        data.sort(function(a,b) {
-            return new Date(a.date).getTime() - new Date(b.date).getTime()
-        });
-
-        var uniques = _.chain(data).map(function(item) {
-            return item.date
-        }).uniq().value();
-
-        $.each(uniques, function(i, element) {
-            if (element === undefined)
-            uniques.splice(i, 1);
-        });
-
-        var newdata = {};
-
-        $.each(uniques, function(i,unique) {
-
-            newdata[unique] = [];
-
-        });
-
-        $.each(data, function(i, obj) {
-
-            $.each(uniques, function(i, unique) {
-
-                if (unique == obj.date) {
-
-                    newdata[unique].push(obj);
-
+            var category;
+            $.each(this.categories, function(index, c){
+                if(c.name === categoryName){
+                    category = c;
                 }
             });
-        });
+            return category;
 
-        // return newdata;
-        console.log(newdata);
-        return newdata;
+        },
+        getColorByCategory: function(categoryName){
 
-    },
-    sortResultsByDateRow: function() {
+            var color;
+            $.each(this.categories, function(index, category){
+                if(category.name === categoryName){
+                    color = category.color.replace('#','0x');
+                }
+            });
+            return color || '0xffffff';
 
-        var data = this.collection[0].models;
+        },
+        sortResultsByCategory: function() {},
+        determineCountry: function(point) {
 
-        var dateAttrs = this.getDatesColumnNames();
+            this.direction.subVectors(this.end, point.position);
+            this.direction.normalize();
+
+            //this.scene.updateMatrixWorld();
+            var ray = new THREE.Raycaster(point.position, this.direction);
+
+            var rayIntersects = ray.intersectObjects(this.rayCatchers);
+
+            if (rayIntersects[0]) {
+
+                return rayIntersects[0].object.userData.name;
+
+            } else {
+
+                return 'none';
+            }
+
+        },
+        pointsPerCountry: function(array, countryname) {
+
+            var i = 0;
+
+            $.each(array, function(index, sprite) {
+
+                if (sprite.userData.country == countryname) {
+
+                    i++;
+                }
+
+            });
+
+            return i;
+
+        },
+        timelineAction: function() {
+
+            $.each(this.tweenings, function(i, tween) {
+                tween.stop();
+            });
+
+            this.resetGlobe();
+
+            this.sortResultsByDate();
+        },
+        findObjectsbyDate: function(date) {
+
+            this.showResults(this.sortedByDateData[date]);
+        },
+        sortResultsByDate: function() {
+
+            if ( typeof Application.attrsMap['date2'] == "undefined") {
+
+                this.sortedByDateData = this.sortResultsByDateColumn();
+
+            } else {
+
+                this.sortedByDateData = this.sortResultsByDateRow();
+            }
+
+            var names = _.keys(this.sortedByDateData);
+
+            Application._vent.trigger('timeline/ready', names);
+
+            var first = _.keys(this.sortedByDateData)[0];
+            //this.showResults(this.sortedByDateData[first]);
+
+        },
+        sortResultsByDateColumn: function() {
+
+            var data = this.collection[0].models;
+
+            data.sort(function(a,b) {
+                return new Date(a.date).getTime() - new Date(b.date).getTime()
+            });
+
+            var uniques = _.chain(data).map(function(item) {
+                return item.date
+            }).uniq().value();
+
+            $.each(uniques, function(i, element) {
+                if (element === undefined)
+                uniques.splice(i, 1);
+            });
+
+            var newdata = {};
+
+            $.each(uniques, function(i,unique) {
+
+                newdata[unique] = [];
+
+            });
+
+            $.each(data, function(i, obj) {
+
+                $.each(uniques, function(i, unique) {
+
+                    if (unique == obj.date) {
+
+                        newdata[unique].push(obj);
+
+                    }
+                });
+            });
+
+            // return newdata;
+            console.log(newdata);
+            return newdata;
+
+        },
+        sortResultsByDateRow: function() {
+
+            var data = this.collection[0].models;
+
+            var dateAttrs = this.getDatesColumnNames();
 
 
-        var newdata = {};
-
-        $.each(dateAttrs, function(i, date) {
-
-            newdata[date] = [];
-
-        });
-
-        $.each(data, function(i, obj) {
+            var newdata = {};
 
             $.each(dateAttrs, function(i, date) {
 
-                var name = _.invert(Application.attrsMap)[date];
+                newdata[date] = [];
 
-                var value = Application.Helper.getNumber(obj[name]);
-
-                newdata[date].push({ value: value, country: obj['country'] });
             });
-        });
 
-        // return newdata;
-        console.log(newdata);
-        return newdata;
+            $.each(data, function(i, obj) {
 
-    },
-    getDatesColumnNames: function() {
+                $.each(dateAttrs, function(i, date) {
 
-        var array = [];
+                    var name = _.invert(Application.attrsMap)[date];
 
-        $.each(Application.attrsMap, function(key, value) {
+                    var value = Application.Helper.getNumber(obj[name]);
 
-            if (/date/.exec(key)) {
-                //   var val = Application.Helper.getNumber(value);
-                array.push(value);
-            }
-        });
+                    newdata[date].push({ value: value, country: obj['country'] });
+                });
+            });
 
-        return array;
+            // return newdata;
+            console.log(newdata);
+            return newdata;
 
-    },
-    compareCountriesArrays: function(current, old) {
+        },
+        getDatesColumnNames: function() {
 
-        var found = false;
-        var difference = [];
+            var array = [];
 
-        $.each(old, function(i, old_country) {
+            $.each(Application.attrsMap, function(key, value) {
 
-            $.each(current, function(k, cur_country) {
+                if (/date/.exec(key)) {
+                    //   var val = Application.Helper.getNumber(value);
+                    array.push(value);
+                }
+            });
 
-                if (cur_country.mesh == old_country.mesh) {
-                    found = true;
+            return array;
+
+        },
+        compareCountriesArrays: function(current, old) {
+
+            var found = false;
+            var difference = [];
+
+            $.each(old, function(i, old_country) {
+
+                $.each(current, function(k, cur_country) {
+
+                    if (cur_country.mesh == old_country.mesh) {
+                        found = true;
+                    }
+
+                });
+
+                if (!found) {
+                    difference.push(old_country);
+
                 }
 
+                found = false;
             });
 
-            if (!found) {
-                difference.push(old_country);
+            return difference;
 
-            }
-
-            found = false;
-        });
-
-        return difference;
-
-    },
-});
+        },
+    });
