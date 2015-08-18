@@ -269,7 +269,6 @@ Application.BaseGlobeView = Backbone.View.extend({
         this.globe = new THREE.Mesh(geometry, material);
         this.globe.name = "globe";
         this.scene.add(this.globe);
-        this.globe.rotation.y = -Math.PI / 2 * 3;
         this.globe.userData.name = 'globe';
         this.rayCatchers.push(this.globe);
     },
