@@ -503,6 +503,7 @@ Application.SubmitAttrs = Backbone.View.extend({
         return this;
     },
     action: function() {
+
         var key = $('.vizTitle').val() || $('.vizTitle').attr('placeholder');
         Application.userConfig.templateTitle = key;
         Application._vent.trigger('matcher/submit');

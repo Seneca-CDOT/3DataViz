@@ -158,6 +158,9 @@ b {
     letter-spacing: 2px;*/
     /*background-color: #56567A;*/
 }
+label + button{
+  margin-top: 0;
+}
 button{
     outline: none;
 }
@@ -671,7 +674,8 @@ img {
 }
 /***FILTERS****/
 
-#filterPanel {
+#filterPanel,
+#angleSwitcherPanel {
     background-color: #1F1F2E;
     position: fixed;
     right: 250px;

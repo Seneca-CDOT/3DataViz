@@ -146,6 +146,7 @@ Application.AirportRoutesCollection = Application.BaseGlobeCollection.extend({
             // this.models[i].destroy();
             this.models[i] = null;
         }
+        Application.BaseGlobeCollection.prototype.destroy.call(this);
     },
     getViewConfigs: function(data) {
         var defaults = {

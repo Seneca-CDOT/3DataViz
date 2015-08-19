@@ -50,6 +50,9 @@ THREE.OrbitControls = function(object, domElement) {
         BOTTOM: 40
     };
 
+    this.zoomStart = 1;
+    this.useOrthographicCamera = false;
+
     // internals
 
     var scope = this;
@@ -90,7 +93,6 @@ THREE.OrbitControls = function(object, domElement) {
 
     var oldX = 0;
     var oldY = 0;
-
 
     this.rotateLeft = function(angle) {
 
@@ -146,10 +148,8 @@ THREE.OrbitControls = function(object, domElement) {
         var factor = 1.0 + (_zoomEnd - _zoomStart) * this.userZoomSpeed;
         scale *= factor;
 
-
         _zoomStart += (_zoomEnd - _zoomStart) * this.zoomDampingFactor;
-
-
+        this.zoomStart = _zoomStart;
     };
 
 
@@ -208,7 +208,6 @@ THREE.OrbitControls = function(object, domElement) {
     this.update = function() {
         this.zoomCamera();
         this.momentum();
-        // console.log(scale)
 
         var position = this.object.position;
         var offset = position.clone().sub(this.center);
@@ -236,7 +235,11 @@ THREE.OrbitControls = function(object, domElement) {
         // restrict phi to be betwee EPS and PI-EPS
         phi = Math.max(EPS, Math.min(Math.PI - EPS, phi));
 
-        var radius = offset.length() * scale;
+        //var radius = offset.length() * scale;
+        var radius = offset.length();
+        if(!this.useOrthographicCamera){
+          radius *= scale;
+        }
 
         // restrict radius to be between desired limits
         radius = Math.max(this.minDistance, Math.min(this.maxDistance, radius));

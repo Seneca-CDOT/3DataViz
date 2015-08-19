@@ -19,8 +19,8 @@ Application.ControlPanelRootView = Backbone.View.extend({
         Application._vent.on('visualize', this.enableTimeline, this);
         Application._vent.on('matcher/submit', this.addFiltersView, this);
         Application._vent.on('matcher/submit', this.enableTimeline, this);
-
         Application._vent.on('timeline/ready', this.addTimelineView, this);
+        Application._vent.on('matcher/submit', this.addCameraSwitcherView, this);
 
         this.helpButton = new Application.Help();
         this.helpButton.$el.attr('id', 'helpButton');
@@ -76,6 +76,14 @@ Application.ControlPanelRootView = Backbone.View.extend({
         this.$el.append(this.filtersView.render().$el);
         //this.filterPanel.$el.hide();
 
+    },
+    addCameraSwitcherView: function() {
+
+        if (this.cameraSwitcherView) this.cameraSwitcherView.destroy();
+
+        this.cameraSwitcherView = new Application.CameraSwitcherView();
+        this.$el.append(this.cameraSwitcherView.render().$el);
+        this.cameraSwitcherView.$el.hide();
     },
     addDataSourcesView: function() {
         if (this.dataSourcesView) this.dataSourcesView.destroy();
