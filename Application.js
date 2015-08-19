@@ -108,7 +108,7 @@ Application = {
         points: {
             url: ['Views/Layers/PointsLayer.js'],
             attributes: {
-                default: ['latitude', 'longitude', 'label', 'value', 'category'],
+                default: ['latitude', 'longitude', 'label', 'value', 'category', 'date'],
                 optional: ['label', 'value', 'category']
             },
             filters: [],

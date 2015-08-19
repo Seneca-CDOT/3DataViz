@@ -44,19 +44,27 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         if (intersectedMesh) {
 
-                    var name = intersectedMesh.object.userData.name;
+            var name = intersectedMesh.object.userData.name;
 
-                    Application._vent.trigger('vizinfocenter/message/on', name +
-                        ': ' + that.pointsPerCountry(that.sprites, name) + ' points');
+            Application._vent.trigger('vizinfocenter/message/on', name +
+            ': ' + that.pointsPerCountry(that.sprites, name) + ' points');
         }
     },
     // member methods
     resetGlobe: function() {
 
         var that = this;
+
+        if (this.timer.length > 0) {
+
+            $.each(this.timer, function(index, id) {
+                clearTimeout(id);
+            });
+        }
+
         this.sprites.forEach(function(sprite) {
 
-            that.scene.remove(sprite);
+            that.globe.remove(sprite);
 
             sprite.geometry.dispose();
             sprite.material.dispose();
@@ -103,11 +111,12 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
     },
     // visualization specific functionality
-    showResults: function() {
+    showResults: function(results) {
 
-        // console.log("PointsLayer showResults");
+        this.resetGlobe();
 
-        var results = this.collection[0].models;
+        if (!results) results = this.collection[0].models;
+
         var that = this;
 
         this.getCategoriesWithColors(results);
@@ -175,7 +184,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
             var color = that.getColorByCategory(sprite.userData.category) || '0xffffff';
 
-            that.sprites.push(sprite)
+            that.sprites.push(sprite);
             that.moObjects.push(sprite);
 
             var timer = setTimeout(function() {
@@ -203,6 +212,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
                 sprite.userData.country = that.determineCountry(sprite);
 
                 sprite.userData.result_color = color;
+
 
             }, time);
 

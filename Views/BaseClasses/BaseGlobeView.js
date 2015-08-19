@@ -4,11 +4,11 @@ Application.BaseGlobeView = Application.BaseView.extend({
     tagName: "div",
     id: 'baseGlobe',
     template: _.template($("#globeViewTemplate").html()),
-    // events: {
-    //
-    //     'mousemove': 'onMouseMove',
-    //     'mouseup': 'onMouseUp'
-    // },
+    initialize: function(decorators, collections) {
+        Application.BaseView.prototype.initialize.call(this, decorators, collections);
+
+        Application._vent.on('timeline/clear', this.resetGlobe, this);
+    },
     destroy: function() {
         Application.BaseView.prototype.destroy.call(this);
 
@@ -25,6 +25,9 @@ Application.BaseGlobeView = Application.BaseView.extend({
         this.stars.material.dispose();
         this.stars.geometry.dispose();
         this.stars = null;
+
+        Application._vent.unbind('timeline/clear', this.resetGlobe);
+
     },
     init: function() {
         Application.BaseView.prototype.init.call(this);
@@ -95,6 +98,7 @@ Application.BaseGlobeView = Application.BaseView.extend({
 
         var closest = this.rayCast(this.rayCatchers, event);
         if (closest != null) {
+            
             this.clickOnIntersect(closest);
 
             if (closest.object.userData.name != 'globe') {

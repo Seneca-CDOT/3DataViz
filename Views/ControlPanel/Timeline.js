@@ -2,6 +2,7 @@ Application.Timeline = Backbone.View.extend({
     tagName: 'div',
     id: 'tl_timebox',
     initialize: function(points) {
+
         points.sort(function(a, b){return a-b});
         this.points = points;
         this.pointsObjects = []; // holds data about points
@@ -166,6 +167,7 @@ Application.Timeline = Backbone.View.extend({
         var traveled = this.getCurPos();
 
         if ( cur_pos >= 0 ) {
+            Application._vent.trigger('timeline/clear');
             Application._vent.trigger('timeline/message', that.pointsObjects[0].label);
         }
 
@@ -184,7 +186,7 @@ Application.Timeline = Backbone.View.extend({
             if (cur_pos >= (that.timelineLength)) {
                 clearTimeout(that.timerId);
                 that.addRestart();
-                Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.pointsObjects.length - 1].label)
+                Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.pointsObjects.length - 1].label);
                 that.cur_index = 0;
 
             }

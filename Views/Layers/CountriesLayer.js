@@ -10,8 +10,6 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         this.added = []; // list of countries participating and their old colors
         this.old = [] ; // holds added countries from the previos call
 
-        Application._vent.on('test', this.resetGlobe, this);
-
     },
     render: function() {
 
@@ -83,24 +81,24 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         that.added.length = 0;
 
     },
-    lerpColor: function(initial, end, seconds) {
-        var that = this;
-
-        var t = new TWEEN.Tween(initial);
-
-        t.to(end, seconds*1000);
-
-        t.onUpdate( function() {
-            initial.setRGB(this.r, this.g, this.b);
-            // console.log(this);
-        }
-    );
-
-    t.start();
-
-    this.tweenings.push(t);
-
-},
+//     tweenit: function(initial, end, seconds) {
+//         var that = this;
+//
+//         var t = new TWEEN.Tween(initial);
+//
+//         t.to(end, seconds*1000);
+//
+//         t.onUpdate( function() {
+//             initial.setRGB(this.r, this.g, this.b);
+//             // console.log(this);
+//         }
+//     );
+//
+//     t.start();
+//
+//     this.tweenings.push(t);
+//
+// },
 getColor: function(cur, min, max) {
 
     if (Application.userConfig.model == 'googleTrends') {
@@ -158,9 +156,6 @@ createColors: function(results) {
 
 showResults: function(results) {
 
-    //    this.resetGlobe();
-
-    // console.log("CountriesLayer showResults");
     if(!results) results = this.collection[0].models;
 
     var that = this;
@@ -209,7 +204,12 @@ showResults: function(results) {
         // countrymesh.material.color.g = 1 - colorsMap[item.value];
         // countrymesh.material.color.b = 1 - colorsMap[item.value];
         // countrymesh.material.color.set(colorsMap[item.value]);
-        that.lerpColor(countrymesh.material.color, colorsMap[item.value], 2);
+
+        function getit(tweenObj) {
+
+            countrymesh.material.color.setRGB(tweenObj.r, tweenObj.g, tweenObj.b);
+        }
+        that.tweenit(countrymesh.material.color, colorsMap[item.value], getit, 2);
 
         obj.result_color = countrymesh.material.color.getHex();
 
@@ -221,11 +221,11 @@ showResults: function(results) {
 
     var old_countries = this.compareCountriesArrays(this.added, this.old);
 
-    $.each(old_countries, function(i, country) {
-
-        this.lerpColor(country.mesh.material.color, country.color);
-
-    });
+    // $.each(old_countries, function(i, country) {
+    //
+    //     this.tweenit(country.mesh.material.color, country.color);
+    //
+    // });
 },
 sortResultsByCategory: function() {
 

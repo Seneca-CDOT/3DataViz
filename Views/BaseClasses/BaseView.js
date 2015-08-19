@@ -332,7 +332,7 @@ Application.BaseView = Backbone.View.extend({
 
         var destination = null;
         var mesh = intersect.object;
-        if (mesh !== this.mesh || mesh !== this.globe) {
+        if (mesh !== this.mesh && mesh !== this.globe) {
 
             // TODO: review
             for (var i = 0; i < this.decorators.length; ++i) {
@@ -580,4 +580,21 @@ Application.BaseView = Backbone.View.extend({
         return array;
 
     },
+    tweenit: function(start, end, receive, seconds) {
+        var that = this;
+
+        var t = new TWEEN.Tween(start);
+
+        t.to(end, seconds*1000);
+
+        t.onUpdate( function() {
+            receive(this);
+        }
+    );
+
+    t.start();
+
+    this.tweenings.push(t);
+
+},
 });

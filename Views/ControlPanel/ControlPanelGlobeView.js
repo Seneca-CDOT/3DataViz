@@ -65,8 +65,8 @@ Application.ControlPanelRootView = Backbone.View.extend({
             this.timeline.$el.toggle();
 
         } else {
-        Application._vent.trigger('timeline/on');
-    }
+            Application._vent.trigger('timeline/on');
+        }
     },
     addFiltersView: function() {
 
@@ -119,6 +119,13 @@ Application.ControlPanelRootView = Backbone.View.extend({
         this.destroyCategoriesView();
         this.destroyFilters();
         this.destroyTimeline();
+        this.destroyCameraSwitch();
+    },
+    destroyCameraSwitch: function() {
+        if (this.cameraSwitcherView) {
+            this.cameraSwitcherView.destroy();
+            this.cameraSwitcherView = null;
+        }
     },
     destroyFilters: function() {
         if (this.filtersView) {
