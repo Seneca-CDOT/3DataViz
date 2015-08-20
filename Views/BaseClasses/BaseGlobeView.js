@@ -6,17 +6,9 @@ Application.BaseGlobeView = Application.BaseView.extend({
     template: _.template($("#globeViewTemplate").html()),
     initialize: function(decorators, collections) {
         Application.BaseView.prototype.initialize.call(this, decorators, collections);
-
-        Application._vent.on('timeline/clear', this.resetGlobe, this);
     },
     destroy: function() {
         Application.BaseView.prototype.destroy.call(this);
-
-        for (var i = 0; i < this.decorators.length; ++i) {
-
-            this.decorators[i].destroy(this);
-        }
-        this.decorators = null;
 
         this.globe.material.dispose();
         this.globe.geometry.dispose();
@@ -26,8 +18,10 @@ Application.BaseGlobeView = Application.BaseView.extend({
         this.stars.geometry.dispose();
         this.stars = null;
 
-        Application._vent.unbind('timeline/clear', this.resetGlobe);
-
+    },
+    reset: function() {
+        Application.BaseView.prototype.reset.call(this);
+        this.resetGlobe();
     },
     init: function() {
         Application.BaseView.prototype.init.call(this);
@@ -46,7 +40,6 @@ Application.BaseGlobeView = Application.BaseView.extend({
         this.scene.add(this.stars);
     },
     addGlobe: function() {
-
         var geometry = new THREE.SphereGeometry(this.globeRadius, 64, 64, 90 * (Math.PI / 180));
         var material = new THREE.MeshPhongMaterial({
             color: 0x4396E8,
@@ -60,13 +53,9 @@ Application.BaseGlobeView = Application.BaseView.extend({
         this.rayCatchers.push(this.globe);
     },
     addLight: function() {
-
-        // var globalLight = new THREE.HemisphereLight(0xFFFFFF,0xFFFFFF,1);
         var dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.5);
         dirLight.position.set(-500, 500, 500);
         dirLight.target = this.globe;
-
-        // this.scene.add(globalLight);
         this.camera.add(dirLight);
     },
     clickOn: function(event) {
@@ -82,10 +71,8 @@ Application.BaseGlobeView = Application.BaseView.extend({
                 Application._vent.trigger('vizinfocenter/message/on', closest.object.userData.name[0]);
             } else return null;
 
-        } else {
+        } else Application._vent.trigger('vizinfocenter/message/off');
 
-            Application._vent.trigger('vizinfocenter/message/off');
-        }
         return closest;
     },
     showAllResults: function() {
@@ -134,21 +121,14 @@ Application.BaseGlobeView = Application.BaseView.extend({
 
             $.each(current, function(k, cur_country) {
 
-                if (cur_country.mesh == old_country.mesh) {
-                    found = true;
-                }
+                if (cur_country.mesh == old_country.mesh)  found = true;
 
             });
 
-            if (!found) {
-                difference.push(old_country);
-
-            }
-
+            if (!found) difference.push(old_country);
             found = false;
         });
 
         return difference;
-
     },
 });

@@ -74,7 +74,7 @@ Application.Timeline = Backbone.View.extend({
         this.setInitialPoint();
         this.configPoints(this.points);
         this.addPoints(this.pointsObjects);
-        $('#tl_timebox').css('margin-left',-($('#tl_timebox').innerWidth()/2));
+        //$('#tl_timebox').css('margin-left',-($('#tl_timebox').innerWidth()/2));
         this.suscribe();
     },
     destroy: function() {
@@ -86,6 +86,8 @@ Application.Timeline = Backbone.View.extend({
         this.$play = null;
         this.$el.unbind();
         this.$el.remove();
+        this.points = null;
+        this.pointsObjects = null;
     },
     setInitialPoint: function() {
 
@@ -108,7 +110,6 @@ Application.Timeline = Backbone.View.extend({
     addPoints: function(points) {
 
         var position = this.distance;
-        // var position = 0;
 
         for (var i = 0; i < points.length; i++) {
             var $point = this.$point.clone();

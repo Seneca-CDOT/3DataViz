@@ -1,8 +1,6 @@
 var Application = Application || {};
 
 Application.BaseView = Backbone.View.extend({
-    // tagName: "div",
-    // id: 'baseGlobe',
     template: _.template($("#globeViewTemplate").html()),
     events: {
         'mousemove': 'onMouseMove',
@@ -25,48 +23,50 @@ Application.BaseView = Backbone.View.extend({
         this.direction = new THREE.Vector3();
         this.activeCategories = []; // holds active categories
 
-        if (decorators !== undefined)
-            this.decorators = decorators;
-        else
-            this.decorators = [];
-
-        this.rayCatchers = [];
-        this.globeRadius = 50;
-
-        // TODO: review
-        this.moved = false;
-        this.orbitOn = false;
-
-        this.idle = true;
-        this.timer = [];
-
-        this.requestedAnimationFrameId = null;
-        var that = this;
+        if (decorators.length) this.decorators = decorators;
+        else this.decorators = [];
 
         this.collection = [];
 
-        $.each(collections, function(index, collection) {
-
-            that.collection[index] = collection;
-
-        });
-
+        for (var i = 0; i < collections.length; i++) {
+            this.collection.push(collections[i]);
+        }
+        this.rayCatchers = [];
+        this.globeRadius = 50;
+        this.moved = false;
+        this.orbitOn = false;
+        this.idle = true;
+        this.timer = [];
+        this.requestedAnimationFrameId = null;
         this.suscribe();
-        this.sortedByDateData;
+        this.sortedByDateData = [];
         this.tweenings = []; // holds references for tween instances
 
+        this.test = 1;
 
-        // TODO: review
+    },
+    suscribe: function() {
+        console.log("BaseView suscribe");
+        Application._vent.on('data/ready', this.showResults, this);
         $(window).on('resize', this.onWindowResize.bind(this));
         Application._vent.on('filters/add', this.addCategory, this);
         Application._vent.on('filters/remove', this.removeCategory, this);
         Application._vent.on('timeline/on', this.timelineAction, this);
         Application._vent.on('timeline/message', this.findObjectsbyDate, this);
+        Application._vent.on('timeline/clear', this.reset, this);
     },
-    suscribe: function() {
-        console.log("BaseView suscribe");
-        Application._vent.on('data/ready', this.showResults, this);
+    unsuscribe: function() {
+        $(window).unbind('resize');
+        Application._vent.unbind('data/ready', this.showResults);
+        //this.collection[0].unbind();
+        Application._vent.unbind('filters/add', this.addCategory);
+        Application._vent.unbind('filters/remove', this.removeCategory);
+        Application._vent.unbind('timeline/on', this.timelineAction);
+        Application._vent.unbind('timeline/message', this.findObjectsbyDate);
+        Application._vent.unbind('timeline/clear', this.reset);
+
     },
+    reset: function() {},
     destroy: function() {
 
         console.log("BaseView destory");
@@ -82,16 +82,12 @@ Application.BaseView = Backbone.View.extend({
         this.camera = null;
         this.controls = null;
         this.tween = null;
-
-        $.each(this.collection, function(index, collection) {
-
-            collection = null;
-        });
+        this.categories = null;
 
         // TODO: review
         this.rayCatchers = null;
 
-        if (this.timer) {
+        if (this.timer.length) {
 
             $.each(this.timer, function(index, id) {
                 clearTimeout(id);
@@ -105,17 +101,24 @@ Application.BaseView = Backbone.View.extend({
             this.requestedAnimationFrameId = null;
         }
 
-        // TODO: review
-        $(window).unbind('resize');
-        Application._vent.unbind('data/ready', this.showResults);
-        this.collection[0].unbind();
-        Application._vent.unbind('filters/add', this.addCategory);
-        Application._vent.unbind('filters/remove', this.removeCategory);
-        Application._vent.unbind('timeline/on', this.sortResultsByDate);
-        Application._vent.unbind('timeline/message', this.findObjectsbyDate);
+        for (var i = 0; i < this.decorators.length; ++i) {
 
+            this.decorators[i].destroy(this);
+        }
+        this.decorators = null;
+
+        for (var i = 0; i < this.collection.length; ++i) {
+
+            this.collection[i] = null;
+        }
+
+        this.collection = null;
+
+
+        this.unsuscribe();
         this.tweenings.length = 0;
     },
+
     render: function() {
 
         this.show();
@@ -155,42 +158,21 @@ Application.BaseView = Backbone.View.extend({
     // member methods
     onMouseUp: function(e) {
 
-      if (!this.moved) {
-          this.clickOn(e);
-      }
-      this.moved = false;
+        if (!this.moved) {
+            this.clickOn(e);
+        }
+        this.moved = false;
     },
     onMouseMove: function(e) {
-
-        if (e.which == 1) {
-
-            this.moved = true;
-        }
-
-        // TODO: fix issue with particles then uncomment
-        // function setTimer() {
-
-        //     this.idle = false;
-
-        //     clearTimeout(this.timer);
-
-        //     var that = this;
-        //     this.timer = setTimeout(function() {
-
-        //         that.idle = true
-        //     }, 5000);
-        // };
-        // setTimer.call(this);
+        if (e.which == 1) this.moved = true;
     },
     show: function() {
-
         this.init();
         this.decorateProperties();
         this.startDataSynchronization();
     },
 
     init: function() {
-
         this.addSceneAndRenderer();
         this.addCamera();
         this.addScene();
@@ -201,7 +183,7 @@ Application.BaseView = Backbone.View.extend({
     },
     decorateProperties: function() {
 
-        if(this.decorators.length > 0){
+        if (this.decorators.length){
             for (var i = 0; i < this.decorators.length; ++i) {
                 this.decorators[i].decorateGlobe(this);
             }
@@ -210,7 +192,6 @@ Application.BaseView = Backbone.View.extend({
     startDataSynchronization: function() {
 
     },
-
     addSceneAndRenderer: function() {
 
         this.scene = new THREE.Scene();
@@ -271,20 +252,10 @@ Application.BaseView = Backbone.View.extend({
     },
     updateScene: function() {
 
-        if(this.controls){
-          this.controls.update();
-
-        //  if (this.orbitOn === true) {
-
-              TWEEN.update();
-          //}
+        if (this.controls) {
+            this.controls.update();
+            TWEEN.update();
         }
-
-        // TODO: fix issue with particles then uncomment
-        // if (this.idle === true) {
-
-        //     this.mesh.rotation.y -= 0.0003;
-        // }
     },
     addControls: function() {
 
@@ -296,7 +267,6 @@ Application.BaseView = Backbone.View.extend({
     addHelpers: function() {
         Application.Debug.addStats();
     },
-
     // TODO: move out of this view
     onWindowResize: function() {
 
@@ -304,7 +274,6 @@ Application.BaseView = Backbone.View.extend({
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth - this.offset, window.innerHeight);
     },
-
     // interaction
     clickOn: function(event) {
 
@@ -369,26 +338,26 @@ Application.BaseView = Backbone.View.extend({
         }
 
         this.tween = new TWEEN.Tween(current)
-            .to({
-                x: destination.x,
-                y: destination.y,
-                z: destination.z
-            }, 1000)
-            .easing(TWEEN.Easing.Sinusoidal.InOut)
-            .onUpdate((function(that) {
+        .to({
+            x: destination.x,
+            y: destination.y,
+            z: destination.z
+        }, 1000)
+        .easing(TWEEN.Easing.Sinusoidal.InOut)
+        .onUpdate((function(that) {
 
-                return function() {
+            return function() {
 
-                    onUpdate(this, that);
-                };
-            })(this))
-            .onComplete((function(that) {
+                onUpdate(this, that);
+            };
+        })(this))
+        .onComplete((function(that) {
 
-                return function() {
+            return function() {
 
-                    onComplete(this, that);
-                };
-            })(this));
+                onComplete(this, that);
+            };
+        })(this));
 
         function onUpdate(point, that) {
 
@@ -408,20 +377,20 @@ Application.BaseView = Backbone.View.extend({
         this.tween.start();
     },
     showResults: function(results) {
-      if (this.categories.length > 0 && this.categories[0] !== undefined) {
-          Application._vent.trigger('controlpanel/categories', this.categories);
-      }
+        if (this.categories.length > 0 && this.categories[0] !== undefined) {
+            Application._vent.trigger('controlpanel/categories', this.categories);
+        }
     },
     sortResultsByCategory: function() {},
     getCategories: function(results){
-      this.categories = Application.Filter.getCategories(results);
+        this.categories = Application.Filter.getCategories(results);
     },
     getCategoriesWithColors: function(results, obj){
-      this.categories = Application.Filter.getCategories(results);
-      $.each(this.categories, function(index, category){
-          category.index = index;
-          category.color = Application.Helper.getRandomColor(obj);
-      });
+        this.categories = Application.Filter.getCategories(results);
+        $.each(this.categories, function(index, category){
+            category.index = index;
+            category.color = Application.Helper.getRandomColor(obj);
+        });
     },
     addCategory: function(group) {
 
@@ -438,24 +407,24 @@ Application.BaseView = Backbone.View.extend({
     },
     getCategoryObj: function(categoryName){
 
-      var category;
-      $.each(this.categories, function(index, c){
-        if(c.name === categoryName){
-          category = c;
-        }
-      });
-      return category;
+        var category;
+        $.each(this.categories, function(index, c){
+            if(c.name === categoryName){
+                category = c;
+            }
+        });
+        return category;
 
     },
     getColorByCategory: function(categoryName){
 
-      var color;
-      $.each(this.categories, function(index, category){
-        if(category.name === categoryName){
-          color = category.color.replace('#','0x');
-        }
-      });
-      return color || '0xffffff';
+        var color;
+        $.each(this.categories, function(index, category){
+            if(category.name === categoryName){
+                color = category.color.replace('#','0x');
+            }
+        });
+        return color || '0xffffff';
 
     },
     timelineAction: function() {
@@ -464,7 +433,7 @@ Application.BaseView = Backbone.View.extend({
             tween.stop();
         });
 
-        this.resetGlobe();
+        this.reset();
 
         this.sortResultsByDate();
     },
@@ -528,8 +497,6 @@ Application.BaseView = Backbone.View.extend({
             });
         });
 
-        // return newdata;
-        console.log(newdata);
         return newdata;
 
     },
@@ -538,7 +505,6 @@ Application.BaseView = Backbone.View.extend({
         var data = this.collection[0].models;
 
         var dateAttrs = this.getDatesColumnNames();
-
 
         var newdata = {};
 
@@ -560,8 +526,6 @@ Application.BaseView = Backbone.View.extend({
             });
         });
 
-        // return newdata;
-        console.log(newdata);
         return newdata;
 
     },
