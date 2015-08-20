@@ -202,6 +202,12 @@ button{
   border-radius: 50%;
   margin-right: 8px;
 }
+#newAttr {
+
+position: relative;
+width: 100%;
+color: black;
+}
 
 .btn-file {
     position: relative;
@@ -681,4 +687,65 @@ img {
     font-size: 150%;
     z-index: 999;
     /*font-weight: lighter;*/
+}
+
+/***TIMELINE***/
+
+#tl_timebox {
+    position: fixed;
+    bottom: 20px;
+    height: 50px;
+    width: 50%;
+    left: 50%;
+    margin-left: -35%;
+    /*border: 1px solid red;*/
+}
+
+#tl_control {
+    position: absolute;
+    left: 0;
+    top: 0;
+    /*border: 1px solid green;*/
+    height: 100%;
+    width: 50px;
+    cursor: pointer;
+}
+
+#tl_line {
+    position: absolute;
+    left: 50px;
+    top: 0;
+    /*border: 1px solid blue;*/
+    height: 100%;
+    width: 100%;
+}
+
+#tl_slider {
+
+    position: absolute;
+    width: 10px;
+    height: 100%;
+    /*border: 1px solid green;*/
+    left: 0;
+    top: 0;
+    cursor: pointer;
+}
+
+.tl_point {
+     position: absolute;
+    width: 20px;
+    height: 100%;
+    /*border: 1px solid yellow;*/
+    left: 20px;
+    top: 0;
+    cursor: pointer;
+}
+
+.tl_label {
+    position: absolute;
+    top: -20px;
+    left: -10px;
+    width: 50px;
+    height: 20px;
+    /*border: 1px solid red;*/
 }

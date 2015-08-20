@@ -1,16 +1,14 @@
 var Application = Application || {};
 
 Application.BaseView = Backbone.View.extend({
-    tagName: "div",
-    id: 'baseGlobe',
+    // tagName: "div",
+    // id: 'baseGlobe',
     template: _.template($("#globeViewTemplate").html()),
     events: {
-
         'mousemove': 'onMouseMove',
         'mouseup': 'onMouseUp',
         'mousedown': 'onMouseDown'
     },
-
     // framework methods
     initialize: function(decorators, collections) {
 
@@ -54,11 +52,16 @@ Application.BaseView = Backbone.View.extend({
         });
 
         this.suscribe();
+        this.sortedByDateData;
+        this.tweenings = []; // holds references for tween instances
+
 
         // TODO: review
         $(window).on('resize', this.onWindowResize.bind(this));
         Application._vent.on('filters/add', this.addCategory, this);
         Application._vent.on('filters/remove', this.removeCategory, this);
+        Application._vent.on('timeline/on', this.timelineAction, this);
+        Application._vent.on('timeline/message', this.findObjectsbyDate, this);
     },
     suscribe: function() {
         console.log("BaseView suscribe");
@@ -108,13 +111,16 @@ Application.BaseView = Backbone.View.extend({
         this.collection[0].unbind();
         Application._vent.unbind('filters/add', this.addCategory);
         Application._vent.unbind('filters/remove', this.removeCategory);
+        Application._vent.unbind('timeline/on', this.sortResultsByDate);
+        Application._vent.unbind('timeline/message', this.findObjectsbyDate);
+
+        this.tweenings.length = 0;
     },
     render: function() {
 
         this.show();
         return this;
-    },
-
+    }, /// !!!! ///
     rayCast: function(objects, e) {
 
         var x = e.clientX;
@@ -268,12 +274,12 @@ Application.BaseView = Backbone.View.extend({
         if(this.controls){
           this.controls.update();
 
-          if (this.orbitOn === true) {
+        //  if (this.orbitOn === true) {
 
               TWEEN.update();
-          }
+          //}
         }
-      
+
         // TODO: fix issue with particles then uncomment
         // if (this.idle === true) {
 
@@ -326,7 +332,7 @@ Application.BaseView = Backbone.View.extend({
 
         var destination = null;
         var mesh = intersect.object;
-        if (mesh !== this.mesh || mesh !== this.globe) {
+        if (mesh !== this.mesh && mesh !== this.globe) {
 
             // TODO: review
             for (var i = 0; i < this.decorators.length; ++i) {
@@ -419,14 +425,10 @@ Application.BaseView = Backbone.View.extend({
     },
     addCategory: function(group) {
 
-        group.name;
-
         this.activeCategories.push(group.category);
         this.sortResultsByCategory();
     },
     removeCategory: function(group) {
-
-        group.name;
 
         var i = this.activeCategories.indexOf(group.category);
         if (i != -1) {
@@ -456,4 +458,143 @@ Application.BaseView = Backbone.View.extend({
       return color || '0xffffff';
 
     },
+    timelineAction: function() {
+
+        $.each(this.tweenings, function(i, tween) {
+            tween.stop();
+        });
+
+        this.resetGlobe();
+
+        this.sortResultsByDate();
+    },
+    findObjectsbyDate: function(date) {
+
+        this.showResults(this.sortedByDateData[date]);
+    },
+    sortResultsByDate: function() {
+
+        if ( typeof Application.attrsMap['date2'] == "undefined") {
+
+            this.sortedByDateData = this.sortResultsByDateColumn();
+
+        } else {
+
+            this.sortedByDateData = this.sortResultsByDateRow();
+        }
+
+        var names = _.keys(this.sortedByDateData);
+
+        Application._vent.trigger('timeline/ready', names);
+
+        var first = _.keys(this.sortedByDateData)[0];
+        //this.showResults(this.sortedByDateData[first]);
+
+    },
+    sortResultsByDateColumn: function() {
+
+        var data = this.collection[0].models;
+
+        data.sort(function(a,b) {
+            return new Date(a.date).getTime() - new Date(b.date).getTime()
+        });
+
+        var uniques = _.chain(data).map(function(item) {
+            return item.date
+        }).uniq().value();
+
+        $.each(uniques, function(i, element) {
+            if (element === undefined)
+            uniques.splice(i, 1);
+        });
+
+        var newdata = {};
+
+        $.each(uniques, function(i,unique) {
+
+            newdata[unique] = [];
+
+        });
+
+        $.each(data, function(i, obj) {
+
+            $.each(uniques, function(i, unique) {
+
+                if (unique == obj.date) {
+
+                    newdata[unique].push(obj);
+
+                }
+            });
+        });
+
+        // return newdata;
+        console.log(newdata);
+        return newdata;
+
+    },
+    sortResultsByDateRow: function() {
+
+        var data = this.collection[0].models;
+
+        var dateAttrs = this.getDatesColumnNames();
+
+
+        var newdata = {};
+
+        $.each(dateAttrs, function(i, date) {
+
+            newdata[date] = [];
+
+        });
+
+        $.each(data, function(i, obj) {
+
+            $.each(dateAttrs, function(i, date) {
+
+                var name = _.invert(Application.attrsMap)[date];
+
+                var value = Application.Helper.getNumber(obj[name]);
+
+                newdata[date].push({ value: value, country: obj['country'] });
+            });
+        });
+
+        // return newdata;
+        console.log(newdata);
+        return newdata;
+
+    },
+    getDatesColumnNames: function() {
+
+        var array = [];
+
+        $.each(Application.attrsMap, function(key, value) {
+
+            if (/date/.exec(key)) {
+                //   var val = Application.Helper.getNumber(value);
+                array.push(value);
+            }
+        });
+
+        return array;
+
+    },
+    tweenit: function(start, end, receive, seconds) {
+        var that = this;
+
+        var t = new TWEEN.Tween(start);
+
+        t.to(end, seconds*1000);
+
+        t.onUpdate( function() {
+            receive(this);
+        }
+    );
+
+    t.start();
+
+    this.tweenings.push(t);
+
+},
 });

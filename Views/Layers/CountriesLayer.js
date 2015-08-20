@@ -8,6 +8,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.initialize.call(this, decorator, collections);
 
         this.added = []; // list of countries participating and their old colors
+        this.old = [] ; // holds added countries from the previos call
 
     },
     render: function() {
@@ -25,7 +26,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         var sign = '';
 
-         if (Application.userConfig.model == 'googleTrends') sign = '%';
+        if (Application.userConfig.model == 'googleTrends') sign = '%';
 
         if (intersectedMesh) {
 
@@ -34,7 +35,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
                 if (intersectedMesh.object == country.mesh) {
 
                     Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
-                        '<br>' + Application.Helper.formatNumber(country.value) + sign );
+                    '<br>' + Application.Helper.formatNumber(country.value) + sign );
                     found = true;
                 }
 
@@ -70,144 +71,182 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
     resetGlobe: function() {
 
         var that = this;
+
         $.each(that.added, function(index, country) {
 
             country.mesh.material.color.setHex(country.color);
 
         });
-    },
-    getColor: function(cur, min, max) {
 
-       if (Application.userConfig.model == 'googleTrends') {
-         min = 0; max = 100;
-        }
-
-        var x = cur - min;
-        var y = max - min;
-        var value = x / y;
-
-        return this.percentToRGB(value*100);
+        that.added.length = 0;
 
     },
-      percentToRGB:  function(percent) {
-        if (percent === 100) {
-            percent = 99
-        }
-        var r, g, b;
-        //
-        // if (percent < 50) {
-        //     // green to yellow
-        //     r = Math.floor(255 * (percent / 50));
-        //     g = 255;
-        //
-        // } else {
-            // yellow to red
-            r = 255;
-            g = Math.floor(255 * ((100 - percent) / 50));
-            console.log(percent);
-        // }
-        b = 0;
-        return "rgb(" + r + "," + g + "," + b + ")";
-    },
-    createColors: function(results) {
+//     tweenit: function(initial, end, seconds) {
+//         var that = this;
+//
+//         var t = new TWEEN.Tween(initial);
+//
+//         t.to(end, seconds*1000);
+//
+//         t.onUpdate( function() {
+//             initial.setRGB(this.r, this.g, this.b);
+//             // console.log(this);
+//         }
+//     );
+//
+//     t.start();
+//
+//     this.tweenings.push(t);
+//
+// },
+getColor: function(cur, min, max) {
 
-        var that = this;
-        var colors = {};
+    if (Application.userConfig.model == 'googleTrends') {
+        min = 0; max = 100;
+    }
 
-        var min = results[0].value;
-        var max = results[results.length - 1].value;
+    var x = cur - min;
+    var y = max - min;
+    var value = x / y;
 
-        var uniques = _.chain(results).map(function(item) {
-            return item.value
-        }).uniq().value();
+    return this.percentToRGB(value*100);
 
-        $.each(uniques, function(index, number) {
+},
+percentToRGB:  function(percent) {
+    if (percent === 100) {
+        percent = 99
+    }
+    var r, g, b;
+    //
+    // if (percent < 50) {
+    //     // green to yellow
+    //     r = Math.floor(255 * (percent / 50));
+    //     g = 255;
+    //
+    // } else {
+    // yellow to red
+    r = 255;
+    g = Math.floor(255 * ((100 - percent) / 100));
+    //console.log(percent);
+    // }
+    b = 0;
+    // return "rgb(" + r + "," + g + "," + b + ")";
+    return { r: (r/255), g: (g/255), b: (b/255) }
+},
+createColors: function(results) {
 
-            colors[number] = that.getColor(number, min, max);
+    var that = this;
+    var colors = {};
 
-        });
+    var min = Math.log10(Math.log10(results[0].value));
+    var max = Math.log10(Math.log10(results[results.length - 1].value));
 
-        return colors;
-    },
+    var uniques = _.chain(results).map(function(item) {
+        return item.value;
+    }).uniq().value();
 
-    showResults: function() {
+    $.each(uniques, function(index, number) {
 
-        // console.log("CountriesLayer showResults");
-        var results = this.collection[0].models;
-        var that = this;
+        colors[number] = that.getColor(Math.log10(Math.log10(number)), min, max);
 
-        this.getCategories(results);
-        Application.BaseGlobeView.prototype.showResults.call(this, results);
+    });
 
-        Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
+    return colors;
+},
 
-        if (results.length == 0) {
-            Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
+showResults: function(results) {
+
+    if(!results) results = this.collection[0].models;
+
+    var that = this;
+
+    this.getCategories(results);
+    Application.BaseGlobeView.prototype.showResults.call(this, results);
+
+    Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
+
+    if (results.length == 0) {
+        Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
+        return;
+    } else if (!(results[0].country)) {
+        Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
+        return;
+    }
+
+    Application._vent.trigger('controlpanel/message/off');
+
+    results.sort(function(a, b) { // sorts array in ascending order by value
+        return a.value - b.value
+    });
+
+    var colorsMap = this.createColors(results); // creates a colors map relative to the values
+
+    results.forEach(function(item, index) {
+
+        var countrymesh = that.decorators[0].findCountry(item.country);
+
+        if (!countrymesh) {
+            // console.log('Country ' + (item.countrycode || item.countryname) + ' is not available ');
             return;
-        } else if (!(results[0].country)) {
-            Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
-            return;
         }
 
-        Application._vent.trigger('controlpanel/message/off');
+        // console.log(countrymesh.userData.name, ' ' + item.value + '%');
 
-        results.sort(function(a, b) { // sorts array in ascending order by value
-            return a.value - b.value
-        });
+        var obj = {};
+        obj.mesh = countrymesh;
+        obj.color = countrymesh.material.color.getHex();
+        if (item.value) obj.value = item.value;
+        //console.log(countrymesh.userData.name)
 
-        var colorsMap = this.createColors(results); // creates a colors map relative to the values
+        if (item.category) obj.category = item.category;
 
+        // countrymesh.material.color.r = 1;
+        // countrymesh.material.color.g = 1 - colorsMap[item.value];
+        // countrymesh.material.color.b = 1 - colorsMap[item.value];
+        // countrymesh.material.color.set(colorsMap[item.value]);
 
-        results.forEach(function(item, index) {
+        function getit(tweenObj) {
 
-            var countrymesh = that.decorators[0].findCountry(item.country);
+            countrymesh.material.color.setRGB(tweenObj.r, tweenObj.g, tweenObj.b);
+        }
+        that.tweenit(countrymesh.material.color, colorsMap[item.value], getit, 2);
 
-            if (!countrymesh) {
-                // console.log('Country ' + (item.countrycode || item.countryname) + ' is not available ');
-                return;
-            }
+        obj.result_color = countrymesh.material.color.getHex();
 
-            // console.log(countrymesh.userData.name, ' ' + item.value + '%');
+        that.added.push(obj);
 
-            var obj = {};
-            obj.mesh = countrymesh;
-            obj.color = countrymesh.material.color.getHex();
-            if (item.value) obj.value = item.value;
-            console.log(countrymesh.userData.name)
+    });
 
-            if (item.category) obj.category = item.category;
+    this.old = that.added;
 
-            // countrymesh.material.color.r = 1;
-            // countrymesh.material.color.g = 1 - colorsMap[item.value];
-            // countrymesh.material.color.b = 1 - colorsMap[item.value];
-            countrymesh.material.color.set(colorsMap[item.value]);
+    var old_countries = this.compareCountriesArrays(this.added, this.old);
 
-            obj.result_color = countrymesh.material.color.getHex();
+    // $.each(old_countries, function(i, country) {
+    //
+    //     this.tweenit(country.mesh.material.color, country.color);
+    //
+    // });
+},
+sortResultsByCategory: function() {
 
-            that.added.push(obj);
+    var that = this;
 
-        });
-    },
-    sortResultsByCategory: function() {
+    Application.BaseGlobeView.prototype.sortResultsByCategory.call(this);
 
-        var that = this;
+    // this.resetGlobe();
+    this.showAllResults();
 
-        Application.BaseGlobeView.prototype.sortResultsByCategory.call(this);
+    // if (category == 'All') return;
 
-       // this.resetGlobe();
-        this.showAllResults();
+    if (this.activeCategories.length != 0) {
+        $.each(this.added, function(index, country) { // turn all added countries grey
 
-       // if (category == 'All') return;
-
-       if (this.activeCategories.length != 0) {
-       $.each(this.added, function(index, country) { // turn all added countries grey
-
-                country.mesh.material.color.r = 0.5;
-                country.mesh.material.color.g = 0.5;
-                country.mesh.material.color.b = 0.5;
+            country.mesh.material.color.r = 0.5;
+            country.mesh.material.color.g = 0.5;
+            country.mesh.material.color.b = 0.5;
 
         });
-   }
+    }
 
     $.each(this.activeCategories, function(i, category) {
 

@@ -214,10 +214,12 @@ Application.Button = Application.ControlElementsGlobeView.extend({
 
         Application.ControlElementsGlobeView.prototype.action.call(this, e);
         Application._vent.trigger('matcher/off');
+    },
+    destroy: function() {
+        this.$el.remove();
+        this.$el.unbind();
     }
 });
-
-
 
 Application.VizButton = Application.ControlElementsGlobeView.extend({
     tagName: 'button',

@@ -45,6 +45,7 @@ Application = {
             'Views/ControlPanel/ControlElementsGlobeView.js',
             'Views/ControlPanel/Matcher.js',
             'Views/ControlPanel/FiltersView.js',
+            'Views/ControlPanel/Timeline.js',
             'Views/ControlPanel/CameraSwitcherView.js',
 
             'Views/BaseClasses/RootView.js',
@@ -98,7 +99,7 @@ Application = {
         countries: {
             url: ['Views/Layers/CountriesLayer.js'],
             attributes: {
-                default: ['country', 'value', 'category'],
+                default: ['country', 'value', 'category', 'date'],
                 optional: ['category', 'countrycode', 'label']
             },
             filters: ['country'],
@@ -107,7 +108,7 @@ Application = {
         points: {
             url: ['Views/Layers/PointsLayer.js'],
             attributes: {
-                default: ['latitude', 'longitude', 'label', 'value', 'category'],
+                default: ['latitude', 'longitude', 'label', 'value', 'category', 'date'],
                 optional: ['label', 'value', 'category']
             },
             filters: [],

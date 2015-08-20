@@ -8,12 +8,18 @@ Application.ControlPanelRootView = Backbone.View.extend({
         this.dataSourcesView = new Application.DataSourcesView();
         this.matcher = new Application.Matcher();
 
+
         Application._vent.on('data/parsed', this.addTemplatesView, this);
 
         Application._vent.on('matcher/on', this.destroyViews, this);
         Application._vent.on('controlpanel/input/changed', this.destroyViews, this);
+        Application._vent.on('controlpanel/subview/model', this.destroyViews, this);
+
         Application._vent.on('visualize', this.addFiltersView, this);
+        Application._vent.on('visualize', this.enableTimeline, this);
         Application._vent.on('matcher/submit', this.addFiltersView, this);
+        Application._vent.on('matcher/submit', this.enableTimeline, this);
+        Application._vent.on('timeline/ready', this.addTimelineView, this);
         Application._vent.on('matcher/submit', this.addCameraSwitcherView, this);
 
         this.helpButton = new Application.Help();
@@ -29,7 +35,38 @@ Application.ControlPanelRootView = Backbone.View.extend({
     render: function() {
         this.$el.append(this.dataSourcesView.render().$el);
         this.$el.append(this.matcher.render().$el);
+
         return this;
+    },
+    addTimelineView: function(dates) {
+
+        if (this.timeline) this.timeline.destroy();
+        this.timeline = new Application.Timeline(dates);
+        this.$el.append(this.timeline.$el);
+        this.timeline.update();
+    },
+    enableTimeline: function() {
+
+        if ( typeof Application.attrsMap['date'] != "undefined") {
+
+            if (this.timelineButton) this.timelineButton.destroy();
+            this.timelineButton = new Application.Button();
+            this.timelineButton.$el.text('TIMELINE');
+            this.timelineButton.$el.on('mousedown', this.timelineButtonAction.bind(this));
+            var div = $('<div class="configList"</div>');
+            this.$el.append(div)
+            div.append(this.timelineButton.render().$el);
+        }
+    },
+    timelineButtonAction: function() {
+
+        if (this.timeline) {
+
+            this.timeline.$el.toggle();
+
+        } else {
+            Application._vent.trigger('timeline/on');
+        }
     },
     addFiltersView: function() {
 
@@ -80,6 +117,33 @@ Application.ControlPanelRootView = Backbone.View.extend({
     destroyViews: function() {
         this.destroyTemplatesView();
         this.destroyCategoriesView();
+        this.destroyFilters();
+        this.destroyTimeline();
+        this.destroyCameraSwitch();
+    },
+    destroyCameraSwitch: function() {
+        if (this.cameraSwitcherView) {
+            this.cameraSwitcherView.destroy();
+            this.cameraSwitcherView = null;
+        }
+    },
+    destroyFilters: function() {
+        if (this.filtersView) {
+            this.filtersView.destroy();
+            this.filtersView = null;
+        }
+    },
+    destroyTimeline: function() {
+        if (this.timeline) {
+            this.timeline.destroy();
+            this.timeline = null;
+        }
+
+        if (this.timelineButton) {
+            this.timelineButton.destroy();
+            this.timelineButton = null;
+
+        }
     },
     destroyCategoriesView: function() {
 
@@ -627,7 +691,8 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
         this.urlfield.$el.attr('class', 'form-control userInput');
         this.urlfield.$el.attr('id', 'key');
         // this.urlfield.$el.val("13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg");
-        this.urlfield.$el.val("1HFYTBC2iKabiidtP2U148PKvMW5tRUvxTAzoJ7w3vNo");
+        // this.urlfield.$el.val("1HFYTBC2iKabiidtP2U148PKvMW5tRUvxTAzoJ7w3vNo");
+        this.urlfield.$el.val("1GAYmPSBgK0yuluRcIWjyVVWnh41L4fDG00fJbHVZnFk");
         this.urlfield.$el.on('mousedown', this.urlFieldAction.bind(this));
         this.labelForKey = $('<label for="key" class="label">ENTER A KEY</label>');
 
