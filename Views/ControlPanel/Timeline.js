@@ -17,6 +17,7 @@ Application.Timeline = Backbone.View.extend({
         // this.SVGRestartButton = document.getElementById('restartButton'); // holding a reference to SVG control  element
         // this.SVGLine = document.getElementById('timeline');
         this.timelineLength = 0;
+
     },
     render: function() {
 
@@ -25,7 +26,7 @@ Application.Timeline = Backbone.View.extend({
 
         this.$lineBox = $('<div id="tl_line"></div>');
         this.$timeline = $('<svg width="100%"><line id="timeline" x1="10" y1="25"' +
-        ' x2="800" y2="25" stroke="red" fill="transparent" stroke-width="1"/></svg>');
+        ' x2="100%" y2="25" stroke="red" fill="transparent" stroke-width="1"/></svg>');
         this.$slider = $('<div id="tl_slider"><svg height="100%"><line x1="5" y1="10"' +
         ' x2="5" y2="40" stroke="red" fill="transparent" stroke-width="2"/></svg></div>');
         this.$point = $("<div class='tl_point'><svg height='100%' width='100%'>" +
@@ -73,11 +74,11 @@ Application.Timeline = Backbone.View.extend({
     },
     update: function() {
         this.setTimelineLength();
-        this.distance = this.timelineLength / this.points.length; // distance between the points
+        this.distance = 98 / this.points.length; // distance between the points
         this.setInitialPoint();
         this.configPoints(this.points);
         this.addPoints(this.pointsObjects);
-        $('#tl_timebox').css('margin-left',-($('#tl_timebox').innerWidth()/2));
+        // $('#tl_timebox').css('margin-left',-($('#tl_timebox').innerWidth()/2));
         this.suscribe();
     },
     destroy: function() {
@@ -99,7 +100,7 @@ Application.Timeline = Backbone.View.extend({
         var $point = this.$point.clone();
         $point.data('index', 0);
         this.$lineBox.append($point);
-        $point.css('left', 0 - 5);
+        $point.css('left', 0+"%");
 
     },
     configPoints: function(points) {
@@ -121,7 +122,7 @@ Application.Timeline = Backbone.View.extend({
             var $point = this.$point.clone();
             $point.data('index', i);
             this.$lineBox.append($point);
-            $point.css('left', position - 5);
+            $point.css('left', position +'%');
             $point.append(this.addLabel(points[i].label));
             position += this.distance;
         }
@@ -133,9 +134,9 @@ Application.Timeline = Backbone.View.extend({
 
     },
     setTimelineLength: function() {
-        this.timelineLength = $('#tl_line').innerWidth(); // length of timeline
-        this.SVGLine = document.getElementById('timeline');
-        this.SVGLine.setAttribute('x2', this.timelineLength);
+        this.timelineLength = 98; // length of timeline
+        // this.SVGLine = document.getElementById('timeline');
+        // this.SVGLine.setAttribute('x2', this.timelineLength);
     },
     addPlay: function() {
 
@@ -158,9 +159,12 @@ Application.Timeline = Backbone.View.extend({
         clearTimeout(this.timerId);
     },
     getCurPos: function() {
-        return this.$slider.position().left;
+        // return this.$slider.position().left;
+        var param = this.$slider[0].style.left;
+        return Number(param.substring(0, param.length - 1));
     },
     moveSlider: function(distance, duration) {
+
         var that = this;
         var cur_pos = this.getCurPos();
         var step = distance/(duration/10);
@@ -173,17 +177,18 @@ Application.Timeline = Backbone.View.extend({
 
         this.timerId = setInterval(function() {
             cur_pos += step;
-            that.$slider.css('left',  cur_pos);
+            that.$slider.css('left',  cur_pos+"%");
+
             if (cur_pos >= that.pointsObjects[that.cur_index].position) {
                 if (that.cur_index < (that.pointsObjects.length - 1) ) {
-                console.log(that.pointsObjects[that.cur_index].position, that.pointsObjects[that.cur_index + 1].label);
-                Application._vent.trigger('timeline/message', that.pointsObjects[that.cur_index + 1].label);
-                Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.cur_index].label);
-                that.cur_index++;
-                traveled += distance;
+                  console.log(that.pointsObjects[that.cur_index].position, that.pointsObjects[that.cur_index + 1].label);
+                  Application._vent.trigger('timeline/message', that.pointsObjects[that.cur_index + 1].label);
+                  Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.cur_index].label);
+                  that.cur_index++;
+                  traveled += distance;
+              }
             }
-            }
-            if (cur_pos >= (that.timelineLength)) {
+            if (cur_pos >= 98) {
                 clearTimeout(that.timerId);
                 that.addRestart();
                 Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.pointsObjects.length - 1].label);
@@ -205,8 +210,8 @@ Application.Timeline = Backbone.View.extend({
             this.addPause();
             this.started = true;
         }
-        if (this.getCurPos() >= (this.timelineLength - 1)) {
-            this.$slider.css('left', 0);
+        if (this.getCurPos() >= (this.timelineLength)) {
+            this.$slider.css('left', 0+"%");
             this.moveSlider(this.distance, 2000);
             this.addPause();
             this.started = true;
@@ -228,9 +233,9 @@ Application.Timeline = Backbone.View.extend({
     },
     mouseDownPoint: function(e) {
         clearTimeout(this.timerId);
-        var cur_pos = $(e.currentTarget).position().left;
+        var cur_pos = $(e.currentTarget)[0].style.left;
         this.cur_index = $(e.currentTarget).data('index');
-        this.$slider.css('left', cur_pos + 5);
+        this.$slider.css('left', cur_pos);
         this.addPlay();
         this.started = false;
     }

@@ -111,7 +111,7 @@ Application.BaseView = Backbone.View.extend({
         this.collection[0].unbind();
         Application._vent.unbind('filters/add', this.addCategory);
         Application._vent.unbind('filters/remove', this.removeCategory);
-        Application._vent.unbind('timeline/on', this.sortResultsByDate);
+        Application._vent.unbind('timeline/on', this.timelineAction);
         Application._vent.unbind('timeline/message', this.findObjectsbyDate);
 
         this.tweenings.length = 0;
