@@ -72,6 +72,8 @@ Application.ControlPanelRootView = Backbone.View.extend({
 
         if (this.filtersView) this.filtersView.destroy();
 
+        if (Application.userConfig.model == 'googleTrends') return;
+
         this.filtersView = new Application.FiltersView();
         this.$el.append(this.filtersView.render().$el);
         //this.filterPanel.$el.hide();

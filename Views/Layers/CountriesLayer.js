@@ -30,7 +30,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             $.each(this.added, function(index, country) {
 
                 if (intersectedMesh.object == country.mesh) {
-                    Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
+                    Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name[0] +
                     '<br>' + Application.Helper.formatNumber(country.value) + sign );
                     found = true;
                 }
@@ -73,11 +73,6 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
     },
     getColor: function(cur, min, max) {
-
-        if (Application.userConfig.model == 'googleTrends') {
-            min = 0; max = 100;
-        }
-
         var x = cur - min;
         var y = max - min;
         var value = x / y;
@@ -114,13 +109,22 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         var min = Math.log10(Math.log10(results[0].value));
         var max = Math.log10(Math.log10(results[results.length - 1].value));
 
+        if (Application.userConfig.model == 'googleTrends') {
+            min = 0;
+            max = 100;
+        }
+
         var uniques = _.chain(results).map(function(item) {
             return item.value;
         }).uniq().value();
 
         $.each(uniques, function(index, number) {
 
-            colors[number] = that.getColor(Math.log10(Math.log10(number)), min, max);
+        var num = number;
+
+        if (Application.userConfig.model !== 'googleTrends') var num = Math.log10(Math.log10(num));
+
+            colors[number] = that.getColor(num, min, max);
 
         });
 
