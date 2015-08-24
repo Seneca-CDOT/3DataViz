@@ -26,22 +26,22 @@ Application.Timeline = Backbone.View.extend({
 
         this.$lineBox = $('<div id="tl_line"></div>');
         this.$timeline = $('<svg width="100%"><line id="timeline" x1="10" y1="25"' +
-        ' x2="100%" y2="25" stroke="red" fill="transparent" stroke-width="1"/></svg>');
+        ' x2="100%" y2="25" stroke="#8888a1" fill="transparent" stroke-width="1"/></svg>');
         this.$slider = $('<div id="tl_slider"><svg height="100%"><line x1="5" y1="10"' +
-        ' x2="5" y2="40" stroke="red" fill="transparent" stroke-width="2"/></svg></div>');
+        ' x2="5" y2="40" stroke="#8888a1" fill="transparent" stroke-width="2"/></svg></div>');
         this.$point = $("<div class='tl_point'><svg height='100%' width='100%'>" +
-        "<circle cx='10' cy='25' r='5' stroke='red' fill='red' opacity='0.8'/></svg></div>");
+        "<circle cx='10' cy='25' r='5' stroke='#8888a1' fill='#8888a1' opacity='0.8'/></svg></div>");
         this.$pause = $("<svg width='100%'><polygon id='playButton'" +
-        "points='10 10 40 25 10 40' stroke='red' fill='red' opacity='0.8'/></svg>");
+        "points='10 10 40 25 10 40' stroke='#8888a1' fill='#8888a1' opacity='0.8'/></svg>");
         this.$play = $("<svg width='100%'><polygon id='playButton'" +
-        "points='10 10 40 25 10 40' stroke='red' fill='red' opacity='0.8'/></svg>");
+        "points='10 10 40 25 10 40' stroke='#8888a1' fill='#8888a1' opacity='0.8'/></svg>");
         this.$pause = $("<svg width='100%'><path id='pauseButton'" +
-        "d='M5 10 L15 10 L15 40 L5 40 M20 10 L30 10 L30 40 L20 40' stroke='red' " +
-        "fill='red' opacity='0.8'/></svg>");
+        "d='M5 10 L15 10 L15 40 L5 40 M20 10 L30 10 L30 40 L20 40' stroke='#8888a1' " +
+        "fill='#8888a1' opacity='0.8'/></svg>");
         this.$control = $('<div id="tl_control"></div>');
         this.$restart = $("<svg width='100%'><path id='restartButton'" +
         "d='M10 10 L25 10  L25 15 L15 15 L15 30 L35 30 L35 15 L40 15 L40 35 L10 35'" +
-        " stroke='red' fill='red' opacity='0.8'/></svg>");
+        " stroke='#8888a1' fill='#8888a1' opacity='0.8'/></svg>");
 
     },
     appendElements: function() {
