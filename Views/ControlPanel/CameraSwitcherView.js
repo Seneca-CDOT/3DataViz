@@ -32,6 +32,7 @@ Application.CameraSwitcherView = Backbone.View.extend({
     },
     toggleCameraSwitcherPanel: function() {
 
+        $('.togglePanel').not("#angleSwitcherPanel").hide();
         this.cameraSwitcherPanel.$el.toggle();
     },
     cameraButtonAction: function() {
@@ -58,6 +59,8 @@ Application.AngleSwitcherPanel = Backbone.View.extend({
     tagName: 'div',
     id: 'angleSwitcherPanel',
     initialize: function() {
+
+        this.$el.addClass('togglePanel');
 
         this.categoriesGroupsViews = []; // hold an array of views
 

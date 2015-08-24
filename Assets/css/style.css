@@ -726,9 +726,10 @@ img {
     width: 10px;
     height: 100%;
     /*border: 1px solid green;*/
-    left: 0;
+    left: 0%;
     top: 0;
     cursor: pointer;
+    margin-left: 5px;
 }
 
 .tl_point {

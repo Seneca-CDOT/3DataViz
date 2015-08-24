@@ -84,8 +84,8 @@ Application.BasePointCloudView = Application.BaseView.extend({
 
     this.raycaster= new THREE.Raycaster();
     var mouse = new THREE.Vector2();
-    mouse.x = ( event.clientX / this.container.offsetWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / this.container.offsetHeight ) * 2 + 1;
+    mouse.x = ( e.clientX / this.container.offsetWidth ) * 2 - 1;
+    mouse.y = - ( e.clientY / this.container.offsetHeight ) * 2 + 1;
     this.raycaster.setFromCamera(mouse, this.camera);
 
     var intersects = this.raycaster.intersectObjects( this.pointclouds );
