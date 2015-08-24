@@ -55,7 +55,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         var that = this;
 
-        if (this.timer.length > 0) {
+        if (this.timer.length) {
 
             $.each(this.timer, function(index, id) {
                 clearTimeout(id);
