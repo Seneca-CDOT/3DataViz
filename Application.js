@@ -135,7 +135,7 @@ Application = {
         pointcloud: {
           	url: ['Views/Layers/PointCloudLayer.js'],
               attributes: {
-          	    default: ['x','y','z','value','category'],
+          	    default: ['x','y','z','value','category', 'date'],
                 optional: ['value','category']
               },
           	filters: [],
