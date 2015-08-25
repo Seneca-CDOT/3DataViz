@@ -68,23 +68,6 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         });
         this.geometries = [];
 
-        //
-        // var that = this;
-        //
-        // if (this.timer.length) {
-        //
-        //     $.each(this.timer, function(index, id) {
-        //         clearTimeout(id);
-        //     });
-        // }
-        //
-        // this.sprites.forEach(function(sprite) {
-        //
-        //     that.globe.remove(sprite);
-        //
-        //     sprite.geometry.dispose();
-        //     sprite.material.dispose();
-        // });
     },
     // visualization specific functionality
     showInit: function(results){
