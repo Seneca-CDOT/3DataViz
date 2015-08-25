@@ -16,30 +16,30 @@ Application.DynamicLayerParticle = function(dataRecord, globeRadius) {
 
 Application.DynamicLayerParticle.prototype._getVertexShader = function() {
 
-    var shader = 
-    "uniform float amplitude;" + 
+    var shader =
+    "uniform float amplitude;" +
     "attribute float size;" +
     "attribute vec3 customColor;" +
     "varying vec3 vColor;" +
     "void main() {" +
-        "vColor = customColor;" + 
-        "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" + 
+        "vColor = customColor;" +
+        "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" +
         "gl_PointSize = size * ( 300.0 / length( mvPosition.xyz ) );" +
         "gl_Position = projectionMatrix * mvPosition;" +
-    "}";  
+    "}";
     return shader;
 };
 
 Application.DynamicLayerParticle.prototype._getFragmentsShader = function() {
 
-    var shader = 
+    var shader =
     "uniform vec3 color;" +
     "uniform sampler2D texture;" +
     "varying vec3 vColor;" +
     "void main() {" +
         "gl_FragColor = vec4( color * vColor, 1.0 );" +
         "gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );" +
-    "}";  
+    "}";
     return shader;
 };
 
@@ -54,7 +54,7 @@ Application.DynamicLayerParticle.prototype._getShaderMaterial = function() {
     var uniforms = {
 
         amplitude: { type: "f", value: 1.0 },
-        color:     { type: "c", value: new THREE.Color( 0xffffff ) }, 
+        color:     { type: "c", value: new THREE.Color( 0xffffff ) },
         texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "Assets/images/sprite_spark.png" ) },
     };
 
@@ -75,11 +75,11 @@ Application.DynamicLayerParticle.prototype._getShaderMaterial = function() {
 
 Application.DynamicLayerParticle.prototype._createMesh = function() {
 
-    // var material = new THREE.MeshPhongMaterial({ 
-    //                             color: 0xFF0000, 
+    // var material = new THREE.MeshPhongMaterial({
+    //                             color: 0xFF0000,
     //                             ambient: 0x4396E8,
     //                             shininess: 20,
-    //                             wireframe: true 
+    //                             wireframe: true
     //                         });
     // var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
     // var geometry = new THREE.SphereGeometry(0.5, 6, 6);
@@ -93,7 +93,7 @@ Application.DynamicLayerParticle.prototype._createMesh = function() {
     for (var v = 0; v < count; ++v) {
 
         var vertex = new THREE.Vector3()
-        
+
         // vertex.x = Math.random() * 2 - 1;
         // vertex.y = Math.random() * 2 - 1;
         // vertex.z = Math.random() * 2 - 1;

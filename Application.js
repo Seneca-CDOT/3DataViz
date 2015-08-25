@@ -95,7 +95,7 @@ Application = {
 
     templates: {
         name: 'template',
-        map: { countries: 'regional', points: 'location', /*dynamic: 'realtime',*/ graph: 'relationship', pointcloud: 'pointcloud' },  // internal name / display name
+        map: { countries: 'regional', points: 'location', dynamic: 'realtime', graph: 'relationship', pointcloud: 'pointcloud' },  // internal name / display name
         countries: {
             url: ['Views/Layers/CountriesLayer.js'],
             attributes: {
@@ -117,7 +117,7 @@ Application = {
         dynamic: {
             url: ['Views/Layers/DynamicLayer.js', 'Views/Layers/DynamicLayerParticle.js'],
             attributes: {
-                default: ['latitude', 'longitude', 'timestamp'],
+                default: ['latitude', 'longitude', 'date'],
                 optional: ['value', 'category']
             },
             filters: [],

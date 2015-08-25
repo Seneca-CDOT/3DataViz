@@ -434,7 +434,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         this.hideAllResults();
 
-        if (this.activeCategories.length == 0) this.showAllResults();
+        if (!this.activeCategories.length) this.showAllResults();
 
         $.each(this.activeCategories, function(i, category) {
 
