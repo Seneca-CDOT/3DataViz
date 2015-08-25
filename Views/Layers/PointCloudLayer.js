@@ -150,6 +150,9 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
 
           var pointcloud = new THREE.PointCloud(this.geometries[i], material);
           pointcloud.userData.values = [];
+          pointcloud.userData.x = [];
+          pointcloud.userData.y = []
+          pointcloud.userData.z = [];
           this.pointclouds.push(pointcloud);
           this.scene.add(pointcloud);
         }
@@ -166,6 +169,9 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
             }
             that.geometries[i].vertices.push(v);
             that.pointclouds[i].userData.values.push(item.value);
+            that.pointclouds[i].userData.x.push(item.x);
+            that.pointclouds[i].userData.y.push(item.y);
+            that.pointclouds[i].userData.z.push(item.z);
         });
 
     },

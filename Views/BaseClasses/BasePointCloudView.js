@@ -94,14 +94,26 @@ Application.BasePointCloudView = Application.BaseView.extend({
       var results = this.collection[0].models;
       var index = intersects[0].index;
       var value = intersects[0].object.userData.values[index];
-      if (value && intersects[0].object.visible) {
+      var x = intersects[0].object.userData.x[index];
+      var y = intersects[0].object.userData.y[index];
+      var z = intersects[0].object.userData.z[index];
+
+      if ( (value || x || y || z) && intersects[0].object.visible) {
         clearTimeout(this.timer);
         this.timer = setTimeout(function(){
             Application._vent.trigger('vizinfocenter/message/off');
             clearTimeout(this.timer);
             this.timer = null;
         }, 3000);
-        Application._vent.trigger('vizinfocenter/message/on', value);
+
+        var msg = "";
+        if(value){
+          msg += (value+"<br>");
+        }
+        if(x && y && z){
+          msg += "(" +Application.attrsMap['x']+ ":" +x+ ", "+Application.attrsMap['y']+ ":" +y+ ",  "+Application.attrsMap['z']+": "+z+")";
+        }
+        Application._vent.trigger('vizinfocenter/message/on', msg);
       }
     }
 
