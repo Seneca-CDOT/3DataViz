@@ -3,8 +3,7 @@ Application.Timeline = Backbone.View.extend({
     id: 'tl_timebox',
     initialize: function(points) {
 
-        points.sort(function(a, b){return a-b});
-        this.points = points;
+        this.points = this.sortDates(points);
         this.pointsObjects = []; // holds data about points
         this.initElements();
         this.appendElements();
@@ -17,6 +16,9 @@ Application.Timeline = Backbone.View.extend({
     },
     render: function() {
 
+    },
+    sortDates: function(points) {
+        return points.sort(function(a, b){return a-b});
     },
     initElements: function() {
 

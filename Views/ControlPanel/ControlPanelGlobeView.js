@@ -4,6 +4,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
     initialize: function() {
 
         this.visualizationsView = null;
+        this.timelineShown = false; // reflects the state of timeline button
 
         this.dataSourcesView = new Application.DataSourcesView();
         this.matcher = new Application.Matcher();
@@ -61,11 +62,18 @@ Application.ControlPanelRootView = Backbone.View.extend({
     timelineButtonAction: function() {
 
         if (this.timeline) {
-            
-            this.timeline.$el.toggle();
 
+            if (!this.timelineShown) {
+                this.timeline.$el.show();
+
+            } else {
+                this.timeline.$el.hide();
+              Application._vent.trigger('data/ready');
+            }
+            this.timelineShown = !this.timelineShown;
         } else {
             Application._vent.trigger('timeline/on');
+            this.timelineShown = true;
         }
     },
     addFiltersView: function() {

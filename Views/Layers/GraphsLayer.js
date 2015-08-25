@@ -58,6 +58,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         this.moObjects = null;
     },
     reset: function() {
+        Application.BaseGlobeView.prototype.reset.call(this);
         this.resetGlobe();
     },
     resetGlobe: function() {
@@ -215,6 +216,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
                 // console.log(dataRecord);
                 var category = that.getCategoryObj(dataRecord.category);
+                console.log('Name of category applied to the line ' + category.name)
 
                 var airportFrom = {
                     longitude: dataRecord.longitudeFrom || null,
@@ -317,7 +319,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         pathGeometry.vertices = curve.getPoints(35);
 
         var material;
-        if (category != null) {
+        if (category) {
             material = new THREE.LineBasicMaterial({
                 color: category.color,
                 transparent: true,
@@ -405,12 +407,12 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
     showResults: function(results) {
 
         if (!results) var results = this.collection[0].models;
-        Application.BaseGlobeView.prototype.showResults.call(this, results);
-        console.log("GraphsLayer showResults");
-
-        this.resetGlobe();
-
         this.getCategoriesWithColors(results);
+
+        Application.BaseGlobeView.prototype.showResults.call(this, results);
+        //console.log("GraphsLayer showResults");
+
+        //this.resetGlobe();
 
         Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
 

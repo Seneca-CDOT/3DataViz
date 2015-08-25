@@ -64,7 +64,10 @@ Application.BaseView = Backbone.View.extend({
         Application._vent.unbind('timeline/clear', this.reset);
 
     },
-    reset: function() {},
+    reset: function() {
+
+        this.activeCategories.length = 0;
+    },
     destroy: function() {
 
         console.log("BaseView destory");
@@ -374,6 +377,9 @@ Application.BaseView = Backbone.View.extend({
         this.tween.start();
     },
     showResults: function(results) {
+
+        this.reset();
+        
         if (this.categories.length > 0 && this.categories[0] !== undefined) {
             Application._vent.trigger('controlpanel/categories', this.categories);
         }
@@ -384,6 +390,7 @@ Application.BaseView = Backbone.View.extend({
     },
     getCategoriesWithColors: function(results, obj){
         this.categories = Application.Filter.getCategories(results);
+        console.log('categories from dataset', this.categories);
         $.each(this.categories, function(index, category){
             category.index = index;
             category.color = Application.Helper.getRandomColor(obj);

@@ -55,6 +55,10 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         // max = Math.round(max/10)*10;
         return max;
     },
+    reset: function() {
+        Application.BaseGlobeView.prototype.reset.call(this);
+        this.resetPointcloud();
+    },
     resetPointcloud: function() {
 
         var that = this;
@@ -115,7 +119,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     },
     showResults: function(results) {
 
-        this.resetPointcloud();
+        //this.resetPointcloud();
 
         //First time
         if (!results){

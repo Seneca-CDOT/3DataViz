@@ -59,6 +59,10 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         this.collection[0].fetch();
 
     },
+    reset: function() {
+        Application.BaseGlobeView.prototype.reset.call(this);
+        //this.resetGlobe();
+    },
     resetGlobe: function() {
 
         var that = this;

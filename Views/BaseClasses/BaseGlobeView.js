@@ -21,7 +21,6 @@ Application.BaseGlobeView = Application.BaseView.extend({
     },
     reset: function() {
         Application.BaseView.prototype.reset.call(this);
-        this.resetGlobe();
     },
     init: function() {
         Application.BaseView.prototype.init.call(this);
@@ -78,7 +77,9 @@ Application.BaseGlobeView = Application.BaseView.extend({
     showAllResults: function() {
 
     },
-    sortResultsByCategory: function() {},
+    sortResultsByCategory: function() {
+        Application.BaseView.prototype.sortResultsByCategory.call(this);
+    },
     determineCountry: function(point) {
         this.direction.subVectors(this.end, point.position);
         this.direction.normalize();
