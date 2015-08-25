@@ -129,8 +129,7 @@ Application.Timeline = Backbone.View.extend({
     },
     addLabel: function(text) {
 
-        return $('<div class="tl_label"><svg height="30" width="50">' +
-        '<text x="0" y="15" fill="white">' + text + '</text></svg></div>');
+        return $('<div class="tl_label"><span>' + text + '</span></div>');
 
     },
     setTimelineLength: function() {
