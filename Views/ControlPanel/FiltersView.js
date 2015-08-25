@@ -19,6 +19,7 @@ Application.FiltersView = Backbone.View.extend({
     },
     toggleFilterPanel: function() {
 
+        $('.togglePanel').not("#filterPanel").hide();
         this.filterPanel.$el.toggle();
     },
     removeFilterPanel: function() {
@@ -46,6 +47,8 @@ Application.FilterPanel = Backbone.View.extend({
     tagName: 'div',
     id: 'filterPanel',
     initialize: function() {
+
+        this.$el.addClass('togglePanel');
 
         this.categoriesGroupsViews = []; // hold an array of views
 

@@ -61,7 +61,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
     timelineButtonAction: function() {
 
         if (this.timeline) {
-
+            
             this.timeline.$el.toggle();
 
         } else {

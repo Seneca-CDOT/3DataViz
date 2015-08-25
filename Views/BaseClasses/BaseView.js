@@ -42,8 +42,6 @@ Application.BaseView = Backbone.View.extend({
         this.sortedByDateData = [];
         this.tweenings = []; // holds references for tween instances
 
-        this.test = 1;
-
     },
     suscribe: function() {
         console.log("BaseView suscribe");
@@ -113,7 +111,6 @@ Application.BaseView = Backbone.View.extend({
         }
 
         this.collection = null;
-
 
         this.unsuscribe();
         this.tweenings.length = 0;

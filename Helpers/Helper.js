@@ -184,7 +184,7 @@ Application.Helper = {
     },
 
     formatNumber: function(num) {
-        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+        return (num) ? num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : "";
     },
 
     breakStringToArray: function(string) {
@@ -275,7 +275,7 @@ Application.Helper = {
         };
         img.src = url;
     },
-    
+
     HSV2HEX : function(h,s,v) {
         // adapted from http://schinckel.net/2012/01/10/hsv-to-rgb-in-javascript/
         var rgb, i, data = [];
