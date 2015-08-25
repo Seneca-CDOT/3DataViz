@@ -265,38 +265,19 @@ Application.Helper = {
         canvas.width = 2000;
         canvas.height = 2000;
         var ctx = canvas.getContext( "2d" );
-        // img.onload = function() {
-        //     ctx.drawImage( img, 0, 0 );
-        //     var pngImg = new Image();
-        //     console.log("getSVGTextImage img.onload");
-        //     pngImg.onload = function(){
-        //         console.log("getSVGTextImage pngImg.onload");
-        //         svg = null;
-        //         canvas = null;
-        //         ctx = null;
-        //         if( callback ) callback(pngImg);
-        //     }
-        //     pngImg.src = canvas.toDataURL( "image/png" )
-        // };
-        img.addEventListener('load', function(){
-          ctx.drawImage( img, 0, 0 );
-          var pngImg = new Image();
-          console.log("getSVGTextImage img.onload");
-          pngImg.addEventListener('load', function(){
-              console.log("getSVGTextImage pngImg.onload");
-              svg = null;
-              canvas = null;
-              ctx = null;
-              if( callback ) callback(pngImg);
-          }, false);
-          pngImg.src = canvas.toDataURL( "image/png" )
-        }, false);
-        console.log(url);
-        img.addEventListener('error', function(err){
-            console.log(err);
-            console.log(img.err);
-        });
-        img.src = url;
+        img.onload = function() {
+            ctx.drawImage( img, 0, 0 );
+            var pngImg = new Image();
+            console.log("getSVGTextImage img.onload");
+            pngImg.onload = function(){
+                console.log("getSVGTextImage pngImg.onload");
+                svg = null;
+                canvas = null;
+                ctx = null;
+                if( callback ) callback(pngImg);
+            }
+            pngImg.src = canvas.toDataURL( "image/png" )
+        };
     },
 
     HSV2HEX : function(h,s,v) {
