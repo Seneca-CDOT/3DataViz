@@ -253,11 +253,8 @@ Application.Helper = {
     },
     getSVGTextImage: function(str, callback){
 
-        var data = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" height="2000" width="2000" viewBox="0 0 2000 2000"><text x="1000" y="1000" fill="white" font-size="600" style="text-anchor: middle; dominant-baseline: middle;">'+str+'</text></svg>';
-        var DOMURL = self.URL || self.webkitURL || self;
+        var data = 'data:image/svg+xml,' + '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" height="2000" width="2000" viewBox="0 0 2000 2000"><text x="1000" y="1000" fill="white" font-size="600" style="text-anchor: middle; dominant-baseline: middle;">'+str+'</text></svg>';
         var img = new Image();
-        var svg = new Blob([data], {type: "image/svg+xml;charset=utf-8"});
-        var url = DOMURL.createObjectURL(svg);
 
         var canvas = document.createElement( "canvas" );
         canvas.width = 2000;
@@ -274,7 +271,7 @@ Application.Helper = {
             }
             pngImg.src = canvas.toDataURL( "image/png" )
         };
-        img.src = url;
+        img.src = data;
     },
 
     HSV2HEX : function(h,s,v) {
