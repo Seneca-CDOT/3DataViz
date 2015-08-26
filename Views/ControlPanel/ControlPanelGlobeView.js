@@ -65,6 +65,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
 
             if (!this.timelineShown) {
                 this.timeline.$el.show();
+                Application._vent.trigger('timeline/on');
 
             } else {
                 this.timeline.$el.hide();

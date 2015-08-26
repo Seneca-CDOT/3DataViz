@@ -18,7 +18,7 @@ Application.DynamicLayer = Application.BaseGlobeView.extend({
 
         this.lifePeriod = 100000;
         this.period = 500;
-        this.particlesLifeTime = 2000;
+        this.particlesLifeTime = 1000;
 
         this.particlesTimer = null;
 
