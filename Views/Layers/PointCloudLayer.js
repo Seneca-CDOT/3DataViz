@@ -55,11 +55,80 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         // max = Math.round(max/10)*10;
         return max;
     },
-    // visualization specific functionality
-    showResults: function() {
+    reset: function() {
+        Application.BaseGlobeView.prototype.reset.call(this);
+        this.resetPointcloud();
+    },
+    resetPointcloud: function() {
 
         var that = this;
-        var results = this.collection[0].models;
+        $.each(this.pointclouds, function(i, pointcloud){
+          that.scene.remove(pointcloud);
+          pointcloud = null;
+        });
+        this.pointcloud = [];
+        $.each(that.geometries, function(i, geometry){
+          geometry.dispose();
+        });
+        this.geometries = [];
+
+    },
+    // visualization specific functionality
+    showInit: function(results){
+
+      var that = this;
+      var maxX = this.getMax(results, 'x');
+      var maxY = this.getMax(results, 'y');
+      var maxZ = this.getMax(results, 'z');
+
+      var minX = this.getMin(results, 'x');
+      var minY = this.getMin(results, 'y');
+      var minZ = this.getMin(results, 'z');
+
+      this.midX = (maxX+minX)/2;
+      this.midY = (maxY+minY)/2;
+      this.midZ = (maxZ+minZ)/2;
+
+      var stX = (maxX - minX)/4;
+      var stY = (maxY - minY)/4;
+      var stZ = (maxZ - minZ)/4;
+
+      this.ratioX = 60 / (maxX - minX);
+      this.ratioY = 60 / (maxY - minY);
+      this.ratioZ = 60 / (maxZ - minZ);
+
+      //Create Legends
+      var storeTexts = function(mesh){
+        that.textMeshs.push(mesh);
+      }
+      Application.Helper.positionImageText(this.scene, Application.attrsMap['x'], 38, -30, -30, storeTexts);
+      Application.Helper.positionImageText(this.scene, Application.attrsMap['z'], -30, -30, 38, storeTexts);
+      Application.Helper.positionImageText(this.scene, Application.attrsMap['y'], -30, 35, -30, storeTexts);
+      for(var i=0; i<5; i++){
+        if(i==0){
+          Application.Helper.positionImageText(this.scene, Math.round((minX+(i*stX))*100)/100, (i*15) - 25, -30, -30, storeTexts);
+          Application.Helper.positionImageText(this.scene, Math.round((minZ+(i*stZ))*100)/100, -30, -30, (i*15) - 25, storeTexts);
+          Application.Helper.positionImageText(this.scene, Math.round((minY+(i*stY))*100)/100, -30, (i*15) - 27, -30, storeTexts);
+        }else{
+          Application.Helper.positionImageText(this.scene, Math.round((minX+(i*stX))*100)/100, (i*15) - 30, -30, -30, storeTexts);
+          Application.Helper.positionImageText(this.scene, Math.round((minZ+(i*stZ))*100)/100, -30, -30, (i*15) - 30, storeTexts);
+          Application.Helper.positionImageText(this.scene, Math.round((minY+(i*stY))*100)/100, -30, (i*15) - 30, -30, storeTexts);
+        }
+      }
+
+    },
+    showResults: function(results) {
+
+        //this.resetPointcloud();
+
+        //First time
+        if (!results){
+          results = this.collection[0].models;
+          this.showInit(results);
+        }
+
+        var that = this;
+
         this.getCategoriesWithColors(results);
         Application.BasePointCloudView.prototype.showResults.call(this, results);
 
@@ -72,63 +141,6 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         }
 
         Application._vent.trigger('controlpanel/message/off');
-
-        // Creating points random
-        // var result = { x: -10000, y: 10000, z: 10000 }
-        // results.push(result);
-        // result = { x: 10000, y: -10000, z: -10000 }
-        // results.push(result);
-        //
-        // for(var i=0; i < 1500; i++){
-        //     var result = {
-        //       x: Math.floor((Math.random()*20000) - 10000),
-        //       y: Math.floor((Math.random()*20000) - 10000),
-        //       z: Math.floor((Math.random()*20000) - 10000)
-        //     }
-        //     results.push(result);
-        // }
-
-
-        //Retrieve and calculate all parameters required.
-        var maxX = this.getMax(results, 'x');
-        var maxY = this.getMax(results, 'y');
-        var maxZ = this.getMax(results, 'z');
-
-        var minX = this.getMin(results, 'x');
-        var minY = this.getMin(results, 'y');
-        var minZ = this.getMin(results, 'z');
-
-        var midX = (maxX+minX)/2;
-        var midY = (maxY+minY)/2;
-        var midZ = (maxZ+minZ)/2;
-
-        var stX = (maxX - minX)/4;
-        var stY = (maxY - minY)/4;
-        var stZ = (maxZ - minZ)/4;
-
-        var ratioX = 60 / (maxX - minX);
-        var ratioY = 60 / (maxY - minY);
-        var ratioZ = 60 / (maxZ - minZ);
-
-
-        //Create Legends
-        var storeTexts = function(mesh){
-          that.textMeshs.push(mesh);
-        }
-        Application.Helper.positionImageText(this.scene, Application.attrsMap['x'], 38, -30, -30, storeTexts);
-        Application.Helper.positionImageText(this.scene, Application.attrsMap['z'], -30, -30, 38, storeTexts);
-        Application.Helper.positionImageText(this.scene, Application.attrsMap['y'], -30, 35, -30, storeTexts);
-        for(var i=0; i<5; i++){
-          if(i==0){
-            Application.Helper.positionImageText(this.scene, Math.round((minX+(i*stX))*100)/100, (i*15) - 25, -30, -30, storeTexts);
-            Application.Helper.positionImageText(this.scene, Math.round((minZ+(i*stZ))*100)/100, -30, -30, (i*15) - 25, storeTexts);
-            Application.Helper.positionImageText(this.scene, Math.round((minY+(i*stY))*100)/100, -30, (i*15) - 27, -30, storeTexts);
-          }else{
-            Application.Helper.positionImageText(this.scene, Math.round((minX+(i*stX))*100)/100, (i*15) - 30, -30, -30, storeTexts);
-            Application.Helper.positionImageText(this.scene, Math.round((minZ+(i*stZ))*100)/100, -30, -30, (i*15) - 30, storeTexts);
-            Application.Helper.positionImageText(this.scene, Math.round((minY+(i*stY))*100)/100, -30, (i*15) - 30, -30, storeTexts);
-          }
-        }
 
         //Create pointclouds
         var pointcloudNum = this.categories.length || 1;
@@ -151,7 +163,8 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
 
         //Iterate each items
         $.each(results, function(index, item) {
-            var v = new THREE.Vector3( item.x*ratioX -(midX*ratioX), item.y*ratioY - (midY*ratioY), item.z*ratioZ -(midZ*ratioZ));
+
+            var v = new THREE.Vector3( item.x*that.ratioX -(that.midX*that.ratioX), item.y*that.ratioY - (that.midY*that.ratioY), item.z*that.ratioZ -(that.midZ*that.ratioZ));
             var i = 0;
             var category = that.getCategoryObj(item.category);
             if(category){

@@ -86,6 +86,7 @@ Application.FilterPanel = Backbone.View.extend({
     addCategoriesGroup: function(obj) {
 
         var view = new Application.FiltersSet(obj);
+        this.$el.empty();
         this.$el.append(view.$el);
 
         this.categoriesGroupsViews.push(view);

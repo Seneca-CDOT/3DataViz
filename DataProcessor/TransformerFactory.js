@@ -210,13 +210,13 @@ Application.DataProcessor.DynamicVisualTransformer = (function() {
 
     DynamicVisualTransformer.prototype.transform = function(data, complete) {
 
-        for (var i = 0; i < data.length; ++i) {
-            if (data[i].timestamp !== "") {
-                data[i].timestamp = Number(data[i].timestamp);
-            } else {
-                data[i].timestamp = 0;
-            }
-        }
+        // for (var i = 0; i < data.length; ++i) {
+        //     if (data[i].timestamp) {
+        //         data[i].timestamp = Number(data[i].timestamp);
+        //     } else {
+        //         data[i].timestamp = Number(new Date());
+        //     }
+        // }
         if (typeof complete === "function") complete(data);
     };
 

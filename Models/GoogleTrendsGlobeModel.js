@@ -75,8 +75,10 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         var fileref = document.createElement('script');
         fileref.setAttribute("type", "text/javascript");
         fileref.setAttribute("src", this.url);
-        var test = document.getElementsByTagName("head")[0].appendChild(fileref);
-
+        var res = document.getElementsByTagName("head")[0].appendChild(fileref);
+        res.onerror = function (e) {
+            Application._vent.trigger('controlpanel/message/on', 'REQUEST HAS FAILED');
+        }
     },
     fetch: function() {
 
@@ -88,6 +90,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
     destroy: function() {
         //  console.log("Destroy GoogleTrendsCollection");
        Application.BaseGlobeCollection.prototype.destroy.call(this);
+
     },
     getViewConfigs: function(data) {
         var defaults = {

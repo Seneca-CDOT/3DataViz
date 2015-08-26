@@ -50,12 +50,16 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             ': ' + that.pointsPerCountry(that.sprites, name) + ' points');
         }
     },
+    reset: function() {
+        Application.BaseGlobeView.prototype.reset.call(this);
+        this.resetGlobe();
+    },
     // member methods
     resetGlobe: function() {
 
         var that = this;
 
-        if (this.timer.length > 0) {
+        if (this.timer.length) {
 
             $.each(this.timer, function(index, id) {
                 clearTimeout(id);
@@ -113,7 +117,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     // visualization specific functionality
     showResults: function(results) {
 
-        this.resetGlobe();
+        //this.resetGlobe();
 
         if (!results) results = this.collection[0].models;
 

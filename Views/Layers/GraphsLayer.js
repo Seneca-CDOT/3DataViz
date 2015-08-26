@@ -1,6 +1,6 @@
 /**
- ** @author Bruno Di Giuseppe / smokingcobra.com
- **/
+** @author Bruno Di Giuseppe / smokingcobra.com
+**/
 var Application = Application || {};
 
 Application.GraphsLayer = Application.BaseGlobeView.extend({
@@ -33,8 +33,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         // with different positions/ rotations. This is the main improvement so far,
         // performance wise
 
-        var airportGeometry = new THREE.SphereGeometry(this.cylinderRadius, 12, 10);
-        this.bufferSphereGeometry = new THREE.BufferGeometry().fromGeometry( airportGeometry );
+        this.airportGeometry = new THREE.SphereGeometry(this.cylinderRadius, 12, 10);
         this.airportMaterial = new THREE.MeshBasicMaterial({
             color: 0x1944e4
         });
@@ -51,14 +50,40 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
+        Application.BaseGlobeView.prototype.destroy.call(this);
+
         var that = this;
+        this.resetGlobe();
+        this.airportMeshes = null;
+        this.moObjects = null;
+    },
+    reset: function() {
+        Application.BaseGlobeView.prototype.reset.call(this);
+        this.resetGlobe();
+    },
+    resetGlobe: function() {
+
+        var that = this;
+
+        if (this.timer.length) {
+
+            $.each(this.timer, function(index, id) {
+                clearTimeout(id);
+            });
+        }
 
         $.each(this.airportMeshes, function(i, mesh) {
 
             that.scene.remove(mesh);
-            mesh.geometry.dispose();
+            // mesh.geometry.dispose();
             mesh.material.dispose();
         });
+
+        if (this.airportMeshes.length) {
+        this.airportMeshes[0].geometry.dispose();  // hadve to do it this way because all the meshes share geometry
+    }
+
+        this.airportMeshes.length = 0;
 
         $.each(this.moObjects, function(i, mesh) {
 
@@ -67,11 +92,9 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
             mesh.material.dispose();
         });
 
-        Application.BaseGlobeView.prototype.destroy.call(this);
+        this.moObjects.length = 0;
 
-
-        this.airportMeshes = null;
-
+        this.airportPoints.length = 0;
 
     },
     // visualization specific functionality
@@ -153,7 +176,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
             Application._vent.trigger('vizinfocenter/message/off');
         }
 
-      },
+    },
     changePrevObjects: function() {
         var that = this;
         if (typeof this.prevObjects !== 'undefined') {
@@ -166,14 +189,12 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         }
     },
     // core function of the application. THIS IS WHERE THE MAGIC HAPPENS
-    addPaths: function() {
-
-      console.log(Application.attrsMap);
+    addPaths: function(results) {
+        //  console.log(Application.attrsMap);
         var i = 0
         var dataRecord;
         var randomIndex;
 
-        var results = this.collection[0].models;
         var srcAirport;
         var destAirport;
         var time = 100;
@@ -195,6 +216,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
                 // console.log(dataRecord);
                 var category = that.getCategoryObj(dataRecord.category);
+                console.log('Name of category applied to the line ' + category.name)
 
                 var airportFrom = {
                     longitude: dataRecord.longitudeFrom || null,
@@ -240,10 +262,9 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
             that.timer.push(timeoutref);
         });
 
-        this.moObjects.push(this.globe);
+        //this.moObjects.push(this.globe);
 
     },
-
     airportCreated: function(airport) {
 
         if (airport.latitude == null || airport.longitude == null) {
@@ -298,7 +319,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         pathGeometry.vertices = curve.getPoints(35);
 
         var material;
-        if (category != null) {
+        if (category) {
             material = new THREE.LineBasicMaterial({
                 color: category.color,
                 transparent: true,
@@ -358,11 +379,11 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
                 opacity: 0.6
             });
         } else {
-            material = this.airportMaterial;
+            material = this.airportMaterial.clone();
         }
 
         // this is for object airports
-        var airportInstance = new THREE.Mesh(this.bufferSphereGeometry, material);
+        var airportInstance = new THREE.Mesh(this.airportGeometry, material);
         airportInstance.rotation.y = airport.longitude * Math.PI / 180;
 
         var xRotationSign = airport.longitude + 90 > 90 ? -1 : 1;
@@ -383,14 +404,15 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         return airportInstance;
 
     },
-    showResults: function() {
+    showResults: function(results) {
 
-        console.log("GraphsLayer showResults");
-
-        var results = this.collection[0].models;
-
+        if (!results) var results = this.collection[0].models;
         this.getCategoriesWithColors(results);
+
         Application.BaseGlobeView.prototype.showResults.call(this, results);
+        //console.log("GraphsLayer showResults");
+
+        //this.resetGlobe();
 
         Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
 
@@ -403,7 +425,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         }
         Application._vent.trigger('controlpanel/message/off');
 
-        this.addPaths();
+        this.addPaths(results);
 
     },
     sortResultsByCategory: function() {
@@ -414,7 +436,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         this.hideAllResults();
 
-        if (this.activeCategories.length == 0) this.showAllResults();
+        if (!this.activeCategories.length) this.showAllResults();
 
         $.each(this.activeCategories, function(i, category) {
 
