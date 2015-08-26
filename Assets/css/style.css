@@ -447,21 +447,31 @@ color: black;
 
 .templateImgList{
     padding: 0;
-    display: table;
+    display: block;
+    overflow-x: scroll;
 }
 .templateTitle{
     font-size: 14px;
     margin-bottom: 0;
 }
+.templateImgList ul{
+    display: table;
+    padding-left: 0;
+    white-space: nowrap;
+}
 .templateImgList li{
     display: table-cell;
-    padding: 0 10px;
+    padding: 0 5px;
+    width: 160px;
+    height: 160px;
 }
 .templateImgList li img{
-    width: 145px;
-    height: 145px;
+    width: 160px;
+    height: 160px;
 }
 .templateImgList li .imgBtn{
+    width: 160px;
+    height: 160px;
     border: none;
     border-radius: 4px;
     padding: 10px;
