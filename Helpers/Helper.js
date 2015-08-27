@@ -170,16 +170,19 @@ Application.Helper = {
 
     getNumber: function(entity) {
 
-        if (isNaN(entity)) {
+        if (entity) {
 
-            var number = entity.replace(/[\,\s]/g, '');
-            number = parseFloat(number);
-        } else {
+            if (isNaN(entity)) {
 
-            number = entity;
-        }
+                var number = entity.replace(/[\,\s]/g, '');
+                number = parseFloat(number);
+            } else {
 
-        return number;
+                number = entity;
+            }
+
+            return number;
+        } else return 0;
 
     },
 

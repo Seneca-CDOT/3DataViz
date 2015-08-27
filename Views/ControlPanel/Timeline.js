@@ -92,6 +92,7 @@ Application.Timeline = Backbone.View.extend({
         this.$el.remove();
         this.points = null;
         this.pointsObjects = null;
+        clearTimeout(this.timerId);
     },
     setInitialPoint: function() {
 

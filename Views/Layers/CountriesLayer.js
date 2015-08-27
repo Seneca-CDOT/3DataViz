@@ -190,7 +190,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
                 countrymesh.material.color.setRGB(tweenObj.r, tweenObj.g, tweenObj.b);
             }
-            that.tweenit(countrymesh.material.color, colorsMap[item.value], getit, 2);
+            if (item.value) that.tweenit(countrymesh.material.color, colorsMap[item.value], getit, 2);
 
             obj.result_color = countrymesh.material.color.getHex();
 
