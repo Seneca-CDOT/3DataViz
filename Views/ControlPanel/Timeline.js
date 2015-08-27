@@ -55,9 +55,10 @@ Application.Timeline = Backbone.View.extend({
         this.$control.on('mousedown', this.mouseDownControl.bind(this));
         this.$control.on('mouseover', this.mouseOverControl.bind(this));
         this.$control.on('mouseout', this.mouseOutControl.bind(this));
-        $('.tl_point').on('mouseover', this.mouseOverPoint.bind(this));
-        $('.tl_point').on('mousedown', this.mouseDownPoint.bind(this));
-        $('.tl_point').on('mouseout', this.mouseOutPoint.bind(this));
+        // $('.tl_point').on('mouseover', this.mouseOverPoint.bind(this));
+        // $('.tl_point').on('mousedown', this.mouseDownPoint.bind(this));
+        // $('.tl_point').on('mouseout', this.mouseOutPoint.bind(this));
+        this.$lineBox.on('mousedown', this.mouseDownLine.bind(this));
 
     },
     unsuscribe: function() {
@@ -65,9 +66,10 @@ Application.Timeline = Backbone.View.extend({
         this.$control.off('mousedown', this.mouseDownControl.bind(this));
         this.$control.off('mouseover', this.mouseOverControl.bind(this));
         this.$control.off('mouseout', this.mouseOutControl.bind(this));
-        $('.tl_point').off('mouseover', this.mouseOverPoint.bind(this));
-        $('.tl_point').off('mousedown', this.mouseDownPoint.bind(this));
-        $('.tl_point').off('mouseout', this.mouseOutPoint.bind(this));
+        // $('.tl_point').off('mouseover', this.mouseOverPoint.bind(this));
+        // $('.tl_point').off('mousedown', this.mouseDownPoint.bind(this));
+        // $('.tl_point').off('mouseout', this.mouseOutPoint.bind(this));
+        this.$lineBox.unbind('mousedown', this.mouseDownLine.bind(this));
 
     },
     update: function() {
@@ -90,6 +92,7 @@ Application.Timeline = Backbone.View.extend({
         this.$el.remove();
         this.points = null;
         this.pointsObjects = null;
+        clearTimeout(this.timerId);
     },
     setInitialPoint: function() {
 
@@ -124,11 +127,13 @@ Application.Timeline = Backbone.View.extend({
     },
     addLabel: function(text) {
 
+        if (text.length > 10) text = text.slice(0,10) + '<br>' + text.slice(10, text.length);
+
         return $('<div class="tl_label"><span>' + text + '</span></div>');
 
     },
     setTimelineLength: function() {
-        this.timelineLength = 98; // length of timeline
+        this.timelineLength = 99; // length of timeline
         // this.SVGLine = document.getElementById('timeline');
         // this.SVGLine.setAttribute('x2', this.timelineLength);
     },
@@ -166,26 +171,33 @@ Application.Timeline = Backbone.View.extend({
 
         if ( cur_pos == 0 ) {
             Application._vent.trigger('timeline/clear');
-            Application._vent.trigger('timeline/message', that.pointsObjects[0].label);
+            //Application._vent.trigger('timeline/message', that.pointsObjects[0].label);
         }
+
+        var old = 0;
+        var cur = 0;
 
         this.timerId = setInterval(function() {
             cur_pos += step;
             that.$slider.css('left',  cur_pos+"%");
 
-            if (cur_pos >= that.pointsObjects[that.cur_index].position) {
-                if (that.cur_index < (that.pointsObjects.length - 1) ) {
-                  console.log(that.pointsObjects[that.cur_index].position, that.pointsObjects[that.cur_index + 1].label);
-                  Application._vent.trigger('timeline/message', that.pointsObjects[that.cur_index + 1].label);
-                  Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.cur_index].label);
-                  that.cur_index++;
-                  traveled += distance;
-              }
-            }
-            if (cur_pos >= 98) {
+            cur = parseInt(cur_pos);
+            if ( cur != old ) Application._vent.trigger('timeline/message', cur);
+            old = cur;
+
+            // if (cur_pos >= that.pointsObjects[that.cur_index].position) {
+            //     if (that.cur_index < (that.pointsObjects.length - 1) ) {
+            //       //console.log(that.pointsObjects[that.cur_index].position, that.pointsObjects[that.cur_index + 1].label);
+            //       Application._vent.trigger('timeline/message', that.pointsObjects[that.cur_index + 1].label);
+            //       Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.cur_index].label);
+            //       that.cur_index++;
+            //       traveled += distance;
+            //   }
+            // }
+            if (cur_pos >= 99) {
                 clearTimeout(that.timerId);
                 that.addRestart();
-                Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.pointsObjects.length - 1].label);
+                //Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.pointsObjects.length - 1].label);
                 that.cur_index = 0;
 
             }
@@ -224,12 +236,23 @@ Application.Timeline = Backbone.View.extend({
         var circle = $(e.target)[0];
         circle.setAttribute('r', 5);
     },
-    mouseDownPoint: function(e) {
+    mouseDownLine: function(e) {
         clearTimeout(this.timerId);
-        var cur_pos = $(e.currentTarget)[0].style.left;
-        this.cur_index = $(e.currentTarget).data('index');
-        this.$slider.css('left', cur_pos);
+        var cur_pos = this.getCursorLocation(e);
+        var width = e.currentTarget.clientWidth;
+        console.log(width);
+        var percent = (cur_pos / width) * 100;
+        this.$slider.css('left', percent + '%');
         this.addPlay();
         this.started = false;
-    }
+    },
+    getCursorLocation: function(e) {
+        var parentOffset = $(e.currentTarget).offset();
+        return  (e.pageX - parentOffset.left);
+    },
+    lineAction: function(e) {
+
+        var position = { left: Math.round(e.offsetX || e.layerX), top: Math.round(e.offsetY || e.layerY) }
+        console.log(position);
+    },
 });

@@ -39,7 +39,7 @@ Application.BaseView = Backbone.View.extend({
         this.timer = [];
         this.requestedAnimationFrameId = null;
         this.suscribe();
-        this.sortedByDateData = [];
+        this.sortedByPercentageData = {};
         this.tweenings = []; // holds references for tween instances
 
     },
@@ -379,7 +379,7 @@ Application.BaseView = Backbone.View.extend({
     showResults: function(results) {
 
         this.reset();
-        
+
         if (this.categories.length > 0 && this.categories[0] !== undefined) {
             Application._vent.trigger('controlpanel/categories', this.categories);
         }
@@ -441,39 +441,97 @@ Application.BaseView = Backbone.View.extend({
 
         this.sortResultsByDate();
     },
-    findObjectsbyDate: function(date) {
+    findObjectsbyDate: function(number) {
 
-        this.showResults(this.sortedByDateData[date]);
+        var data = this.sortedByPercentageData[number];
+        if (data.length) this.showResults(data);
     },
     sortResultsByDate: function() {
 
         if ( typeof Application.attrsMap['date2'] == "undefined") {
 
-            this.sortedByDateData = this.sortResultsByDateColumn();
+            var sortedByDateData = this.sortResultsByDateColumn();
 
         } else {
 
-            this.sortedByDateData = this.sortResultsByDateRow();
+            var sortedByDateData = this.sortResultsByDateRow();
         }
 
-        var names = _.keys(this.sortedByDateData);
+        var dates = _.keys(sortedByDateData);
 
-        Application._vent.trigger('timeline/ready', names);
+        var dateRanges = this.getDateRanges(dates);
 
-        var first = _.keys(this.sortedByDateData)[0];
+        Application._vent.trigger('timeline/ready', dateRanges);
+
+        this.sortedByPercentageData = this.sortResultsByPercentage(sortedByDateData);
+
+        //var first = _.keys(this.sortedByDateData)[0];
         //this.showResults(this.sortedByDateData[first]);
 
+    },
+    sortResultsByPercentage: function(data) {
+        var pointsRemainder = 0;
+        var len = (_.keys(data)).length;
+        if (len > 10) pointsRemainder = len % 100;
+        var pointsPerOnePercent = 0;
+        var sortedByPercentage = {};
+
+        if (pointsRemainder) {
+            pointsPerOnePercent = parseInt(len / 98);
+        } else {
+            pointsPerOnePercent = parseInt(len / 99);
+        }
+
+        if (pointsPerOnePercent <= 1) pointsPerOnePercent = 1;
+
+        var j = 1;
+        var k = 1;
+
+        for( var i = 1; i < 101; i++) {
+
+            sortedByPercentage[i] = [];
+        }
+
+        var shift = 1;
+
+        if (len < 100) shift = parseInt(100/len);
+
+        $.each(data, function(i, item) {
+            if ( Array.isArray(item) ) {
+                item.forEach(function(item, i) {
+                    sortedByPercentage[j].push(item);
+                });
+            } else sortedByPercentage[j].push(item);
+            if ( !(k % pointsPerOnePercent) ) j+=shift;
+            k++;
+        });
+        return sortedByPercentage;
+    },
+    getDateRanges: function(dates) {
+        var ranges = [];
+        var len = dates.length;
+        var numOfSegments = len;
+        if (len > 10) numOfSegments = 10;
+        var pointsPerSegments = parseInt(len / numOfSegments);
+
+        for ( var i = 0; i < len; i+= pointsPerSegments) {
+            ranges.push(dates[i]);
+        }
+
+        return ranges;
     },
     sortResultsByDateColumn: function() {
 
         var data = this.collection[0].models;
 
+        var DateAttrName = Application.attrsMap['date'];
+
         data.sort(function(a,b) {
-            return new Date(a.date).getTime() - new Date(b.date).getTime()
+            return new Date(a[DateAttrName]).getTime() - new Date(b[DateAttrName]).getTime()
         });
 
         var uniques = _.chain(data).map(function(item) {
-            return item.date
+            return item[DateAttrName];
         }).uniq().value();
 
         $.each(uniques, function(i, element) {
@@ -493,13 +551,15 @@ Application.BaseView = Backbone.View.extend({
 
             $.each(uniques, function(i, unique) {
 
-                if (unique == obj.date) {
+                if (unique == obj[DateAttrName]) {
 
                     newdata[unique].push(obj);
 
                 }
             });
         });
+
+        //newdata.prototype.length = (_.keys(newdata)).length;
 
         return newdata;
 
