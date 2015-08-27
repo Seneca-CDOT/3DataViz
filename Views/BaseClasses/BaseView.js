@@ -497,16 +497,15 @@ Application.BaseView = Backbone.View.extend({
         if (len < 100) shift = parseInt(100/len);
 
         $.each(data, function(i, item) {
-            if (k == 1700) {
-                console.log(j); }
-            sortedByPercentage[j].push(item[0]);
+            if ( Array.isArray(item) ) {
+                item.forEach(function(item, i) {
+                    sortedByPercentage[j].push(item);
+                });
+            } else sortedByPercentage[j].push(item);
             if ( !(k % pointsPerOnePercent) ) j+=shift;
             k++;
         });
-
-
         return sortedByPercentage;
-
     },
     getDateRanges: function(dates) {
         var ranges = [];
