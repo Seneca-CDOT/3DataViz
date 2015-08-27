@@ -523,13 +523,13 @@ Application.TemplatesView = Backbone.View.extend({
     initialize: function() {
         var that = this;
         this.$el.append('<div class="heading">Choose a template<p>Please select a visualization template for your data.</p><div/>')
-        var $templist = $('<ul class="templateImgList"></ul>');
-
+        var $templist = $('<ul class=""></ul>');
+        var $wrap = $('<div class="templateImgList"></div>')
 
         $.each(Application.templates.map, function(index, item) {
             $templist.append('<li><button class="imgBtn"><img src="Assets/images/templates/'+ index + '.png"><p class="templateTitle" id="' + index + '">'+item+'</p></button></li>');
         });
-        this.$el.append($templist);
+        this.$el.append($wrap.append($templist));
 
         $('button.imgBtn', this.$el).on('click', this.btnSelected);
     },

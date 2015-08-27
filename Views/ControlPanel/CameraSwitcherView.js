@@ -93,6 +93,7 @@ Application.AngleSwitcherPanel = Backbone.View.extend({
           }
         ];
         this.cameraAngleView = new Application.CameraAngleSet(obj);
+        this.$el.empty();
         this.$el.append(this.cameraAngleView.$el);
 
     },
