@@ -90,6 +90,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
     },
     addCameraSwitcherView: function() {
 
+        console.log("addCameraSwitcherView");
         if (this.cameraSwitcherView) this.cameraSwitcherView.destroy();
 
         this.cameraSwitcherView = new Application.CameraSwitcherView();
