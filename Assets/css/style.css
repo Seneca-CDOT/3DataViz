@@ -718,6 +718,7 @@ img {
     /*border: 1px solid blue;*/
     height: 100%;
     width: 100%;
+    cursor: pointer;
 }
 
 #tl_slider {
@@ -739,7 +740,7 @@ img {
     /*border: 1px solid yellow;*/
     left: 20px;
     top: 0;
-    cursor: pointer;
+
 }
 
 .tl_label {

@@ -55,10 +55,10 @@ Application.Timeline = Backbone.View.extend({
         this.$control.on('mousedown', this.mouseDownControl.bind(this));
         this.$control.on('mouseover', this.mouseOverControl.bind(this));
         this.$control.on('mouseout', this.mouseOutControl.bind(this));
-        $('.tl_point').on('mouseover', this.mouseOverPoint.bind(this));
-        $('.tl_point').on('mousedown', this.mouseDownPoint.bind(this));
-        $('.tl_point').on('mouseout', this.mouseOutPoint.bind(this));
-        this.$lineBox.on('mousedown', this.lineAction.bind(this));
+        // $('.tl_point').on('mouseover', this.mouseOverPoint.bind(this));
+        // $('.tl_point').on('mousedown', this.mouseDownPoint.bind(this));
+        // $('.tl_point').on('mouseout', this.mouseOutPoint.bind(this));
+        this.$lineBox.on('mousedown', this.mouseDownLine.bind(this));
 
     },
     unsuscribe: function() {
@@ -66,9 +66,10 @@ Application.Timeline = Backbone.View.extend({
         this.$control.off('mousedown', this.mouseDownControl.bind(this));
         this.$control.off('mouseover', this.mouseOverControl.bind(this));
         this.$control.off('mouseout', this.mouseOutControl.bind(this));
-        $('.tl_point').off('mouseover', this.mouseOverPoint.bind(this));
-        $('.tl_point').off('mousedown', this.mouseDownPoint.bind(this));
-        $('.tl_point').off('mouseout', this.mouseOutPoint.bind(this));
+        // $('.tl_point').off('mouseover', this.mouseOverPoint.bind(this));
+        // $('.tl_point').off('mousedown', this.mouseDownPoint.bind(this));
+        // $('.tl_point').off('mouseout', this.mouseOutPoint.bind(this));
+        this.$lineBox.unbind('mousedown', this.mouseDownLine.bind(this));
 
     },
     update: function() {
@@ -131,7 +132,7 @@ Application.Timeline = Backbone.View.extend({
 
     },
     setTimelineLength: function() {
-        this.timelineLength = 98; // length of timeline
+        this.timelineLength = 99; // length of timeline
         // this.SVGLine = document.getElementById('timeline');
         // this.SVGLine.setAttribute('x2', this.timelineLength);
     },
@@ -234,13 +235,19 @@ Application.Timeline = Backbone.View.extend({
         var circle = $(e.target)[0];
         circle.setAttribute('r', 5);
     },
-    mouseDownPoint: function(e) {
+    mouseDownLine: function(e) {
         clearTimeout(this.timerId);
-        var cur_pos = $(e.currentTarget)[0].style.left;
-        this.cur_index = $(e.currentTarget).data('index');
-        this.$slider.css('left', cur_pos);
+        var cur_pos = this.getCursorLocation(e);
+        var width = e.currentTarget.clientWidth;
+        console.log(width);
+        var percent = (cur_pos / width) * 100;
+        this.$slider.css('left', percent + '%');
         this.addPlay();
         this.started = false;
+    },
+    getCursorLocation: function(e) {
+        var parentOffset = $(e.currentTarget).offset();
+        return  (e.pageX - parentOffset.left);
     },
     lineAction: function(e) {
 
