@@ -210,14 +210,30 @@ Application.DataProcessor.DynamicVisualTransformer = (function() {
 
     DynamicVisualTransformer.prototype.transform = function(data, complete) {
 
-        // for (var i = 0; i < data.length; ++i) {
-        //     if (data[i].timestamp) {
-        //         data[i].timestamp = Number(data[i].timestamp);
-        //     } else {
-        //         data[i].timestamp = Number(new Date());
-        //     }
-        // }
-        if (typeof complete === "function") complete(data);
+      var transData = [];
+
+      $.each(data, function(index, item) {
+
+          var obj = {};
+
+          $.each(item, function(attr, value) {
+
+              var parserAttr = _.invert(Application.attrsMap)[attr];
+
+              if (parserAttr) {
+
+                  obj[parserAttr] = value;
+
+              }
+
+          });
+
+          transData.push(obj);
+
+      });
+
+      if( typeof complete === "function" ) complete(transData);
+      
     };
 
     return DynamicVisualTransformer;
@@ -261,40 +277,6 @@ Application.DataProcessor.GraphTransformer = (function() {
             transData.push(obj);
 
         });
-
-        // $.each(data, function(index, item) {
-        //     console.log(item);
-        //     var obj = {
-        //         from: {
-        //             latitude: "",
-        //             longitude: ""
-        //         },
-        //         to: {
-        //             latitude: "",
-        //             longitude: ""
-        //         },
-        //         fromLabel: "",
-        //         toLabel: "",
-        //         category: "",
-        //         timestamp: "",
-        //         value: ""
-        //     };
-        //     obj.from = {
-        //         latitude: item.fromLatitude || null,
-        //         longitude: item.fromLongitude || null
-        //     };
-        //     obj.to = {
-        //         latitude: item.toLatitude || null,
-        //         longitude: item.toLongitude || null
-        //     };
-        //     obj.fromLabel = item.fromLabel || null;
-        //     obj.toLabel = item.toLabel || null;
-        //     obj.category = item.category || null;
-        //     obj.timestamp = Number(item.timestamp) || null;
-        //     obj.value = Number(item.value) || null;
-
-        //     tData.push(obj);
-        // });
 
         if (typeof complete === "function") complete(transData);
     };

@@ -524,14 +524,12 @@ Application.BaseView = Backbone.View.extend({
 
         var data = this.collection[0].models;
 
-        var DateAttrName = Application.attrsMap['date'];
-
         data.sort(function(a,b) {
-            return new Date(a[DateAttrName]).getTime() - new Date(b[DateAttrName]).getTime()
+            return new Date(a.date).getTime() - new Date(b.date).getTime()
         });
 
         var uniques = _.chain(data).map(function(item) {
-            return item[DateAttrName];
+            return item.date;
         }).uniq().value();
 
         $.each(uniques, function(i, element) {
@@ -551,7 +549,7 @@ Application.BaseView = Backbone.View.extend({
 
             $.each(uniques, function(i, unique) {
 
-                if (unique == obj[DateAttrName]) {
+                if (unique == obj.date) {
 
                     newdata[unique].push(obj);
 
