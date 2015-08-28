@@ -77,8 +77,8 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
     },
     getColor: function(cur, min, max) {
-        var x = cur - min;
-        var y = max - min;
+        var x = cur - min || 0;
+        var y = max - min || 0;
         var value = x / y;
 
         return this.percentToRGB(value*100);
@@ -113,6 +113,10 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         var min = Math.log10(Math.log10(results[0].value));
         var max = Math.log10(Math.log10(results[results.length - 1].value));
 
+        if(!isFinite(min) || min < 0){
+          min = 0;
+        }
+
         if (Application.userConfig.model == 'googleTrends') {
             min = 0;
             max = 100;
@@ -124,9 +128,12 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         $.each(uniques, function(index, number) {
 
-        var num = number;
+            var num = number;
 
-        if (Application.userConfig.model !== 'googleTrends') var num = Math.log10(Math.log10(num));
+            if (Application.userConfig.model !== 'googleTrends') var num = Math.log10(Math.log10(num));
+            if(!isFinite(num) || num < 0){
+              num = 0;
+            }
 
             colors[number] = that.getColor(num, min, max);
 
@@ -149,10 +156,11 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;
-        } else if (!(results[0].country)) {
-            Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
-            return;
         }
+        //  else if (!(results[0].country)) {
+        //     Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
+        //     return;
+        // }
 
         Application._vent.trigger('controlpanel/message/off');
 

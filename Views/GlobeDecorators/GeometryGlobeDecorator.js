@@ -72,7 +72,7 @@ Application.GeometryGlobeDecorator = (function() {
             }
 
         }
-        if (mesh === null)  console.log('something wrong with the name: ' + country);
+        //if (mesh === null)  console.log('something wrong with the name: ' + country);
     };
 
     var privateMethods = Object.create(GeometryGlobeDecorator.prototype);
