@@ -570,6 +570,8 @@ Application.BaseView = Backbone.View.extend({
 
         var newdata = {};
 
+        var invertedMap = _.invert(Application.attrsMap);
+
         $.each(dateAttrs, function(i, date) {
 
             newdata[date] = [];
@@ -580,7 +582,7 @@ Application.BaseView = Backbone.View.extend({
 
             $.each(dateAttrs, function(i, date) {
 
-                var name = _.invert(Application.attrsMap)[date];
+                var name = invertedMap[date];
 
                 var value = Application.Helper.getNumber(obj[name]);
 
