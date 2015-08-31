@@ -268,7 +268,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.showAllResults.call(this);
 
-        this.resetGlobe();
+//        this.resetGlobe();
 
         $.each(this.sprites, function(index, point) {
 
