@@ -390,7 +390,6 @@ Application.BaseView = Backbone.View.extend({
     },
     getCategoriesWithColors: function(results, obj){
         this.categories = Application.Filter.getCategories(results);
-        console.log('categories from dataset', this.categories);
         $.each(this.categories, function(index, category){
             category.index = index;
             category.color = Application.Helper.getRandomColor(obj);

@@ -72,7 +72,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
           that.scene.remove(pointcloud);
           pointcloud = null;
         });
-        this.pointcloud = [];
+        this.pointclouds = [];
         $.each(that.geometries, function(i, geometry){
           geometry.dispose();
         });
@@ -125,7 +125,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     },
     showResults: function(results) {
 
-        //this.resetPointcloud();
+        this.resetPointcloud();
 
         //First time
         if (!results){
