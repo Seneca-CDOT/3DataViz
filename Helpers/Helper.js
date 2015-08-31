@@ -270,6 +270,7 @@ Application.Helper = {
                 svg = null;
                 canvas = null;
                 ctx = null;
+                img = null;
                 if( callback ) callback(pngImg);
             }
             pngImg.src = canvas.toDataURL( "image/png" )

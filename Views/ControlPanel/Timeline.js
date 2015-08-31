@@ -253,6 +253,6 @@ Application.Timeline = Backbone.View.extend({
     lineAction: function(e) {
 
         var position = { left: Math.round(e.offsetX || e.layerX), top: Math.round(e.offsetY || e.layerY) }
-        console.log(position);
+
     },
 });

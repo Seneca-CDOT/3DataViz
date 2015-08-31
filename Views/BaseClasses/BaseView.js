@@ -511,7 +511,7 @@ Application.BaseView = Backbone.View.extend({
         var ranges = [];
         var len = dates.length;
         var numOfSegments = len;
-        if (len > 10) numOfSegments = 10;
+        if (len > 5) numOfSegments = 5;
         var pointsPerSegments = parseInt(len / numOfSegments);
 
         for ( var i = 0; i < len; i+= pointsPerSegments) {

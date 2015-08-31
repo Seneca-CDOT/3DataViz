@@ -23,10 +23,16 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         this.lineMesh = null;
         this.results = null;
         this.material = null;
+        var that = this;
         $.each(this.textMeshs, function(index, mesh) {
+            that.scene.remove(mesh);
+            mesh.dispose();
             mesh = null;
         });
         $.each(this.pointclouds, function(index, pointcloud){
+            that.scene.remove(pointcloud);
+            pointcloud.geometry.dispose();
+            pointcloud.material.dispose();
             pointcloud = null;
         });
         $.each(this.geometries, function(index, geometry){
