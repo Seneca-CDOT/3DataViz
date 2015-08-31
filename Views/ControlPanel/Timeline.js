@@ -23,12 +23,12 @@ Application.Timeline = Backbone.View.extend({
     initElements: function() {
 
         this.$lineBox = $('<div id="tl_line"></div>');
-        this.$timeline = $('<svg width="100%"><line id="timeline" x1="10" y1="25"' +
+        this.$timeline = $('<svg width="100%"><line id="timeline" x1="0" y1="25"' +
         ' x2="100%" y2="25" stroke="#8888a1" fill="transparent" stroke-width="1"/></svg>');
-        this.$slider = $('<div id="tl_slider"><svg height="100%"><line x1="5" y1="10"' +
-        ' x2="5" y2="40" stroke="#8888a1" fill="transparent" stroke-width="2"/></svg></div>');
-        this.$point = $("<div class='tl_point'><svg height='100%' width='100%'>" +
-        "<circle cx='10' cy='25' r='5' stroke='#8888a1' fill='#8888a1' opacity='0.8'/></svg></div>");
+        this.$slider = $('<div id="tl_slider"><svg height="100%"><line x1="0" y1="10"' +
+        ' x2="0" y2="40" stroke="#ffffff" fill="transparent" stroke-width="3"/></svg></div>');
+        this.$point = $('<div class="tl_point"><svg width="100%" height="100%"><line x1="0" y1="20"' +
+        ' x2="0" y2="30" stroke="#8888a1" fill="transparent" stroke-width="2"/></svg></div>');
         this.$pause = $("<svg width='100%'><polygon id='playButton'" +
         "points='10 10 40 25 10 40' stroke='#8888a1' fill='#8888a1' opacity='0.8'/></svg>");
         this.$play = $("<svg width='100%'><polygon id='playButton'" +
@@ -75,7 +75,7 @@ Application.Timeline = Backbone.View.extend({
     update: function() {
 
         this.setTimelineLength();
-        this.distance = 98 / this.points.length; // distance between the points
+        this.distance = 100 / this.points.length; // distance between the points
         this.setInitialPoint();
         this.configPoints(this.points);
         this.addPoints(this.pointsObjects);
@@ -92,6 +92,7 @@ Application.Timeline = Backbone.View.extend({
         this.$el.remove();
         this.points = null;
         this.pointsObjects = null;
+        delete this.$el;
         clearTimeout(this.timerId);
     },
     setInitialPoint: function() {
@@ -133,7 +134,7 @@ Application.Timeline = Backbone.View.extend({
 
     },
     setTimelineLength: function() {
-        this.timelineLength = 99; // length of timeline
+        this.timelineLength = 100; // length of timeline
         // this.SVGLine = document.getElementById('timeline');
         // this.SVGLine.setAttribute('x2', this.timelineLength);
     },
@@ -171,7 +172,6 @@ Application.Timeline = Backbone.View.extend({
 
         if ( cur_pos == 0 ) {
             Application._vent.trigger('timeline/clear');
-            //Application._vent.trigger('timeline/message', that.pointsObjects[0].label);
         }
 
         var old = 0;
@@ -185,19 +185,10 @@ Application.Timeline = Backbone.View.extend({
             if ( cur != old ) Application._vent.trigger('timeline/message', cur);
             old = cur;
 
-            // if (cur_pos >= that.pointsObjects[that.cur_index].position) {
-            //     if (that.cur_index < (that.pointsObjects.length - 1) ) {
-            //       //console.log(that.pointsObjects[that.cur_index].position, that.pointsObjects[that.cur_index + 1].label);
-            //       Application._vent.trigger('timeline/message', that.pointsObjects[that.cur_index + 1].label);
-            //       Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.cur_index].label);
-            //       that.cur_index++;
-            //       traveled += distance;
-            //   }
-            // }
-            if (cur_pos >= 99) {
+            if (cur_pos >= 100) {
+                that.$slider.css('left', "100%");
                 clearTimeout(that.timerId);
                 that.addRestart();
-                //Application._vent.trigger('vizinfocenter/message/on', that.pointsObjects[that.pointsObjects.length - 1].label);
                 that.cur_index = 0;
 
             }
@@ -215,7 +206,7 @@ Application.Timeline = Backbone.View.extend({
             this.addPause();
             this.started = true;
         }
-        if (this.getCurPos() >= (this.timelineLength)) {
+        if (this.getCurPos() >= this.timelineLength) {
             this.$slider.css('left', 0+"%");
             this.moveSlider(this.distance, 2000);
             this.addPause();
@@ -240,7 +231,6 @@ Application.Timeline = Backbone.View.extend({
         clearTimeout(this.timerId);
         var cur_pos = this.getCursorLocation(e);
         var width = e.currentTarget.clientWidth;
-        console.log(width);
         var percent = (cur_pos / width) * 100;
         this.$slider.css('left', percent + '%');
         this.addPlay();
@@ -253,6 +243,6 @@ Application.Timeline = Backbone.View.extend({
     lineAction: function(e) {
 
         var position = { left: Math.round(e.offsetX || e.layerX), top: Math.round(e.offsetY || e.layerY) }
-        console.log(position);
+
     },
 });

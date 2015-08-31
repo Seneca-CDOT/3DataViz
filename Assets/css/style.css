@@ -734,23 +734,22 @@ img {
 #tl_slider {
 
     position: absolute;
-    width: 10px;
+    width: 2px;
     height: 100%;
-    /*border: 1px solid green;*/
     left: 0%;
     top: 0;
     cursor: pointer;
-    margin-left: 5px;
+    z-index: 1000;
 }
 
 .tl_point {
      position: absolute;
-    width: 20px;
+    width: 2px;
     height: 100%;
     /*border: 1px solid yellow;*/
-    left: 20px;
+    left: 0;
     top: 0;
-
+    z-index: 900;
 }
 
 .tl_label {

@@ -91,7 +91,6 @@ Application.BasePointCloudView = Application.BaseView.extend({
     var intersects = this.raycaster.intersectObjects( this.pointclouds );
 
     if ( intersects.length > 0 ) {
-      var results = this.collection[0].models;
       var index = intersects[0].index;
       var value = intersects[0].object.userData.values[index];
       var x = intersects[0].object.userData.x[index];

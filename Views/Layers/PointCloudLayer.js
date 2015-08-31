@@ -18,20 +18,26 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         Application.BasePointCloudView.prototype.suscribe.call(this);
     },
     destroy: function() {
-        Application.BasePointCloudView.prototype.destroy.call(this);
 
         this.lineMesh = null;
         this.results = null;
         this.material = null;
+        var that = this;
         $.each(this.textMeshs, function(index, mesh) {
+            that.scene.remove(mesh);
             mesh = null;
         });
         $.each(this.pointclouds, function(index, pointcloud){
+            that.scene.remove(pointcloud);
+            pointcloud.geometry.dispose();
+            pointcloud.material.dispose();
             pointcloud = null;
         });
         $.each(this.geometries, function(index, geometry){
             geometry = null;
         });
+
+        Application.BasePointCloudView.prototype.destroy.call(this);
     },
     getMin: function(objarray, key){
         var min = undefined;
@@ -66,7 +72,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
           that.scene.remove(pointcloud);
           pointcloud = null;
         });
-        this.pointcloud = [];
+        this.pointclouds = [];
         $.each(that.geometries, function(i, geometry){
           geometry.dispose();
         });
@@ -119,7 +125,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     },
     showResults: function(results) {
 
-        //this.resetPointcloud();
+        this.resetPointcloud();
 
         //First time
         if (!results){

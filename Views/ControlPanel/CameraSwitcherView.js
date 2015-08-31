@@ -51,6 +51,9 @@ Application.CameraSwitcherView = Backbone.View.extend({
         }
         this.cameraSwitcherPanel.destroy();
         this.cameraSwitcherPanel = null;
+
+        this.remove();
+        this.unbind();
         delete this.$el;
     }
 });

@@ -390,7 +390,6 @@ Application.BaseView = Backbone.View.extend({
     },
     getCategoriesWithColors: function(results, obj){
         this.categories = Application.Filter.getCategories(results);
-        console.log('categories from dataset', this.categories);
         $.each(this.categories, function(index, category){
             category.index = index;
             category.color = Application.Helper.getRandomColor(obj);
@@ -511,7 +510,7 @@ Application.BaseView = Backbone.View.extend({
         var ranges = [];
         var len = dates.length;
         var numOfSegments = len;
-        if (len > 10) numOfSegments = 10;
+        if (len > 5) numOfSegments = 5;
         var pointsPerSegments = parseInt(len / numOfSegments);
 
         for ( var i = 0; i < len; i+= pointsPerSegments) {

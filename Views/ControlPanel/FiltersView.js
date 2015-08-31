@@ -36,6 +36,8 @@ Application.FiltersView = Backbone.View.extend({
     destroy: function() {
 
         this.remove();
+        this.unbind();
+        delete this.$el;
         this.filterButton.destroy();
         this.filterPanel.destroy();
         // this.categoriesList = null;

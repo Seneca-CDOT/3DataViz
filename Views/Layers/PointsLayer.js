@@ -66,6 +66,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             });
         }
 
+        this.moObjects = [];
         this.sprites.forEach(function(sprite) {
 
             that.globe.remove(sprite);
@@ -73,6 +74,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
             sprite.geometry.dispose();
             sprite.material.dispose();
         });
+        this.sprites = [];
     },
     onMouseMove: function(e) {
 
@@ -82,7 +84,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         var closest = this.rayCast(this.moObjects, e);
 
         if (closest != null) {
-            if (closest.object.name !== 'globe') {
+            if (closest.object.name !== 'globe' && closest.object.visible) {
 
                 if (this.prevObject) this.prevObject.object.material.color.setHex(this.prevObject.object.userData.result_color);
 
@@ -266,7 +268,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.showAllResults.call(this);
 
-        this.resetGlobe();
+//        this.resetGlobe();
 
         $.each(this.sprites, function(index, point) {
 
