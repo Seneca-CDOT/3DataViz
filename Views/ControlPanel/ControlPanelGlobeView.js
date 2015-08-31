@@ -50,13 +50,16 @@ Application.ControlPanelRootView = Backbone.View.extend({
 
         if ( typeof Application.attrsMap['date'] != "undefined") {
 
-            if (this.timelineButton) this.timelineButton.destroy();
+            if (this.timelineButton){
+              this.timelineContainer.remove();
+            }
             this.timelineButton = new Application.Button();
             this.timelineButton.$el.text('TIMELINE');
             this.timelineButton.$el.on('mousedown', this.timelineButtonAction.bind(this));
-            var div = $('<div class="configList"</div>');
-            this.$el.append(div)
-            div.append(this.timelineButton.render().$el);
+
+            this.timelineContainer = $('<div class="configList"></div>');
+            this.timelineContainer.append(this.timelineButton.render().$el);
+            this.$el.append(this.timelineContainer);
         }
     },
     timelineButtonAction: function() {
@@ -90,8 +93,11 @@ Application.ControlPanelRootView = Backbone.View.extend({
     },
     addCameraSwitcherView: function() {
 
-        console.log("addCameraSwitcherView");
-        if (this.cameraSwitcherView) this.cameraSwitcherView.destroy();
+        console.log(this.cameraSwitcherView);
+
+        if (this.cameraSwitcherView){
+          this.cameraSwitcherView.destroy();
+        }
 
         this.cameraSwitcherView = new Application.CameraSwitcherView();
         this.$el.append(this.cameraSwitcherView.render().$el);
@@ -154,7 +160,8 @@ Application.ControlPanelRootView = Backbone.View.extend({
         if (this.timelineButton) {
             this.timelineButton.destroy();
             this.timelineButton = null;
-
+            this.timelineContainer.remove();
+            this.timelineContainer = null;
         }
     },
     destroyCategoriesView: function() {
