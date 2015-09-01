@@ -131,11 +131,11 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
         if (!results){
           results = this.collection[0].models;
           this.showInit(results);
+          this.getCategoriesWithColors(results);
         }
 
         var that = this;
 
-        this.getCategoriesWithColors(results);
         Application.BasePointCloudView.prototype.showResults.call(this, results);
 
         if (results.length == 0) {

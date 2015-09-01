@@ -5,36 +5,20 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     // framework methods
     initialize: function(decorator, collections) {
         Application.BaseGlobeView.prototype.initialize.call(this, decorator, collections);
-        // this._vent = config._vent;
-        //this.countries = [];
-        //this.intersected; // intersected mesh
-        //this.moved = false; // for controls and mouse events
-        //this.timer; // represents timer for user mouse idle
-        //this.idle = true; // represents user mouse idle
         this.sprites = [];
         this.moObjects = [];
         this.prevObject;
-        //this.suscribe();
-        //this.collection = config.collection[0];
         this.texture = THREE.ImageUtils.loadTexture("Assets/images/disc.png");
 
-        // console.log('link: https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
-        // console.log('key: 13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg');
     },
     suscribe: function() {
 
         Application.BaseGlobeView.prototype.suscribe.call(this);
-        //Application._vent.on('data/ready', this.showResults.bind(this));
-        //Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
     destroy: function() {
 
-        // console.log("PointsLayer Destroy");
-
         Application.BaseGlobeView.prototype.destroy.call(this);
-        // Application._vent.unbind('globe/ready');
         this.sprites = null;
-        // Application._vent.unbind('globe/ready');
     },
     clickOn: function(event) {
 
@@ -121,11 +105,14 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         //this.resetGlobe();
 
-        if (!results) results = this.collection[0].models;
+        //First time
+        if (!results){
+          results = this.collection[0].models;
+          this.getCategoriesWithColors(results);
+        }
 
         var that = this;
 
-        this.getCategoriesWithColors(results);
         Application.BaseGlobeView.prototype.showResults.call(this, results);
         Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
 
@@ -267,8 +254,6 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     showAllResults: function() {
 
         Application.BaseGlobeView.prototype.showAllResults.call(this);
-
-//        this.resetGlobe();
 
         $.each(this.sprites, function(index, point) {
 

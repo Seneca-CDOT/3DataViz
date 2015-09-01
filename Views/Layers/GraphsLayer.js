@@ -406,8 +406,10 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
     },
     showResults: function(results) {
 
-        if (!results) var results = this.collection[0].models;
-        this.getCategoriesWithColors(results);
+        if (!results){
+            results = this.collection[0].models;
+            this.getCategoriesWithColors(results);
+        }
 
         Application.BaseGlobeView.prototype.showResults.call(this, results);
         //console.log("GraphsLayer showResults");
