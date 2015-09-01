@@ -126,8 +126,8 @@ Application = {
         graph: {
             url: ['Views/Layers/GraphsLayer.js'],
             attributes: {
-                default: ['latitudeFrom', 'longitudeFrom', 'latitudeTo', 'longitudeTo', 'fromLabel', 'toLabel', 'value', 'category'],
-                optional: ['timestamp', 'value', 'fromLabel', 'toLabel', 'category']
+                default: ['label_from', 'latitude_from', 'longitude_from',  'label_to', 'latitude_to', 'longitude_to', 'value', 'category', 'date'],
+                optional: ['timestamp', 'value', 'category']
             },
             filters: [],
             decorator: 'geometry',
