@@ -196,7 +196,9 @@ Application.Timeline = Backbone.View.extend({
     },
     mouseDownControl: function() {
 
-        if (this.started) {
+        if(this.getCurPos() < 0){
+          return;
+        }else if (this.started) {
             clearTimeout(this.timerId);
             this.addPlay();
             this.started = false;
@@ -230,6 +232,8 @@ Application.Timeline = Backbone.View.extend({
     mouseDownLine: function(e) {
         clearTimeout(this.timerId);
         var cur_pos = this.getCursorLocation(e);
+        if(cur_pos < 0) return;
+        
         var width = e.currentTarget.clientWidth;
         var percent = (cur_pos / width) * 100;
         this.$slider.css('left', percent + '%');

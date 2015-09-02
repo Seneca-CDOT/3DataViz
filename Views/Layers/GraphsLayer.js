@@ -50,10 +50,10 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
     },
     destroy: function() {
 
+        this.resetGlobe();
         Application.BaseGlobeView.prototype.destroy.call(this);
 
         var that = this;
-        this.resetGlobe();
         this.airportMeshes = null;
         this.moObjects = null;
     },
@@ -65,7 +65,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
         var that = this;
 
-        if (this.timer.length) {
+        if (this.timer && this.timer.length) {
 
             $.each(this.timer, function(index, id) {
                 clearTimeout(id);
@@ -73,8 +73,9 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         }
 
         $.each(this.airportMeshes, function(i, mesh) {
-
-            that.scene.remove(mesh);
+            if(that.scene){
+              that.scene.remove(mesh);
+            }
             // mesh.geometry.dispose();
             mesh.material.dispose();
         });
@@ -86,8 +87,9 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         this.airportMeshes.length = 0;
 
         $.each(this.moObjects, function(i, mesh) {
-
-            that.scene.remove(mesh);
+            if(that.scene){
+              that.scene.remove(mesh);
+            }
             mesh.geometry.dispose();
             mesh.material.dispose();
         });
@@ -158,8 +160,8 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
                 this.prevObjects.push(closest);
                 var data = closest.object.userData;
                 var msg = "";
-                if (typeof data.fromLabel !== 'undefined' && typeof data.toLabel !== 'undefined' && data.toLabel !== "" && data.fromLabel !== "") {
-                    msg += ("From: " + data.fromLabel + "<br>" + "To: " + data.toLabel + "<br>");
+                if (typeof data.label_from !== 'undefined' && typeof data.label_to !== 'undefined' && data.label_to !== "" && data.label_from !== "") {
+                    msg += ("From: " + data.label_from + "<br>" + "To: " + data.label_to + "<br>");
                 }
                 if (typeof data.value !== 'undefined') {
                     msg += (" (" + data.value + ")");
@@ -208,7 +210,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         $.each(results, function(index, dataRecord) {
 
             time = time + 10;
-            if (dataRecord.latitudeFrom == null || dataRecord.longitudeFrom == null || dataRecord.latitudeTo == null || dataRecord.longitudeTo == null) {
+            if (dataRecord.latitude_from == null || dataRecord.longitude_from == null || dataRecord.latitude_to == null || dataRecord.longitude_to == null) {
                 return;
             }
 
@@ -216,18 +218,17 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
 
                 // console.log(dataRecord);
                 var category = that.getCategoryObj(dataRecord.category);
-                console.log('Name of category applied to the line ' + category.name)
 
                 var airportFrom = {
-                    longitude: dataRecord.longitudeFrom || null,
-                    latitude: dataRecord.latitudeFrom || null,
-                    label: dataRecord.fromLabel || null,
+                    longitude: dataRecord.longitude_from || null,
+                    latitude: dataRecord.latitude_from || null,
+                    label: dataRecord.label_from || null,
                 }
 
                 var airportTo = {
-                    longitude: dataRecord.longitudeTo || null,
-                    latitude: dataRecord.latitudeTo || null,
-                    label: dataRecord.toLabel || null,
+                    longitude: dataRecord.longitude_to || null,
+                    latitude: dataRecord.latitude_to || null,
+                    label: dataRecord.label_to || null,
                 }
 
                 if (!that.airportCreated(airportFrom)) {
@@ -406,8 +407,10 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
     },
     showResults: function(results) {
 
-        if (!results) var results = this.collection[0].models;
-        this.getCategoriesWithColors(results);
+        if (!results){
+            results = this.collection[0].models;
+            this.getCategoriesWithColors(results);
+        }
 
         Application.BaseGlobeView.prototype.showResults.call(this, results);
         //console.log("GraphsLayer showResults");
@@ -419,7 +422,7 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;
-        } else if (!results[0].longitudeFrom || !results[0].latitudeFrom || !results[0].longitudeTo || !results[0].latitudeTo) {
+        } else if (!results[0].longitude_from || !results[0].latitude_from || !results[0].longitude_to || !results[0].latitude_to) {
             Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
             return;
         }
