@@ -150,7 +150,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
                     results[index].destination = destination;
                 } else {
 
-                    console.log('Data has no country identified');
+                    // console.log('Data has no country identified');
                 }
             });
         } else {

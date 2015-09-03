@@ -86,7 +86,7 @@ Application.GeometryGlobeDecorator = (function() {
             dataType: 'json',
             cache: false,
             error: function() {
-                console.log('An error occurred while processing a countries file.');
+                // console.log('An error occurred while processing a countries file.');
             },
             success: function(data) {
 

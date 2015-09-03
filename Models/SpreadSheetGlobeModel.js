@@ -58,7 +58,7 @@ Application.SpreadSheetCollection = Application.BaseGlobeCollection.extend({
         }
 
         pModule.transformData(this.data, options, function(response) {
-            console.log("transform:", response);
+            // console.log("transform:", response);
             that.models = response;
             Application._vent.trigger('data/ready');
         });
