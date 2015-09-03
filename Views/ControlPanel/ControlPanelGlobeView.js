@@ -4,16 +4,24 @@ Application.ControlPanelRootView = Backbone.View.extend({
     initialize: function() {
 
         this.visualizationsView = null;
+        this.timelineShown = false; // reflects the state of timeline button
 
         this.dataSourcesView = new Application.DataSourcesView();
         this.matcher = new Application.Matcher();
+
 
         Application._vent.on('data/parsed', this.addTemplatesView, this);
 
         Application._vent.on('matcher/on', this.destroyViews, this);
         Application._vent.on('controlpanel/input/changed', this.destroyViews, this);
+        Application._vent.on('controlpanel/subview/model', this.destroyViews, this);
+
         Application._vent.on('visualize', this.addFiltersView, this);
+        Application._vent.on('visualize', this.enableTimeline, this);
         Application._vent.on('matcher/submit', this.addFiltersView, this);
+        Application._vent.on('matcher/submit', this.enableTimeline, this);
+        Application._vent.on('timeline/ready', this.addTimelineView, this);
+        Application._vent.on('matcher/submit', this.addCameraSwitcherView, this);
 
         this.helpButton = new Application.Help();
         this.helpButton.$el.attr('id', 'helpButton');
@@ -28,16 +36,72 @@ Application.ControlPanelRootView = Backbone.View.extend({
     render: function() {
         this.$el.append(this.dataSourcesView.render().$el);
         this.$el.append(this.matcher.render().$el);
+
         return this;
+    },
+    addTimelineView: function(dates) {
+
+        if (this.timeline) this.timeline.destroy();
+        this.timeline = new Application.Timeline(dates);
+        this.$el.append(this.timeline.$el);
+        this.timeline.update();
+    },
+    enableTimeline: function() {
+
+        if ( typeof Application.attrsMap['date'] != "undefined") {
+
+            if (this.timelineButton){
+              this.timelineContainer.remove();
+            }
+            this.timelineButton = new Application.Button();
+            this.timelineButton.$el.text('TIMELINE');
+            this.timelineButton.$el.on('mousedown', this.timelineButtonAction.bind(this));
+
+            this.timelineContainer = $('<div class="configList"></div>');
+            this.timelineContainer.append(this.timelineButton.render().$el);
+            this.$el.append(this.timelineContainer);
+        }
+    },
+    timelineButtonAction: function() {
+
+        if (this.timeline) {
+
+            if (!this.timelineShown) {
+                this.timeline.$el.show();
+                Application._vent.trigger('timeline/on');
+
+            } else {
+                this.timeline.$el.hide();
+              Application._vent.trigger('data/ready');
+            }
+            this.timelineShown = !this.timelineShown;
+        } else {
+            Application._vent.trigger('timeline/on');
+            this.timelineShown = true;
+        }
     },
     addFiltersView: function() {
 
         if (this.filtersView) this.filtersView.destroy();
 
+        if (Application.userConfig.model == 'googleTrends') return;
+
         this.filtersView = new Application.FiltersView();
         this.$el.append(this.filtersView.render().$el);
         //this.filterPanel.$el.hide();
 
+    },
+    addCameraSwitcherView: function() {
+
+        // console.log(this.cameraSwitcherView);
+
+        if (this.cameraSwitcherView){
+          this.cameraSwitcherView.destroy();
+        }
+
+        this.cameraSwitcherView = new Application.CameraSwitcherView();
+        this.$el.append(this.cameraSwitcherView.render().$el);
+        this.cameraSwitcherView.$el.hide();
     },
     addDataSourcesView: function() {
         if (this.dataSourcesView) this.dataSourcesView.destroy();
@@ -71,6 +135,34 @@ Application.ControlPanelRootView = Backbone.View.extend({
     destroyViews: function() {
         this.destroyTemplatesView();
         this.destroyCategoriesView();
+        this.destroyFilters();
+        this.destroyTimeline();
+        this.destroyCameraSwitch();
+    },
+    destroyCameraSwitch: function() {
+        if (this.cameraSwitcherView) {
+            this.cameraSwitcherView.destroy();
+            this.cameraSwitcherView = null;
+        }
+    },
+    destroyFilters: function() {
+        if (this.filtersView) {
+            this.filtersView.destroy();
+            this.filtersView = null;
+        }
+    },
+    destroyTimeline: function() {
+        if (this.timeline) {
+            this.timeline.destroy();
+            this.timeline = null;
+        }
+
+        if (this.timelineButton) {
+            this.timelineButton.destroy();
+            this.timelineButton = null;
+            this.timelineContainer.remove();
+            this.timelineContainer = null;
+        }
     },
     destroyCategoriesView: function() {
 
@@ -118,7 +210,7 @@ Application.NotificationsCenter = Backbone.View.extend({
         return this;
     },
     showMessage: function(message) {
-        console.log("showMessage", message);
+        // console.log("showMessage", message);
         this.$el.fadeIn();
         this.$el.empty();
         this.$el.append('<div class="notification">' + message + '</div>');
@@ -572,7 +664,7 @@ Application.DynamicTwitterDBControlPanel = Application.ButtonsView.extend({
         var path = 'http://threedataviz.herokuapp.com/';
 
         $.get(path + 'twitterDB/apple/timeto').done(function(data) {
-            console.log(data[0].timestamp_ms);
+            // console.log(data[0].timestamp_ms);
             var datetime = that.convertStampToDateTime(data[0].timestamp_ms)
             that.timeTo.$el.val(datetime);
         });
@@ -618,7 +710,8 @@ Application.SpreadSheetControlPanel = Application.ButtonsView.extend({
         this.urlfield.$el.attr('class', 'form-control userInput');
         this.urlfield.$el.attr('id', 'key');
         // this.urlfield.$el.val("13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg");
-        this.urlfield.$el.val("1HFYTBC2iKabiidtP2U148PKvMW5tRUvxTAzoJ7w3vNo");
+        // this.urlfield.$el.val("1HFYTBC2iKabiidtP2U148PKvMW5tRUvxTAzoJ7w3vNo");
+        this.urlfield.$el.val("1GAYmPSBgK0yuluRcIWjyVVWnh41L4fDG00fJbHVZnFk");
         this.urlfield.$el.on('mousedown', this.urlFieldAction.bind(this));
         this.labelForKey = $('<label for="key" class="label">ENTER A KEY</label>');
 

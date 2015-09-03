@@ -10,20 +10,24 @@ Application.DataProcessor.TransformerFactory = (function() {
         switch (options.transformerType) {
 
             case "countriesVisualTransformer":
-                console.log("countriesVisualTransformer");
+                // console.log("countriesVisualTransformer");
                 TransformerClass = Application.DataProcessor.CountriesVisualTransformer;
                 break;
             case "pointsVisualTransformer":
-                console.log("pointsVisualTransformer");
+                // console.log("pointsVisualTransformer");
                 TransformerClass = Application.DataProcessor.PointsVisualTransformer;
                 break;
             case "dynamicVisualTransformer":
-                console.log("dynamicVisualTransformer");
+                // console.log("dynamicVisualTransformer");
                 TransformerClass = Application.DataProcessor.DynamicVisualTransformer;
                 break;
             case "graphVisualTransformer":
-                console.log("graphVisualTransformer");
+                // console.log("graphVisualTransformer");
                 TransformerClass = Application.DataProcessor.GraphTransformer;
+                break;
+            case "pointcloudVisualTransformer":
+                // console.log("pointcloudVisualTransformer");
+                TransformerClass = Application.DataProcessor.PointCloudTransformer;
                 break;
         }
         // console.log(TransformerClass);
@@ -69,7 +73,7 @@ Application.DataProcessor.BaseTransformerStrategy = (function() {
     BaseTransformerStrategy.prototype.testPublicFunction2 = function(data) {
 
         // accessing public and private variables form public function
-        console.log("From public function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
+        // console.log("From public function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
     };
 
     // define private methods after prototype has been inhereted and defined
@@ -82,7 +86,7 @@ Application.DataProcessor.BaseTransformerStrategy = (function() {
         privateMethods.testPublicFunction2.call(this);
 
         // accessing public and private variables form private function
-        console.log("From private function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
+        // console.log("From private function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
     };
     // } ***
 
@@ -131,12 +135,12 @@ Application.DataProcessor.CountriesVisualTransformer = (function() {
                 if (parserAttr) {
 
                     if (parserAttr == 'value') value = Application.Helper.getNumber(value);
-                    
+
                     obj[parserAttr] = value;
 
                 } else {
 
-                    console.log("Attribute " + attr + " wasn't included");
+                    // console.log("Attribute " + attr + " wasn't included");
                 }
 
             });
@@ -163,21 +167,6 @@ Application.DataProcessor.PointsVisualTransformer = (function() {
 
     PointsVisualTransformer.prototype.transform = function(data, complete) {
 
-        // if(data[0].latitude == "" && data[0].longitude == ""){
-        //      var transData = [];  
-
-        //     $.each( data, function (index, item ) {
-
-        //       var obj = {};
-        //       obj.countrycode = item.countrycode || "";
-        //       obj.countryname = item.countryname || "";
-        //       obj.percent = item.percent || 0;
-        //       transData.push(obj);
-
-        //      });
-
-        // }
-
         var transData = [];
 
         $.each(data, function(index, item) {
@@ -194,7 +183,7 @@ Application.DataProcessor.PointsVisualTransformer = (function() {
 
                 } else {
 
-                    console.log("Attribute " + attr + " wasn't included");
+                    // console.log("Attribute " + attr + " wasn't included");
                 }
 
             });
@@ -210,7 +199,7 @@ Application.DataProcessor.PointsVisualTransformer = (function() {
 
 })();
 
-// point visual
+// Dynamic visual
 Application.DataProcessor.DynamicVisualTransformer = (function() {
 
     function DynamicVisualTransformer() {
@@ -221,14 +210,30 @@ Application.DataProcessor.DynamicVisualTransformer = (function() {
 
     DynamicVisualTransformer.prototype.transform = function(data, complete) {
 
-        for (var i = 0; i < data.length; ++i) {
-            if (data[i].timestamp !== "") {
-                data[i].timestamp = Number(data[i].timestamp);
-            } else {
-                data[i].timestamp = 0;
-            }
-        }
-        if (typeof complete === "function") complete(data);
+      var transData = [];
+
+      $.each(data, function(index, item) {
+
+          var obj = {};
+
+          $.each(item, function(attr, value) {
+
+              var parserAttr = _.invert(Application.attrsMap)[attr];
+
+              if (parserAttr) {
+
+                  obj[parserAttr] = value;
+
+              }
+
+          });
+
+          transData.push(obj);
+
+      });
+
+      if( typeof complete === "function" ) complete(transData);
+
     };
 
     return DynamicVisualTransformer;
@@ -259,12 +264,12 @@ Application.DataProcessor.GraphTransformer = (function() {
                 if (parserAttr) {
 
                     if (parserAttr == 'value') value = Application.Helper.getNumber(value);
-                    
+
                     obj[parserAttr] = value;
 
                 } else {
 
-                    console.log("Attribute " + attr + " wasn't included");
+                    // console.log("Attribute " + attr + " wasn't included");
                 }
 
             });
@@ -273,43 +278,49 @@ Application.DataProcessor.GraphTransformer = (function() {
 
         });
 
-        // $.each(data, function(index, item) {
-        //     console.log(item);
-        //     var obj = {
-        //         from: {
-        //             latitude: "",
-        //             longitude: ""
-        //         },
-        //         to: {
-        //             latitude: "",
-        //             longitude: ""
-        //         },
-        //         fromLabel: "",
-        //         toLabel: "",
-        //         category: "",
-        //         timestamp: "",
-        //         value: ""
-        //     };
-        //     obj.from = {
-        //         latitude: item.fromLatitude || null,
-        //         longitude: item.fromLongitude || null
-        //     };
-        //     obj.to = {
-        //         latitude: item.toLatitude || null,
-        //         longitude: item.toLongitude || null
-        //     };
-        //     obj.fromLabel = item.fromLabel || null;
-        //     obj.toLabel = item.toLabel || null;
-        //     obj.category = item.category || null;
-        //     obj.timestamp = Number(item.timestamp) || null;
-        //     obj.value = Number(item.value) || null;
-
-        //     tData.push(obj);
-        // });
-
         if (typeof complete === "function") complete(transData);
     };
 
     return GraphTransformer;
+
+})();
+
+// point cloud visual
+Application.DataProcessor.PointCloudTransformer = (function(){
+
+    function PointCloudTransformer() {
+
+        Application.DataProcessor.BaseTransformer.call(this);
+    };
+    Application.Helper.inherit(PointCloudTransformer, Application.DataProcessor.BaseTransformer);
+
+    PointCloudTransformer.prototype.transform = function(data, complete) {
+
+        var transData = [];
+
+        $.each(data, function(index, item) {
+
+            var obj = {};
+
+            $.each(item, function(attr, value) {
+
+                var parserAttr = _.invert(Application.attrsMap)[attr];
+
+                if (parserAttr) {
+
+                    obj[parserAttr] = value;
+
+                }
+
+            });
+
+            transData.push(obj);
+
+        });
+
+        if( typeof complete === "function" ) complete(transData);
+    };
+
+    return PointCloudTransformer;
 
 })();

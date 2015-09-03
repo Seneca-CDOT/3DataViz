@@ -18,14 +18,14 @@ Application.DynamicLayer = Application.BaseGlobeView.extend({
 
         this.lifePeriod = 100000;
         this.period = 500;
-        this.particlesLifeTime = 2000;
+        this.particlesLifeTime = 1000;
 
         this.particlesTimer = null;
 
     },
     destroy: function() {
 
-       // console.log("DynamicLayer Destroy");
+        // console.log("DynamicLayer Destroy");
 
         // TODO: review
         var iterator = this.particles.getBegin();
@@ -64,14 +64,16 @@ Application.DynamicLayer = Application.BaseGlobeView.extend({
             clearTimeout(this.particlesTimer);
             this.particlesTimer = null;
         }
-        
+
         Application.BaseGlobeView.prototype.destroy.call(this);
     },
+    resetGlobe: function() {
 
+    },
     // visualization specific functionality
-    updateGlobe: function() {
+    updateScene: function() {
 
-        Application.BaseGlobeView.prototype.updateGlobe.call(this);
+        Application.BaseGlobeView.prototype.updateScene.call(this);
 
         this.updateParticles();
     },
@@ -128,12 +130,9 @@ Application.DynamicLayer = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.addHelpers.call(this);
 
-        Application.Debug.addAxes(this.globe);
+        //Application.Debug.addAxes(this.globe);
     },
-
     onDataReceive: function(data) {
-
-        console.log(data);
 
         var dataRecord = new Application.GeoDataRecord({
 
@@ -144,18 +143,20 @@ Application.DynamicLayer = Application.BaseGlobeView.extend({
 
         this.addParticleWithDataRecord(dataRecord);
     },
-
     showResults: function(results) {
 
-      //  console.log("DynamicLayer showResults");
-
         var that = this;
-        this.collection[0].bind("add", function(data){
-          var results = that.collection[0].models;
-          that.addParticleWithDataRecord(results[results.length-1].attributes);
+
+        if(!results) var results = that.collection[0].models;
+        Application._vent.trigger('controlpanel/message/off');
+
+        $.each(results, function(i, result) {
+
+            result.timestamp = Number(new Date());
+            that.addParticleWithDataRecord(result);
+
         });
     },
-
     showDataRecords: function(results, beginIndex, timeInterval) {
 
         if (beginIndex >= results.length) {
@@ -177,15 +178,15 @@ Application.DynamicLayer = Application.BaseGlobeView.extend({
             ++count;
             ++beginIndex;
             if (beginIndex >= results.length)
-                break;
+            break;
             dataRecord = results[++beginIndex];
             time = dataRecord.timestamp;
         }
 
-        console.log("----------------");
-        console.log("Twittes Viewed: " + count + " Within Iterval Of: " + 0.001 * timeInterval + "sec.");
-        console.log("Twittes Viewed Total: " + beginIndex);
-        console.log("Twittes Left To View: " + (results.length - beginIndex));
+        // console.log("----------------");
+        // console.log("Twittes Viewed: " + count + " Within Iterval Of: " + 0.001 * timeInterval + "sec.");
+        // console.log("Twittes Viewed Total: " + beginIndex);
+        // console.log("Twittes Left To View: " + (results.length - beginIndex));
 
         var that = this;
         this.particlesTimer = setTimeout(function() {
@@ -200,7 +201,7 @@ Application.DynamicLayer = Application.BaseGlobeView.extend({
         var particle = new Application.DynamicLayerParticle(dataRecord, this.globeRadius);
         particle.setLifeTime(this.particlesLifeTime);
 
-        // Application.Debug.addAxes(particle.getMesh());
+        //Application.Debug.addAxes(particle.getMesh());
 
         this.scene.add(particle.getMesh());
         this.particles.pushBack(particle);

@@ -47,7 +47,7 @@ body {
     font-size: 200%;
     position: absolute;
     top: 18px;
-    left: 100px;
+    left: 18px;
     font-size: 26px;
     font-weight: bold;
 }
@@ -158,6 +158,9 @@ b {
     letter-spacing: 2px;*/
     /*background-color: #56567A;*/
 }
+label + button{
+  margin-top: 0;
+}
 button{
     outline: none;
 }
@@ -198,6 +201,12 @@ button{
   vertical-align: middle;
   border-radius: 50%;
   margin-right: 8px;
+}
+#newAttr {
+
+position: relative;
+width: 100%;
+color: black;
 }
 
 .btn-file {
@@ -326,7 +335,10 @@ button{
     margin-bottom: 30px;
 }
 
-#instruction .demo {}
+#instruction .demo a{
+  vertical-align: middle;
+  margin-left: 10px;
+}
 
 #instruction ul.steps {
     text-align: center;
@@ -438,21 +450,31 @@ button{
 
 .templateImgList{
     padding: 0;
-    display: table;
+    display: block;
+    overflow-x: scroll;
 }
 .templateTitle{
     font-size: 14px;
     margin-bottom: 0;
 }
+.templateImgList ul{
+    display: table;
+    padding-left: 0;
+    white-space: nowrap;
+}
 .templateImgList li{
     display: table-cell;
-    padding: 0 10px;
+    padding: 0 5px;
+    width: 150px;
+    height: 165px;
 }
 .templateImgList li img{
-    width: 145px;
-    height: 145px;
+    width: 100%;
+    height: auto;
 }
 .templateImgList li .imgBtn{
+    width: 150px;
+    height: 165px;
     border: none;
     border-radius: 4px;
     padding: 10px;
@@ -665,7 +687,8 @@ img {
 }
 /***FILTERS****/
 
-#filterPanel {
+#filterPanel,
+#angleSwitcherPanel {
     background-color: #1F1F2E;
     position: fixed;
     right: 250px;
@@ -677,4 +700,70 @@ img {
     font-size: 150%;
     z-index: 999;
     /*font-weight: lighter;*/
+}
+
+/***TIMELINE***/
+
+#tl_timebox {
+    position: fixed;
+    bottom: 20px;
+    height: 50px;
+    width: 50%;
+    left: 50%;
+    margin-left: -35%;
+    /*border: 1px solid red;*/
+}
+
+#tl_control {
+    position: absolute;
+    left: 0;
+    top: 0;
+    /*border: 1px solid green;*/
+    height: 100%;
+    width: 50px;
+    cursor: pointer;
+}
+
+#tl_line {
+    position: absolute;
+    left: 50px;
+    top: 0;
+    /*border: 1px solid blue;*/
+    height: 100%;
+    width: 100%;
+    cursor: pointer;
+}
+
+#tl_slider {
+
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    left: 0%;
+    top: 0;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.tl_point {
+     position: absolute;
+    width: 2px;
+    height: 100%;
+    /*border: 1px solid yellow;*/
+    left: 0;
+    top: 0;
+    z-index: 900;
+}
+
+.tl_label {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    width: 800px;
+    margin-left: -400px;
+    text-align: center;
+}
+
+.tl_label span{
+    color: #ffffff;
 }

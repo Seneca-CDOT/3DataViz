@@ -8,6 +8,7 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         Application.BaseGlobeView.prototype.initialize.call(this, decorator, collections);
 
         this.added = []; // list of countries participating and their old colors
+        this.old = [] ; // holds added countries from the previos call
 
     },
     render: function() {
@@ -17,38 +18,29 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
     },
     clickOn: function(event) {
 
-        //  this.inter();
-
         var intersectedMesh = Application.BaseGlobeView.prototype.clickOn.call(this, event);
 
         var found = false;
+        var sign = '';
+
+        if (Application.userConfig.model == 'googleTrends') sign = '%';
 
         if (intersectedMesh) {
 
             $.each(this.added, function(index, country) {
 
                 if (intersectedMesh.object == country.mesh) {
-
-
-                    console.log(country.value);
-                    Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name +
-                        '<br>' + Application.Helper.formatNumber(country.value));
+                    Application._vent.trigger('vizinfocenter/message/on', country.mesh.userData.name[0] +
+                    '<br>' + Application.Helper.formatNumber(country.value) + sign );
                     found = true;
                 }
-
             });
-
         }
-
     },
     destroy: function() {
-
-        // console.log("CountriesLayer Destroy");
-
         Application.BaseGlobeView.prototype.destroy.call(this);
-        //this.resetGlobe();
+
         this.colors = null;
-        this.added = [];
 
         $.each(this.added, function(index, country) {
             country.mesh = null;
@@ -56,6 +48,8 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             country = null;
         });
 
+        this.added = null;
+        this.old = null;
     },
     suscribe: function() {
         Application.BaseGlobeView.prototype.suscribe.call(this);
@@ -65,52 +59,98 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         this.collection[0].fetch();
 
     },
+    reset: function() {
+        Application.BaseGlobeView.prototype.reset.call(this);
+        //this.resetGlobe();
+    },
     resetGlobe: function() {
 
         var that = this;
+
         $.each(that.added, function(index, country) {
 
             country.mesh.material.color.setHex(country.color);
 
         });
+
+        that.added.length = 0;
+
     },
     getColor: function(cur, min, max) {
-
-        var x = cur - min;
-        var y = max - min;
+        var x = cur - min || 0;
+        var y = max - min || 0;
         var value = x / y;
 
-        return value;
+        return this.percentToRGB(value*100);
 
+    },
+    percentToRGB:  function(percent) {
+        if (percent === 100) {
+            percent = 99
+        }
+        var r, g, b;
+        //
+        // if (percent < 50) {
+        //     // green to yellow
+        //     r = Math.floor(255 * (percent / 50));
+        //     g = 255;
+        //
+        // } else {
+        // yellow to red
+        r = 255;
+        g = Math.floor(255 * ((100 - percent) / 100));
+        //console.log(percent);
+        // }
+        b = 0;
+        // return "rgb(" + r + "," + g + "," + b + ")";
+        return { r: (r/255), g: (g/255), b: (b/255) }
     },
     createColors: function(results) {
 
         var that = this;
         var colors = {};
 
-        var min = results[0].value;
-        var max = results[results.length - 1].value;
+        var min = Math.log10(Math.log10(results[0].value));
+        var max = Math.log10(Math.log10(results[results.length - 1].value));
+
+        if(!isFinite(min) || min < 0){
+          min = 0;
+        }
+
+        if (Application.userConfig.model == 'googleTrends') {
+            min = 0;
+            max = 100;
+        }
 
         var uniques = _.chain(results).map(function(item) {
-            return item.value
+            return item.value;
         }).uniq().value();
 
         $.each(uniques, function(index, number) {
 
-            colors[number] = that.getColor(number, min, max);
+            var num = number;
+
+            if (Application.userConfig.model !== 'googleTrends') var num = Math.log10(Math.log10(num));
+            if(!isFinite(num) || num < 0){
+              num = 0;
+            }
+
+            colors[number] = that.getColor(num, min, max);
 
         });
 
         return colors;
     },
 
-    showResults: function() {
+    showResults: function(results) {
 
-        // console.log("CountriesLayer showResults");
-        var results = this.collection[0].models;
+        if(!results){
+            results = this.collection[0].models;
+            this.getCategories(results);
+        }
+
         var that = this;
 
-        this.getCategories(results);
         Application.BaseGlobeView.prototype.showResults.call(this, results);
 
         Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
@@ -118,10 +158,11 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;
-        } else if (!(results[0].countryname || results[0].countrycode)) {
-            Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
-            return;
         }
+        //  else if (!(results[0].country)) {
+        //     Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
+        //     return;
+        // }
 
         Application._vent.trigger('controlpanel/message/off');
 
@@ -131,21 +172,12 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         var colorsMap = this.createColors(results); // creates a colors map relative to the values
 
-        if (results[0].countryname) {
-            var search = 'countryname';
-        }
+        $.each(results, function(index, item) {
 
-        if (results[0].countrycode) {
-            var search = 'countrycode';
-        }
-
-        results.forEach(function(item, index) {
-
-
-            var countrymesh = that.decorators[0].findCountry(item[search], search);
+            var countrymesh = that.decorators[0].findCountry(item.country);
 
             if (!countrymesh) {
-                console.log('Country ' + (item.countrycode || item.countryname) + ' is not available ');
+                // console.log('Country ' + (item.countrycode || item.countryname) + ' is not available ');
                 return;
             }
 
@@ -155,18 +187,37 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             obj.mesh = countrymesh;
             obj.color = countrymesh.material.color.getHex();
             if (item.value) obj.value = item.value;
+            //console.log(countrymesh.userData.name)
 
             if (item.category) obj.category = item.category;
 
-            countrymesh.material.color.r = 1;
-            countrymesh.material.color.g = 1 - colorsMap[item.value];
-            countrymesh.material.color.b = 1 - colorsMap[item.value];
+            // countrymesh.material.color.r = 1;
+            // countrymesh.material.color.g = 1 - colorsMap[item.value];
+            // countrymesh.material.color.b = 1 - colorsMap[item.value];
+            // countrymesh.material.color.set(colorsMap[item.value]);
+
+            function getit(tweenObj) {
+
+                countrymesh.material.color.setRGB(tweenObj.r, tweenObj.g, tweenObj.b);
+            }
+            if (item.value) that.tweenit(countrymesh.material.color, colorsMap[item.value], getit, 2);
 
             obj.result_color = countrymesh.material.color.getHex();
 
             that.added.push(obj);
 
         });
+
+        //this.old = that.added;
+
+        //var old_countries = this.compareCountriesArrays(this.added, this.old);
+
+        // $.each(old_countries, function(i, country) {
+        //
+        //     this.tweenit(country.mesh.material.color, country.color);
+        //
+        // });
+
     },
     sortResultsByCategory: function() {
 
@@ -174,48 +225,44 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.sortResultsByCategory.call(this);
 
-       // this.resetGlobe();
         this.showAllResults();
 
-       // if (category == 'All') return;
-
-       if (this.activeCategories.length != 0) {
-       $.each(this.added, function(index, country) { // turn all added countries grey
+        if (this.activeCategories.length != 0) {
+            $.each(this.added, function(index, country) { // turn all added countries grey
 
                 country.mesh.material.color.r = 0.5;
                 country.mesh.material.color.g = 0.5;
                 country.mesh.material.color.b = 0.5;
 
+            });
+        }
+
+        $.each(this.activeCategories, function(i, category) {
+
+            $.each(that.added, function(i, country) {
+
+                if (country.category == category) {
+
+                    country.mesh.material.color.setHex(country.result_color);
+
+                }
+
+            });
+
         });
-   }
 
-    $.each(this.activeCategories, function(i, category) {
+    },
+    showAllResults: function() {
 
-        $.each(that.added, function(i, country) {
+        Application.BaseGlobeView.prototype.showAllResults.call(this);
 
-            if (country.category == category) {
+        this.resetGlobe();
 
-                country.mesh.material.color.setHex(country.result_color);
+        $.each(this.added, function(index, country) {
 
-                console.log(i++);
-            }
+            country.mesh.material.color.setHex(country.result_color);
 
         });
-
-    });
-
-},
-showAllResults: function() {
-
-    Application.BaseGlobeView.prototype.showAllResults.call(this);
-
-    this.resetGlobe();
-
-    $.each(this.added, function(index, country) {
-
-        country.mesh.material.color.setHex(country.result_color);
-
-    });
-},
+    },
 
 });

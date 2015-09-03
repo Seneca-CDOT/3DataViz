@@ -43,14 +43,11 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         };
 
         pModule.processData(response.table.rows, options, function(response) {
-                //console.log("parse:", response);
-                // Application._vent.trigger('data/parsed');
 
                 Application.userConfig.templateTitle = 'Google Trends Visualization';
                 Application.userConfig.template = 'countries';
                 Application._vent.trigger('visualize');
 
-                //that.transform(response);
                 that.data = response; // to hold data until visualization starts
             });
     },
@@ -61,7 +58,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
             visualizationType: Application.userConfig.template
         }
         //pModule.transformData(this.data, options, function(response) {
-            console.log("transform:", this.data);
+            // console.log("transform:", this.data);
             that.models = this.data;
             Application._vent.trigger('data/ready');
        // });
@@ -78,8 +75,10 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
         var fileref = document.createElement('script');
         fileref.setAttribute("type", "text/javascript");
         fileref.setAttribute("src", this.url);
-        var test = document.getElementsByTagName("head")[0].appendChild(fileref);
-
+        var res = document.getElementsByTagName("head")[0].appendChild(fileref);
+        res.onerror = function (e) {
+            Application._vent.trigger('controlpanel/message/on', 'REQUEST HAS FAILED');
+        }
     },
     fetch: function() {
 
@@ -91,6 +90,7 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
     destroy: function() {
         //  console.log("Destroy GoogleTrendsCollection");
        Application.BaseGlobeCollection.prototype.destroy.call(this);
+
     },
     getViewConfigs: function(data) {
         var defaults = {

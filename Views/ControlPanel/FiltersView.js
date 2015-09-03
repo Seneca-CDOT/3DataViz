@@ -19,6 +19,7 @@ Application.FiltersView = Backbone.View.extend({
     },
     toggleFilterPanel: function() {
 
+        $('.togglePanel').not("#filterPanel").hide();
         this.filterPanel.$el.toggle();
     },
     removeFilterPanel: function() {
@@ -35,6 +36,8 @@ Application.FiltersView = Backbone.View.extend({
     destroy: function() {
 
         this.remove();
+        this.unbind();
+        delete this.$el;
         this.filterButton.destroy();
         this.filterPanel.destroy();
         // this.categoriesList = null;
@@ -46,6 +49,8 @@ Application.FilterPanel = Backbone.View.extend({
     tagName: 'div',
     id: 'filterPanel',
     initialize: function() {
+
+        this.$el.addClass('togglePanel');
 
         this.categoriesGroupsViews = []; // hold an array of views
 
@@ -83,6 +88,7 @@ Application.FilterPanel = Backbone.View.extend({
     addCategoriesGroup: function(obj) {
 
         var view = new Application.FiltersSet(obj);
+        this.$el.empty();
         this.$el.append(view.$el);
 
         this.categoriesGroupsViews.push(view);
@@ -124,11 +130,10 @@ Application.FiltersSet = Backbone.View.extend({
     },
     addLabel: function(name) {
 
-        if(name){
+        if (name) {
             var $label = $('<div><label class="label">BY ' + name.toUpperCase() + '</label></div>');
             this.$el.append($label);
         }
-        
     },
     list: function(group) {
 
@@ -170,7 +175,7 @@ Application.FiltersSet = Backbone.View.extend({
 
         } else {
 
-            console.log("Couldn't check if the target was checked", e);
+            // console.log("Couldn't check if the target was checked", e);
         }
     },
     createCheckBox: function(category, groupname) {

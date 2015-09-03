@@ -46,19 +46,33 @@ Application.GeometryGlobeDecorator = (function() {
         privateMethods.highlightCountry.call(this, mesh);
     };
 
-    GeometryGlobeDecorator.prototype.findCountry = function(country, id) {
+    GeometryGlobeDecorator.prototype.findCountry = function(country) {
 
-        switch (id) {
+        var countries = this.countries;
+        var mesh = null;
 
-            case 'countryname':
-                var mesh = privateMethods.findCountryMeshByName.call(this, country);
-                break;
-            case 'countrycode':
-                var mesh = privateMethods.findCountryMeshByCode.call(this, country);
-                break;
+        for (var i = 0; i < countries.length; i++) {
+
+            var names = countries[i].userData.name;
+            var codes = countries[i].userData.code;
+
+            for (var k = 0; k < names.length; k++) {
+
+                if (names[k].toLowerCase() == country.toLowerCase()) {
+                    mesh = countries[i];
+                    return mesh;
+                }
+            }
+            for (var j = 0; j < codes.length; j++) {
+
+                if (codes[j].toLowerCase() == country.toLowerCase()) {
+                    mesh = countries[i];
+                    return mesh;
+                }
+            }
+
         }
-
-        return mesh;
+        //if (mesh === null)  console.log('something wrong with the name: ' + country);
     };
 
     var privateMethods = Object.create(GeometryGlobeDecorator.prototype);
@@ -72,8 +86,7 @@ Application.GeometryGlobeDecorator = (function() {
             dataType: 'json',
             cache: false,
             error: function() {
-
-                console.log('An error occurred while processing a countries file.');
+                // console.log('An error occurred while processing a countries file.');
             },
             success: function(data) {
 
@@ -104,7 +117,7 @@ Application.GeometryGlobeDecorator = (function() {
             mesh.scale.set(scale, scale, scale);
             mesh.geometry.computeBoundingSphere();
 
-            mesh.userData.name = countryName;
+            mesh.userData.name = data[countryName].dictionary;
             mesh.userData.code = data[countryName].code;
 
             // TODO: review
@@ -115,121 +128,6 @@ Application.GeometryGlobeDecorator = (function() {
         }
 
         Application._vent.trigger('globe/ready'); // notifies about ready state of geometry
-    };
-
-    // country selection functionality
-    privateMethods.findCountryMeshByName = function(nameFromUser) {
-
-        var countries = this.countries;
-
-        var nameFromUser = Application.Helper.breakStringToArray(nameFromUser);
-
-        for (var i = 0; i < countries.length; i++) {
-
-            var n = countries[i].userData.name;
-            var k = 0;
-            var weight = 0;
-            var match = 0;
-
-            var nameFromSystem = Application.Helper.breakStringToArray(countries[i].userData.name);
-
-            for (k; k < nameFromUser.length; k++) {
-
-                for (var j = 0; j < nameFromSystem.length; j++) {
-
-                    var score = privateMethods.checkCountryName(nameFromUser[k], nameFromSystem[j]);
-
-                    weight += (nameFromUser[k].length - score) / nameFromUser[k].length;
-
-                    if (weight > 0.7) {
-                        match++;
-                    }
-                }
-
-                if (match > 2) {
-                    console.log(nameFromSystem, match);
-                    return countries[i];
-                }
-            }
-
-            if (weight / k > 0.7) {
-
-                return countries[i];
-
-            }
-
-        }
-
-        console.log('something wrong with the name: ' + nameFromUser);
-    };
-
-    privateMethods.findCountryMeshByCode = function(code) {
-
-        var countries = this.countries;
-        for (var i = 0; i < countries.length; i++) {
-
-            if (countries[i].userData.code.toLowerCase() == code.toLowerCase()) {
-
-                return countries[i];
-            }
-        }
-    };
-
-    privateMethods.checkCountryName = function(UserDataname, InitialDataName) {
-
-
-        var s = UserDataname;
-        var t = InitialDataName;
-
-        var d = []; //2d matrix
-
-        // Step 1
-        var n = s.length;
-        var m = t.length;
-
-        if (n == 0) return m;
-        if (m == 0) return n;
-
-        //Create an array of arrays in javascript (a descending loop is quicker)
-        for (var i = n; i >= 0; i--) d[i] = [];
-
-        // Step 2
-        for (var i = n; i >= 0; i--) d[i][0] = i;
-        for (var j = m; j >= 0; j--) d[0][j] = j;
-
-        // Step 3
-        for (var i = 1; i <= n; i++) {
-            var s_i = s.charAt(i - 1);
-
-            // Step 4
-            for (var j = 1; j <= m; j++) {
-
-                //Check the jagged ld total so far
-                if (i == j && d[i][j] > 4) return n;
-
-                var t_j = t.charAt(j - 1);
-                var cost = (s_i == t_j) ? 0 : 1; // Step 5
-
-                //Calculate the minimum
-                var mi = d[i - 1][j] + 1;
-                var b = d[i][j - 1] + 1;
-                var c = d[i - 1][j - 1] + cost;
-
-                if (b < mi) mi = b;
-                if (c < mi) mi = c;
-
-                d[i][j] = mi; // Step 6
-
-                //Damerau transposition
-                if (i > 1 && j > 1 && s_i == t.charAt(j - 2) && s.charAt(i - 2) == t_j) {
-                    d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + cost);
-                }
-            }
-        }
-
-        // Step 7
-        return d[n][m];
-
     };
 
     privateMethods.highlightCountry = function(object) {

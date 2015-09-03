@@ -5,36 +5,20 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     // framework methods
     initialize: function(decorator, collections) {
         Application.BaseGlobeView.prototype.initialize.call(this, decorator, collections);
-        // this._vent = config._vent;
-        //this.countries = [];
-        //this.intersected; // intersected mesh
-        //this.moved = false; // for controls and mouse events
-        //this.timer; // represents timer for user mouse idle
-        //this.idle = true; // represents user mouse idle
         this.sprites = [];
         this.moObjects = [];
         this.prevObject;
-        //this.suscribe();
-        //this.collection = config.collection[0];
         this.texture = THREE.ImageUtils.loadTexture("Assets/images/disc.png");
 
-        console.log('link: https://docs.google.com/spreadsheets/d/13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg/pubhtml');
-        console.log('key: 13aV2htkF_dYz4uU76mJMhFfDBxrCkD1jJI5ktw4lBLg');
     },
     suscribe: function() {
 
         Application.BaseGlobeView.prototype.suscribe.call(this);
-        //Application._vent.on('data/ready', this.showResults.bind(this));
-        //Application._vent.on('globe/ready', this.processRequest.bind(this));
     },
     destroy: function() {
 
-        console.log("PointsLayer Destroy");
-
         Application.BaseGlobeView.prototype.destroy.call(this);
-        // Application._vent.unbind('globe/ready');
         this.sprites = null;
-        // Application._vent.unbind('globe/ready');
     },
     clickOn: function(event) {
 
@@ -44,23 +28,37 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         if (intersectedMesh) {
 
-                    var name = intersectedMesh.object.userData.name;
+            var name = intersectedMesh.object.userData.name;
 
-                    Application._vent.trigger('vizinfocenter/message/on', name +
-                        ': ' + that.pointsPerCountry(that.sprites, name) + ' points');
+            Application._vent.trigger('vizinfocenter/message/on', name +
+            ': ' + that.pointsPerCountry(that.sprites, name) + ' points');
         }
+    },
+    reset: function() {
+        Application.BaseGlobeView.prototype.reset.call(this);
+        this.resetGlobe();
     },
     // member methods
     resetGlobe: function() {
 
         var that = this;
+
+        if (this.timer.length) {
+
+            $.each(this.timer, function(index, id) {
+                clearTimeout(id);
+            });
+        }
+
+        this.moObjects = [];
         this.sprites.forEach(function(sprite) {
 
-            that.scene.remove(sprite);
+            that.globe.remove(sprite);
 
             sprite.geometry.dispose();
             sprite.material.dispose();
         });
+        this.sprites = [];
     },
     onMouseMove: function(e) {
 
@@ -70,7 +68,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
         var closest = this.rayCast(this.moObjects, e);
 
         if (closest != null) {
-            if (closest.object.name !== 'globe') {
+            if (closest.object.name !== 'globe' && closest.object.visible) {
 
                 if (this.prevObject) this.prevObject.object.material.color.setHex(this.prevObject.object.userData.result_color);
 
@@ -103,14 +101,18 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
     },
     // visualization specific functionality
-    showResults: function() {
+    showResults: function(results) {
 
-        console.log("PointsLayer showResults");
+        //this.resetGlobe();
 
-        var results = this.collection[0].models;
+        //First time
+        if (!results){
+          results = this.collection[0].models;
+          this.getCategoriesWithColors(results);
+        }
+
         var that = this;
 
-        this.getCategoriesWithColors(results);
         Application.BaseGlobeView.prototype.showResults.call(this, results);
         Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
 
@@ -148,7 +150,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
                     results[index].destination = destination;
                 } else {
 
-                    console.log('Data has no country identified');
+                    // console.log('Data has no country identified');
                 }
             });
         } else {
@@ -175,7 +177,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
             var color = that.getColorByCategory(sprite.userData.category) || '0xffffff';
 
-            that.sprites.push(sprite)
+            that.sprites.push(sprite);
             that.moObjects.push(sprite);
 
             var timer = setTimeout(function() {
@@ -203,6 +205,7 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
                 sprite.userData.country = that.determineCountry(sprite);
 
                 sprite.userData.result_color = color;
+
 
             }, time);
 
@@ -251,8 +254,6 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     showAllResults: function() {
 
         Application.BaseGlobeView.prototype.showAllResults.call(this);
-
-        this.resetGlobe();
 
         $.each(this.sprites, function(index, point) {
 

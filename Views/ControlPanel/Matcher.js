@@ -104,6 +104,7 @@ Application.AttributesSet = Backbone.View.extend({
         this.activeClass = 'active';
         this.chosenClass = 'chosen';
         this.selectedClass = 'selected';
+        this.attrsChosen = [];
     },
     render: function() {
 
@@ -118,12 +119,9 @@ Application.AttributesSet = Backbone.View.extend({
 
         $.each(list, function(index, name) {
 
-            //  if (index != '_length') {
-
             var checkbox = that.createCheckBox(name);
 
             that.$el.append(checkbox);
-            //}
 
         });
 
@@ -162,7 +160,7 @@ Application.AttributesSet = Backbone.View.extend({
 
         } else {
 
-            console.log("Couldn't check if the target was checked", e);
+            // console.log("Couldn't check if the target was checked", e);
         }
 
     },
@@ -245,6 +243,12 @@ Application.AttributesSet = Backbone.View.extend({
         });
 
         this.checkboxes.length = 0;
+        if (this.$newAttr) {
+        this.$newAttr.remove();
+        this.$newAttr.unbind();
+        this.valueIndex = 1;
+        this.dateIndex = 1;
+    }
 
     },
     destroy: function() {
@@ -385,6 +389,8 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
         Application._vent.on('matcher/parser/unclick', this.unsetAttributeChosen, this);
 
         this.templateChosen = false;
+        this.dateIndex = 1;
+        this.valueIndex = 1;
 
     },
     render: function() {
@@ -433,12 +439,52 @@ Application.ParserAttributesSet = Application.AttributesSet.extend({
         Application.AttributesSet.prototype.listAttributes.call(this, this.list);
         this.makeInactiveTheRest();
         this.templateIsChosen = true;
+        this.addPlusButton();
+    },
+    addPlusButton: function() {
+        this.$newAttr = $('<button class="checkbox" style="text-align: center">+</button>');
+        this.$newAttr.on('click', this.addAction.bind(this));
+        this.$el.append(this.$newAttr);
+    },
+    addAction: function() {
+        // this.$newAttr.remove();
+        // this.$newAttr.unbind();
+        this.$attrMenu = $('<select id="newAttr">' +
+        '<option value="" selected disabled></option>' +
+        '<option value="date">new Date</option>' +
+        '<option value="value">new Value</option></select>');
+        this.$attrMenu.on('change', this.menuAction.bind(this));
+        this.$attrMenu.insertBefore($('.checkbox').last());
+    },
+    menuAction: function(e) {
+
+        this.addAttribute(e.target.value);
+
+    },
+    addAttribute: function(name) {
+
+        var value = '';
+
+        switch (name) {
+            case 'value':
+            value = ++this.valueIndex;
+            break;
+            case 'date':
+            value = ++this.dateIndex;
+            break;
+        }
+
+        this.$attrMenu.unbind();
+        var checkbox = this.createCheckBox(name + value);
+        this.$attrMenu.replaceWith(checkbox);
+        this.makeInactiveTheRest();
     },
     unsuscribe: function() {
         Application._vent.unbind('controlpanel/subview/template', this.listAttributes);
     },
     destroy: function() {
         Application.AttributesSet.prototype.destroy.call(this);
+        this.$attrMenu.unbind();
     },
 });
 
@@ -457,6 +503,7 @@ Application.SubmitAttrs = Backbone.View.extend({
         return this;
     },
     action: function() {
+
         var key = $('.vizTitle').val() || $('.vizTitle').attr('placeholder');
         Application.userConfig.templateTitle = key;
         Application._vent.trigger('matcher/submit');
@@ -476,13 +523,13 @@ Application.TemplatesView = Backbone.View.extend({
     initialize: function() {
         var that = this;
         this.$el.append('<div class="heading">Choose a template<p>Please select a visualization template for your data.</p><div/>')
-        var $templist = $('<ul class="templateImgList"></ul>');
-
+        var $templist = $('<ul class=""></ul>');
+        var $wrap = $('<div class="templateImgList"></div>')
 
         $.each(Application.templates.map, function(index, item) {
             $templist.append('<li><button class="imgBtn"><img src="Assets/images/templates/'+ index + '.png"><p class="templateTitle" id="' + index + '">'+item+'</p></button></li>');
         });
-        this.$el.append($templist);
+        this.$el.append($wrap.append($templist));
 
         $('button.imgBtn', this.$el).on('click', this.btnSelected);
     },
