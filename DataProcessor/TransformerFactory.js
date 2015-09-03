@@ -26,7 +26,7 @@ Application.DataProcessor.TransformerFactory = (function() {
                 TransformerClass = Application.DataProcessor.GraphTransformer;
                 break;
             case "pointcloudVisualTransformer":
-                console.log("pointcloudVisualTransformer");
+                // console.log("pointcloudVisualTransformer");
                 TransformerClass = Application.DataProcessor.PointCloudTransformer;
                 break;
         }
@@ -140,7 +140,7 @@ Application.DataProcessor.CountriesVisualTransformer = (function() {
 
                 } else {
 
-                    console.log("Attribute " + attr + " wasn't included");
+                    // console.log("Attribute " + attr + " wasn't included");
                 }
 
             });
@@ -183,7 +183,7 @@ Application.DataProcessor.PointsVisualTransformer = (function() {
 
                 } else {
 
-                    console.log("Attribute " + attr + " wasn't included");
+                    // console.log("Attribute " + attr + " wasn't included");
                 }
 
             });
@@ -233,7 +233,7 @@ Application.DataProcessor.DynamicVisualTransformer = (function() {
       });
 
       if( typeof complete === "function" ) complete(transData);
-      
+
     };
 
     return DynamicVisualTransformer;
@@ -269,7 +269,7 @@ Application.DataProcessor.GraphTransformer = (function() {
 
                 } else {
 
-                    console.log("Attribute " + attr + " wasn't included");
+                    // console.log("Attribute " + attr + " wasn't included");
                 }
 
             });

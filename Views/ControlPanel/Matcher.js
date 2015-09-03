@@ -160,7 +160,7 @@ Application.AttributesSet = Backbone.View.extend({
 
         } else {
 
-            console.log("Couldn't check if the target was checked", e);
+            // console.log("Couldn't check if the target was checked", e);
         }
 
     },

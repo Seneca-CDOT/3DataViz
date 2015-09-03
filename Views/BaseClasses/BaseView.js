@@ -44,7 +44,7 @@ Application.BaseView = Backbone.View.extend({
 
     },
     suscribe: function() {
-        console.log("BaseView suscribe");
+        // console.log("BaseView suscribe");
         Application._vent.on('data/ready', this.showResults, this);
         $(window).on('resize', this.onWindowResize.bind(this));
         Application._vent.on('filters/add', this.addCategory, this);
@@ -70,7 +70,7 @@ Application.BaseView = Backbone.View.extend({
     },
     destroy: function() {
 
-        console.log("BaseView destory");
+        // console.log("BaseView destory");
 
         this.remove();
         this.unbind();
@@ -178,7 +178,7 @@ Application.BaseView = Backbone.View.extend({
         this.addScene();
         this.addLight();
         this.addControls();
-        this.addHelpers();
+        // this.addHelpers();
         this.renderScene();
     },
     decorateProperties: function() {
@@ -245,10 +245,10 @@ Application.BaseView = Backbone.View.extend({
 
         this.requestedAnimationFrameId = requestAnimationFrame(this.renderScene.bind(this));
 
-        Application.Debug.stats.begin();
+        // Application.Debug.stats.begin();
         this.updateScene();
         this.renderer.render(this.scene, this.camera);
-        Application.Debug.stats.end();
+        // Application.Debug.stats.end();
     },
     updateScene: function() {
 
