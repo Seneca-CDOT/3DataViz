@@ -23,7 +23,7 @@ Here is the link of our appilcation.
 http://seneca-cdot.github.io/3DataViz/
 
 If you do not know how to use the app, please read this
-[Instruction](https://github.com/Seneca-CDOT/3DataViz/wiki/How-to-use-the-tool).
+[Instruction](https://github.com/Seneca-CDOT/3DataViz/wiki/Instruction).
 
 
 ## Architecture
