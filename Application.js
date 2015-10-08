@@ -27,6 +27,7 @@ Application = {
             'Helpers/Debug.js',
             'Helpers/Filter.js',
             'Helpers/DataStructures.js',
+            'Helpers/Examples.js',
             'DataProcessor/ParserFactory.js',
             'DataProcessor/TransformerFactory.js',
             'Events/events.js',
