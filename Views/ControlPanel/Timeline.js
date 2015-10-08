@@ -58,7 +58,7 @@ Application.Timeline = Backbone.View.extend({
         // $('.tl_point').on('mouseover', this.mouseOverPoint.bind(this));
         // $('.tl_point').on('mousedown', this.mouseDownPoint.bind(this));
         // $('.tl_point').on('mouseout', this.mouseOutPoint.bind(this));
-        this.$lineBox.on('mousedown', this.mouseDownLine.bind(this));
+        this.$timeline.on('mousedown', this.mouseDownLine.bind(this));
 
     },
     unsuscribe: function() {
@@ -69,7 +69,7 @@ Application.Timeline = Backbone.View.extend({
         // $('.tl_point').off('mouseover', this.mouseOverPoint.bind(this));
         // $('.tl_point').off('mousedown', this.mouseDownPoint.bind(this));
         // $('.tl_point').off('mouseout', this.mouseOutPoint.bind(this));
-        this.$lineBox.unbind('mousedown', this.mouseDownLine.bind(this));
+        this.$timeline.unbind('mousedown', this.mouseDownLine.bind(this));
 
     },
     update: function() {

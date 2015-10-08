@@ -169,22 +169,19 @@ Application.DataProcessor.PointsVisualTransformer = (function() {
 
         var transData = [];
 
+        var parserAttrs = _.invert(Application.attrsMap);
+
         $.each(data, function(index, item) {
 
             var obj = {};
 
             $.each(item, function(attr, value) {
 
-                var parserAttr = _.invert(Application.attrsMap)[attr];
+                var parserAttr = parserAttrs[attr];
 
-                if (parserAttr) {
+                if (parserAttr) obj[parserAttr] = value;
 
-                    obj[parserAttr] = value;
-
-                } else {
-
-                    // console.log("Attribute " + attr + " wasn't included");
-                }
+          //      else console.log("Attribute " + attr + " wasn't included");
 
             });
 
@@ -211,6 +208,7 @@ Application.DataProcessor.DynamicVisualTransformer = (function() {
     DynamicVisualTransformer.prototype.transform = function(data, complete) {
 
       var transData = [];
+      var parserAttrs = _.invert(Application.attrsMap);
 
       $.each(data, function(index, item) {
 
@@ -218,14 +216,11 @@ Application.DataProcessor.DynamicVisualTransformer = (function() {
 
           $.each(item, function(attr, value) {
 
-              var parserAttr = _.invert(Application.attrsMap)[attr];
+              var parserAttr = parserAttrs[attr];
 
-              if (parserAttr) {
+              if (parserAttr) obj[parserAttr] = value;
 
-                  obj[parserAttr] = value;
-
-              }
-
+              else console.log("Attribute " + attr + " wasn't included");
           });
 
           transData.push(obj);
@@ -253,13 +248,15 @@ Application.DataProcessor.GraphTransformer = (function() {
 
         var transData = [];
 
+        var parserAttrs = _.invert(Application.attrsMap);
+
         $.each(data, function(index, item) {
 
             var obj = {};
 
             $.each(item, function(attr, value) {
 
-                var parserAttr = _.invert(Application.attrsMap)[attr];
+                var parserAttr = parserAttrs[attr];
 
                 if (parserAttr) {
 
