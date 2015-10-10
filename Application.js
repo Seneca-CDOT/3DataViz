@@ -91,6 +91,11 @@ Application = {
             url: ['Models/BoxGlobeModel.js'],
             attributes: true,
             templates: ['points', 'countries', 'graph']
+        },
+        json: {
+            url: ['Models/JSONModel.js'],
+            attributes: true,
+            templates: ['points', 'countries', 'graph']
         }
     },
 
