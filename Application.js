@@ -14,6 +14,7 @@ Application = {
     init: function() {
         this.rootRouter = new this.RootRouter();
         Backbone.history.start();
+        Application.Examples.init();
     },
 
     //Files which need to be imported for GlobeVisualization

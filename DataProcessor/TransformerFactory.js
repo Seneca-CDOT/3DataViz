@@ -206,21 +206,17 @@ Application.DataProcessor.DynamicVisualTransformer = (function() {
     Application.Helper.inherit(DynamicVisualTransformer, Application.DataProcessor.BaseTransformer);
 
     DynamicVisualTransformer.prototype.transform = function(data, complete) {
-
       var transData = [];
-      var parserAttrs = _.invert(Application.attrsMap);
+      var parserKeys = _.keys(Application.attrsMap);
 
       $.each(data, function(index, item) {
 
           var obj = {};
 
-          $.each(item, function(attr, value) {
+          $.each(parserKeys, function(index, key) {
 
-              var parserAttr = parserAttrs[attr];
+             obj[key] = item[Application.attrsMap[key]] || 0;
 
-              if (parserAttr) obj[parserAttr] = value;
-
-              else console.log("Attribute " + attr + " wasn't included");
           });
 
           transData.push(obj);

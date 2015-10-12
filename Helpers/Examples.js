@@ -5,8 +5,21 @@ Application.Examples = {
   init: function() {
 
     var _this = this;
-
     Application.userConfig.model = 'json';
+
+    var list = ['quakes'];
+
+    var $samplesDiv = $('.sample.cf');
+    $samplesDiv.prepend('<div class="heading">Choose an example<div/>')
+    var $templist = $('<ul class=""></ul>');
+    var $wrap = $('<div class="templateImgList"></div>')
+
+    $.each(list, function(index, item) {
+        $templist.append('<li><button class="imgBtn"><img src="Assets/images/examples/'+ item + '.png"><p class="templateTitle" id="' + index + '">'+item+'</p></button></li>');
+    });
+   $samplesDiv.append($wrap.append($templist));
+
+   $('button.imgBtn', $samplesDiv).on('click', this.immigration.init.bind(this));
 
     return this;
 
