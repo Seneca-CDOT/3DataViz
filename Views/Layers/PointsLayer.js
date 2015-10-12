@@ -103,6 +103,8 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
     // visualization specific functionality
     showResults: function(results) {
 
+        Application.BaseGlobeView.prototype.showResults.call(this, results);
+
         //this.resetGlobe();
 
         //First time
@@ -215,6 +217,10 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
 
         that.moObjects.push(this.globe);
 
+    },
+    showFilteredResults: function(results) {
+
+        Application.BaseGlobeView.prototype.showFilteredResults.call(this, results);
     },
     sortResultsByCategory: function() {
 

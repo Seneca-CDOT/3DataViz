@@ -158,7 +158,8 @@ Application = {
         interval: '',
         timeFrom: '',
         timeTo: '',
-        fileInfo: {}
+        fileInfo: {},
+        timelineAvailable: false
     }
 
 }

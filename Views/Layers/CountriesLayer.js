@@ -144,6 +144,8 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
     showResults: function(results) {
 
+      if (Application.userConfig.timelineAvailable) return;
+
         if(!results){
             results = this.collection[0].models;
             this.getCategories(results);
@@ -153,16 +155,10 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         Application.BaseGlobeView.prototype.showResults.call(this, results);
 
-        Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
-
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
             return;
         }
-        //  else if (!(results[0].country)) {
-        //     Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
-        //     return;
-        // }
 
         Application._vent.trigger('controlpanel/message/off');
 
@@ -187,20 +183,10 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
             obj.mesh = countrymesh;
             obj.color = countrymesh.material.color.getHex();
             if (item.value) obj.value = item.value;
-            //console.log(countrymesh.userData.name)
 
             if (item.category) obj.category = item.category;
 
-            // countrymesh.material.color.r = 1;
-            // countrymesh.material.color.g = 1 - colorsMap[item.value];
-            // countrymesh.material.color.b = 1 - colorsMap[item.value];
-            // countrymesh.material.color.set(colorsMap[item.value]);
-
-            function getit(tweenObj) {
-
-                countrymesh.material.color.setRGB(tweenObj.r, tweenObj.g, tweenObj.b);
-            }
-            if (item.value) that.tweenit(countrymesh.material.color, colorsMap[item.value], getit, 2);
+            if (item.value) that.tweenit(countrymesh, colorsMap[item.value], that.getit, 2);
 
             obj.result_color = countrymesh.material.color.getHex();
 
@@ -208,15 +194,41 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
         });
 
-        //this.old = that.added;
+    },
+    showFilteredResults: function(results) {
+      Application.BaseGlobeView.prototype.showFilteredResults.call(this, results);
 
-        //var old_countries = this.compareCountriesArrays(this.added, this.old);
+      var colorsMap = this.createColors(results); // creates a colors map relative to the values
 
-        // $.each(old_countries, function(i, country) {
-        //
-        //     this.tweenit(country.mesh.material.color, country.color);
-        //
-        // });
+      $.each(results, function(index, item) {
+
+          var countrymesh = that.decorators[0].findCountry(item.country);
+
+          if (!countrymesh) return;
+
+          var obj = {};
+          obj.mesh = countrymesh;
+          obj.color = countrymesh.material.color.getHex();
+          if (item.value) obj.value = item.value;
+
+          if (item.category) obj.category = item.category;
+
+          if (item.value) that.tweenit(countrymesh, colorsMap[item.value], that.getit, 2);
+
+          obj.result_color = countrymesh.material.color.getHex();
+
+          that.added.push(obj);
+
+      });
+
+    },
+    getit: function(countrymesh, tweenObj) {
+
+        countrymesh.material.color.setRGB(tweenObj.r, tweenObj.g, tweenObj.b);
+    },
+    tweenit: function(mesh, end, receive, seconds) {
+
+        Application.BaseGlobeView.prototype.tweenit.call(this, mesh, end, receive, seconds);
 
     },
     sortResultsByCategory: function() {

@@ -125,6 +125,8 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     },
     showResults: function(results) {
 
+        Application.BaseGlobeView.prototype.showResults.call(this, results);
+
         this.resetPointcloud();
 
         //First time
@@ -183,6 +185,11 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
             that.pointclouds[i].userData.y.push(item.y);
             that.pointclouds[i].userData.z.push(item.z);
         });
+
+    },
+    showFilteredResults: function(results) {
+
+        Application.BaseGlobeView.prototype.showFilteredResults.call(this, results);
 
     },
     sortResultsByCategory: function() {

@@ -413,11 +413,6 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         }
 
         Application.BaseGlobeView.prototype.showResults.call(this, results);
-        //console.log("GraphsLayer showResults");
-
-        //this.resetGlobe();
-
-        Application._vent.trigger('title/message/on', Application.userConfig.templateTitle);
 
         if (results.length == 0) {
             Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
@@ -427,6 +422,22 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
             return;
         }
         Application._vent.trigger('controlpanel/message/off');
+
+        this.addPaths(results);
+
+    },
+    showFilteredResults: function(results) {
+
+        Application.BaseGlobeView.prototype.showFilteredResults.call(this, results);
+
+        if (results.length == 0) {
+            Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
+            return;
+        } else if (!results[0].longitude_from || !results[0].latitude_from || !results[0].longitude_to || !results[0].latitude_to) {
+            Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
+            return;
+        }
+      //  Application._vent.trigger('controlpanel/message/off');
 
         this.addPaths(results);
 
