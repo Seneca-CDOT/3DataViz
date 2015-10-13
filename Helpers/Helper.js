@@ -172,7 +172,7 @@ Application.Helper = {
     var FLOAT = /^\s*-?(\d*\.?\d+|\d+\.?\d*)(e[-+]?\d+)?\s*$/i;
     var number = null;
 
-    if (entity) {
+    if (entity !== 'undefined') {
 
       if (!isNaN(entity)) number = entity; // check if value is a number
       else {

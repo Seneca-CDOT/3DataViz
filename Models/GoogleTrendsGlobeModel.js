@@ -30,6 +30,8 @@ Application.GoogleTrendsCollection = Application.BaseGlobeCollection.extend({
             }
         }
 
+        Application.attrsMap = {};
+
     },
     parse: function(response) {
 

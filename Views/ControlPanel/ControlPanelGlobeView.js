@@ -4,7 +4,6 @@ Application.ControlPanelRootView = Backbone.View.extend({
     initialize: function() {
 
         this.visualizationsView = null;
-        this.timelineAvailable = false; // if dataset has timeline
         this.timelineShown = false; // reflects the state of timeline button
 
         this.dataSourcesView = new Application.DataSourcesView();

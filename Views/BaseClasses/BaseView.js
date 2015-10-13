@@ -120,6 +120,7 @@ Application.BaseView = Backbone.View.extend({
 
     this.unsuscribe();
     this.tweenings.length = 0;
+
   },
 
   render: function() {
@@ -453,6 +454,8 @@ Application.BaseView = Backbone.View.extend({
   },
   sortResultsByDate: function() {
 
+    if (!Application.attrsMap['date']) return;
+
     if ( typeof Application.attrsMap['date2'] == "undefined") {
 
       var sortedByDateData = this.sortResultsByDateColumn();
@@ -469,9 +472,6 @@ Application.BaseView = Backbone.View.extend({
     Application._vent.trigger('timeline/ready', dateRanges);
 
     this.sortedByPercentageData = this.sortResultsByPercentage(sortedByDateData);
-
-    //var first = _.keys(this.sortedByDateData)[0];
-    //this.showResults(this.sortedByDateData[first]);
 
   },
   sortResultsByPercentage: function(data) {
@@ -585,7 +585,7 @@ Application.BaseView = Backbone.View.extend({
 
     $.each(data, function(i, obj) {
 
-      $.each(dateAttrs, function(i, date) {
+      $.each(dateAttrs, function(k, date) {
 
         var name = invertedMap[date];
 
