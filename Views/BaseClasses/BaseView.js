@@ -59,7 +59,7 @@ Application.BaseView = Backbone.View.extend({
   unsuscribe: function() {
     $(window).unbind('resize');
     Application._vent.unbind('data/ready', this.showResults);
-    Application._vent.on('filteredData/ready', this.showFilteredResults);
+    Application._vent.unbind('filteredData/ready', this.showFilteredResults);
     Application._vent.unbind('filters/add', this.addCategory);
     Application._vent.unbind('filters/remove', this.removeCategory);
     Application._vent.unbind('timeline/on', this.timelineAction);
@@ -127,7 +127,7 @@ Application.BaseView = Backbone.View.extend({
 
     this.show();
     return this;
-  }, /// !!!! ///
+  },
   rayCast: function(objects, e) {
 
     var x = e.clientX;
@@ -522,6 +522,8 @@ Application.BaseView = Backbone.View.extend({
     for ( var i = 0; i < len; i+= pointsPerSegments) {
       ranges.push(dates[i]);
     }
+
+    if (ranges[ranges.length-1] != dates[dates.length-1])  ranges.push(dates[dates.length-1]);
 
     return ranges;
   },

@@ -4,6 +4,8 @@ Application.Examples = {
 
   init: function() {
 
+    Application._vent.on('data/ready', this.callTimeline, this);
+
     var _this = this;
     Application.userConfig.model = 'json';
 
@@ -26,6 +28,8 @@ Application.Examples = {
   },
   destroy: function() {
 
+    Application._vent.unbind('data/ready', this.callTimeline);
+
   },
   action: function(e) {
 
@@ -36,37 +40,33 @@ Application.Examples = {
     this.module = new this[id];
     this.module.init();
   },
+  callTimeline: function() {
+
+    Application._vent.trigger('timeline/on');
+
+  },
   earthquakes: function () {
 
     this.init = function() {
 
-      Application._vent.on('data/ready', this.callTimeline, this);
-
       Application.attrsMap = {date: "time", latitude: "latitude", longitude: "longitude"};
+      Application.userConfig.model = 'json';
       Application.userConfig.template = 'dynamic';
       Application.userConfig.templateTitle = 'Earthquakes';
       Application.userConfig.files = 'SampleData/Location/earthquake.json';
+      Application._vent.trigger('controlpanel/subview/remove');
+      Application._vent.trigger('controlpanel/menu/clear');
       Application._vent.trigger('controlpanel/parse'); // create collection
 
-    },
+    }
+
     this.destroy = function() {
-
-      Application._vent.unbind('data/ready', this.callTimeline);
-
-
-    },
-    this.callTimeline = function() {
-
-      Application._vent.trigger('timeline/on');
-
     }
 
   },
   immigration: function() {
 
     this.init = function() {
-
-      Application._vent.on('data/ready', this.callTimeline, this);
 
       Application.attrsMap = {
         country: "Country of citizenship", date: "1980", date2: "1981",
@@ -81,14 +81,16 @@ Application.Examples = {
         date35: "2014"
       }
       Application.userConfig.template = 'countries';
+      Application.userConfig.model = 'json';
       Application.userConfig.templateTitle = 'Canada immigration';
       Application.userConfig.files = 'SampleData/Regional/canadaImmigration.json';
+      Application._vent.trigger('controlpanel/subview/remove');
+      Application._vent.trigger('controlpanel/menu/clear');
       Application._vent.trigger('controlpanel/parse'); // create collection
 
-    },
-    this.destroy = function() {
-
     }
+
+    this.destroy = function() {}
 
   }
 

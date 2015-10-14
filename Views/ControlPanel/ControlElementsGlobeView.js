@@ -1,282 +1,292 @@
 Application.ControlElementsGlobeView = Backbone.View.extend({
-    initialize: function(viewConfig) {
-        this.viewConfig = viewConfig;
+  initialize: function(viewConfig) {
+    this.viewConfig = viewConfig;
 
-    },
-    render: function() {
-        return this;
-    },
-    events: {
-        'mousedown': 'action'
-    },
-    destroy: function() {
-        this.viewConfig = null;
-        this.remove();
-        this.unbind();
-        delete this.$el;
-        delete this.el;
-    },
-    action: function(e) {
+  },
+  render: function() {
+    return this;
+  },
+  events: {
+    'mousedown': 'action'
+  },
+  destroy: function() {
+    this.viewConfig = null;
+    this.remove();
+    this.unbind();
+    delete this.$el;
+    delete this.el;
+  },
+  action: function(e) {
 
-        if (e) e.stopPropagation();
+    if (e) e.stopPropagation();
 
-    },
-    addToConfig: function(value) {
+  },
+  addToConfig: function(value) {
 
-        Application.userConfig[this.viewConfig.name] = value;
-    }
+    Application.userConfig[this.viewConfig.name] = value;
+  }
 
 });
 
 Application.InputField = Application.ControlElementsGlobeView.extend({
-    tagName: 'input',
-    initialize: function() {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this);
-        this.$el.on('keyup', this.disableVisView.bind(this));
-    },
-    render: function() {
+  tagName: 'input',
+  initialize: function() {
+    Application.ControlElementsGlobeView.prototype.initialize.call(this);
+    this.$el.on('keyup', this.disableVisView.bind(this));
+  },
+  render: function() {
 
-        return this;
-    },
-    action: function(e) {
+    return this;
+  },
+  action: function(e) {
 
-        Application.ControlElementsGlobeView.prototype.action.call(this, e);
+    Application.ControlElementsGlobeView.prototype.action.call(this, e);
 
-    },
-    grabInput: function() {
+  },
+  grabInput: function() {
 
-        this.addToConfig(this.$el.val());
+    this.addToConfig(this.$el.val());
 
-    },
-    disableVisView: function() {
+  },
+  disableVisView: function() {
 
-        Application._vent.trigger('controlpanel/input/changed');
-        Application._vent.trigger('matcher/off');
-    }
+    Application._vent.trigger('controlpanel/input/changed');
+    Application._vent.trigger('matcher/off');
+  },
+  destroy: function() {
+    this.$el.unbind('keyup', this.disableVisView.bind(this));
+    this.$el.remove();
+  }
 
 });
 
 Application.FileUpload = Application.ControlElementsGlobeView.extend({
-    tagName: 'div',
-    initialize: function() {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this);
+  tagName: 'div',
+  initialize: function(type) {
+    Application.ControlElementsGlobeView.prototype.initialize.call(this);
 
-        this.$btnfile = $('<div class="btn btn-default btn-file">Choose File (*.csv)</div>');
+    this.$btnfile = $('<div class="btn btn-default btn-file">Choose File (*.' + type + ')</div>');
 
-        this.$file = $('<input id="fileUpload" type="file">');
-        this.$file.on('change', this.handleFile.bind(this));
-        this.$btnfile.on('click', this.action.bind(this));
-        this.$btnfile.append(this.$file);
+    this.$file = $('<input id="fileUpload" type="file">');
+    this.$file.on('change', this.handleFile.bind(this));
+    this.$btnfile.on('click', this.action.bind(this));
+    this.$btnfile.append(this.$file);
 
-        this.$el.append(this.$btnfile);
+    this.$el.append(this.$btnfile);
 
-        this.$list = $('<p id="fileName"></p>');
-        this.$el.append(this.$list);
+    this.$list = $('<p id="fileName"></p>');
+    this.$el.append(this.$list);
 
-        this.$errMsg = $('<p id="fileNameMsg"></p>');
-        this.$el.append(this.$errMsg);
+    this.$errMsg = $('<p id="fileNameMsg"></p>');
+    this.$el.append(this.$errMsg);
 
-    },
-    render: function() {
-        return this;
-    },
-    getFile: function() {
-        return this.$file[0].files[0];
-    },
-    handleFile: function() {
-        this.$list.text(this.getFile().name).show();
-    },
-    changeErrMsg: function(text){
-        this.$errMsg.text(text);
-    },
-    action: function() {
+  },
+  render: function() {
+    return this;
+  },
+  getFile: function() {
+    return this.$file[0].files[0];
+  },
+  handleFile: function() {
+    this.$list.text(this.getFile().name).show();
+  },
+  changeErrMsg: function(text){
+    this.$errMsg.text(text);
+  },
+  action: function() {
 
-        Application._vent.trigger('controlpanel/input/changed');
-        Application._vent.trigger('matcher/off');
-    },
+    Application._vent.trigger('controlpanel/input/changed');
+    Application._vent.trigger('matcher/off');
+  },
 });
 
 Application.BoxExplorer = Application.ControlElementsGlobeView.extend({
-    tagName: 'div',
-    initialize: function(viewConfig) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
-        var that = this;
-        this.fileInfo;
+  tagName: 'div',
+  initialize: function(viewConfig) {
+    Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+    var that = this;
+    this.fileInfo;
 
-        this.$btnfile = $('<div id="box-select"></div>');
-        this.boxSelect = new BoxSelect({
-            clientId: "2cef1xake819jgxn76fpd9303j0ngmrs",
-            linkType: "direct",
-            multiselect: false
-        });
-        this.boxSelect.success(function(response){
-            that.boxSelect.closePopup();
-            $("#fileName").text(response[0].name).show();
-            that.fileInfo = response[0];
-            that.trigger('success');
-        });
+    this.$btnfile = $('<div id="box-select"></div>');
+    this.boxSelect = new BoxSelect({
+      clientId: "2cef1xake819jgxn76fpd9303j0ngmrs",
+      linkType: "direct",
+      multiselect: false
+    });
+    this.boxSelect.success(function(response){
+      that.boxSelect.closePopup();
+      $("#fileName").text(response[0].name).show();
+      that.fileInfo = response[0];
+      that.trigger('success');
+    });
 
-        this.$btnfile.on('click', this.handleFile.bind(this));
-        this.$el.append(this.$btnfile);
+    this.$btnfile.on('click', this.handleFile.bind(this));
+    this.$el.append(this.$btnfile);
 
-        this.$list = $('<p id="fileName"></p>');
-        this.$el.append(this.$list);
+    this.$list = $('<p id="fileName"></p>');
+    this.$el.append(this.$list);
 
-        this.$errMsg = $('<p id="fileNameMsg"></p>');
-        this.$el.append(this.$errMsg);
+    this.$errMsg = $('<p id="fileNameMsg"></p>');
+    this.$el.append(this.$errMsg);
 
-    },
-    render: function() {
-        return this;
-    },
-    changeErrMsg: function(text){
-        this.$errMsg.text(text);
-    },
-    getFileInfo: function(){
-        return this.fileInfo;
-    },
-    handleFile: function(){
-        this.boxSelect.launchPopup();
-    }
+  },
+  render: function() {
+    return this;
+  },
+  changeErrMsg: function(text){
+    this.$errMsg.text(text);
+  },
+  getFileInfo: function(){
+    return this.fileInfo;
+  },
+  handleFile: function(){
+    this.boxSelect.launchPopup();
+  }
 });
 
 Application.DateTime = Application.ControlElementsGlobeView.extend({
-    tagName: 'input',
-    initialize: function(viewConfig) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
-        this.$el.on('keyup', this.grabInput.bind(this));
-    },
-    render: function() {
+  tagName: 'input',
+  initialize: function(viewConfig) {
+    Application.ControlElementsGlobeView.prototype.initialize.call(this, viewConfig);
+    this.$el.on('keyup', this.grabInput.bind(this));
+  },
+  render: function() {
 
-        return this;
-    },
-    action: function(e) {
+    return this;
+  },
+  action: function(e) {
 
-        Application.ControlElementsGlobeView.prototype.action.call(this, e);
-        Application._vent.trigger('matcher/off');
+    Application.ControlElementsGlobeView.prototype.action.call(this, e);
+    Application._vent.trigger('matcher/off');
 
-    },
-    grabInput: function() {
+  },
+  grabInput: function() {
 
-        this.addToConfig(this.$el.val());
+    this.addToConfig(this.$el.val());
 
-    }
+  }
 
 
 });
 
 Application.FeedBack = Application.ControlElementsGlobeView.extend({
-    tagName: 'a',
-    className: 'feedbackButton',
-    initialize: function() {},
-    events: {
-        'mousedown': 'action'
-    },
-    render: function() {
-        this.$el.attr('href','http://goo.gl/forms/M4xWnUXCNx');
-        this.$el.attr('target','_blank');
-        this.$el.append('<span class="glyphicon glyphicon-envelope"></span>');
-        return this;
-    }
+  tagName: 'a',
+  className: 'feedbackButton',
+  initialize: function() {},
+  events: {
+    'mousedown': 'action'
+  },
+  render: function() {
+    this.$el.attr('href','http://goo.gl/forms/M4xWnUXCNx');
+    this.$el.attr('target','_blank');
+    this.$el.append('<span class="glyphicon glyphicon-envelope"></span>');
+    return this;
+  }
 });
 
 Application.Help = Application.ControlElementsGlobeView.extend({
-    tagName: 'a',
-    className: 'helpButton',
-    initialize: function() {},
-    events: {
-        'mousedown': 'action'
-    },
-    render: function() {
-        this.$el.append('<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>');
-        return this;
-    },
-    action: function(e) {
-        $("#instruction").fadeToggle();
-        Application._vent.trigger('matcher/off');
-    }
+  tagName: 'a',
+  className: 'helpButton',
+  initialize: function() {},
+  events: {
+    'mousedown': 'action'
+  },
+  render: function() {
+    this.$el.append('<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>');
+    return this;
+  },
+  action: function(e) {
+    $("#instruction").fadeToggle();
+    Application._vent.trigger('matcher/off');
+  }
 });
 
 Application.Button = Application.ControlElementsGlobeView.extend({
-    tagName: 'button',
-    className: 'btn btn-primary button',
-    initialize: function() {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this);
-    },
-    events: {
+  tagName: 'button',
+  className: 'btn btn-primary button',
+  initialize: function() {
+    Application.ControlElementsGlobeView.prototype.initialize.call(this);
+  },
+  events: {
 
-        'mousedown': 'action'
-    },
-    render: function() {
-        return this;
-    },
-    action: function(e) {
+    'mousedown': 'action'
+  },
+  render: function() {
+    return this;
+  },
+  action: function(e) {
 
-        Application.ControlElementsGlobeView.prototype.action.call(this, e);
-        Application._vent.trigger('matcher/off');
-    },
-    destroy: function() {
-        this.$el.remove();
-        this.$el.unbind();
-    }
+    Application.ControlElementsGlobeView.prototype.action.call(this, e);
+    Application._vent.trigger('matcher/off');
+  },
+  destroy: function() {
+    this.$el.remove();
+    this.$el.unbind();
+  }
 });
 
 Application.VizButton = Application.ControlElementsGlobeView.extend({
-    tagName: 'button',
-    initialize: function() {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this);
-    },
-    render: function() {
-        return this;
-    },
-    action: function(e) {
+  tagName: 'button',
+  initialize: function() {
+    Application.ControlElementsGlobeView.prototype.initialize.call(this);
+  },
+  render: function() {
+    return this;
+  },
+  action: function(e) {
 
-        Application.ControlElementsGlobeView.prototype.action.call(this, e);
+    Application.ControlElementsGlobeView.prototype.action.call(this, e);
 
-        // Application._vent.trigger('controlpanel', this.userInput);
-    }
+    // Application._vent.trigger('controlpanel', this.userInput);
+  }
 });
 
 Application.DropDownList = Application.ControlElementsGlobeView.extend({
-    tagName: 'select',
-    className: 'form-control',
-    initialize: function(config) {
-        Application.ControlElementsGlobeView.prototype.initialize.call(this, config);
-        this.config = config;
-        // this.config = config; // list of the options
-        // this.name = null; // name of the option in the list
-    },
-    events: {
-        'change': 'action'
-    },
-    render: function() {
+  tagName: 'select',
+  className: 'form-control',
+  id: 'dataSources',
+  initialize: function(config) {
+    Application.ControlElementsGlobeView.prototype.initialize.call(this, config);
+    this.config = config;
+    // this.config = config; // list of the options
+    // this.name = null; // name of the option in the list
+  },
+  events: {
+    'change': 'action'
+  },
+  render: function() {
 
-        var that = this;
-        //this.name = this.$el.attr('id');
+    var that = this;
+    //this.name = this.$el.attr('id');
 
-        this.$el.append("<option value='' selected disabled></option>");
-        $.each(this.config.map, function(index, item) {
-          var selected = "";
-          if(that.config && that.config.map_default && that.config.map_default === item){
-            selected = 'selected';
-          }
-          that.$el.append("<option value='" + index + "' "+selected+">" + item + "</option>");
-        });
-        return this;
-    },
-    action: function(e) {
+    this.$emptyOption = $("<option value='null' selected disabled></option>");
+    this.$el.append(this.$emptyOption);
 
-        var that = this;
+    $.each(this.config.map, function(index, item) {
+      var selected = "";
+      if(that.config && that.config.map_default && that.config.map_default === item){
+        selected = 'selected';
+      }
+      that.$el.append("<option value='" + index + "' "+selected+">" + item + "</option>");
+    });
+    return this;
+  },
+  clear: function() {
+  this.$emptyOption.prop('selected', true);
+  },
+  action: function(e) {
 
-        Application.ControlElementsGlobeView.prototype.action.call(this, e);
+    var that = this;
 
-        $.each(e.target.children, function(index, option) {
+    Application.ControlElementsGlobeView.prototype.action.call(this, e);
 
-            if (option.selected == true && e.target.value != "") {
+    $.each(e.target.children, function(index, option) {
 
-                that.addToConfig(e.target.value);
-                Application._vent.trigger('controlpanel/subview/' + that.config.name, e.target.value);
-            }
-        });
-    }
+      if (option.selected == true && e.target.value != "") {
+
+        that.addToConfig(e.target.value);
+        Application._vent.trigger('controlpanel/subview/' + that.config.name, e.target.value);
+      }
+    });
+  }
 });
