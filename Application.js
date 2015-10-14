@@ -14,6 +14,7 @@ Application = {
     init: function() {
         this.rootRouter = new this.RootRouter();
         Backbone.history.start();
+        Application.Examples.init();
     },
 
     //Files which need to be imported for GlobeVisualization
@@ -27,6 +28,7 @@ Application = {
             'Helpers/Debug.js',
             'Helpers/Filter.js',
             'Helpers/DataStructures.js',
+            'Helpers/Examples.js',
             'DataProcessor/ParserFactory.js',
             'DataProcessor/TransformerFactory.js',
             'Events/events.js',
@@ -90,6 +92,11 @@ Application = {
             url: ['Models/BoxGlobeModel.js'],
             attributes: true,
             templates: ['points', 'countries', 'graph']
+        },
+        json: {
+            url: ['Models/JSONModel.js'],
+            attributes: true,
+            templates: ['points', 'countries', 'graph']
         }
     },
 
@@ -151,7 +158,8 @@ Application = {
         interval: '',
         timeFrom: '',
         timeTo: '',
-        fileInfo: {}
+        fileInfo: {},
+        timelineAvailable: false
     }
 
 }

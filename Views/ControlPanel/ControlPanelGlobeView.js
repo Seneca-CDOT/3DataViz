@@ -50,9 +50,12 @@ Application.ControlPanelRootView = Backbone.View.extend({
 
         if ( typeof Application.attrsMap['date'] != "undefined") {
 
+          Application.userConfig.timelineAvailable = true;
+
             if (this.timelineButton){
               this.timelineContainer.remove();
             }
+
             this.timelineButton = new Application.Button();
             this.timelineButton.$el.text('TIMELINE');
             this.timelineButton.$el.on('mousedown', this.timelineButtonAction.bind(this));
@@ -163,6 +166,8 @@ Application.ControlPanelRootView = Backbone.View.extend({
             this.timelineContainer.remove();
             this.timelineContainer = null;
         }
+
+        Application.userConfig.timelineAvailable = false;
     },
     destroyCategoriesView: function() {
 

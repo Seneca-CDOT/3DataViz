@@ -2,325 +2,318 @@ var Application = Application || {};
 
 Application.DataProcessor.TransformerFactory = (function() {
 
-    var TransformerClass = Application.DataProcessor.PointsVisualTransformer;
+  var TransformerClass = Application.DataProcessor.PointsVisualTransformer;
 
-    var publicMethods = {};
-    publicMethods.createTransformer = function(options) {
+  var publicMethods = {};
+  publicMethods.createTransformer = function(options) {
 
-        switch (options.transformerType) {
+    switch (options.transformerType) {
 
-            case "countriesVisualTransformer":
-                // console.log("countriesVisualTransformer");
-                TransformerClass = Application.DataProcessor.CountriesVisualTransformer;
-                break;
-            case "pointsVisualTransformer":
-                // console.log("pointsVisualTransformer");
-                TransformerClass = Application.DataProcessor.PointsVisualTransformer;
-                break;
-            case "dynamicVisualTransformer":
-                // console.log("dynamicVisualTransformer");
-                TransformerClass = Application.DataProcessor.DynamicVisualTransformer;
-                break;
-            case "graphVisualTransformer":
-                // console.log("graphVisualTransformer");
-                TransformerClass = Application.DataProcessor.GraphTransformer;
-                break;
-            case "pointcloudVisualTransformer":
-                // console.log("pointcloudVisualTransformer");
-                TransformerClass = Application.DataProcessor.PointCloudTransformer;
-                break;
-        }
-        // console.log(TransformerClass);
-        return new TransformerClass(options);
-    };
+      case "countriesVisualTransformer":
+      // console.log("countriesVisualTransformer");
+      TransformerClass = Application.DataProcessor.CountriesVisualTransformer;
+      break;
+      case "pointsVisualTransformer":
+      // console.log("pointsVisualTransformer");
+      TransformerClass = Application.DataProcessor.PointsVisualTransformer;
+      break;
+      case "dynamicVisualTransformer":
+      // console.log("dynamicVisualTransformer");
+      TransformerClass = Application.DataProcessor.DynamicVisualTransformer;
+      break;
+      case "graphVisualTransformer":
+      // console.log("graphVisualTransformer");
+      TransformerClass = Application.DataProcessor.GraphTransformer;
+      break;
+      case "pointcloudVisualTransformer":
+      // console.log("pointcloudVisualTransformer");
+      TransformerClass = Application.DataProcessor.PointCloudTransformer;
+      break;
+    }
+    // console.log(TransformerClass);
+    return new TransformerClass(options);
+  };
 
-    return {
+  return {
 
-        createTransformer: publicMethods.createTransformer
-    };
+    createTransformer: publicMethods.createTransformer
+  };
 })();
 
 // strategy
 
 Application.DataProcessor.BaseTransformerStrategy = (function() {
 
-    // private store
-    var _ = {};
-    var uid = 0;
+  // private store
+  var _ = {};
+  var uid = 0;
 
-    function BaseTransformerStrategy() {
+  function BaseTransformerStrategy() {
 
-        this.testPublicVariable = "test-public";
+    this.testPublicVariable = "test-public";
 
-        _[this.id = uid++] = {};
-        _[this.id].testPrivateVariable = "test-private";
-    };
-    // inherite the base interface if needed
-    // Application.Helper.inherit(...)
+    _[this.id = uid++] = {};
+    _[this.id].testPrivateVariable = "test-private";
+  };
+  // inherite the base interface if needed
+  // Application.Helper.inherit(...)
 
-    BaseTransformerStrategy.prototype.transform = function(data, complete) {
+  BaseTransformerStrategy.prototype.transform = function(data, complete) {
 
-        throw 'Please, define an abstract interface.';
-    };
+    throw 'Please, define an abstract interface.';
+  };
 
-    // { *** for testing purposes
-    BaseTransformerStrategy.prototype.testPublicFunction1 = function(data) {
+  // { *** for testing purposes
+  BaseTransformerStrategy.prototype.testPublicFunction1 = function(data) {
 
-        // calling private function from public
-        privateMethods.testPrivateFunction1.call(this);
-    };
+    // calling private function from public
+    privateMethods.testPrivateFunction1.call(this);
+  };
 
-    BaseTransformerStrategy.prototype.testPublicFunction2 = function(data) {
+  BaseTransformerStrategy.prototype.testPublicFunction2 = function(data) {
 
-        // accessing public and private variables form public function
-        // console.log("From public function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
-    };
+    // accessing public and private variables form public function
+    // console.log("From public function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
+  };
 
-    // define private methods after prototype has been inhereted and defined
+  // define private methods after prototype has been inhereted and defined
 
-    // by doing this you have got an access to the public methods from private methods
-    var privateMethods = Object.create(BaseTransformerStrategy.prototype);
-    privateMethods.testPrivateFunction1 = function() {
+  // by doing this you have got an access to the public methods from private methods
+  var privateMethods = Object.create(BaseTransformerStrategy.prototype);
+  privateMethods.testPrivateFunction1 = function() {
 
-        // calling public function from private
-        privateMethods.testPublicFunction2.call(this);
+    // calling public function from private
+    privateMethods.testPublicFunction2.call(this);
 
-        // accessing public and private variables form private function
-        // console.log("From private function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
-    };
-    // } ***
+    // accessing public and private variables form private function
+    // console.log("From private function: " + this.testPublicVariable + "  " + _[this.id].testPrivateVariable);
+  };
+  // } ***
 
-    return BaseTransformerStrategy;
+  return BaseTransformerStrategy;
 })();
 
 Application.DataProcessor.BaseTransformer = (function() {
 
-    function BaseTransformer() {
+  function BaseTransformer() {
 
-        Application.DataProcessor.BaseTransformerStrategy.call(this);
-    };
-    Application.Helper.inherit(BaseTransformer, Application.DataProcessor.BaseTransformerStrategy);
+    Application.DataProcessor.BaseTransformerStrategy.call(this);
+  };
+  Application.Helper.inherit(BaseTransformer, Application.DataProcessor.BaseTransformerStrategy);
 
-    var privateMethods = Object.create(BaseTransformer.prototype);
+  var privateMethods = Object.create(BaseTransformer.prototype);
 
-    BaseTransformer.prototype.transform = function(data, complete) {
+  BaseTransformer.prototype.transform = function(data, complete) {
 
-        throw 'Please, define an abstract interface.';
-    };
+    throw 'Please, define an abstract interface.';
+  };
 
-    return BaseTransformer;
+  return BaseTransformer;
 })();
 
 // country visual
 Application.DataProcessor.CountriesVisualTransformer = (function() {
 
-    function CountriesVisualTransformer() {
+  function CountriesVisualTransformer() {
 
-        Application.DataProcessor.BaseTransformer.call(this);
-    };
-    Application.Helper.inherit(CountriesVisualTransformer, Application.DataProcessor.BaseTransformer);
+    Application.DataProcessor.BaseTransformer.call(this);
+  };
+  Application.Helper.inherit(CountriesVisualTransformer, Application.DataProcessor.BaseTransformer);
 
-    CountriesVisualTransformer.prototype.transform = function(data, complete) {
+  CountriesVisualTransformer.prototype.transform = function(data, complete) {
 
-        var transData = [];
+    var transData = [];
 
-        $.each(data, function(index, item) {
+    $.each(data, function(index, item) {
 
-            var obj = {};
+      var obj = {};
 
-            $.each(item, function(attr, value) {
+      $.each(item, function(attr, value) {
 
-                var parserAttr = _.invert(Application.attrsMap)[attr];
+        var parserAttr = _.invert(Application.attrsMap)[attr];
 
-                if (parserAttr) {
+        if (parserAttr) {
 
-                    if (parserAttr == 'value') value = Application.Helper.getNumber(value);
+          if (parserAttr == 'value') value = Application.Helper.getNumber(value);
 
-                    obj[parserAttr] = value;
+          obj[parserAttr] = value;
 
-                } else {
+        } else {
 
-                    // console.log("Attribute " + attr + " wasn't included");
-                }
+          // console.log("Attribute " + attr + " wasn't included");
+        }
 
-            });
+      });
 
-            transData.push(obj);
+      transData.push(obj);
 
-        });
+    });
 
-        if (typeof complete === "function") complete(transData);
-    };
+    if (typeof complete === "function") complete(transData);
+  };
 
-    return CountriesVisualTransformer;
+  return CountriesVisualTransformer;
 
 })();
 
 // point visual
 Application.DataProcessor.PointsVisualTransformer = (function() {
 
-    function PointsVisualTransformer() {
+  function PointsVisualTransformer() {
 
-        Application.DataProcessor.BaseTransformer.call(this);
-    };
-    Application.Helper.inherit(PointsVisualTransformer, Application.DataProcessor.BaseTransformer);
+    Application.DataProcessor.BaseTransformer.call(this);
+  };
+  Application.Helper.inherit(PointsVisualTransformer, Application.DataProcessor.BaseTransformer);
 
-    PointsVisualTransformer.prototype.transform = function(data, complete) {
+  PointsVisualTransformer.prototype.transform = function(data, complete) {
 
-        var transData = [];
+    var transData = [];
 
-        $.each(data, function(index, item) {
+    var parserAttrs = _.invert(Application.attrsMap);
 
-            var obj = {};
+    $.each(data, function(index, item) {
 
-            $.each(item, function(attr, value) {
+      var obj = {};
 
-                var parserAttr = _.invert(Application.attrsMap)[attr];
+      $.each(item, function(attr, value) {
 
-                if (parserAttr) {
+        var parserAttr = parserAttrs[attr];
 
-                    obj[parserAttr] = value;
+        if (parserAttr) obj[parserAttr] = value;
 
-                } else {
+        //      else console.log("Attribute " + attr + " wasn't included");
 
-                    // console.log("Attribute " + attr + " wasn't included");
-                }
+      });
 
-            });
+      transData.push(obj);
 
-            transData.push(obj);
+    });
 
-        });
+    if (typeof complete === "function") complete(transData);
+  };
 
-        if (typeof complete === "function") complete(transData);
-    };
-
-    return PointsVisualTransformer;
+  return PointsVisualTransformer;
 
 })();
 
 // Dynamic visual
 Application.DataProcessor.DynamicVisualTransformer = (function() {
 
-    function DynamicVisualTransformer() {
+  function DynamicVisualTransformer() {
 
-        Application.DataProcessor.BaseTransformer.call(this);
-    };
-    Application.Helper.inherit(DynamicVisualTransformer, Application.DataProcessor.BaseTransformer);
+    Application.DataProcessor.BaseTransformer.call(this);
+  };
+  Application.Helper.inherit(DynamicVisualTransformer, Application.DataProcessor.BaseTransformer);
 
-    DynamicVisualTransformer.prototype.transform = function(data, complete) {
+  DynamicVisualTransformer.prototype.transform = function(data, complete) {
+    var transData = [];
+    var parserKeys = _.keys(Application.attrsMap);
 
-      var transData = [];
+    $.each(data, function(index, item) {
 
-      $.each(data, function(index, item) {
+      var obj = {};
 
-          var obj = {};
+      $.each(parserKeys, function(index, key) {
 
-          $.each(item, function(attr, value) {
-
-              var parserAttr = _.invert(Application.attrsMap)[attr];
-
-              if (parserAttr) {
-
-                  obj[parserAttr] = value;
-
-              }
-
-          });
-
-          transData.push(obj);
+        obj[key] = item[Application.attrsMap[key]] || 0;
 
       });
 
-      if( typeof complete === "function" ) complete(transData);
+      transData.push(obj);
 
-    };
+    });
 
-    return DynamicVisualTransformer;
+    if( typeof complete === "function" ) complete(transData);
+
+  };
+
+  return DynamicVisualTransformer;
 
 })();
 
 // flightPath visual
 Application.DataProcessor.GraphTransformer = (function() {
 
-    function GraphTransformer() {
+  function GraphTransformer() {
 
-        Application.DataProcessor.BaseTransformer.call(this);
-    };
-    Application.Helper.inherit(GraphTransformer, Application.DataProcessor.BaseTransformer);
+    Application.DataProcessor.BaseTransformer.call(this);
+  };
+  Application.Helper.inherit(GraphTransformer, Application.DataProcessor.BaseTransformer);
 
-    GraphTransformer.prototype.transform = function(data, complete) {
+  GraphTransformer.prototype.transform = function(data, complete) {
 
-        var transData = [];
+    var transData = [];
 
-        $.each(data, function(index, item) {
+    var parserAttrs = _.invert(Application.attrsMap);
 
-            var obj = {};
+    $.each(data, function(index, item) {
 
-            $.each(item, function(attr, value) {
+      var obj = {};
 
-                var parserAttr = _.invert(Application.attrsMap)[attr];
+      $.each(item, function(attr, value) {
 
-                if (parserAttr) {
+        var parserAttr = parserAttrs[attr];
 
-                    if (parserAttr == 'value') value = Application.Helper.getNumber(value);
+        if (parserAttr) {
 
-                    obj[parserAttr] = value;
+          if (parserAttr == 'value') value = Application.Helper.getNumber(value);
 
-                } else {
+          obj[parserAttr] = value;
 
-                    // console.log("Attribute " + attr + " wasn't included");
-                }
+        } else {
 
-            });
+          // console.log("Attribute " + attr + " wasn't included");
+        }
 
-            transData.push(obj);
+      });
 
-        });
+      transData.push(obj);
 
-        if (typeof complete === "function") complete(transData);
-    };
+    });
 
-    return GraphTransformer;
+    if (typeof complete === "function") complete(transData);
+  };
+
+  return GraphTransformer;
 
 })();
 
 // point cloud visual
 Application.DataProcessor.PointCloudTransformer = (function(){
 
-    function PointCloudTransformer() {
+  function PointCloudTransformer() {
 
-        Application.DataProcessor.BaseTransformer.call(this);
-    };
-    Application.Helper.inherit(PointCloudTransformer, Application.DataProcessor.BaseTransformer);
+    Application.DataProcessor.BaseTransformer.call(this);
+  };
+  Application.Helper.inherit(PointCloudTransformer, Application.DataProcessor.BaseTransformer);
 
-    PointCloudTransformer.prototype.transform = function(data, complete) {
+  PointCloudTransformer.prototype.transform = function(data, complete) {
 
-        var transData = [];
+    var transData = [];
 
-        $.each(data, function(index, item) {
+    $.each(data, function(index, item) {
 
-            var obj = {};
+      var obj = {};
 
-            $.each(item, function(attr, value) {
+      $.each(item, function(attr, value) {
 
-                var parserAttr = _.invert(Application.attrsMap)[attr];
+        var parserAttr = _.invert(Application.attrsMap)[attr];
 
-                if (parserAttr) {
+        if (parserAttr) {
 
-                    obj[parserAttr] = value;
+          obj[parserAttr] = value;
 
-                }
+        }
 
-            });
+      });
 
-            transData.push(obj);
+      transData.push(obj);
 
-        });
+    });
 
-        if( typeof complete === "function" ) complete(transData);
-    };
+    if( typeof complete === "function" ) complete(transData);
+  };
 
-    return PointCloudTransformer;
+  return PointCloudTransformer;
 
 })();

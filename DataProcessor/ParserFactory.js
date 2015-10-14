@@ -335,23 +335,27 @@ Application.DataProcessor.CSVParser = (function() {
 
     CSVParser.prototype.parse = function(file, callbacks) {
 
+      Papa.SCRIPT_PATH = 'Libraries/papaparse.js';
+
         Papa.parse(file, {
             preview: 1,
             header: true,
             complete: function(response){
-                // console.log("Preparse:", response.meta.fields);
+
         if (typeof callbacks.preparsed === "function") callbacks.preparsed(response.meta.fields);
             }
         });
 
 
         Papa.parse(file, {
-            // worker: true,
+            worker: true,
+            comments: false,
+            skipEmptyLines: true,
             header: true,
+            dynamicTyping: true,
             complete: function(response) {
-                // if (typeof complete === "function") complete(response);
+
             if (typeof callbacks.complete === "function") callbacks.complete(response.data);
-                //Application._vent.trigger('matcher/on');
             }
         });
 
