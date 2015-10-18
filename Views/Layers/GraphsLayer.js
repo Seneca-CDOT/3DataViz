@@ -405,12 +405,15 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
         return airportInstance;
 
     },
-    showResults: function(results) {
+    getAllResults: function() {
 
-        if (!results){
-            results = this.collection[0].models;
-            this.getCategoriesWithColors(results);
-        }
+    Application.BaseGlobeView.prototype.getAllResults.call(this);
+
+      var results = this.collection[0].models;
+    //  this.getCategoriesWithColors(results);
+       this.showResults(results);
+    },
+    showResults: function(results) {
 
         Application.BaseGlobeView.prototype.showResults.call(this, results);
 
@@ -421,26 +424,8 @@ Application.GraphsLayer = Application.BaseGlobeView.extend({
             Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
             return;
         }
-        Application._vent.trigger('controlpanel/message/off');
 
         this.addPaths(results);
-
-    },
-    showFilteredResults: function(results) {
-
-        Application.BaseGlobeView.prototype.showFilteredResults.call(this, results);
-
-        if (results.length == 0) {
-            Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
-            return;
-        } else if (!results[0].longitude_from || !results[0].latitude_from || !results[0].longitude_to || !results[0].latitude_to) {
-            Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
-            return;
-        }
-      //  Application._vent.trigger('controlpanel/message/off');
-
-        this.addPaths(results);
-
     },
     sortResultsByCategory: function() {
 

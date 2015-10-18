@@ -1,15 +1,13 @@
 var Application = Application || {};
 
-Application.Examples = {
+Application.Examples = function() {
 
-  init: function() {
-
-    Application._vent.on('data/ready', this.callTimeline, this);
+  var init = function() {
 
     var _this = this;
     Application.userConfig.model = 'json';
 
-    var list = ['earthquakes','immigration'];
+    var list = ['earthquakes','immigration','currencies'];
 
     var $samplesDiv = $('#examples');
     $samplesDiv.append('<div class="heading">Choose an example<div/>')
@@ -17,35 +15,17 @@ Application.Examples = {
     var $wrap = $('<div class="templateImgList"></div>')
 
     $.each(list, function(index, item) {
-      $templist.append('<li><button class="imgBtn"><img id="' + item + '" src="Assets/images/examples/'+ item + '.png"><p class="templateTitle">'+item+'</p></button></li>');
+      $templist.append('<li><a href="/#' + item + '"><button class="imgBtn"><img src="Assets/images/examples/'+ item + '.png"><p class="templateTitle">'+item+'</p></button></a></li>');
     });
     $samplesDiv.append($wrap.append($templist));
 
-    $('button.imgBtn', $samplesDiv).on('click', this.action.bind(this));
-
     return this;
 
-  },
-  destroy: function() {
+  }
 
-    Application._vent.unbind('data/ready', this.callTimeline);
+  var destroy = function() {};
 
-  },
-  action: function(e) {
-
-    var id = $(e.target).attr('id');
-
-    if (this.module) this.module.destroy();
-
-    this.module = new this[id];
-    this.module.init();
-  },
-  callTimeline: function() {
-
-    Application._vent.trigger('timeline/on');
-
-  },
-  earthquakes: function () {
+  var Earthquakes = function () {
 
     this.init = function() {
 
@@ -60,11 +40,11 @@ Application.Examples = {
 
     }
 
-    this.destroy = function() {
-    }
+    this.destroy = function() {};
 
-  },
-  immigration: function() {
+  }
+
+  var Immigration = function() {
 
     this.init = function() {
 
@@ -94,4 +74,33 @@ Application.Examples = {
 
   }
 
-}
+  var Currencies = function() {
+
+    this.init = function() {
+
+      Application.attrsMap = { x: "USD", y: "EUR", z: "CNY" }
+      Application.userConfig.template = 'pointcloud';
+      Application.userConfig.model = 'json';
+      Application.userConfig.templateTitle = 'Currencies';
+      Application.userConfig.files = 'SampleData/Pointcloud/currencies.json';
+      Application._vent.trigger('controlpanel/subview/remove');
+      Application._vent.trigger('controlpanel/menu/clear');
+      Application._vent.trigger('controlpanel/parse'); // create collection
+
+    }
+
+    this.destroy = function() {}
+
+  }
+
+  return {
+
+    init: init,
+    destroy: destroy,
+    Earthquakes: Earthquakes,
+    Immigration: Immigration,
+    Currencies: Currencies
+
+  }
+
+};

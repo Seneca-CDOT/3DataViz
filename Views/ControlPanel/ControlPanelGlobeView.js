@@ -18,9 +18,8 @@ Application.ControlPanelRootView = Backbone.View.extend({
     Application._vent.on('controlpanel/menu/clear', this.clearDataSourceMenu, this);
 
     Application._vent.on('visualize', this.addFiltersView, this);
-    Application._vent.on('visualize', this.enableTimeline, this);
+    Application._vent.on('controlpanel/subview/model', this.changeLocation, this);
     Application._vent.on('matcher/submit', this.addFiltersView, this);
-    Application._vent.on('matcher/submit', this.enableTimeline, this);
     Application._vent.on('timeline/ready', this.addTimelineView, this);
     Application._vent.on('matcher/submit', this.addCameraSwitcherView, this);
 
@@ -40,22 +39,20 @@ Application.ControlPanelRootView = Backbone.View.extend({
 
     return this;
   },
+  changeLocation: function() {
+    window.location = '#view';
+  },
   addTimelineView: function(dates) {
 
     if (this.timeline) this.timeline.destroy();
+    this.addTimelineButton();
     this.timeline = new Application.Timeline(dates);
     this.$el.append(this.timeline.$el);
     this.timeline.update();
   },
-  enableTimeline: function() {
+  addTimelineButton: function() {
 
-    if ( typeof Application.attrsMap['date'] != "undefined") {
-
-      Application.userConfig.timelineAvailable = true;
-
-      if (this.timelineButton){
-        this.timelineContainer.remove();
-      }
+      if (this.timelineButton) this.timelineContainer.remove();
 
       this.timelineButton = new Application.Button();
       this.timelineButton.$el.text('TIMELINE');
@@ -64,7 +61,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
       this.timelineContainer = $('<div class="configList"></div>');
       this.timelineContainer.append(this.timelineButton.render().$el);
       this.$el.append(this.timelineContainer);
-    }
+
   },
   timelineButtonAction: function() {
 
