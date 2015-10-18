@@ -7,7 +7,7 @@ Application.Examples = function() {
     var _this = this;
     Application.userConfig.model = 'json';
 
-    var list = ['earthquakes','immigration'];
+    var list = ['earthquakes','immigration','currencies'];
 
     var $samplesDiv = $('#examples');
     $samplesDiv.append('<div class="heading">Choose an example<div/>')
@@ -74,12 +74,32 @@ Application.Examples = function() {
 
   }
 
+  var Currencies = function() {
+
+    this.init = function() {
+
+      Application.attrsMap = { x: "USD", y: "EUR", z: "CNY" }
+      Application.userConfig.template = 'pointcloud';
+      Application.userConfig.model = 'json';
+      Application.userConfig.templateTitle = 'Currencies';
+      Application.userConfig.files = 'SampleData/Pointcloud/currencies.json';
+      Application._vent.trigger('controlpanel/subview/remove');
+      Application._vent.trigger('controlpanel/menu/clear');
+      Application._vent.trigger('controlpanel/parse'); // create collection
+
+    }
+
+    this.destroy = function() {}
+
+  }
+
   return {
 
     init: init,
     destroy: destroy,
     Earthquakes: Earthquakes,
-    Immigration: Immigration
+    Immigration: Immigration,
+    Currencies: Currencies
 
   }
 

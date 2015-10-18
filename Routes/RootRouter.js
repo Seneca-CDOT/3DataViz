@@ -11,7 +11,8 @@ Application.RootRouter = Backbone.Router.extend({
     "": "initRootView",
     "view":"",
     "earthquakes":"initEarthquakes",
-    "immigration":"initImmigration"
+    "immigration":"initImmigration",
+    "currencies":"initCurrencies"
   },
   initRootView: function() {
 
@@ -33,6 +34,11 @@ Application.RootRouter = Backbone.Router.extend({
   initImmigration: function() {
     this.checkInit();
     this.exampleView = new this.examples.Immigration();
+    this.exampleView.init();
+  },
+  initCurrencies: function() {
+    this.checkInit();
+    this.exampleView = new this.examples.Currencies();
     this.exampleView.init();
   },
 
