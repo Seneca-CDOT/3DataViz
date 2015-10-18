@@ -4,8 +4,6 @@ Application.Examples = function() {
 
   var init = function() {
 
-    Application._vent.on('data/ready', callTimeline, this);
-
     var _this = this;
     Application.userConfig.model = 'json';
 
@@ -25,17 +23,8 @@ Application.Examples = function() {
 
   }
 
-  var destroy = function() {
+  var destroy = function() {};
 
-    Application._vent.unbind('data/ready', callTimeline);
-
-  }
-
-  var callTimeline = function() {
-
-    Application._vent.trigger('timeline/on');
-
-  }
   var Earthquakes = function () {
 
     this.init = function() {
@@ -51,8 +40,7 @@ Application.Examples = function() {
 
     }
 
-    this.destroy = function() {
-    }
+    this.destroy = function() {};
 
   }
 

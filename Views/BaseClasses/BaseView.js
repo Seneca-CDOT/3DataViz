@@ -47,22 +47,22 @@ Application.BaseView = Backbone.View.extend({
   },
   suscribe: function() {
     // console.log("BaseView suscribe");
-    Application._vent.on('data/ready', this.showResults, this);
+    Application._vent.on('data/ready', this.checkAttributes, this);
+    //Application._vent.on('data/ready', this.showResults, this);
     Application._vent.on('filteredData/ready', this.showFilteredResults, this);
     $(window).on('resize', this.onWindowResize.bind(this));
     Application._vent.on('filters/add', this.addCategory, this);
     Application._vent.on('filters/remove', this.removeCategory, this);
-    Application._vent.on('timeline/on', this.timelineAction, this);
     Application._vent.on('timeline/message', this.findObjectsbyDate, this);
     Application._vent.on('timeline/clear', this.reset, this);
   },
   unsuscribe: function() {
     $(window).unbind('resize');
-    Application._vent.unbind('data/ready', this.showResults);
+    Application._vent.unbind('data/ready', this.checkAttributes);
     Application._vent.unbind('filteredData/ready', this.showFilteredResults);
     Application._vent.unbind('filters/add', this.addCategory);
     Application._vent.unbind('filters/remove', this.removeCategory);
-    Application._vent.unbind('timeline/on', this.timelineAction);
+    //Application._vent.unbind('timeline/on', this.timelineAction);
     Application._vent.unbind('timeline/message', this.findObjectsbyDate);
     Application._vent.unbind('timeline/clear', this.reset);
 
@@ -70,6 +70,10 @@ Application.BaseView = Backbone.View.extend({
   reset: function() {
 
     this.activeCategories.length = 0;
+  },
+  checkAttributes: function() {
+
+        if (Application.attrsMap['date']) this.timelineAction();
   },
   destroy: function() {
 
@@ -453,8 +457,6 @@ Application.BaseView = Backbone.View.extend({
     if (data.length) this.showFilteredResults(data);
   },
   sortResultsByDate: function() {
-
-    if (!Application.attrsMap['date']) return;
 
     if ( typeof Application.attrsMap['date2'] == "undefined") {
 

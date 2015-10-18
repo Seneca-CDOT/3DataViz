@@ -9,6 +9,7 @@ Application.RootRouter = Backbone.Router.extend({
 
   routes: {
     "": "initRootView",
+    "view":"",
     "earthquakes":"initEarthquakes",
     "immigration":"initImmigration"
   },
