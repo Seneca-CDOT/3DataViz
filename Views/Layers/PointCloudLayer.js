@@ -16,6 +16,7 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
   },
   suscribe: function() {
     Application.BasePointCloudView.prototype.suscribe.call(this);
+    Application._vent.on('data/ready', this.initResults, this);
   },
   destroy: function() {
 
@@ -36,8 +37,12 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     $.each(this.geometries, function(index, geometry){
       geometry = null;
     });
-
+    Application._vent.unbind('data/ready', this.initResults);
     Application.BasePointCloudView.prototype.destroy.call(this);
+  },
+  initResults: function() {
+    var results = this.collection[0].models;
+    this.showInit(results);
   },
   getMin: function(objarray, key){
     var min = undefined;
@@ -123,24 +128,21 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
     }
 
   },
+  getAllResults: function() {
+
+  Application.BaseGlobeView.prototype.getAllResults.call(this);
+
+    var results = this.collection[0].models;
+    //this.getCategoriesWithColors(results);
+    this.showInit(results);
+     this.showResults(results);
+  },
   showResults: function(results) {
 
-    Application._vent.trigger('controlpanel/message/off');
-
+    var that = this;
     this.resetPointcloud();
 
-    if (!results){
-      results = this.collection[0].models;
-      this.showInit(results);
-      this.getCategoriesWithColors(results);
-    }
-
-    if (Application.userConfig.timelineAvailable) return;
-
     Application.BaseGlobeView.prototype.showResults.call(this, results);
-
-    var that = this;
-
     Application.BasePointCloudView.prototype.showResults.call(this, results);
 
     if (results.length == 0) {
@@ -150,52 +152,6 @@ Application.PointCloudLayer = Application.BasePointCloudView.extend({
       Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
       return;
     }
-
-
-    //Create pointclouds
-    var pointcloudNum = this.categories.length || 1;
-    for(var i=0; i< pointcloudNum; i++){
-
-      this.geometries.push(new THREE.Geometry());
-      var material = this.material.clone();
-      if(this.categories[i]){
-        material.color = new THREE.Color(this.categories[i].color);
-      }
-
-      var pointcloud = new THREE.PointCloud(this.geometries[i], material);
-      pointcloud.userData.values = [];
-      pointcloud.userData.x = [];
-      pointcloud.userData.y = []
-      pointcloud.userData.z = [];
-      this.pointclouds.push(pointcloud);
-      this.scene.add(pointcloud);
-    }
-
-    //Iterate each items
-    $.each(results, function(index, item) {
-
-      var v = new THREE.Vector3( item.x*that.ratioX -(that.midX*that.ratioX), item.y*that.ratioY - (that.midY*that.ratioY), item.z*that.ratioZ -(that.midZ*that.ratioZ));
-      var i = 0;
-      var category = that.getCategoryObj(item.category);
-      if(category){
-        i = category.index;
-        that.pointclouds[i].userData.category = category.name;
-      }
-      that.geometries[i].vertices.push(v);
-      that.pointclouds[i].userData.values.push(item.value);
-      that.pointclouds[i].userData.x.push(item.x);
-      that.pointclouds[i].userData.y.push(item.y);
-      that.pointclouds[i].userData.z.push(item.z);
-    });
-
-  },
-  showFilteredResults: function(results) {
-
-    Application.BaseGlobeView.prototype.showFilteredResults.call(this, results);
-
-    var that = this;
-
-    this.resetPointcloud();
 
     //Create pointclouds
     var pointcloudNum = this.categories.length || 1;

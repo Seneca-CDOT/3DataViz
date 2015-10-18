@@ -48,8 +48,6 @@ Application.BaseView = Backbone.View.extend({
   suscribe: function() {
     // console.log("BaseView suscribe");
     Application._vent.on('data/ready', this.checkAttributes, this);
-    //Application._vent.on('data/ready', this.showResults, this);
-    Application._vent.on('filteredData/ready', this.showFilteredResults, this);
     $(window).on('resize', this.onWindowResize.bind(this));
     Application._vent.on('filters/add', this.addCategory, this);
     Application._vent.on('filters/remove', this.removeCategory, this);
@@ -59,10 +57,8 @@ Application.BaseView = Backbone.View.extend({
   unsuscribe: function() {
     $(window).unbind('resize');
     Application._vent.unbind('data/ready', this.checkAttributes);
-    Application._vent.unbind('filteredData/ready', this.showFilteredResults);
     Application._vent.unbind('filters/add', this.addCategory);
     Application._vent.unbind('filters/remove', this.removeCategory);
-    //Application._vent.unbind('timeline/on', this.timelineAction);
     Application._vent.unbind('timeline/message', this.findObjectsbyDate);
     Application._vent.unbind('timeline/clear', this.reset);
 
@@ -73,7 +69,10 @@ Application.BaseView = Backbone.View.extend({
   },
   checkAttributes: function() {
 
-        if (Application.attrsMap['date']) this.timelineAction();
+        if (Application.attrsMap['date'])  { this.timelineAction(); }
+        else this.getAllResults();
+        
+        Application._vent.trigger('controlpanel/message/off');
   },
   destroy: function() {
 
@@ -384,16 +383,18 @@ Application.BaseView = Backbone.View.extend({
     this.orbitOn = true;
     this.tween.start();
   },
+  getAllResults: function() {
+
+  },
   showResults: function(results) {
+
+    Application._vent.trigger('controlpanel/message/off');
 
     this.reset();
 
     if (this.categories.length > 0 && this.categories[0] !== undefined) {
       Application._vent.trigger('controlpanel/categories', this.categories);
     }
-  },
-  showFilteredResults: function() {
-
   },
   sortResultsByCategory: function() {},
   getCategories: function(results){
@@ -454,7 +455,7 @@ Application.BaseView = Backbone.View.extend({
   findObjectsbyDate: function(number) {
 
     var data = this.sortedByPercentageData[number];
-    if (data.length) this.showFilteredResults(data);
+    if (data.length) this.showResults(data);
   },
   sortResultsByDate: function() {
 

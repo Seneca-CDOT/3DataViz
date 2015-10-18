@@ -143,26 +143,18 @@ Application.DynamicLayer = Application.BaseGlobeView.extend({
 
     this.addParticleWithDataRecord(dataRecord);
   },
+  getAllResults: function() {
+
+    Application.BaseGlobeView.prototype.getAllResults.call(this);
+
+    var results = this.collection[0].models;
+    //  this.getCategories(results);
+    this.showResults(results);
+  },
   showResults: function(results) {
     var that = this;
-    Application._vent.trigger('controlpanel/message/off');
 
     Application.BaseGlobeView.prototype.showResults.call(this, results);
-
-    if (Application.userConfig.timelineAvailable) return;
-
-    if (!results) var results = that.collection[0].models;
-
-    $.each(results, function(i, result) {
-
-      result.timestamp = Number(new Date());
-      that.addParticleWithDataRecord(result);
-
-    });
-  },
-  showFilteredResults: function(results) {
-    var that = this;
-    Application.BaseGlobeView.prototype.showFilteredResults.call(this, results);
 
     $.each(results, function(i, result) {
 

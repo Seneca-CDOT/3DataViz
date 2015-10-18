@@ -141,16 +141,16 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
 
     return colors;
   },
+  getAllResults: function() {
 
+  Application.BaseGlobeView.prototype.getAllResults.call(this);
+
+    var results = this.collection[0].models;
+  //  this.getCategories(results);
+     this.showResults(results);
+  },
   showResults: function(results) {
     Application._vent.trigger('controlpanel/message/off');
-
-    if (Application.userConfig.timelineAvailable) return;
-
-    if(!results){
-      results = this.collection[0].models;
-      this.getCategories(results);
-    }
 
     var that = this;
 
@@ -160,7 +160,6 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
       Application._vent.trigger('controlpanel/message/on', 'NO DATA RECIEVED');
       return;
     }
-
 
     if (results[0].value !== 'undefined') {
       results.sort(function(a, b) { // sorts array in ascending order by value
@@ -178,43 +177,6 @@ Application.CountriesLayer = Application.BaseGlobeView.extend({
         // console.log('Country ' + (item.countrycode || item.countryname) + ' is not available ');
         return;
       }
-
-      // console.log(countrymesh.userData.name, ' ' + item.value + '%');
-
-      var obj = {};
-      obj.mesh = countrymesh;
-      obj.color = countrymesh.material.color.getHex();
-      if (item.value) obj.value = item.value;
-
-      if (item.category) obj.category = item.category;
-
-      if (item.value) that.tweenit(countrymesh, colorsMap[item.value], that.getit, 2);
-
-      obj.result_color = countrymesh.material.color.getHex();
-
-      that.added.push(obj);
-
-    });
-
-  },
-  showFilteredResults: function(results) {
-    Application.BaseGlobeView.prototype.showFilteredResults.call(this, results);
-
-    var that = this;
-
-    if (results[0].value !== 'undefined') {
-      results.sort(function(a, b) { // sorts array in ascending order by value
-        return a.value - b.value
-      });
-    }
-
-    var colorsMap = this.createColors(results); // creates a colors map relative to the values
-
-    $.each(results, function(index, item) {
-
-      var countrymesh = that.decorators[0].findCountry(item.country);
-
-      if (!countrymesh) return;
 
       var obj = {};
       obj.mesh = countrymesh;
