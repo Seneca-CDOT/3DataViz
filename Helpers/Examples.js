@@ -1,10 +1,10 @@
 var Application = Application || {};
 
-Application.Examples = {
+Application.Examples = function() {
 
-  init: function() {
+  var init = function() {
 
-    Application._vent.on('data/ready', this.callTimeline, this);
+    Application._vent.on('data/ready', callTimeline, this);
 
     var _this = this;
     Application.userConfig.model = 'json';
@@ -17,35 +17,26 @@ Application.Examples = {
     var $wrap = $('<div class="templateImgList"></div>')
 
     $.each(list, function(index, item) {
-      $templist.append('<li><button class="imgBtn"><img id="' + item + '" src="Assets/images/examples/'+ item + '.png"><p class="templateTitle">'+item+'</p></button></li>');
+      $templist.append('<li><a href="/#' + item + '"><button class="imgBtn"><img src="Assets/images/examples/'+ item + '.png"><p class="templateTitle">'+item+'</p></button></a></li>');
     });
     $samplesDiv.append($wrap.append($templist));
 
-    $('button.imgBtn', $samplesDiv).on('click', this.action.bind(this));
-
     return this;
 
-  },
-  destroy: function() {
+  }
 
-    Application._vent.unbind('data/ready', this.callTimeline);
+  var destroy = function() {
 
-  },
-  action: function(e) {
+    Application._vent.unbind('data/ready', callTimeline);
 
-    var id = $(e.target).attr('id');
+  }
 
-    if (this.module) this.module.destroy();
-
-    this.module = new this[id];
-    this.module.init();
-  },
-  callTimeline: function() {
+  var callTimeline = function() {
 
     Application._vent.trigger('timeline/on');
 
-  },
-  earthquakes: function () {
+  }
+  var Earthquakes = function () {
 
     this.init = function() {
 
@@ -63,8 +54,9 @@ Application.Examples = {
     this.destroy = function() {
     }
 
-  },
-  immigration: function() {
+  }
+
+  var Immigration = function() {
 
     this.init = function() {
 
@@ -94,4 +86,13 @@ Application.Examples = {
 
   }
 
-}
+  return {
+
+    init: init,
+    destroy: destroy,
+    Earthquakes: Earthquakes,
+    Immigration: Immigration
+
+  }
+
+};
