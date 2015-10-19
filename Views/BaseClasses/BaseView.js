@@ -69,9 +69,11 @@ Application.BaseView = Backbone.View.extend({
   },
   checkAttributes: function() {
 
-        if (Application.attrsMap['date'])  { this.timelineAction(); }
+        if (Application.attrsMap['category']) this.filtersAction();
+
+        if (Application.attrsMap['date']) this.timelineAction();
         else this.getAllResults();
-        
+
         Application._vent.trigger('controlpanel/message/off');
   },
   destroy: function() {
@@ -451,6 +453,12 @@ Application.BaseView = Backbone.View.extend({
     this.reset();
 
     this.sortResultsByDate();
+  },
+  filtersAction: function() {
+
+    var results = this.collection[0].models;
+    this.getCategoriesWithColors(results);
+    Application._vent.trigger('filters/on');
   },
   findObjectsbyDate: function(number) {
 

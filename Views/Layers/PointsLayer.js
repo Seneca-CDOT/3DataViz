@@ -111,7 +111,6 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
   // visualization specific functionality
   showResults: function(results) {
     var that = this;
-
     Application.BaseGlobeView.prototype.showResults.call(this, results);
 
     //this.resetGlobe();
@@ -124,8 +123,6 @@ Application.PointsLayer = Application.BaseGlobeView.extend({
       Application._vent.trigger('controlpanel/message/on', 'The data is not compatible with this template.<br>Please choose different data or a template');
       return;
     }
-
-    //    Application._vent.trigger('controlpanel/message/off');
 
     var material = new THREE.SpriteMaterial({
       map: this.texture,

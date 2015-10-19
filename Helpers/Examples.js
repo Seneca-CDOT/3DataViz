@@ -4,7 +4,6 @@ Application.Examples = function() {
 
   var init = function() {
 
-    var _this = this;
     Application.userConfig.model = 'json';
 
     var list = ['earthquakes','immigration','currencies'];
@@ -23,13 +22,11 @@ Application.Examples = function() {
 
   }
 
-  var destroy = function() {};
-
   var Earthquakes = function () {
 
     this.init = function() {
 
-      Application.attrsMap = {date: "time", latitude: "latitude", longitude: "longitude"};
+      Application.attrsMap = { date: "time", latitude: "latitude", longitude: "longitude" };
       Application.userConfig.model = 'json';
       Application.userConfig.template = 'dynamic';
       Application.userConfig.templateTitle = 'Earthquakes';
@@ -78,7 +75,7 @@ Application.Examples = function() {
 
     this.init = function() {
 
-      Application.attrsMap = { x: "USD", y: "EUR", z: "CNY" }
+      Application.attrsMap = { x: "USD", y: "EUR", z: "CNY", category: "date" }
       Application.userConfig.template = 'pointcloud';
       Application.userConfig.model = 'json';
       Application.userConfig.templateTitle = 'Currencies';
@@ -96,7 +93,6 @@ Application.Examples = function() {
   return {
 
     init: init,
-    destroy: destroy,
     Earthquakes: Earthquakes,
     Immigration: Immigration,
     Currencies: Currencies
