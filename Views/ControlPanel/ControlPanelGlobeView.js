@@ -15,11 +15,12 @@ Application.ControlPanelRootView = Backbone.View.extend({
     Application._vent.on('matcher/on', this.destroyViews, this);
     Application._vent.on('controlpanel/input/changed', this.destroyViews, this);
     Application._vent.on('controlpanel/subview/model', this.destroyViews, this);
+    Application._vent.on('controlpanel/subview/remove', this.destroyViews, this);
     Application._vent.on('controlpanel/menu/clear', this.clearDataSourceMenu, this);
 
-    Application._vent.on('visualize', this.addFiltersView, this);
+    Application._vent.on('filters/on', this.addFiltersView, this);
     Application._vent.on('controlpanel/subview/model', this.changeLocation, this);
-    Application._vent.on('matcher/submit', this.addFiltersView, this);
+    //Application._vent.on('matcher/submit', this.addFiltersView, this);
     Application._vent.on('timeline/ready', this.addTimelineView, this);
     Application._vent.on('matcher/submit', this.addCameraSwitcherView, this);
 
@@ -85,7 +86,7 @@ Application.ControlPanelRootView = Backbone.View.extend({
 
     if (this.filtersView) this.filtersView.destroy();
 
-    if (!Application.attrsMap['category']) return;
+    //if (!Application.attrsMap['category']) return;
 
     this.filtersView = new Application.FiltersView();
     this.$el.append(this.filtersView.render().$el);

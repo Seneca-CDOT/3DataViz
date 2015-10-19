@@ -77,6 +77,9 @@ Application.BaseGlobeView = Application.BaseView.extend({
     showAllResults: function() {
 
     },
+    showResults: function(results) {
+        Application.BaseView.prototype.showResults.call(this, results);
+    },
     sortResultsByCategory: function() {
         Application.BaseView.prototype.sortResultsByCategory.call(this);
     },
