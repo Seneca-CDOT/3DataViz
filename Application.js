@@ -93,7 +93,7 @@ Application = {
             templates: ['points', 'countries', 'graph']
         },
         json: {
-            url: ['Models/JSONModel.js'],
+            url: ['Models/JSONmodel.js'],
             attributes: true,
             templates: ['points', 'countries', 'graph']
         }
