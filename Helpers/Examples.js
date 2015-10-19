@@ -14,7 +14,7 @@ Application.Examples = function() {
     var $wrap = $('<div class="templateImgList"></div>')
 
     $.each(list, function(index, item) {
-      $templist.append('<li><a href="/#' + item + '"><button class="imgBtn"><img src="Assets/images/examples/'+ item + '.png"><p class="templateTitle">'+item+'</p></button></a></li>');
+      $templist.append('<li><a href="#' + item + '"><button class="imgBtn"><img src="Assets/images/examples/'+ item + '.png"><p class="templateTitle">'+item+'</p></button></a></li>');
     });
     $samplesDiv.append($wrap.append($templist));
 
