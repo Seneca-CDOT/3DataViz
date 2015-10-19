@@ -75,7 +75,7 @@ Application.Examples = function() {
 
     this.init = function() {
 
-      Application.attrsMap = { x: "USD", y: "EUR", z: "CNY" }
+      Application.attrsMap = { x: "USD", y: "EUR", z: "CNY", category: "date" }
       Application.userConfig.template = 'pointcloud';
       Application.userConfig.model = 'json';
       Application.userConfig.templateTitle = 'Currencies';
