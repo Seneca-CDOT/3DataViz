@@ -5,22 +5,9 @@ Application.Examples = function() {
   var init = function() {
 
     Application.userConfig.model = 'json';
-
-    var list = ['earthquakes','immigration','currencies'];
-
-    var $samplesDiv = $('#examples');
-    $samplesDiv.append('<div class="heading">Choose an example<div/>')
-    var $templist = $('<ul class=""></ul>');
-    var $wrap = $('<div class="templateImgList"></div>')
-
-    $.each(list, function(index, item) {
-      $templist.append('<li><a href="#' + item + '"><button class="imgBtn"><img src="Assets/images/examples/'+ item + '.png"><p class="templateTitle">'+item+'</p></button></a></li>');
-    });
-    $samplesDiv.append($wrap.append($templist));
-
     return this;
 
-  }
+  };
 
   var Earthquakes = function () {
 
@@ -35,11 +22,11 @@ Application.Examples = function() {
       Application._vent.trigger('controlpanel/menu/clear');
       Application._vent.trigger('controlpanel/parse'); // create collection
 
-    }
+    };
 
     this.destroy = function() {};
 
-  }
+  };
 
   var Immigration = function() {
 
@@ -56,7 +43,7 @@ Application.Examples = function() {
         date27: "2006", date28: "2007", date29: "2008", date30: "2009",
         date31: "2010", date32: "2011", date33: "2012", date34: "2013",
         date35: "2014"
-      }
+      };
       Application.userConfig.template = 'countries';
       Application.userConfig.model = 'json';
       Application.userConfig.templateTitle = 'Canada immigration';
@@ -65,17 +52,17 @@ Application.Examples = function() {
       Application._vent.trigger('controlpanel/menu/clear');
       Application._vent.trigger('controlpanel/parse'); // create collection
 
-    }
+    };
 
-    this.destroy = function() {}
+    this.destroy = function() {};
 
-  }
+  };
 
   var Currencies = function() {
 
     this.init = function() {
 
-      Application.attrsMap = { x: "USD", y: "EUR", z: "CNY", category: "date" }
+      Application.attrsMap = { x: "USD", y: "EUR", z: "CNY", category: "date" };
       Application.userConfig.template = 'pointcloud';
       Application.userConfig.model = 'json';
       Application.userConfig.templateTitle = 'Currencies';
@@ -84,11 +71,11 @@ Application.Examples = function() {
       Application._vent.trigger('controlpanel/menu/clear');
       Application._vent.trigger('controlpanel/parse'); // create collection
 
-    }
+    };
 
-    this.destroy = function() {}
+    this.destroy = function() {};
 
-  }
+  };
 
   return {
 
@@ -97,6 +84,6 @@ Application.Examples = function() {
     Immigration: Immigration,
     Currencies: Currencies
 
-  }
+  };
 
 };
