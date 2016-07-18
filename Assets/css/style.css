@@ -489,7 +489,6 @@ button{
 .templateImgList{
   padding: 0;
   display: block;
-  overflow-x: scroll;
 }
 .templateTitle{
   font-size: 14px;
