@@ -196,7 +196,7 @@ Application.Help = Application.ControlElementsGlobeView.extend({
     return this;
   },
   action: function(e) {
-    $("#instruction").fadeToggle();
+    $("#instruction").toggle();
     Application._vent.trigger('matcher/off');
   }
 });
