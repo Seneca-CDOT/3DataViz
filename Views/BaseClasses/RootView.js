@@ -15,6 +15,7 @@ Application.RootView = Backbone.View.extend({
     this.notifBox = new Application.NotificationsCenter();
     this.infocenter = new Application.VizInfoCenter();
     this.titleBox = new Application.VizTitleCenter();
+    this.instruction = new Application.InstructionView();
 
     this.rootView = null;
     this.collections = [];
@@ -36,7 +37,7 @@ Application.RootView = Backbone.View.extend({
     return this;
   },
   submitOn: function() {
-    $("#instruction").fadeOut('slow');
+    $("#instruction").hide();
     this.createCollection();
   },
   visualizeOn: function() {
@@ -44,7 +45,6 @@ Application.RootView = Backbone.View.extend({
     Application._vent.trigger('controlpanel/message/off');
     Application._vent.trigger('controlpanel/message/on', 'LOADING...');
     this.initGlobeView();
-    // $("#instruction").fadeOut('slow');
 
 
   },
