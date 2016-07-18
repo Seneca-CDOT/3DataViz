@@ -2,6 +2,7 @@
 <html prefix="og: http://ogp.me/ns#">
 <link rel="stylesheet" type="text/css" href="Assets/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="Assets/css/style.css">
+<link rel="stylesheet" type="text/css" href="Assets/css/instruction.css">
 <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
 <head>
 <meta property="og:title" content="3D Web Data Visualization Tool" />
@@ -11,94 +12,53 @@
 <meta property="og:image" content="http://seneca-cdot.github.io/3DataViz/Assets/images/logo.png" />
 </head>
 <body>
-  <!-- TODO: move it to View later.-->
-  <section id="instruction">
-
-  </div>
-
-  <div class="inner">
-
-    <a href="https://github.com/Seneca-CDOT/3DataViz"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
-
-    <header>
-      <h1>3D Data Visualization</h1>
-
-      <p>In this project we are developing a web application prototype that will allow users to visualize their data in the 3D world.</p>
-
-      <p>Our main focus in this project is creating a mechanism or tool that can process various types of data formats and visualize them on a specific visualization template that we have built so that users can visualize their data in the 3D world without knowing about much of the technologies around it.</p>
-    </header>
-
-    <div class="demo">
-      <h3>How to use<a target="_blank" href="https://github.com/Seneca-CDOT/3DataViz/wiki/Instruction"><i class="glyphicon glyphicon-info-sign"></i></a></h3>
-      <ul class="steps cf">
-        <li>
-          <div class="ttl">1.</div>
-          <div>Choose<br>A Data Source</div>
-        </li>
-        <li>
-          <div class="ttl">2.</div>
-          <div>Supply<br> Your Dataset</div>
-        </li>
-        <li>
-          <div class="ttl">3.</div>
-          <div>Choose<br>Template Type</div>
-        </li>
-        <li>
-          <div class="ttl">4.</div>
-          <div>Match<br>Data Attributes</div>
-        </li>
-        <li>
-          <div class="ttl">5.</div>
-          <div>Visualize</div>
-        </li>
-      </ul>
-    </div>
-
-    <!-- https://docs.google.com/spreadsheets/d/1UlLizoLuAm9TFktEl9vzv_a003Y7ggQ8-CtQSj_QaK0/edit#gid=0 -->
-    <div class="cf" id='examples'>
-      <h3>Examples</h3>
-    </div>
-    <div class="sample cf">
-      <h3>Sample Data</h3>
-      <p><a href="http://seneca-cdot.github.io/3DataViz/sample-data/sample-data.zip"><i class="glyphicon glyphicon-file"></i>Download sample .csv files</a></p>
-    </div>
-    <div class="feedback">
-      <h3>Feedback</h3>
-      <p>If you have any feedbacks for our project or any other use cases that you would like to achieve using our application please let us know.</p>
-      <div class="contacts">
-        <p>Feedback Form: </p>
-        <p><a href="http://goo.gl/forms/M4xWnUXCNx" target="_blank">http://goo.gl/forms/M4xWnUXCNx</a></p>
-      </div>
-      <div class="contacts">
-        <p>Seneca-CDOT: </p>
-        <ul>
-          <li><a href="https://github.com/cathyatseneca" target="_blank">@cathyatseneca</a></li>
-          <li><a href="https://github.com/Hamabama" target="_blank">@hamabama</a></li>
-          <li><a href="https://github.com/collamo" target="_blank">@collamo</a></li>
-          <li><a href="https://github.com/andriibugaiov" target="_blank">@andriibugaiov</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-
-</section>
-<div id="applicationRegion"></div>
+<div id="applicationRegion">
+<div id="startScreen"><div class="notification">LOADING...</div></div>
+</div>
 </body>
-<script id="rootGlobeViewTemplate" type="text/html">
-</script>
-<script id="globeViewTemplate" type="text/html">
-</script>
-<!-- TODO: -->
-<!-- <script src="http://localhost:8080/socket.io/socket.io.js"></script> -->
+<script id="rootGlobeViewTemplate" type="text/html"></script>
+<script id="globeViewTemplate" type="text/html"></script>
 <!-- structure -->
-<script src="Libraries/jquery.js"></script>
-<script src="Libraries/underscore.js"></script>
-<script src="Libraries/backbone.js"></script>
-<script src='Libraries/randomColor.min.js'></script>
-<!-- 3D view -->
+<script type="text/javascript" src="Libraries/jquery.js"></script>
+<script type="text/javascript" src="Libraries/underscore.js"></script>
+<script type="text/javascript" src="Libraries/backbone.js"></script>
+<script type="text/javascript" src='Libraries/randomColor.min.js'></script>
+<script type="text/javascript" src="https://app.box.com/js/static/select.js"></script>
+<!-- 3D library -->
 <script src="Libraries/three.js"></script>
 <!-- source code loading -->
+<script type="text/javascript" src='Config/Config.js'></script>
+<script type="text/javascript" src='DataProcessor/DataProcessor.js'></script>
+<script type="text/javascript" src='Views/GlobeDecorators/BaseGlobeDecorator.js'></script>
+<script type="text/javascript" src='Views/BaseClasses/BaseView.js'></script>
+<script type="text/javascript" src='Helpers/Debug.js'></script>
+<script type="text/javascript" src='Helpers/Filter.js'></script>
+<script type="text/javascript" src='Helpers/DataStructures.js'></script>
+<script type="text/javascript" src='Helpers/Examples.js'></script>
+<script type="text/javascript" src='Helpers/Helper.js'></script>
+<script type="text/javascript" src='DataProcessor/ParserFactory.js'></script>
+<script type="text/javascript" src='DataProcessor/TransformerFactory.js'></script>
+<script type="text/javascript" src='Events/events.js'></script>
+<script type="text/javascript" src='Libraries/OrbitControls.js'></script>
+<script type="text/javascript" src='Libraries/stats.js'></script>
+<script type="text/javascript" src='Libraries/tween.min.js'></script>
+<script type="text/javascript" src='Libraries/map3d.js'></script>
+<script type="text/javascript" src='Libraries/papaparse.js'></script>
+<script type="text/javascript" src='Routes/RootRouter.js'></script>
+<script type="text/javascript" src='Views/GlobeDecorators/GeometryGlobeDecorator.js'></script>
+<script type="text/javascript" src='Views/GlobeDecorators/TextureGlobeDecorator.js'></script>
+<script type="text/javascript" src='Views/GlobeDecorators/GlobeDecoratorFactory.js'></script>
+<script type="text/javascript" src='Views/ControlPanel/ControlPanelGlobeView.js'></script>
+<script type="text/javascript" src='Views/ControlPanel/ControlElementsGlobeView.js'></script>
+<script type="text/javascript" src='Views/ControlPanel/Matcher.js'></script>
+<script type="text/javascript" src='Views/ControlPanel/FiltersView.js'></script>
+<script type="text/javascript" src='Views/ControlPanel/InstructionView.js'></script>
+<script type="text/javascript" src='Views/ControlPanel/Timeline.js'></script>
+<script type="text/javascript" src='Views/ControlPanel/CameraSwitcherView.js'></script>
+<script type="text/javascript" src='Views/BaseClasses/RootView.js'></script>
+<script type="text/javascript" src='Views/BaseClasses/RootGlobeView.js'></script>
+<script type="text/javascript" src='Views/BaseClasses/BaseGlobeView.js'></script>
+<script type="text/javascript" src='Views/BaseClasses/BasePointCloudView.js'></script>
+<script type="text/javascript" src='Models/BaseClasses/BaseGlobeModel.js'></script>
 <script data-main="Application.js" src="Libraries/require.js"></script>
-<script type="text/javascript" src="https://app.box.com/js/static/select.js"></script>
 </html>

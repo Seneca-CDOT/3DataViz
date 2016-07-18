@@ -128,7 +128,8 @@ Application.Timeline = Backbone.View.extend({
     },
     addLabel: function(text) {
 
-        if (text.length > 10) text = text.slice(0,10) + '<br>' + text.slice(10, text.length);
+        // if (text.length > 10) text = text.slice(0,10) + '<br>' + text.slice(10, text.length);
+        if (text.length > 10) text = text.slice(0,10);
 
         return $('<div class="tl_label"><span>' + text + '</span></div>');
 
@@ -233,7 +234,7 @@ Application.Timeline = Backbone.View.extend({
         clearTimeout(this.timerId);
         var cur_pos = this.getCursorLocation(e);
         if(cur_pos < 0) return;
-        
+
         var width = e.currentTarget.clientWidth;
         var percent = (cur_pos / width) * 100;
         this.$slider.css('left', percent + '%');
